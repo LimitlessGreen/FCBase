@@ -1,0 +1,16 @@
+id: bosch-bmi270
+name: Bosch Sensortec BMI270
+manufacturer: Bosch Sensortec
+type: imu
+axes: 6
+interface: spi
+notes: 6-axis accelerometer and gyroscope designed for wearable and motion-tracking applications with ultra-low power features.
+datasheet:
+  title: "Bosch Sensortec BMI270 Datasheet"
+  publisher: Bosch Sensortec
+  year: 2025
+  url: https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bmi270-ds000.pdf
+  retrieved: 2025-10-13
+  language: en
+sources:
+  - ardupilot-holybro-kakuteh7-v2

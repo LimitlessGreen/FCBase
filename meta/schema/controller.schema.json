@@ -12,6 +12,7 @@
     "mounting",
     "power",
     "io",
+    "hardware",
     "sensors",
     "firmware_support",
     "sources",
@@ -61,6 +62,18 @@
         "pwm": { "type": "integer", "minimum": 0 },
         "ethernet": { "type": "boolean" },
         "sd_card": { "type": "boolean" }
+      }
+    },
+    "hardware": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["openness"],
+      "properties": {
+        "openness": {
+          "type": "string",
+          "enum": ["open", "closed", "mixed"]
+        },
+        "notes": { "type": "string" }
       }
     },
     "sensors": {

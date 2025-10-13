@@ -49,12 +49,15 @@ firmware_support:
 - id: px4
   status: stable
 sources:
+- ardupilot-autopilots
 - ardupilot-holybro-pixhawk6x
 - holybro-pixhawk6x-product
 - px4-pixhawk6x
 verification:
   last_updated: "2025-10-13"
   level: community
+hardware:
+  openness: open
 keywords:
 - ardupilot
 - ethernet

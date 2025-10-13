@@ -1,0 +1,42 @@
+id: holybro-kakute-h7-v2
+title: Holybro Kakute H7 V2
+brand: holybro
+mcu: stmicro-stm32h743
+mounting: custom
+power:
+  voltage_in: 2S-8S LiPo main input, USB 5V
+  notes: Includes 9V/1.5A BEC for HD video systems and supports external current monitoring.
+io:
+  uarts: 6
+  can: 0
+  pwm: 9
+  ethernet: false
+  sd_card: false
+sensors:
+  imu:
+  - count: 1
+    id: bosch-bmi270
+  barometer:
+  - count: 1
+    id: bosch-bmp280
+features:
+- 128 MB onboard flash logging
+- Hardware-inverted UART support on every port
+- Switchable VTX power with USB-C connectivity
+firmware_support:
+- id: ardupilot
+  status: stable
+sources:
+- ardupilot-autopilots
+- ardupilot-holybro-kakuteh7-v2
+verification:
+  last_updated: "2025-10-13"
+  level: community
+hardware:
+  openness: closed
+keywords:
+- ardupilot
+- holybro
+- kakute
+- stm32h743
+notes: Kakute H7 V2 relies on external compass modules because the onboard IMU lacks a magnetometer.
