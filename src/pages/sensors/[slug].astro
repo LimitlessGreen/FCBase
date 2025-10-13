@@ -21,8 +21,11 @@ const { data } = sensor;
 const allControllers = await getCollection('controllers');
 const controllersUsingSensor = allControllers.filter((controller) => {
   const sensors = controller.data.sensors;
-  if (!sensors || !Array.isArray(sensors)) return false;
-  return sensors.some((s) => s.id === sensor.id);
+  if (!sensors) return false;
+
+  return Object.values(sensors).some((sensorGroup) =>
+    Array.isArray(sensorGroup) && sensorGroup.some((s) => s.id === sensor.id)
+  );
 });
 
 // Sort by title
