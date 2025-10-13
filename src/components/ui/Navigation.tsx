@@ -12,11 +12,12 @@ export function Navigation({ className }: NavigationProps) {
 
   return (
     <nav className={cn("border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60", className)}>
-      <div className="container flex h-16 items-center justify-between">
-        <div className="flex items-center gap-6">
-          <a href="/" className="flex items-center space-x-2">
-            <span className="font-bold text-xl">FCBase</span>
-          </a>
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="flex h-16 items-center justify-between">
+          <div className="flex items-center gap-6">
+            <a href="/" className="flex items-center space-x-2">
+              <span className="font-bold text-xl">FCBase</span>
+            </a>
           
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-6">
@@ -54,12 +55,13 @@ export function Navigation({ className }: NavigationProps) {
         >
           {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </Button>
+        </div>
       </div>
 
       {/* Mobile Navigation */}
       {isOpen && (
         <div className="md:hidden border-t">
-          <div className="container py-4 flex flex-col gap-3">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4 flex flex-col gap-3">
             <a href="/controllers" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors py-2 px-2 rounded-sm hover:bg-muted">
               Controllers
             </a>
