@@ -5,5 +5,12 @@ type: magnetometer
 axes: 3
 interface: i2c
 notes: "Geomagnetic sensor providing 3-axis compass data for autopilot heading."
+datasheet:
+  title: "Bosch Sensortec BMM150 Datasheet"
+  publisher: Bosch Sensortec
+  year: 2025
+  url: https://www.mouser.com/datasheet/2/783/BST-BMM150-DS000-1508729.pdf
+  retrieved: 2025-10-13
+  language: en
 sources:
   - px4-pixhawk6x

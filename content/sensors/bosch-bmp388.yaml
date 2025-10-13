@@ -4,6 +4,13 @@ manufacturer: Bosch Sensortec
 type: barometer
 interface: i2c
 notes: Precision barometric pressure sensor used for redundant altitude estimation.
+datasheet:
+  title: "Bosch Sensortec BMP388 Datasheet"
+  publisher: Bosch Sensortec
+  year: 2025
+  url: https://www.mouser.com/datasheet/2/783/BST-BMP388-DS001-1507807.pdf
+  retrieved: 2025-10-13
+  language: en
 sources:
-- holybro-pixhawk6x-product
-- px4-pixhawk6x
+  - holybro-pixhawk6x-product
+  - px4-pixhawk6x

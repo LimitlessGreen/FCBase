@@ -5,6 +5,13 @@ type: imu
 axes: 6
 interface: spi
 notes: "32g/4000 dps 6-axis IMU for high-dynamic vehicles."
+datasheet:
+  title: "TDK InvenSense ICM-20649 Datasheet"
+  publisher: TDK InvenSense
+  year: 2025
+  url: https://www.mouser.com/datasheet/2/400/DS-000166-ICM-20649-v1.2-1506982.pdf
+  retrieved: 2025-10-13
+  language: en
 sources:
   - px4-cube-orange-plus
   - px4-pixhawk6x
