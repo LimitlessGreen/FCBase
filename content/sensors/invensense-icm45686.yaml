@@ -5,5 +5,12 @@ type: imu
 axes: 6
 interface: spi
 notes: "Industrial 6-axis IMU with BalancedGyro technology used on Pixhawk 6X revisions."
+datasheet:
+  title: "TDK InvenSense ICM-45686 Datasheet"
+  publisher: TDK InvenSense
+  year: 2025
+  url: https://www.mouser.com/datasheet/2/400/DS-000476-ICM-45686-v1.1-3140767.pdf
+  retrieved: 2025-10-13
+  language: en
 sources:
   - holybro-pixhawk6x-product

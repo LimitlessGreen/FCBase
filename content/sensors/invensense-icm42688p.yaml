@@ -5,7 +5,14 @@ type: imu
 axes: 6
 interface: spi
 notes: 6-axis accelerometer/gyroscope with integrated digital motion processing.
+datasheet:
+  title: "TDK InvenSense ICM-42688-P Datasheet"
+  publisher: TDK InvenSense
+  year: 2025
+  url: https://www.mouser.com/datasheet/2/400/DS-000201-ICM-42688-P-v1.0-1987544.pdf
+  retrieved: 2025-10-13
+  language: en
 sources:
-- px4-cube-orange-plus
-- px4-pixhawk6c
-- px4-pixhawk6x
+  - px4-cube-orange-plus
+  - px4-pixhawk6c
+  - px4-pixhawk6x

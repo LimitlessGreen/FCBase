@@ -4,6 +4,13 @@ manufacturer: TDK InvenSense
 type: barometer
 interface: i2c
 notes: "Digital barometric pressure sensor providing redundant altitude data."
+datasheet:
+  title: "TDK InvenSense ICP-20100 Datasheet"
+  publisher: TDK InvenSense
+  year: 2025
+  url: https://www.mouser.com/datasheet/2/400/DS-000228-ICP-20100-v1.3-1987548.pdf
+  retrieved: 2025-10-13
+  language: en
 sources:
   - ardupilot-cuav-pixhawkv6x
   - holybro-pixhawk6x-product

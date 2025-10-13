@@ -5,5 +5,12 @@ type: magnetometer
 axes: 3
 interface: spi
 notes: "3-axis magnetometer integrated with the ICM-20948 for Cube Orange+ redundancy."
+datasheet:
+  title: "AKM AK09916C Datasheet"
+  publisher: Asahi Kasei Microdevices
+  year: 2025
+  url: https://www.akm.com/akm/en/file/datasheet/AK09916C.pdf
+  retrieved: 2025-10-13
+  language: en
 sources:
   - ardupilot-cube-orange-overview

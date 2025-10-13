@@ -5,6 +5,13 @@ type: imu
 axes: 9
 interface: spi
 notes: 9-axis IMU with integrated AK09916 compass used for redundant attitude sensing.
+datasheet:
+  title: "TDK InvenSense ICM-20948 Datasheet"
+  publisher: TDK InvenSense
+  year: 2025
+  url: https://www.mouser.com/datasheet/2/400/DS-000219-ICM-20948-v1.3-1592083.pdf
+  retrieved: 2025-10-13
+  language: en
 sources:
-- ardupilot-cube-orange-overview
-- px4-cube-orange-plus
+  - ardupilot-cube-orange-overview
+  - px4-cube-orange-plus

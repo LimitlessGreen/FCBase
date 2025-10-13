@@ -5,6 +5,13 @@ type: magnetometer
 axes: 3
 interface: i2c
 notes: 3-axis magnetometer used on Pixhawk 6C for compass measurements.
+datasheet:
+  title: "iSentek IST8310 Datasheet"
+  publisher: iSentek
+  year: 2025
+  url: https://www.mouser.com/datasheet/2/724/IST8310_Datasheet-1514315.pdf
+  retrieved: 2025-10-13
+  language: en
 sources:
-- holybro-pixhawk6c-product
-- px4-pixhawk6c
+  - holybro-pixhawk6c-product
+  - px4-pixhawk6c
