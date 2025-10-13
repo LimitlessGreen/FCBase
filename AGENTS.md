@@ -1,8 +1,10 @@
 # 🤖 FCBase Agents Guide
 
 ## 🧭 Project Overview
-**FCBase** is an open, static database of flight controllers for ArduPilot, PX4, and iNAV.  
+**FCBase** is an open, static database of flight controllers for ArduPilot, PX4, and iNAV.
 The project combines a structured YAML/JSON dataset, static Astro pages, and community-contributed metadata.
+
+> 🔤 **Language Requirement**: All user-facing content must be written in English.
 
 ---
 
