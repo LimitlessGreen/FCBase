@@ -1,0 +1,58 @@
+id: holybro-pixhawk-4
+title: Holybro Pixhawk 4
+brand: holybro
+mcu: stmicro-stm32f765
+mounting: custom
+dimensions:
+  length_mm: 84
+  width_mm: 44
+  height_mm: 12
+  weight_g: 33.3
+power:
+  voltage_in: POWER1/POWER2 4.9-5.5V, USB 4.75-5.25V
+  redundant: true
+  notes: Triple-redundant power inputs with servo rail tolerant to 42V and POWER rails surviving up to 10V.
+io:
+  uarts: 6
+  can: 2
+  pwm: 16
+  ethernet: false
+  sd_card: true
+sensors:
+  imu:
+  - count: 1
+    id: invensense-icm20689
+  - count: 1
+    id: bosch-bmi055
+  barometer:
+  - count: 1
+    id: meas-ms5611
+  magnetometer:
+  - count: 1
+    id: ist-ist8310
+features:
+- Dual IMU stack with dedicated vibration isolation
+- Two CAN buses and four I2C ports for expansion
+- Integrated microSD slot for high-rate logging
+firmware_support:
+- id: ardupilot
+  status: stable
+- id: px4
+  status: stable
+sources:
+- ardupilot-autopilots
+- ardupilot-holybro-pixhawk4
+- holybro-pixhawk4-product
+- px4-pixhawk4
+verification:
+  last_updated: "2025-10-13"
+  level: community
+hardware:
+  openness: open
+keywords:
+- ardupilot
+- holybro
+- pixhawk
+- px4
+- stm32f765
+notes: Aluminum enclosure option increases weight to 49g but retains identical electronics.

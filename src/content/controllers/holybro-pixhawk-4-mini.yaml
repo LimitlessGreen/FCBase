@@ -1,0 +1,58 @@
+id: holybro-pixhawk-4-mini
+title: Holybro Pixhawk 4 Mini
+brand: holybro
+mcu: stmicro-stm32f765
+mounting: custom
+dimensions:
+  length_mm: 55
+  width_mm: 38
+  height_mm: 15.5
+  weight_g: 37.2
+power:
+  voltage_in: POWER 4.75-5.5V, USB 4.75-5.25V
+  redundant: true
+  notes: Dual power domains with servo rail tolerant to 24V and POWER input protected up to 6V.
+io:
+  uarts: 5
+  can: 1
+  pwm: 11
+  ethernet: false
+  sd_card: true
+sensors:
+  imu:
+  - count: 1
+    id: invensense-icm20689
+  - count: 1
+    id: bosch-bmi055
+  barometer:
+  - count: 1
+    id: meas-ms5611
+  magnetometer:
+  - count: 1
+    id: ist-ist8310
+features:
+- FMUv5 mini form factor with 11 PWM outputs
+- Redundant power inputs across POWER and USB rails
+- Integrated microSD logging and external buzzer support
+firmware_support:
+- id: ardupilot
+  status: stable
+- id: px4
+  status: stable
+sources:
+- ardupilot-autopilots
+- ardupilot-holybro-ph4mini
+- px4-pixhawk4mini
+verification:
+  last_updated: "2025-10-13"
+  level: community
+hardware:
+  openness: open
+keywords:
+- ardupilot
+- holybro
+- pixhawk
+- px4
+- stm32f765
+notes: >-
+  PX4 documentation notes some production runs swap the BMI055 for an ICM20602 second IMU while maintaining identical interfaces.
