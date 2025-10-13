@@ -22,6 +22,10 @@ const searchControllers = allControllers.map((controller) => ({
   uarts: controller.data.io.uarts,
   can: controller.data.io.can || 0,
   pwm: controller.data.io.pwm || 0,
+  sdCard: controller.data.io.sd_card,
+  ethernet: controller.data.io.ethernet,
+  barometer: (controller.data.sensors?.barometer?.length ?? 0) > 0,
+  redundant: controller.data.power?.redundant,
 }));
 
 // First 6 controllers for grid preview

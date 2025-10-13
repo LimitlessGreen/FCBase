@@ -1,6 +1,6 @@
 import * as React from "react";
 import Fuse from "fuse.js";
-import { Search, X } from "lucide-react";
+import { Search, X, SlidersHorizontal, ArrowUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Card, CardContent } from "./Card";
 import { Badge } from "./Badge";
@@ -15,6 +15,10 @@ interface Controller {
   uarts: number;
   can: number;
   pwm: number;
+  sdCard?: boolean;
+  ethernet?: boolean;
+  barometer?: boolean;
+  redundant?: boolean;
 }
 
 interface ControllerSearchProps {
@@ -22,11 +26,26 @@ interface ControllerSearchProps {
   basePath?: string;
 }
 
+type SortOption = 'name-asc' | 'name-desc' | 'mcu' | 'uarts-desc' | 'ports-desc';
+
 export function ControllerSearch({ controllers, basePath = "" }: ControllerSearchProps) {
+  // Basic filters
   const [searchQuery, setSearchQuery] = React.useState("");
   const [selectedMCU, setSelectedMCU] = React.useState<string | null>(null);
   const [selectedMounting, setSelectedMounting] = React.useState<string | null>(null);
   const [selectedFirmware, setSelectedFirmware] = React.useState<string | null>(null);
+  
+  // Advanced filters
+  const [minUarts, setMinUarts] = React.useState<number>(0);
+  const [requireCAN, setRequireCAN] = React.useState(false);
+  const [requireSDCard, setRequireSDCard] = React.useState(false);
+  const [requireEthernet, setRequireEthernet] = React.useState(false);
+  const [requireBarometer, setRequireBarometer] = React.useState(false);
+  const [requireRedundant, setRequireRedundant] = React.useState(false);
+  
+  // UI state
+  const [sortBy, setSortBy] = React.useState<SortOption>('name-asc');
+  const [showFilters, setShowFilters] = React.useState(false);
   const [results, setResults] = React.useState<Controller[]>([]);
 
   // Extract unique values for filters
@@ -59,7 +78,7 @@ export function ControllerSearch({ controllers, basePath = "" }: ControllerSearc
     [controllers]
   );
 
-  // Perform search and filtering
+  // Perform search, filtering, and sorting
   React.useEffect(() => {
     let filtered = controllers;
 
@@ -69,7 +88,7 @@ export function ControllerSearch({ controllers, basePath = "" }: ControllerSearc
       filtered = fuseResults.map(r => r.item);
     }
 
-    // Apply filters
+    // Basic filters
     if (selectedMCU) {
       filtered = filtered.filter(c => c.mcu === selectedMCU);
     }
@@ -80,17 +99,87 @@ export function ControllerSearch({ controllers, basePath = "" }: ControllerSearc
       filtered = filtered.filter(c => c.firmware.includes(selectedFirmware));
     }
 
-    setResults(filtered);
-  }, [searchQuery, selectedMCU, selectedMounting, selectedFirmware, controllers, fuse]);
+    // Advanced filters
+    if (minUarts > 0) {
+      filtered = filtered.filter(c => c.uarts >= minUarts);
+    }
+    if (requireCAN) {
+      filtered = filtered.filter(c => c.can > 0);
+    }
+    if (requireSDCard) {
+      filtered = filtered.filter(c => c.sdCard === true);
+    }
+    if (requireEthernet) {
+      filtered = filtered.filter(c => c.ethernet === true);
+    }
+    if (requireBarometer) {
+      filtered = filtered.filter(c => c.barometer === true);
+    }
+    if (requireRedundant) {
+      filtered = filtered.filter(c => c.redundant === true);
+    }
+
+    // Sorting
+    const sorted = [...filtered].sort((a, b) => {
+      switch (sortBy) {
+        case 'name-asc':
+          return a.title.localeCompare(b.title);
+        case 'name-desc':
+          return b.title.localeCompare(a.title);
+        case 'mcu':
+          return a.mcu.localeCompare(b.mcu) || a.title.localeCompare(b.title);
+        case 'uarts-desc':
+          return b.uarts - a.uarts || a.title.localeCompare(b.title);
+        case 'ports-desc':
+          const aPorts = a.uarts + a.can + a.pwm;
+          const bPorts = b.uarts + b.can + b.pwm;
+          return bPorts - aPorts || a.title.localeCompare(b.title);
+        default:
+          return 0;
+      }
+    });
+
+    setResults(sorted);
+  }, [
+    searchQuery, 
+    selectedMCU, 
+    selectedMounting, 
+    selectedFirmware,
+    minUarts,
+    requireCAN,
+    requireSDCard,
+    requireEthernet,
+    requireBarometer,
+    requireRedundant,
+    sortBy,
+    controllers, 
+    fuse
+  ]);
 
   const clearFilters = () => {
     setSearchQuery("");
     setSelectedMCU(null);
     setSelectedMounting(null);
     setSelectedFirmware(null);
+    setMinUarts(0);
+    setRequireCAN(false);
+    setRequireSDCard(false);
+    setRequireEthernet(false);
+    setRequireBarometer(false);
+    setRequireRedundant(false);
   };
 
-  const hasActiveFilters = searchQuery || selectedMCU || selectedMounting || selectedFirmware;
+  const hasActiveFilters = 
+    searchQuery || 
+    selectedMCU || 
+    selectedMounting || 
+    selectedFirmware ||
+    minUarts > 0 ||
+    requireCAN ||
+    requireSDCard ||
+    requireEthernet ||
+    requireBarometer ||
+    requireRedundant;
 
   return (
     <div className="w-full space-y-6">
@@ -114,74 +203,192 @@ export function ControllerSearch({ controllers, basePath = "" }: ControllerSearc
         )}
       </div>
 
-      {/* Filter Chips */}
-      <div className="flex flex-wrap gap-2">
-        {/* MCU Filter */}
+      {/* Filter Controls */}
+      <div className="space-y-4">
+        {/* Basic Filters Row */}
         <div className="flex flex-wrap gap-2">
-          <span className="text-sm font-medium text-muted-foreground self-center">MCU:</span>
-          {mcuOptions.slice(0, 5).map((mcu) => (
-            <button
-              key={mcu}
-              onClick={() => setSelectedMCU(selectedMCU === mcu ? null : mcu)}
-              className={cn(
-                "px-3 py-1 text-sm rounded-full border transition-colors",
-                selectedMCU === mcu
-                  ? "bg-primary text-primary-foreground border-primary"
-                  : "bg-background hover:bg-muted border-border"
-              )}
-            >
-              {mcu.replace('stmicro-', '').toUpperCase()}
-            </button>
-          ))}
+          {/* MCU Filter */}
+          <div className="flex flex-wrap gap-2">
+            <span className="text-sm font-medium text-muted-foreground self-center">MCU:</span>
+            {mcuOptions.slice(0, 5).map((mcu) => (
+              <button
+                key={mcu}
+                onClick={() => setSelectedMCU(selectedMCU === mcu ? null : mcu)}
+                className={cn(
+                  "px-3 py-1 text-sm rounded-full border transition-colors",
+                  selectedMCU === mcu
+                    ? "bg-primary text-primary-foreground border-primary"
+                    : "bg-background hover:bg-muted border-border"
+                )}
+              >
+                {mcu.replace('stmicro-', '').toUpperCase()}
+              </button>
+            ))}
+          </div>
+
+          {/* Mounting Filter */}
+          <div className="flex flex-wrap gap-2">
+            <span className="text-sm font-medium text-muted-foreground self-center">Mounting:</span>
+            {mountingOptions.map((mounting) => (
+              <button
+                key={mounting}
+                onClick={() => setSelectedMounting(selectedMounting === mounting ? null : mounting)}
+                className={cn(
+                  "px-3 py-1 text-sm rounded-full border transition-colors",
+                  selectedMounting === mounting
+                    ? "bg-primary text-primary-foreground border-primary"
+                    : "bg-background hover:bg-muted border-border"
+                )}
+              >
+                {mounting}
+              </button>
+            ))}
+          </div>
+
+          {/* Firmware Filter */}
+          <div className="flex flex-wrap gap-2">
+            <span className="text-sm font-medium text-muted-foreground self-center">Firmware:</span>
+            {firmwareOptions.map((firmware) => (
+              <button
+                key={firmware}
+                onClick={() => setSelectedFirmware(selectedFirmware === firmware ? null : firmware)}
+                className={cn(
+                  "px-3 py-1 text-sm rounded-full border transition-colors",
+                  selectedFirmware === firmware
+                    ? "bg-primary text-primary-foreground border-primary"
+                    : "bg-background hover:bg-muted border-border"
+                )}
+              >
+                {firmware.toUpperCase()}
+              </button>
+            ))}
+          </div>
         </div>
 
-        {/* Mounting Filter */}
-        <div className="flex flex-wrap gap-2">
-          <span className="text-sm font-medium text-muted-foreground self-center">Mounting:</span>
-          {mountingOptions.map((mounting) => (
-            <button
-              key={mounting}
-              onClick={() => setSelectedMounting(selectedMounting === mounting ? null : mounting)}
-              className={cn(
-                "px-3 py-1 text-sm rounded-full border transition-colors",
-                selectedMounting === mounting
-                  ? "bg-primary text-primary-foreground border-primary"
-                  : "bg-background hover:bg-muted border-border"
-              )}
-            >
-              {mounting}
-            </button>
-          ))}
-        </div>
-
-        {/* Firmware Filter */}
-        <div className="flex flex-wrap gap-2">
-          <span className="text-sm font-medium text-muted-foreground self-center">Firmware:</span>
-          {firmwareOptions.map((firmware) => (
-            <button
-              key={firmware}
-              onClick={() => setSelectedFirmware(selectedFirmware === firmware ? null : firmware)}
-              className={cn(
-                "px-3 py-1 text-sm rounded-full border transition-colors",
-                selectedFirmware === firmware
-                  ? "bg-primary text-primary-foreground border-primary"
-                  : "bg-background hover:bg-muted border-border"
-              )}
-            >
-              {firmware.toUpperCase()}
-            </button>
-          ))}
-        </div>
-
-        {/* Clear Filters */}
-        {hasActiveFilters && (
+        {/* Advanced Filters Toggle + Sorting + Clear */}
+        <div className="flex flex-wrap items-center gap-4">
           <button
-            onClick={clearFilters}
-            className="px-3 py-1 text-sm rounded-full border border-border bg-background hover:bg-muted transition-colors flex items-center gap-1"
+            onClick={() => setShowFilters(!showFilters)}
+            className={cn(
+              "px-4 py-2 text-sm rounded-lg border transition-colors flex items-center gap-2",
+              showFilters
+                ? "bg-primary text-primary-foreground border-primary"
+                : "bg-background hover:bg-muted border-border"
+            )}
           >
-            <X className="h-3 w-3" />
-            Clear all
+            <SlidersHorizontal className="h-4 w-4" />
+            Advanced Filters
           </button>
+
+          {/* Sort Dropdown */}
+          <div className="flex items-center gap-2">
+            <ArrowUpDown className="h-4 w-4 text-muted-foreground" />
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as SortOption)}
+              className="px-3 py-2 text-sm rounded-lg border border-border bg-background hover:bg-muted transition-colors focus:outline-hidden focus:ring-2 focus:ring-ring"
+            >
+              <option value="name-asc">Name (A-Z)</option>
+              <option value="name-desc">Name (Z-A)</option>
+              <option value="mcu">MCU Type</option>
+              <option value="uarts-desc">Most UARTs</option>
+              <option value="ports-desc">Most Ports Total</option>
+            </select>
+          </div>
+
+          {/* Clear Filters */}
+          {hasActiveFilters && (
+            <button
+              onClick={clearFilters}
+              className="px-3 py-2 text-sm rounded-lg border border-border bg-background hover:bg-muted transition-colors flex items-center gap-1"
+            >
+              <X className="h-3 w-3" />
+              Clear all
+            </button>
+          )}
+        </div>
+
+        {/* Advanced Filters Panel */}
+        {showFilters && (
+          <div className="p-6 rounded-lg border border-border bg-muted/30 space-y-6">
+            {/* Port Requirements */}
+            <div className="space-y-4">
+              <h3 className="text-sm font-semibold">Port Requirements</h3>
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {/* UART Min */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">
+                    Min UARTs: <span className="text-muted-foreground">{minUarts}</span>
+                  </label>
+                  <input
+                    type="range"
+                    min="0"
+                    max="12"
+                    value={minUarts}
+                    onChange={(e) => setMinUarts(parseInt(e.target.value))}
+                    className="w-full"
+                  />
+                </div>
+
+                {/* CAN Checkbox */}
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={requireCAN}
+                    onChange={(e) => setRequireCAN(e.target.checked)}
+                    className="rounded border-border"
+                  />
+                  <span className="text-sm">Require CAN</span>
+                </label>
+              </div>
+            </div>
+
+            {/* Features */}
+            <div className="space-y-4">
+              <h3 className="text-sm font-semibold">Required Features</h3>
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={requireSDCard}
+                    onChange={(e) => setRequireSDCard(e.target.checked)}
+                    className="rounded border-border"
+                  />
+                  <span className="text-sm">SD Card</span>
+                </label>
+
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={requireEthernet}
+                    onChange={(e) => setRequireEthernet(e.target.checked)}
+                    className="rounded border-border"
+                  />
+                  <span className="text-sm">Ethernet</span>
+                </label>
+
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={requireBarometer}
+                    onChange={(e) => setRequireBarometer(e.target.checked)}
+                    className="rounded border-border"
+                  />
+                  <span className="text-sm">Barometer</span>
+                </label>
+
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={requireRedundant}
+                    onChange={(e) => setRequireRedundant(e.target.checked)}
+                    className="rounded border-border"
+                  />
+                  <span className="text-sm">Redundant Power</span>
+                </label>
+              </div>
+            </div>
+          </div>
         )}
       </div>
 
@@ -196,7 +403,7 @@ export function ControllerSearch({ controllers, basePath = "" }: ControllerSearc
 
       {/* Results Grid */}
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {(hasActiveFilters ? results : controllers).map((controller) => (
+        {results.map((controller) => (
           <a
             key={controller.id}
             href={`${basePath}/controllers/${controller.id}`}
@@ -221,15 +428,22 @@ export function ControllerSearch({ controllers, basePath = "" }: ControllerSearc
                       {controller.mounting}
                     </Badge>
                   </div>
-                  <p className="text-xs text-muted-foreground">
-                    {controller.uarts} UART • {controller.can} CAN • {controller.pwm} PWM
-                  </p>
                   <div className="flex flex-wrap gap-1.5">
-                    {controller.firmware.map((fw) => (
-                      <Badge key={fw} className="text-xs bg-primary/10 text-primary border-primary/20">
+                    {controller.firmware.map(fw => (
+                      <Badge key={fw} variant="secondary" className="text-xs">
                         {fw.toUpperCase()}
                       </Badge>
                     ))}
+                  </div>
+                  <div className="text-xs text-muted-foreground space-y-1">
+                    <div>UARTs: {controller.uarts} • CAN: {controller.can} • PWM: {controller.pwm}</div>
+                    {(controller.sdCard || controller.ethernet || controller.barometer) && (
+                      <div className="flex flex-wrap gap-1">
+                        {controller.sdCard && <span>✓ SD</span>}
+                        {controller.ethernet && <span>✓ Ethernet</span>}
+                        {controller.barometer && <span>✓ Baro</span>}
+                      </div>
+                    )}
                   </div>
                 </div>
               </CardContent>
@@ -237,19 +451,6 @@ export function ControllerSearch({ controllers, basePath = "" }: ControllerSearc
           </a>
         ))}
       </div>
-
-      {/* No Results */}
-      {hasActiveFilters && results.length === 0 && (
-        <div className="text-center py-12">
-          <p className="text-muted-foreground">No controllers found matching your criteria.</p>
-          <button
-            onClick={clearFilters}
-            className="mt-4 text-primary hover:underline"
-          >
-            Clear filters and try again
-          </button>
-        </div>
-      )}
     </div>
   );
 }
