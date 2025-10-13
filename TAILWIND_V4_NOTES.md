@@ -33,13 +33,21 @@ border-radius: var(--radius);
 ```
 
 ### Border Colors
-Always specify border color explicitly:
-```html
-<!-- ✅ Good -->
-<div class="border border-border">...</div>
+Border color is set globally via CSS variable:
+```css
+/* In globals.css */
+* {
+  border-color: hsl(var(--border));
+}
+```
 
-<!-- ❌ Avoid (will use currentColor) -->
+No need to specify color on each border utility:
+```html
+<!-- ✅ Good - uses global border color -->
 <div class="border">...</div>
+
+<!-- ❌ Don't use (not a valid utility) -->
+<div class="border border-border">...</div>
 ```
 
 ### Ring Utilities
