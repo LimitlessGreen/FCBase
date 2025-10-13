@@ -1,0 +1,55 @@
+id: cubepilot-cube-black
+title: CubePilot Cube Black
+brand: cubepilot
+mcu: stmicro-stm32f427
+mounting: cube
+power:
+  voltage_in: 4.1-5.7V redundant power rails, USB 4.75-5.25V
+  redundant: true
+  notes: Redundant power module inputs with automatic failover and isolated servo rail supply.
+io:
+  uarts: 5
+  can: 2
+  pwm: 14
+  ethernet: false
+  sd_card: true
+sensors:
+  barometer:
+  - count: 2
+    id: meas-ms5611
+  imu:
+  - count: 1
+    id: invensense-icm20648
+  - count: 1
+    id: invensense-icm20948
+  - count: 1
+    id: invensense-mpu9250
+  magnetometer:
+  - count: 1
+    id: invensense-icm20948
+  - count: 1
+    id: invensense-mpu9250
+features:
+- 80-pin DF17 modular connector compatible with Pixhawk ecosystem carrier boards
+- Triple redundant IMUs with onboard heating for vibration resilience
+- Redundant MS5611 barometers for atmospheric sensing backup
+firmware_support:
+- id: ardupilot
+  status: stable
+- id: px4
+  status: stable
+sources:
+- ardupilot-thecube-overview
+- cubepilot-cube-black-product
+verification:
+  last_updated: "2025-10-13"
+  level: community
+hardware:
+  openness: open
+keywords:
+- ardupilot
+- cube
+- cubepilot
+- px4
+- stm32f427
+notes: Requires a compatible carrier board for IO breakout; shares mechanical form factor with other Cube modules.

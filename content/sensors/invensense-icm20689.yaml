@@ -1,0 +1,17 @@
+id: invensense-icm20689
+name: TDK InvenSense ICM-20689
+manufacturer: TDK InvenSense
+type: imu
+axes: 6
+interface: spi
+notes: 6-axis industrial-grade accelerometer/gyroscope with 30 kHz gyro bandwidth used for vibration-resilient flight control.
+datasheet:
+  title: "ICM-20689 High Performance 6-Axis MotionTracking IC"
+  publisher: TDK InvenSense
+  year: 2020
+  url: https://invensense.tdk.com/wp-content/uploads/2015/02/DS-000189-ICM-20689-v1.0.pdf
+  retrieved: 2025-10-13
+  language: en
+sources:
+  - ardupilot-cuav-nora-overview
+  - ardupilot-holybro-durandal

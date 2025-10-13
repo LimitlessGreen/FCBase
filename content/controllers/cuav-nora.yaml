@@ -1,0 +1,56 @@
+id: cuav-nora
+title: CUAV Nora
+brand: cuav
+mcu: stmicro-stm32h743
+mounting: custom
+dimensions:
+  weight_g: 101
+power:
+  voltage_in: 4.3-5.4V regulated inputs, USB 4.75-5.25V, servo rail 0-36V passthrough
+  redundant: true
+  notes: Dual power module inputs with DroneCAN battery interface allow triple-redundant supply paths.
+io:
+  uarts: 7
+  can: 2
+  pwm: 14
+  ethernet: false
+  sd_card: true
+sensors:
+  barometer:
+  - count: 2
+    id: meas-ms5611
+  imu:
+  - count: 1
+    id: invensense-icm20649
+  - count: 1
+    id: invensense-icm20689
+  - count: 1
+    id: bosch-bmi088
+  magnetometer:
+  - count: 1
+    id: pni-rm3100
+features:
+- Built-in vibration isolation with temperature-compensated IMU platform
+- Dual CAN buses supporting DroneCAN peripherals
+- Triple IMU architecture for industrial reliability
+firmware_support:
+- id: ardupilot
+  status: stable
+- id: px4
+  status: beta
+sources:
+- ardupilot-cuav-nora-overview
+- cuav-nora-product
+- px4-cuav-nora
+verification:
+  last_updated: "2025-10-13"
+  level: community
+hardware:
+  openness: closed
+keywords:
+- ardupilot
+- cuav
+- nora
+- px4
+- stm32h743
+notes: PX4 currently exposes only eight PWM outputs on Nora while remaining channels await upstream support.
