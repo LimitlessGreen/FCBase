@@ -1,4 +1,5 @@
 ---
+import { getCollection } from 'astro:content';
 import MainLayout from "@/layouts/MainLayout.astro";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -12,32 +13,16 @@ const filters = [
   { label: "Firmware", value: "ArduPilot" },
 ];
 
-const controllers = [
-  {
-    name: "Matek H743",
-    slug: "matek-h743",
-    mcu: "STM32H743",
-    ports: "10x UART, 2x CAN, MicroSD",
-    badges: ["CAN", "SD", "UART6"],
-    imageAlt: "Placeholder image for Matek H743 flight controller",
-  },
-  {
-    name: "Pixhawk 6C",
-    slug: "pixhawk-6c",
-    mcu: "STM32H743",
-    ports: "12x PWM, 2x CAN, SD",
-    badges: ["CAN", "SD", "UART6"],
-    imageAlt: "Placeholder image for Pixhawk 6C flight controller",
-  },
-  {
-    name: "Kakute H743 Wing",
-    slug: "kakute-h743-wing",
-    mcu: "STM32H743",
-    ports: "8x UART, 2x CAN, MicroSD",
-    badges: ["CAN", "SD", "UART6"],
-    imageAlt: "Placeholder image for Kakute H743 Wing flight controller",
-  },
-];
+// Load actual controllers from content collection
+const allControllers = await getCollection('controllers');
+const controllers = allControllers.slice(0, 6).map((controller) => ({
+  slug: controller.id,
+  name: controller.data.title,
+  mcu: controller.data.mcu.toUpperCase().replace('STMICRO-', ''),
+  ports: `${controller.data.io.uarts} UART • ${controller.data.io.can} CAN • ${controller.data.io.pwm} PWM`,
+  imageAlt: controller.data.title,
+  badges: controller.data.firmware_support.map(fw => fw.id.toUpperCase()),
+}));
 
 const features = [
   {
