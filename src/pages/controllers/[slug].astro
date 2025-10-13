@@ -142,103 +142,111 @@ const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
             <CardTitle className="text-lg">Technical Specifications</CardTitle>
           </CardHeader>
           <CardContent>
-            <table class="w-full text-sm">
-              <tbody class="divide-y divide-border">
+            <table class="w-full text-sm border-collapse">
+              <tbody>
                 <!-- Core Hardware -->
-                <tr class="bg-muted/30">
-                  <td colspan="4" class="py-1.5 px-2 font-semibold text-xs uppercase tracking-wide flex items-center gap-2">
-                    <Cpu className="w-3.5 h-3.5" />
-                    Core Hardware
+                <tr class="border-b-2 border-primary/20">
+                  <td colspan="4" class="py-2 px-3 font-bold text-xs uppercase tracking-wider bg-primary/5">
+                    <div class="flex items-center gap-2">
+                      <Cpu className="w-4 h-4 text-primary" />
+                      <span class="text-primary">Core Hardware</span>
+                    </div>
                   </td>
                 </tr>
-                <tr>
-                  <td class="py-1.5 px-2 text-muted-foreground w-1/4">MCU</td>
-                  <td class="py-1.5 px-2 font-medium w-1/4">{mcu?.data.title || mcu?.data.name || data.mcu}</td>
-                  <td class="py-1.5 px-2 text-muted-foreground w-1/4">Mounting</td>
-                  <td class="py-1.5 px-2 font-medium w-1/4">{mountingDisplay[data.mounting]}</td>
+                <tr class="border-b border-border hover:bg-muted/50 transition-colors">
+                  <td class="py-2 px-3 text-muted-foreground font-medium w-1/4 text-xs uppercase">MCU</td>
+                  <td class="py-2 px-3 font-mono font-semibold w-1/4 text-foreground">{mcu?.data.title || mcu?.data.name || data.mcu}</td>
+                  <td class="py-2 px-3 text-muted-foreground font-medium w-1/4 text-xs uppercase">Mounting</td>
+                  <td class="py-2 px-3 font-mono font-semibold w-1/4">{mountingDisplay[data.mounting]}</td>
                 </tr>
                 {data.dimensions && (
-                  <tr>
-                    <td class="py-1.5 px-2 text-muted-foreground">Dimensions</td>
-                    <td class="py-1.5 px-2 font-medium">
+                  <tr class="border-b border-border bg-muted/20 hover:bg-muted/40 transition-colors">
+                    <td class="py-2 px-3 text-muted-foreground font-medium text-xs uppercase">Dimensions</td>
+                    <td class="py-2 px-3 font-mono font-semibold">
                       {data.dimensions.width_mm} × {data.dimensions.length_mm}
                       {data.dimensions.height_mm && ` × ${data.dimensions.height_mm}`} mm
                     </td>
                     {data.dimensions.weight_g && (
                       <>
-                        <td class="py-1.5 px-2 text-muted-foreground">Weight</td>
-                        <td class="py-1.5 px-2 font-medium">{data.dimensions.weight_g}g</td>
+                        <td class="py-2 px-3 text-muted-foreground font-medium text-xs uppercase">Weight</td>
+                        <td class="py-2 px-3 font-mono font-semibold">{data.dimensions.weight_g}g</td>
                       </>
                     )}
                   </tr>
                 )}
 
                 <!-- Power -->
-                <tr class="bg-muted/30">
-                  <td colspan="4" class="py-1.5 px-2 font-semibold text-xs uppercase tracking-wide flex items-center gap-2">
-                    <Zap className="w-3.5 h-3.5" />
-                    Power
+                <tr class="border-b-2 border-primary/20">
+                  <td colspan="4" class="py-2 px-3 font-bold text-xs uppercase tracking-wider bg-primary/5">
+                    <div class="flex items-center gap-2">
+                      <Zap className="w-4 h-4 text-amber-500" />
+                      <span class="text-amber-600 dark:text-amber-500">Power</span>
+                    </div>
                   </td>
                 </tr>
-                <tr>
-                  <td class="py-1.5 px-2 text-muted-foreground">Input Voltage</td>
-                  <td class="py-1.5 px-2 font-medium">{data.power.voltage_in}</td>
+                <tr class="border-b border-border hover:bg-muted/50 transition-colors">
+                  <td class="py-2 px-3 text-muted-foreground font-medium text-xs uppercase">Input Voltage</td>
+                  <td class="py-2 px-3 font-mono font-semibold">{data.power.voltage_in}</td>
                   {data.power.redundant && (
                     <>
-                      <td class="py-1.5 px-2 text-muted-foreground">Redundancy</td>
-                      <td class="py-1.5 px-2 font-medium text-green-600 dark:text-green-400">✓ Yes</td>
+                      <td class="py-2 px-3 text-muted-foreground font-medium text-xs uppercase">Redundancy</td>
+                      <td class="py-2 px-3 font-semibold text-green-600 dark:text-green-400">✓ Yes</td>
                     </>
                   )}
                 </tr>
                 {data.power.notes && (
-                  <tr>
-                    <td colspan="4" class="py-1 px-2 text-xs text-muted-foreground italic">{data.power.notes}</td>
+                  <tr class="border-b border-border bg-muted/20">
+                    <td colspan="4" class="py-1.5 px-3 text-xs text-muted-foreground italic">{data.power.notes}</td>
                   </tr>
                 )}
 
                 <!-- I/O Ports -->
-                <tr class="bg-muted/30">
-                  <td colspan="4" class="py-1.5 px-2 font-semibold text-xs uppercase tracking-wide flex items-center gap-2">
-                    <Package className="w-3.5 h-3.5" />
-                    Connectivity & I/O
+                <tr class="border-b-2 border-primary/20">
+                  <td colspan="4" class="py-2 px-3 font-bold text-xs uppercase tracking-wider bg-primary/5">
+                    <div class="flex items-center gap-2">
+                      <Package className="w-4 h-4 text-blue-500" />
+                      <span class="text-blue-600 dark:text-blue-400">Connectivity & I/O</span>
+                    </div>
                   </td>
                 </tr>
-                <tr>
-                  <td class="py-1.5 px-2 text-muted-foreground">UARTs</td>
-                  <td class="py-1.5 px-2 font-medium">{data.io.uarts}</td>
-                  <td class="py-1.5 px-2 text-muted-foreground">CAN Bus</td>
-                  <td class="py-1.5 px-2 font-medium">{data.io.can}</td>
+                <tr class="border-b border-border hover:bg-muted/50 transition-colors">
+                  <td class="py-2 px-3 text-muted-foreground font-medium text-xs uppercase">UARTs</td>
+                  <td class="py-2 px-3 font-mono font-semibold">{data.io.uarts}</td>
+                  <td class="py-2 px-3 text-muted-foreground font-medium text-xs uppercase">CAN Bus</td>
+                  <td class="py-2 px-3 font-mono font-semibold">{data.io.can}</td>
                 </tr>
-                <tr>
-                  <td class="py-1.5 px-2 text-muted-foreground">PWM Outputs</td>
-                  <td class="py-1.5 px-2 font-medium">{data.io.pwm}</td>
-                  <td class="py-1.5 px-2 text-muted-foreground">SD Card</td>
-                  <td class="py-1.5 px-2 font-medium">{data.io.sd_card ? '✓ Yes' : '✗ No'}</td>
+                <tr class="border-b border-border bg-muted/20 hover:bg-muted/40 transition-colors">
+                  <td class="py-2 px-3 text-muted-foreground font-medium text-xs uppercase">PWM Outputs</td>
+                  <td class="py-2 px-3 font-mono font-semibold">{data.io.pwm}</td>
+                  <td class="py-2 px-3 text-muted-foreground font-medium text-xs uppercase">SD Card</td>
+                  <td class="py-2 px-3 font-semibold">{data.io.sd_card ? '✓ Yes' : '✗ No'}</td>
                 </tr>
                 {data.io.ethernet !== undefined && (
-                  <tr>
-                    <td class="py-1.5 px-2 text-muted-foreground">Ethernet</td>
-                    <td class="py-1.5 px-2 font-medium">{data.io.ethernet ? '✓ Yes' : '✗ No'}</td>
+                  <tr class="border-b border-border hover:bg-muted/50 transition-colors">
+                    <td class="py-2 px-3 text-muted-foreground font-medium text-xs uppercase">Ethernet</td>
+                    <td class="py-2 px-3 font-semibold">{data.io.ethernet ? '✓ Yes' : '✗ No'}</td>
                     <td colspan="2"></td>
                   </tr>
                 )}
 
                 <!-- Sensors -->
-                <tr class="bg-muted/30">
-                  <td colspan="4" class="py-1.5 px-2 font-semibold text-xs uppercase tracking-wide flex items-center gap-2">
-                    <Box className="w-3.5 h-3.5" />
-                    Onboard Sensors
+                <tr class="border-b-2 border-primary/20">
+                  <td colspan="4" class="py-2 px-3 font-bold text-xs uppercase tracking-wider bg-primary/5">
+                    <div class="flex items-center gap-2">
+                      <Box className="w-4 h-4 text-purple-500" />
+                      <span class="text-purple-600 dark:text-purple-400">Onboard Sensors</span>
+                    </div>
                   </td>
                 </tr>
                 {sensorDetails.imu.length > 0 && (
-                  <tr>
-                    <td class="py-1.5 px-2 text-muted-foreground align-top">IMU</td>
-                    <td colspan="3" class="py-1.5 px-2">
+                  <tr class="border-b border-border hover:bg-muted/50 transition-colors">
+                    <td class="py-2 px-3 text-muted-foreground font-medium align-top text-xs uppercase">IMU</td>
+                    <td colspan="3" class="py-2 px-3">
                       {sensorDetails.imu.map((sensor, idx) => (
-                        <span class="inline-flex items-center mr-3">
-                          <span class="font-medium">{sensor.name}</span>
+                        <span class="inline-flex items-center mr-4 mb-1">
+                          <span class="font-mono font-semibold text-sm">{sensor.name}</span>
                           {sensor.count && sensor.count > 1 && (
-                            <span class="text-xs text-muted-foreground ml-1">×{sensor.count}</span>
+                            <span class="text-xs text-muted-foreground ml-1.5 font-medium">×{sensor.count}</span>
                           )}
                         </span>
                       ))}
@@ -246,14 +254,14 @@ const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
                   </tr>
                 )}
                 {sensorDetails.barometer.length > 0 && (
-                  <tr>
-                    <td class="py-1.5 px-2 text-muted-foreground align-top">Barometer</td>
-                    <td colspan="3" class="py-1.5 px-2">
+                  <tr class="border-b border-border bg-muted/20 hover:bg-muted/40 transition-colors">
+                    <td class="py-2 px-3 text-muted-foreground font-medium align-top text-xs uppercase">Barometer</td>
+                    <td colspan="3" class="py-2 px-3">
                       {sensorDetails.barometer.map((sensor, idx) => (
-                        <span class="inline-flex items-center mr-3">
-                          <span class="font-medium">{sensor.name}</span>
+                        <span class="inline-flex items-center mr-4 mb-1">
+                          <span class="font-mono font-semibold text-sm">{sensor.name}</span>
                           {sensor.count && sensor.count > 1 && (
-                            <span class="text-xs text-muted-foreground ml-1">×{sensor.count}</span>
+                            <span class="text-xs text-muted-foreground ml-1.5 font-medium">×{sensor.count}</span>
                           )}
                         </span>
                       ))}
@@ -261,14 +269,14 @@ const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
                   </tr>
                 )}
                 {sensorDetails.magnetometer.length > 0 && (
-                  <tr>
-                    <td class="py-1.5 px-2 text-muted-foreground align-top">Magnetometer</td>
-                    <td colspan="3" class="py-1.5 px-2">
+                  <tr class="border-b border-border hover:bg-muted/50 transition-colors">
+                    <td class="py-2 px-3 text-muted-foreground font-medium align-top text-xs uppercase">Magnetometer</td>
+                    <td colspan="3" class="py-2 px-3">
                       {sensorDetails.magnetometer.map((sensor, idx) => (
-                        <span class="inline-flex items-center mr-3">
-                          <span class="font-medium">{sensor.name}</span>
+                        <span class="inline-flex items-center mr-4 mb-1">
+                          <span class="font-mono font-semibold text-sm">{sensor.name}</span>
                           {sensor.count && sensor.count > 1 && (
-                            <span class="text-xs text-muted-foreground ml-1">×{sensor.count}</span>
+                            <span class="text-xs text-muted-foreground ml-1.5 font-medium">×{sensor.count}</span>
                           )}
                         </span>
                       ))}
@@ -279,19 +287,21 @@ const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
                 <!-- Features -->
                 {data.features && data.features.length > 0 && (
                   <>
-                    <tr class="bg-muted/30">
-                      <td colspan="4" class="py-1.5 px-2 font-semibold text-xs uppercase tracking-wide flex items-center gap-2">
-                        <Layers className="w-3.5 h-3.5" />
-                        Additional Features
+                    <tr class="border-b-2 border-primary/20">
+                      <td colspan="4" class="py-2 px-3 font-bold text-xs uppercase tracking-wider bg-primary/5">
+                        <div class="flex items-center gap-2">
+                          <Layers className="w-4 h-4 text-emerald-500" />
+                          <span class="text-emerald-600 dark:text-emerald-400">Additional Features</span>
+                        </div>
                       </td>
                     </tr>
-                    <tr>
-                      <td colspan="4" class="py-2 px-2">
-                        <ul class="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
+                    <tr class="border-b border-border">
+                      <td colspan="4" class="py-3 px-3">
+                        <ul class="grid grid-cols-2 gap-x-4 gap-y-1.5 text-sm">
                           {data.features.map((feature) => (
-                            <li class="flex items-start gap-1.5">
-                              <span class="text-green-600 dark:text-green-400 text-xs mt-0.5">✓</span>
-                              <span>{feature}</span>
+                            <li class="flex items-start gap-2">
+                              <span class="text-emerald-600 dark:text-emerald-400 font-bold text-sm mt-0.5">✓</span>
+                              <span class="font-medium">{feature}</span>
                             </li>
                           ))}
                         </ul>
@@ -305,25 +315,25 @@ const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
         </Card>
       </div>
 
-      <!-- Right Column - Compact Sidebar -->
+      <!-- Right Column - Professional Sidebar -->
       <div class="space-y-4">
         <!-- Firmware & Info Combined -->
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Quick Reference</CardTitle>
+            <CardTitle className="text-base font-bold uppercase tracking-wide text-primary">Quick Reference</CardTitle>
           </CardHeader>
           <CardContent>
-            <table class="w-full text-xs">
-              <tbody class="divide-y divide-border">
+            <table class="w-full text-xs border-collapse">
+              <tbody>
                 <!-- Firmware Section -->
-                <tr class="bg-muted/30">
-                  <td colspan="2" class="py-1 px-1 font-semibold text-xs uppercase tracking-wide">Firmware</td>
+                <tr class="border-b-2 border-primary/20">
+                  <td colspan="2" class="py-1.5 px-2 font-bold text-xs uppercase tracking-wider bg-primary/5 text-primary">Firmware Support</td>
                 </tr>
-                {firmware.map((fw) => (
-                  <tr>
-                    <td class="py-1 px-1 font-medium">{fw.name}</td>
-                    <td class="py-1 px-1 text-right">
-                      <Badge className={firmwareStatusColor[fw.status] + " text-xs px-1.5 py-0"}>
+                {firmware.map((fw, idx) => (
+                  <tr class={`border-b border-border ${idx % 2 === 0 ? 'bg-muted/10' : ''} hover:bg-muted/30 transition-colors`}>
+                    <td class="py-1.5 px-2 font-semibold">{fw.name}</td>
+                    <td class="py-1.5 px-2 text-right">
+                      <Badge className={firmwareStatusColor[fw.status] + " text-xs px-1.5 py-0.5 font-medium"}>
                         {fw.status}
                       </Badge>
                     </td>
@@ -331,45 +341,45 @@ const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
                 ))}
                 
                 <!-- Info Section -->
-                <tr class="bg-muted/30">
-                  <td colspan="2" class="py-1 px-1 font-semibold text-xs uppercase tracking-wide">Information</td>
+                <tr class="border-b-2 border-primary/20">
+                  <td colspan="2" class="py-1.5 px-2 font-bold text-xs uppercase tracking-wider bg-primary/5 text-primary">Information</td>
                 </tr>
-                <tr>
-                  <td class="py-1 px-1 text-muted-foreground">Verification</td>
-                  <td class="py-1 px-1 text-right">
-                    <Badge className={verificationColor[data.verification.level] + " text-xs px-1.5 py-0"}>
+                <tr class="border-b border-border hover:bg-muted/30 transition-colors">
+                  <td class="py-1.5 px-2 text-muted-foreground font-medium">Verification</td>
+                  <td class="py-1.5 px-2 text-right">
+                    <Badge className={verificationColor[data.verification.level] + " text-xs px-1.5 py-0.5 font-medium"}>
                       {data.verification.level.charAt(0).toUpperCase() + data.verification.level.slice(1)}
                     </Badge>
                   </td>
                 </tr>
-                <tr>
-                  <td class="py-1 px-1 text-muted-foreground">Hardware</td>
-                  <td class="py-1 px-1 text-right">
-                    <Badge className="bg-primary/10 text-primary border-primary/20 text-xs px-1.5 py-0"}>
+                <tr class="border-b border-border bg-muted/10 hover:bg-muted/30 transition-colors">
+                  <td class="py-1.5 px-2 text-muted-foreground font-medium">Hardware</td>
+                  <td class="py-1.5 px-2 text-right">
+                    <Badge className="bg-primary/10 text-primary border-primary/20 text-xs px-1.5 py-0.5 font-medium">
                       {data.hardware.openness.charAt(0).toUpperCase() + data.hardware.openness.slice(1)}
                     </Badge>
                   </td>
                 </tr>
-                <tr>
-                  <td class="py-1 px-1 text-muted-foreground">Updated</td>
-                  <td class="py-1 px-1 font-medium text-right text-xs">{data.verification.last_updated}</td>
+                <tr class="border-b border-border hover:bg-muted/30 transition-colors">
+                  <td class="py-1.5 px-2 text-muted-foreground font-medium">Updated</td>
+                  <td class="py-1.5 px-2 font-mono font-semibold text-right text-xs">{data.verification.last_updated}</td>
                 </tr>
-                <tr>
-                  <td class="py-1 px-1 text-muted-foreground">Sources</td>
-                  <td class="py-1 px-1 font-medium text-right">{data.sources.length}</td>
+                <tr class="border-b border-border bg-muted/10 hover:bg-muted/30 transition-colors">
+                  <td class="py-1.5 px-2 text-muted-foreground font-medium">Sources</td>
+                  <td class="py-1.5 px-2 font-mono font-semibold text-right">{data.sources.length}</td>
                 </tr>
                 {manufacturer?.data.website && (
-                  <tr>
-                    <td class="py-1 px-1 text-muted-foreground">Manufacturer</td>
-                    <td class="py-1 px-1 text-right">
+                  <tr class="hover:bg-muted/30 transition-colors">
+                    <td class="py-1.5 px-2 text-muted-foreground font-medium">Manufacturer</td>
+                    <td class="py-1.5 px-2 text-right">
                       <a 
                         href={manufacturer.data.website} 
                         target="_blank" 
                         rel="noopener noreferrer"
-                        class="font-medium hover:text-primary transition-colors text-xs inline-flex items-center gap-0.5"
+                        class="font-semibold hover:text-primary transition-colors text-xs inline-flex items-center gap-1"
                       >
                         {manufacturer.data.name}
-                        <span>→</span>
+                        <span class="text-primary">→</span>
                       </a>
                     </td>
                   </tr>
