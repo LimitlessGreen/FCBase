@@ -1,0 +1,6 @@
+id: aocoda-rc
+name: Aocoda-RC
+website: https://www.aocoda-rc.com/
+description: Aocoda-RC develops drone flight controllers, ESCs, FPV stacks, radios, VTXs, and motors for multirotor builds.
+sources:
+- aocoda-rc-home

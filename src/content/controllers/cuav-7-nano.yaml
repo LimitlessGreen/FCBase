@@ -1,0 +1,50 @@
+id: cuav-7-nano
+title: CUAV 7 Nano
+brand: cuav
+mcu: stmicro-stm32h753
+mounting: custom
+power:
+  voltage_in: External power via 6-pin Power A module; voltage range depends on connected power brick
+  notes: Configurable 3.3V/5V servo rail with dedicated power monitor connector.
+io:
+  uarts: 5
+  can: 3
+  pwm: 14
+  ethernet: true
+  sd_card: true
+sensors:
+  imu:
+  - count: 1
+    id: invensense-iim42652
+  - count: 1
+    id: bosch-bmi088
+  barometer:
+  - count: 1
+    id: bosch-bmp581
+  - count: 1
+    id: tdk-icp20100
+  magnetometer:
+  - count: 1
+    id: ist-ist8310
+features:
+- Integrated 100 Mbps Ethernet for onboard computer networking.
+- Dual IMU stack with industrial temperature support and on-board IST8310 compass.
+- 14 PWM outputs with GPIO-selectable 3.3 V or 5 V servo rail.
+firmware_support:
+- id: ardupilot
+  status: stable
+sources:
+- ardupilot-autopilots
+- ardupilot-cuav-7-nano
+- cuav-7-nano-product
+verification:
+  last_updated: "2025-10-13"
+  level: community
+hardware:
+  openness: closed
+keywords:
+- cuav
+- ethernet
+- stm32h753
+- tiny-flight-controller
+notes: Built-in IST8310 magnetometer is often supplemented with an external compass to mitigate interference on the stack.
