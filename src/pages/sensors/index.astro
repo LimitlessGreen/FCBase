@@ -1,0 +1,113 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import MainLayout from '@/layouts/MainLayout.astro';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Badge } from '@/components/ui/Badge';
+
+// Load all sensors
+const allSensors = await getCollection('sensors');
+
+// Group by type
+const sensorsByType = allSensors.reduce((acc, sensor) => {
+  const type = sensor.data.type || 'other';
+  if (!acc[type]) acc[type] = [];
+  acc[type].push(sensor);
+  return acc;
+}, {} as Record<string, typeof allSensors>);
+
+// Sort each group by name
+Object.keys(sensorsByType).forEach((type) => {
+  sensorsByType[type].sort((a, b) => (a.data.name || a.data.title || a.id).localeCompare(b.data.name || b.data.title || b.id));
+});
+
+const typeDisplay: Record<string, string> = {
+  imu: 'IMU (Gyro/Accel)',
+  barometer: 'Barometer',
+  magnetometer: 'Magnetometer',
+  gps: 'GPS',
+  other: 'Other',
+};
+
+const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout
+  title="Sensors - FCBase"
+  description="Browse flight controller sensors. Find IMU, barometer, magnetometer, and GPS specs used in flight controllers."
+>
+  <MainLayout>
+    <div class="container py-8">
+      <!-- Header -->
+      <div class="mb-8">
+        <nav class="mb-4 flex items-center gap-2 text-sm text-muted-foreground">
+          <a href={`${basePath}/`} class="hover:text-foreground transition-colors">Home</a>
+          <span>/</span>
+          <span class="text-foreground">Sensors</span>
+        </nav>
+        
+        <h1 class="text-4xl font-bold tracking-tight mb-3">Sensors</h1>
+        <p class="text-lg text-muted-foreground">
+          Browse {allSensors.length} flight controller sensors by type
+        </p>
+      </div>
+
+      <!-- Sensors by Type -->
+      {Object.entries(sensorsByType).map(([type, sensors]) => (
+        <div class="mb-12">
+          <h2 class="text-2xl font-bold tracking-tight mb-4 flex items-center gap-3">
+            {typeDisplay[type] || type}
+            <Badge variant="secondary" className="text-sm">
+              {sensors.length}
+            </Badge>
+          </h2>
+          <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {sensors.map((sensor) => (
+              <a
+                href={`${basePath}/sensors/${sensor.id}`}
+                class="group block"
+              >
+                <Card client:load class="h-full transition-all hover:shadow-lg hover:-translate-y-1">
+                  <CardHeader>
+                    <CardTitle className="text-base group-hover:text-primary transition-colors line-clamp-2">
+                      {sensor.data.name || sensor.data.title || sensor.id}
+                    </CardTitle>
+                    {sensor.data.manufacturer && (
+                      <CardDescription className="text-xs">
+                        {sensor.data.manufacturer}
+                      </CardDescription>
+                    )}
+                  </CardHeader>
+                  <CardContent>
+                    <div class="flex flex-wrap gap-1.5">
+                      <Badge variant="outline" className="text-xs capitalize">
+                        {type}
+                      </Badge>
+                      {sensor.data.interface && (
+                        <Badge variant="secondary" className="text-xs uppercase">
+                          {Array.isArray(sensor.data.interface) ? sensor.data.interface.join('/') : sensor.data.interface}
+                        </Badge>
+                      )}
+                      {sensor.data.axes && (
+                        <Badge variant="secondary" className="text-xs">
+                          {sensor.data.axes}-axis
+                        </Badge>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              </a>
+            ))}
+          </div>
+        </div>
+      ))}
+
+      {/* Empty State */}
+      {allSensors.length === 0 && (
+        <div class="text-center py-12">
+          <p class="text-muted-foreground">No sensors found.</p>
+        </div>
+      )}
+    </div>
+  </MainLayout>
+</BaseLayout>

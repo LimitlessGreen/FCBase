@@ -1,0 +1,115 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import MainLayout from '@/layouts/MainLayout.astro';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Badge } from '@/components/ui/Badge';
+
+// Load all firmware
+const allFirmware = await getCollection('firmware');
+
+// Load all controllers to count per firmware
+const allControllers = await getCollection('controllers');
+
+// Count controllers per firmware
+const firmwareWithCounts = allFirmware.map((firmware) => {
+  const controllerCount = allControllers.filter((controller) =>
+    controller.data.firmware_support.some((fw) => fw.id === firmware.id)
+  ).length;
+  
+  return {
+    ...firmware,
+    controllerCount,
+  };
+}).sort((a, b) => a.data.title.localeCompare(b.data.title));
+
+const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout
+  title="Firmware - FCBase"
+  description="Browse flight controller firmware platforms. Compare ArduPilot, PX4, iNAV and find compatible controllers."
+>
+  <MainLayout>
+    <div class="container py-8">
+      <!-- Header -->
+      <div class="mb-8">
+        <nav class="mb-4 flex items-center gap-2 text-sm text-muted-foreground">
+          <a href={`${basePath}/`} class="hover:text-foreground transition-colors">Home</a>
+          <span>/</span>
+          <span class="text-foreground">Firmware</span>
+        </nav>
+        
+        <h1 class="text-4xl font-bold tracking-tight mb-3">Firmware Platforms</h1>
+        <p class="text-lg text-muted-foreground">
+          Browse {firmwareWithCounts.length} flight controller firmware platforms
+        </p>
+      </div>
+
+      <!-- Firmware Grid -->
+      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {firmwareWithCounts.map((firmware) => (
+          <a
+            href={`${basePath}/firmware/${firmware.id}`}
+            class="group block"
+          >
+            <Card client:load class="h-full transition-all hover:shadow-lg hover:-translate-y-1">
+              <CardHeader>
+                <div class="flex items-start justify-between mb-2">
+                  <div class="h-12 w-12 rounded-lg bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
+                    <span class="text-xl font-bold text-primary">
+                      {firmware.data.title.charAt(0)}
+                    </span>
+                  </div>
+                  {firmware.controllerCount > 0 && (
+                    <Badge variant="secondary" className="text-xs">
+                      {firmware.controllerCount} {firmware.controllerCount === 1 ? 'controller' : 'controllers'}
+                    </Badge>
+                  )}
+                </div>
+                <CardTitle className="group-hover:text-primary transition-colors">
+                  {firmware.data.title}
+                </CardTitle>
+                <CardDescription>
+                  <div class="space-y-2 mt-2">
+                    {firmware.data.maintainer && (
+                      <p class="text-xs">
+                        <span class="font-medium">Maintainer:</span> {firmware.data.maintainer}
+                      </p>
+                    )}
+                    {firmware.data.license && (
+                      <Badge variant="outline" className="text-xs">
+                        {firmware.data.license}
+                      </Badge>
+                    )}
+                  </div>
+                </CardDescription>
+              </CardHeader>
+              {firmware.data.supported_vehicle_types && firmware.data.supported_vehicle_types.length > 0 && (
+                <CardContent>
+                  <div class="space-y-2">
+                    <p class="text-xs font-medium text-muted-foreground">Supported vehicles:</p>
+                    <div class="flex flex-wrap gap-1.5">
+                      {firmware.data.supported_vehicle_types.map((type) => (
+                        <Badge key={type} variant="secondary" className="text-xs capitalize">
+                          {type}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                </CardContent>
+              )}
+            </Card>
+          </a>
+        ))}
+      </div>
+
+      {/* Empty State */}
+      {firmwareWithCounts.length === 0 && (
+        <div class="text-center py-12">
+          <p class="text-muted-foreground">No firmware platforms found.</p>
+        </div>
+      )}
+    </div>
+  </MainLayout>
+</BaseLayout>

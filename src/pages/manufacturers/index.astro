@@ -1,0 +1,103 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import MainLayout from '@/layouts/MainLayout.astro';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Badge } from '@/components/ui/Badge';
+
+// Load all manufacturers
+const allManufacturers = await getCollection('manufacturers');
+
+// Load all controllers to count per manufacturer
+const allControllers = await getCollection('controllers');
+
+// Count controllers per manufacturer
+const manufacturersWithCounts = allManufacturers.map((manufacturer) => {
+  const controllerCount = allControllers.filter(
+    (controller) => controller.data.brand === manufacturer.id
+  ).length;
+  
+  return {
+    ...manufacturer,
+    controllerCount,
+  };
+}).sort((a, b) => a.data.name.localeCompare(b.data.name));
+
+const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout
+  title="Manufacturers - FCBase"
+  description="Browse flight controller manufacturers. Find detailed information about brands, their products, and supported platforms."
+>
+  <MainLayout>
+    <div class="container py-8">
+      <!-- Header -->
+      <div class="mb-8">
+        <nav class="mb-4 flex items-center gap-2 text-sm text-muted-foreground">
+          <a href={`${basePath}/`} class="hover:text-foreground transition-colors">Home</a>
+          <span>/</span>
+          <span class="text-foreground">Manufacturers</span>
+        </nav>
+        
+        <h1 class="text-4xl font-bold tracking-tight mb-3">Manufacturers</h1>
+        <p class="text-lg text-muted-foreground">
+          Browse {manufacturersWithCounts.length} flight controller manufacturers
+        </p>
+      </div>
+
+      <!-- Manufacturers Grid -->
+      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {manufacturersWithCounts.map((manufacturer) => (
+          <a
+            href={`${basePath}/manufacturers/${manufacturer.id}`}
+            class="group block"
+          >
+            <Card client:load class="h-full transition-all hover:shadow-lg hover:-translate-y-1">
+              <CardHeader>
+                <div class="flex items-start justify-between mb-2">
+                  <div class="h-12 w-12 rounded-lg bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
+                    <span class="text-xl font-bold text-primary">
+                      {manufacturer.data.name.charAt(0)}
+                    </span>
+                  </div>
+                  {manufacturer.controllerCount > 0 && (
+                    <Badge variant="secondary" className="text-xs">
+                      {manufacturer.controllerCount} {manufacturer.controllerCount === 1 ? 'controller' : 'controllers'}
+                    </Badge>
+                  )}
+                </div>
+                <CardTitle className="group-hover:text-primary transition-colors">
+                  {manufacturer.data.name}
+                </CardTitle>
+                {manufacturer.data.description && (
+                  <CardDescription className="line-clamp-2">
+                    {manufacturer.data.description}
+                  </CardDescription>
+                )}
+              </CardHeader>
+              {manufacturer.data.website && (
+                <CardContent>
+                  <div class="flex items-center gap-2 text-xs text-muted-foreground">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-3.5 w-3.5">
+                      <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                      <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                    </svg>
+                    <span class="truncate">{manufacturer.data.website.replace('https://', '').replace('http://', '')}</span>
+                  </div>
+                </CardContent>
+              )}
+            </Card>
+          </a>
+        ))}
+      </div>
+
+      {/* Empty State */}
+      {manufacturersWithCounts.length === 0 && (
+        <div class="text-center py-12">
+          <p class="text-muted-foreground">No manufacturers found.</p>
+        </div>
+      )}
+    </div>
+  </MainLayout>
+</BaseLayout>

@@ -1,0 +1,169 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import MainLayout from '@/layouts/MainLayout.astro';
+import { Card, CardContent } from '@/components/ui/Card';
+import { Badge } from '@/components/ui/Badge';
+import { ExternalLink } from 'lucide-react';
+
+export async function getStaticPaths() {
+  const sensors = await getCollection('sensors');
+  return sensors.map((sensor) => ({
+    params: { slug: sensor.id },
+    props: { sensor },
+  }));
+}
+
+const { sensor } = Astro.props;
+const { data } = sensor;
+
+// Load all controllers using this sensor
+const allControllers = await getCollection('controllers');
+const controllersUsingSensor = allControllers.filter((controller) => {
+  const sensors = controller.data.sensors;
+  if (!sensors || !Array.isArray(sensors)) return false;
+  return sensors.some((s) => s.id === sensor.id);
+});
+
+// Sort by title
+controllersUsingSensor.sort((a, b) => a.data.title.localeCompare(b.data.title));
+
+const typeDisplay: Record<string, string> = {
+  imu: 'IMU (Gyro/Accel)',
+  barometer: 'Barometer',
+  magnetometer: 'Magnetometer',
+  gps: 'GPS',
+};
+
+const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout
+  title={`${data.name || data.title || sensor.id} - Sensors - FCBase`}
+  description={`${data.name || data.title} sensor. ${data.manufacturer ? `Manufactured by ${data.manufacturer}.` : ''} ${data.notes || ''}`}
+>
+  <MainLayout>
+    <div class="container py-8">
+      <!-- Breadcrumb -->
+      <nav class="mb-6 flex items-center gap-2 text-sm text-muted-foreground">
+        <a href={`${basePath}/`} class="hover:text-foreground transition-colors">Home</a>
+        <span>/</span>
+        <a href={`${basePath}/sensors`} class="hover:text-foreground transition-colors">Sensors</a>
+        <span>/</span>
+        <span class="text-foreground">{data.name || data.title || sensor.id}</span>
+      </nav>
+
+      <!-- Header -->
+      <div class="mb-8">
+        <h1 class="text-4xl font-bold tracking-tight mb-3">{data.name || data.title || sensor.id}</h1>
+        {data.manufacturer && (
+          <p class="text-lg text-muted-foreground mb-4">
+            by {data.manufacturer}
+          </p>
+        )}
+
+        <!-- Specs Grid -->
+        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-6">
+          {data.type && (
+            <Card client:load>
+              <CardContent class="pt-4">
+                <p class="text-xs text-muted-foreground mb-1">Type</p>
+                <p class="font-medium">{typeDisplay[data.type] || data.type}</p>
+              </CardContent>
+            </Card>
+          )}
+          {data.interface && (
+            <Card client:load>
+              <CardContent class="pt-4">
+                <p class="text-xs text-muted-foreground mb-1">Interface</p>
+                <p class="font-medium uppercase">
+                  {Array.isArray(data.interface) ? data.interface.join(' / ') : data.interface}
+                </p>
+              </CardContent>
+            </Card>
+          )}
+          {data.axes && (
+            <Card client:load>
+              <CardContent class="pt-4">
+                <p class="text-xs text-muted-foreground mb-1">Axes</p>
+                <p class="font-medium">{data.axes}-axis</p>
+              </CardContent>
+            </Card>
+          )}
+          <Card client:load>
+            <CardContent class="pt-4">
+              <p class="text-xs text-muted-foreground mb-1">Used in</p>
+              <p class="font-medium">{controllersUsingSensor.length} controllers</p>
+            </CardContent>
+          </Card>
+        </div>
+
+        <!-- Notes -->}
+        {data.notes && (
+          <div class="bg-muted/40 rounded-lg p-4 mb-6">
+            <p class="text-sm">{data.notes}</p>
+          </div>
+        )}
+
+        <!-- Datasheet Link -->}
+        {data.datasheet?.url && (
+          <a
+            href={data.datasheet.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center gap-2 text-sm text-primary hover:underline"
+          >
+            <ExternalLink className="h-4 w-4" />
+            View Datasheet
+            {data.datasheet.year && <span class="text-muted-foreground">({data.datasheet.year})</span>}
+          </a>
+        )}
+      </div>
+
+      <!-- Controllers Using This Sensor -->
+      {controllersUsingSensor.length > 0 ? (
+        <>
+          <h2 class="text-2xl font-bold tracking-tight mb-6">Used in Controllers</h2>
+          <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {controllersUsingSensor.map((controller) => (
+              <a
+                href={`${basePath}/controllers/${controller.id}`}
+                class="group block"
+              >
+                <Card client:load class="h-full transition-all hover:shadow-lg hover:-translate-y-1">
+                  <div class="relative aspect-video w-full bg-gradient-to-br from-muted via-background to-muted overflow-hidden rounded-t-xl">
+                    <div class="absolute inset-0 flex items-center justify-center px-6 text-center">
+                      <div class="space-y-2">
+                        <h3 class="font-bold text-lg line-clamp-2">{controller.data.title}</h3>
+                        <p class="text-sm text-muted-foreground">{controller.data.brand}</p>
+                      </div>
+                    </div>
+                  </div>
+                  <CardContent class="pt-4">
+                    <div class="space-y-3">
+                      <div class="flex flex-wrap gap-1.5">
+                        <Badge variant="outline" class="text-xs">
+                          {controller.data.mcu.replace('stmicro-', '').toUpperCase()}
+                        </Badge>
+                        <Badge variant="outline" class="text-xs">
+                          {controller.data.mounting}
+                        </Badge>
+                      </div>
+                      <p class="text-xs text-muted-foreground">
+                        {controller.data.io.uarts} UART • {controller.data.io.can || 0} CAN • {controller.data.io.pwm || 0} PWM
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </a>
+            ))}
+          </div>
+        </>
+      ) : (
+        <div class="text-center py-12 bg-muted/20 rounded-lg">
+          <p class="text-muted-foreground">No controllers using this sensor yet.</p>
+        </div>
+      )}
+    </div>
+  </MainLayout>
+</BaseLayout>

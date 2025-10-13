@@ -1,0 +1,164 @@
+---
+import { getCollection, getEntry } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import MainLayout from '@/layouts/MainLayout.astro';
+import { Card, CardContent } from '@/components/ui/Card';
+import { Badge } from '@/components/ui/Badge';
+import { ExternalLink } from 'lucide-react';
+
+export async function getStaticPaths() {
+  const firmware = await getCollection('firmware');
+  return firmware.map((fw) => ({
+    params: { slug: fw.id },
+    props: { firmware: fw },
+  }));
+}
+
+const { firmware } = Astro.props;
+const { data } = firmware;
+
+// Load all controllers supporting this firmware
+const allControllers = await getCollection('controllers');
+const compatibleControllers = allControllers.filter((controller) =>
+  controller.data.firmware_support.some((fw) => fw.id === firmware.id)
+);
+
+// Sort by title
+compatibleControllers.sort((a, b) => a.data.title.localeCompare(b.data.title));
+
+const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout
+  title={`${data.title} - Firmware - FCBase`}
+  description={`${data.title} firmware platform. ${data.maintainer ? `Maintained by ${data.maintainer}.` : ''} Browse ${compatibleControllers.length} compatible controllers.`}
+>
+  <MainLayout>
+    <div class="container py-8">
+      <!-- Breadcrumb -->
+      <nav class="mb-6 flex items-center gap-2 text-sm text-muted-foreground">
+        <a href={`${basePath}/`} class="hover:text-foreground transition-colors">Home</a>
+        <span>/</span>
+        <a href={`${basePath}/firmware`} class="hover:text-foreground transition-colors">Firmware</a>
+        <span>/</span>
+        <span class="text-foreground">{data.title}</span>
+      </nav>
+
+      <!-- Header -->
+      <div class="mb-8">
+        <div class="flex items-start gap-4 mb-4">
+          <div class="h-16 w-16 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center flex-shrink-0">
+            <span class="text-3xl font-bold text-primary">
+              {data.title.charAt(0)}
+            </span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <h1 class="text-4xl font-bold tracking-tight mb-2">{data.title}</h1>
+            <div class="flex flex-wrap gap-3 items-center">
+              {data.maintainer && (
+                <p class="text-sm text-muted-foreground">
+                  Maintained by <span class="font-medium">{data.maintainer}</span>
+                </p>
+              )}
+              {data.license && (
+                <Badge variant="outline" className="text-xs">
+                  {data.license}
+                </Badge>
+              )}
+            </div>
+            {data.website && (
+              <a
+                href={data.website}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center gap-2 mt-3 text-sm text-primary hover:underline"
+              >
+                <ExternalLink className="h-4 w-4" />
+                {data.website.replace('https://', '').replace('http://', '')}
+              </a>
+            )}
+          </div>
+        </div>
+
+        {/* Supported Vehicles */}
+        {data.supported_vehicle_types && data.supported_vehicle_types.length > 0 && (
+          <div class="flex items-center gap-3 mt-4">
+            <span class="text-sm font-medium text-muted-foreground">Supported vehicles:</span>
+            <div class="flex flex-wrap gap-2">
+              {data.supported_vehicle_types.map((type) => (
+                <Badge key={type} variant="secondary" className="text-xs capitalize">
+                  {type}
+                </Badge>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <div class="flex items-center gap-4 text-sm mt-4">
+          <Badge variant="secondary" className="text-sm">
+            {compatibleControllers.length} Compatible {compatibleControllers.length === 1 ? 'Controller' : 'Controllers'}
+          </Badge>
+        </div>
+      </div>
+
+      <!-- Compatible Controllers -->
+      {compatibleControllers.length > 0 ? (
+        <>
+          <h2 class="text-2xl font-bold tracking-tight mb-6">Compatible Controllers</h2>
+          <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {compatibleControllers.map((controller) => {
+              const fwSupport = controller.data.firmware_support.find((fw) => fw.id === firmware.id);
+              return (
+                <a
+                  href={`${basePath}/controllers/${controller.id}`}
+                  class="group block"
+                >
+                  <Card client:load class="h-full transition-all hover:shadow-lg hover:-translate-y-1">
+                    <div class="relative aspect-video w-full bg-gradient-to-br from-muted via-background to-muted overflow-hidden rounded-t-xl">
+                      <div class="absolute inset-0 flex items-center justify-center px-6 text-center">
+                        <div class="space-y-2">
+                          <h3 class="font-bold text-lg line-clamp-2">{controller.data.title}</h3>
+                          <p class="text-sm text-muted-foreground">{controller.data.brand}</p>
+                        </div>
+                      </div>
+                      {fwSupport?.status && fwSupport.status !== 'stable' && (
+                        <div class="absolute top-2 right-2">
+                          <Badge className={`text-xs ${
+                            fwSupport.status === 'beta' ? 'bg-orange-500/10 text-orange-500 border-orange-500/20' :
+                            fwSupport.status === 'deprecated' ? 'bg-red-500/10 text-red-500 border-red-500/20' :
+                            'bg-blue-500/10 text-blue-500 border-blue-500/20'
+                          }`}>
+                            {fwSupport.status}
+                          </Badge>
+                        </div>
+                      )}
+                    </div>
+                    <CardContent class="pt-4">
+                      <div class="space-y-3">
+                        <div class="flex flex-wrap gap-1.5">
+                          <Badge variant="outline" class="text-xs">
+                            {controller.data.mcu.replace('stmicro-', '').toUpperCase()}
+                          </Badge>
+                          <Badge variant="outline" class="text-xs">
+                            {controller.data.mounting}
+                          </Badge>
+                        </div>
+                        <p class="text-xs text-muted-foreground">
+                          {controller.data.io.uarts} UART • {controller.data.io.can || 0} CAN • {controller.data.io.pwm || 0} PWM
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </a>
+              );
+            })}
+          </div>
+        </>
+      ) : (
+        <div class="text-center py-12 bg-muted/20 rounded-lg">
+          <p class="text-muted-foreground">No compatible controllers found yet.</p>
+        </div>
+      )}
+    </div>
+  </MainLayout>
+</BaseLayout>
