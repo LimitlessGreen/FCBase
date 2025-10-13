@@ -59,21 +59,21 @@ export function Navigation({ className }: NavigationProps) {
       {/* Mobile Navigation */}
       {isOpen && (
         <div className="md:hidden border-t">
-          <div className="container py-4 flex flex-col gap-4">
-            <a href="/controllers" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+          <div className="container py-4 flex flex-col gap-3">
+            <a href="/controllers" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors py-2 px-2 rounded-sm hover:bg-muted">
               Controllers
             </a>
-            <a href="/firmware" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+            <a href="/firmware" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors py-2 px-2 rounded-sm hover:bg-muted">
               Firmware
             </a>
-            <a href="/sensors" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+            <a href="/sensors" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors py-2 px-2 rounded-sm hover:bg-muted">
               Sensors
             </a>
-            <a href="/manufacturers" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+            <a href="/manufacturers" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors py-2 px-2 rounded-sm hover:bg-muted">
               Manufacturers
             </a>
-            <div className="pt-4 flex flex-col gap-2">
-              <Button variant="ghost" className="w-full">
+            <div className="pt-4 flex flex-col gap-3">
+              <Button variant="ghost" className="w-full justify-start">
                 Sign In
               </Button>
               <Button className="w-full">

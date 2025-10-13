@@ -61,22 +61,22 @@ const features = [
 <MainLayout title={title} description={description}>
   <!-- Hero Section -->
   <section class="w-full bg-gradient-to-b from-background to-muted/20">
-    <div class="container py-16 md:py-24">
-      <div class="flex flex-col items-center text-center gap-6 max-w-3xl mx-auto">
-        <div class="inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm">
+    <div class="container py-12 md:py-16 lg:py-24">
+      <div class="flex flex-col items-center text-center gap-4 md:gap-6 max-w-3xl mx-auto px-4">
+        <div class="inline-flex items-center gap-2 rounded-full border px-3 py-1.5 md:px-4 md:py-2 text-xs md:text-sm">
           <span class="font-medium text-primary">Open Hardware Index</span>
         </div>
-        <h1 class="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
+        <h1 class="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl">
           FCBase
         </h1>
-        <p class="text-xl text-muted-foreground max-w-2xl">
+        <p class="text-base md:text-lg lg:text-xl text-muted-foreground max-w-2xl px-4">
           The open database for flight controllers: compare ArduPilot-, PX4-, and iNAV-compatible boards by MCU, ports, and features.
         </p>
-        <div class="flex flex-wrap gap-4 justify-center mt-4">
-          <Button size="lg" asChild client:load>
+        <div class="flex flex-col sm:flex-row flex-wrap gap-3 md:gap-4 justify-center mt-2 md:mt-4 w-full sm:w-auto px-4">
+          <Button size="lg" asChild client:load class="w-full sm:w-auto">
             <a href="/controllers">Browse Controllers</a>
           </Button>
-          <Button variant="outline" size="lg" asChild client:load>
+          <Button variant="outline" size="lg" asChild client:load class="w-full sm:w-auto">
             <a href="/contribute">Contribute</a>
           </Button>
         </div>
@@ -85,9 +85,9 @@ const features = [
   </section>
 
   <!-- Features Section -->
-  <section class="w-full py-16 md:py-24">
-    <div class="container">
-      <div class="grid gap-8 md:grid-cols-3">
+  <section class="w-full py-12 md:py-16 lg:py-24">
+    <div class="container px-4">
+      <div class="grid gap-6 md:gap-8 sm:grid-cols-2 lg:grid-cols-3">
         {features.map((feature) => (
           <Card key={feature.title} client:load>
             <CardHeader>
@@ -101,14 +101,14 @@ const features = [
   </section>
 
   <!-- Search Section -->
-  <section class="w-full bg-muted/40 py-16 md:py-24">
-    <div class="container">
-      <div class="flex flex-col gap-8 max-w-4xl mx-auto">
-        <div class="flex flex-col gap-3 text-center">
-          <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">
+  <section class="w-full bg-muted/40 py-12 md:py-16 lg:py-24">
+    <div class="container px-4">
+      <div class="flex flex-col gap-6 md:gap-8 max-w-4xl mx-auto">
+        <div class="flex flex-col gap-2 md:gap-3 text-center px-4">
+          <h2 class="text-2xl md:text-3xl font-bold tracking-tight lg:text-4xl">
             Find your flight controller
           </h2>
-          <p class="text-lg text-muted-foreground">
+          <p class="text-base md:text-lg text-muted-foreground">
             Quickly search by MCU, form factor, or supported firmware
           </p>
         </div>
@@ -128,12 +128,12 @@ const features = [
                 class="w-full rounded-sm border border-input bg-background px-10 py-3 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                 disabled
               />
-              <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-muted-foreground">Coming soon</span>
+              <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-muted-foreground hidden sm:inline">Coming soon</span>
             </div>
           </CardContent>
         </Card>
 
-        <div class="flex flex-wrap gap-3 justify-center">
+        <div class="flex flex-wrap gap-2 md:gap-3 justify-center px-4">
           {filters.map((filter) => (
             <Button variant="secondary" size="sm" key={filter.label} client:load>
               <span class="text-xs uppercase tracking-wide text-muted-foreground mr-2">{filter.label}</span>
@@ -146,9 +146,9 @@ const features = [
   </section>
 
   <!-- Controllers Grid -->
-  <section class="w-full py-16 md:py-24">
-    <div class="container">
-      <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+  <section class="w-full py-12 md:py-16 lg:py-24">
+    <div class="container px-4">
+      <div class="grid gap-6 md:gap-8 sm:grid-cols-2 lg:grid-cols-3">
         {controllers.map((controller) => (
           <a
             href={`/controllers/${controller.slug}`}
@@ -185,20 +185,20 @@ const features = [
   </section>
 
   <!-- CTA Section -->
-  <section class="w-full bg-primary text-primary-foreground py-16 md:py-24">
-    <div class="container">
-      <div class="flex flex-col items-center text-center gap-6 max-w-3xl mx-auto">
-        <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">
+  <section class="w-full bg-primary text-primary-foreground py-12 md:py-16 lg:py-24">
+    <div class="container px-4">
+      <div class="flex flex-col items-center text-center gap-4 md:gap-6 max-w-3xl mx-auto">
+        <h2 class="text-2xl md:text-3xl font-bold tracking-tight lg:text-4xl">
           Ready to contribute?
         </h2>
-        <p class="text-lg opacity-90">
+        <p class="text-base md:text-lg opacity-90 px-4">
           Help us build the most comprehensive flight controller database. Add new boards, update specifications, or improve documentation.
         </p>
-        <div class="flex flex-wrap gap-4 justify-center mt-4">
-          <Button variant="secondary" size="lg" asChild client:load>
+        <div class="flex flex-col sm:flex-row flex-wrap gap-3 md:gap-4 justify-center mt-2 md:mt-4 w-full sm:w-auto px-4">
+          <Button variant="secondary" size="lg" asChild client:load class="w-full sm:w-auto">
             <a href="https://github.com">View on GitHub</a>
           </Button>
-          <Button variant="outline" size="lg" asChild client:load class="bg-primary-foreground/10 hover:bg-primary-foreground/20 text-primary-foreground border-primary-foreground/20">
+          <Button variant="outline" size="lg" asChild client:load class="w-full sm:w-auto bg-primary-foreground/10 hover:bg-primary-foreground/20 text-primary-foreground border-primary-foreground/20">
             <a href="/docs">Read Documentation</a>
           </Button>
         </div>
