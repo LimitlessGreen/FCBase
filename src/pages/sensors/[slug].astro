@@ -2,7 +2,7 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import MainLayout from '@/layouts/MainLayout.astro';
-import { Card, CardContent } from '@/components/ui/Card';
+import { Card, CardContent, CardHeader } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { ExternalLink } from 'lucide-react';
 
@@ -55,104 +55,127 @@ const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
 
       <!-- Header -->
       <div class="mb-8">
-        <h1 class="text-4xl font-bold tracking-tight mb-3">{data.name || data.title || sensor.id}</h1>
+        <h1 class="text-4xl font-bold tracking-tight mb-2">{data.name || data.title || sensor.id}</h1>
         {data.manufacturer && (
           <p class="text-lg text-muted-foreground mb-4">
             by {data.manufacturer}
           </p>
         )}
 
-        <!-- Specs Grid -->
-        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-6">
-          {data.type && (
-            <Card client:load>
-              <CardContent class="pt-4">
-                <p class="text-xs text-muted-foreground mb-1">Type</p>
-                <p class="font-medium">{typeDisplay[data.type] || data.type}</p>
-              </CardContent>
-            </Card>
-          )}
-          {data.interface && (
-            <Card client:load>
-              <CardContent class="pt-4">
-                <p class="text-xs text-muted-foreground mb-1">Interface</p>
-                <p class="font-medium uppercase">
-                  {Array.isArray(data.interface) ? data.interface.join(' / ') : data.interface}
-                </p>
-              </CardContent>
-            </Card>
-          )}
-          {data.axes && (
-            <Card client:load>
-              <CardContent class="pt-4">
-                <p class="text-xs text-muted-foreground mb-1">Axes</p>
-                <p class="font-medium">{data.axes}-axis</p>
-              </CardContent>
-            </Card>
-          )}
+        {data.notes && (
+          <p class="text-sm text-muted-foreground mb-4">{data.notes}</p>
+        )}
+      </div>
+
+      <!-- Compact Specs -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        <!-- Sensor Specifications -->
+        <div class="lg:col-span-2">
           <Card client:load>
-            <CardContent class="pt-4">
-              <p class="text-xs text-muted-foreground mb-1">Used in</p>
-              <p class="font-medium">{controllersUsingSensor.length} controllers</p>
+            <CardHeader>
+              <h2 class="text-lg font-semibold">Sensor Specifications</h2>
+            </CardHeader>
+            <CardContent>
+              <table class="w-full text-sm">
+                <tbody class="divide-y divide-border">
+                  {data.type && (
+                    <tr>
+                      <td class="py-2 text-muted-foreground">Type</td>
+                      <td class="py-2 font-medium text-right">{typeDisplay[data.type] || data.type}</td>
+                    </tr>
+                  )}
+                  {data.interface && (
+                    <tr>
+                      <td class="py-2 text-muted-foreground">Interface</td>
+                      <td class="py-2 font-medium text-right uppercase">
+                        {Array.isArray(data.interface) ? data.interface.join(' / ') : data.interface}
+                      </td>
+                    </tr>
+                  )}
+                  {data.axes && (
+                    <tr>
+                      <td class="py-2 text-muted-foreground">Axes</td>
+                      <td class="py-2 font-medium text-right">{data.axes}-axis</td>
+                    </tr>
+                  )}
+                  <tr>
+                    <td class="py-2 text-muted-foreground">Used in Controllers</td>
+                    <td class="py-2 font-medium text-right">{controllersUsingSensor.length}</td>
+                  </tr>
+                  {data.datasheet?.url && (
+                    <tr>
+                      <td class="py-2 text-muted-foreground">Datasheet</td>
+                      <td class="py-2 text-right">
+                        <a
+                          href={data.datasheet.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          class="inline-flex items-center gap-1 text-primary hover:underline font-medium"
+                        >
+                          <ExternalLink className="h-3 w-3" />
+                          PDF
+                          {data.datasheet.year && <span class="text-xs text-muted-foreground">({data.datasheet.year})</span>}
+                        </a>
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
             </CardContent>
           </Card>
         </div>
 
-        <!-- Notes -->}
-        {data.notes && (
-          <div class="bg-muted/40 rounded-lg p-4 mb-6">
-            <p class="text-sm">{data.notes}</p>
-          </div>
-        )}
-
-        <!-- Datasheet Link -->}
-        {data.datasheet?.url && (
-          <a
-            href={data.datasheet.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="inline-flex items-center gap-2 text-sm text-primary hover:underline"
-          >
-            <ExternalLink className="h-4 w-4" />
-            View Datasheet
-            {data.datasheet.year && <span class="text-muted-foreground">({data.datasheet.year})</span>}
-          </a>
-        )}
+        <!-- Quick Stats -->
+        <div>
+          <Card client:load>
+            <CardHeader>
+              <h2 class="text-base font-semibold">Quick Info</h2>
+            </CardHeader>
+            <CardContent>
+              <div class="space-y-3">
+                <div class="text-center p-4 bg-muted/50 rounded-lg">
+                  <p class="text-3xl font-bold">{controllersUsingSensor.length}</p>
+                  <p class="text-xs text-muted-foreground mt-1">Controllers</p>
+                </div>
+                {data.type && (
+                  <div class="text-center p-3 bg-muted/50 rounded-lg">
+                    <p class="text-sm font-medium">{typeDisplay[data.type] || data.type}</p>
+                    <p class="text-xs text-muted-foreground mt-0.5">Sensor Type</p>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
 
       <!-- Controllers Using This Sensor -->
       {controllersUsingSensor.length > 0 ? (
         <>
-          <h2 class="text-2xl font-bold tracking-tight mb-6">Used in Controllers</h2>
-          <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <h2 class="text-2xl font-bold tracking-tight mb-4">Controllers Using This Sensor</h2>
+          <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {controllersUsingSensor.map((controller) => (
               <a
                 href={`${basePath}/controllers/${controller.id}`}
                 class="group block"
               >
-                <Card client:load class="h-full transition-all hover:shadow-lg hover:-translate-y-1">
-                  <div class="relative aspect-video w-full bg-gradient-to-br from-muted via-background to-muted overflow-hidden rounded-t-xl">
-                    <div class="absolute inset-0 flex items-center justify-center px-6 text-center">
-                      <div class="space-y-2">
-                        <h3 class="font-bold text-lg line-clamp-2">{controller.data.title}</h3>
-                        <p class="text-sm text-muted-foreground">{controller.data.brand}</p>
-                      </div>
+                <Card client:load class="h-full transition-all hover:shadow-md hover:-translate-y-0.5">
+                  <CardContent class="pt-4 pb-3">
+                    <h3 class="font-semibold text-sm mb-1 line-clamp-2 group-hover:text-primary transition-colors">
+                      {controller.data.title}
+                    </h3>
+                    <p class="text-xs text-muted-foreground mb-2">{controller.data.brand}</p>
+                    <div class="flex flex-wrap gap-1 mb-2">
+                      <Badge variant="outline" class="text-xs px-1.5 py-0">
+                        {controller.data.mcu.replace('stmicro-', '').toUpperCase()}
+                      </Badge>
+                      <Badge variant="outline" class="text-xs px-1.5 py-0">
+                        {controller.data.mounting}
+                      </Badge>
                     </div>
-                  </div>
-                  <CardContent class="pt-4">
-                    <div class="space-y-3">
-                      <div class="flex flex-wrap gap-1.5">
-                        <Badge variant="outline" class="text-xs">
-                          {controller.data.mcu.replace('stmicro-', '').toUpperCase()}
-                        </Badge>
-                        <Badge variant="outline" class="text-xs">
-                          {controller.data.mounting}
-                        </Badge>
-                      </div>
-                      <p class="text-xs text-muted-foreground">
-                        {controller.data.io.uarts} UART • {controller.data.io.can || 0} CAN • {controller.data.io.pwm || 0} PWM
-                      </p>
-                    </div>
+                    <p class="text-xs text-muted-foreground">
+                      {controller.data.io.uarts}U • {controller.data.io.can || 0}C • {controller.data.io.pwm || 0}PWM
+                    </p>
                   </CardContent>
                 </Card>
               </a>
@@ -160,8 +183,8 @@ const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
           </div>
         </>
       ) : (
-        <div class="text-center py-12 bg-muted/20 rounded-lg">
-          <p class="text-muted-foreground">No controllers using this sensor yet.</p>
+        <div class="text-center py-8 bg-muted/20 rounded-lg">
+          <p class="text-sm text-muted-foreground">No controllers using this sensor in database yet.</p>
         </div>
       )}
     </div>

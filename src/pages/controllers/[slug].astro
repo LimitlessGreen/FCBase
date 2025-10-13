@@ -133,208 +133,190 @@ const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
       )}
     </div>
 
-    <!-- Main Grid -->
+    <!-- Main Content - Compact Layout -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-      <!-- Left Column - Specs -->
-      <div class="lg:col-span-2 space-y-6">
-        <!-- Core Specs -->
+      <!-- Left Column - Technical Specs -->
+      <div class="lg:col-span-2">
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Cpu className="w-5 h-5" />
-              Core Specifications
-            </CardTitle>
+            <CardTitle>Technical Specifications</CardTitle>
+            <CardDescription>Complete hardware reference</CardDescription>
           </CardHeader>
-          <CardContent>
-            <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <dt class="text-sm font-medium text-muted-foreground mb-1">MCU</dt>
-                <dd class="text-base font-semibold">{mcu?.data.title || mcu?.data.name || data.mcu}</dd>
-              </div>
-              <div>
-                <dt class="text-sm font-medium text-muted-foreground mb-1">Mounting</dt>
-                <dd class="text-base font-semibold">{mountingDisplay[data.mounting]}</dd>
-              </div>
-              {data.dimensions && (
-                <>
-                  <div>
-                    <dt class="text-sm font-medium text-muted-foreground mb-1 flex items-center gap-1">
-                      <Ruler className="w-3 h-3" />
-                      Dimensions
-                    </dt>
-                    <dd class="text-base font-semibold">
-                      {data.dimensions.width_mm} × {data.dimensions.length_mm}
-                      {data.dimensions.height_mm && ` × ${data.dimensions.height_mm}`} mm
-                    </dd>
-                  </div>
-                  {data.dimensions.weight_g && (
-                    <div>
-                      <dt class="text-sm font-medium text-muted-foreground mb-1 flex items-center gap-1">
-                        <Scale className="w-3 h-3" />
-                        Weight
-                      </dt>
-                      <dd class="text-base font-semibold">{data.dimensions.weight_g}g</dd>
-                    </div>
+          <CardContent class="space-y-6">
+            <!-- Core Hardware -->
+            <div>
+              <h3 class="text-sm font-semibold mb-3 flex items-center gap-2">
+                <Cpu className="w-4 h-4" />
+                Core Hardware
+              </h3>
+              <table class="w-full text-sm">
+                <tbody class="divide-y divide-border">
+                  <tr>
+                    <td class="py-2 text-muted-foreground">MCU</td>
+                    <td class="py-2 font-medium text-right">{mcu?.data.title || mcu?.data.name || data.mcu}</td>
+                  </tr>
+                  <tr>
+                    <td class="py-2 text-muted-foreground">Mounting</td>
+                    <td class="py-2 font-medium text-right">{mountingDisplay[data.mounting]}</td>
+                  </tr>
+                  {data.dimensions && (
+                    <>
+                      <tr>
+                        <td class="py-2 text-muted-foreground">Dimensions</td>
+                        <td class="py-2 font-medium text-right">
+                          {data.dimensions.width_mm} × {data.dimensions.length_mm}
+                          {data.dimensions.height_mm && ` × ${data.dimensions.height_mm}`} mm
+                        </td>
+                      </tr>
+                      {data.dimensions.weight_g && (
+                        <tr>
+                          <td class="py-2 text-muted-foreground">Weight</td>
+                          <td class="py-2 font-medium text-right">{data.dimensions.weight_g}g</td>
+                        </tr>
+                      )}
+                    </>
                   )}
-                </>
-              )}
-            </dl>
-          </CardContent>
-        </Card>
+                </tbody>
+              </table>
+            </div>
 
-        <!-- Power -->
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Zap className="w-5 h-5" />
-              Power
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <dl class="space-y-4">
-              <div>
-                <dt class="text-sm font-medium text-muted-foreground mb-1">Input Voltage</dt>
-                <dd class="text-base font-semibold">{data.power.voltage_in}</dd>
-              </div>
-              {data.power.redundant && (
-                <div>
-                  <dt class="text-sm font-medium text-muted-foreground mb-1">Redundancy</dt>
-                  <dd class="flex items-center gap-2 text-base font-semibold text-green-600 dark:text-green-400">
-                    <CheckCircle2 className="w-4 h-4" />
-                    Redundant Power Inputs
-                  </dd>
-                </div>
-              )}
+            <!-- Power -->
+            <div>
+              <h3 class="text-sm font-semibold mb-3 flex items-center gap-2">
+                <Zap className="w-4 h-4" />
+                Power
+              </h3>
+              <table class="w-full text-sm">
+                <tbody class="divide-y divide-border">
+                  <tr>
+                    <td class="py-2 text-muted-foreground">Input Voltage</td>
+                    <td class="py-2 font-medium text-right">{data.power.voltage_in}</td>
+                  </tr>
+                  {data.power.redundant && (
+                    <tr>
+                      <td class="py-2 text-muted-foreground">Redundancy</td>
+                      <td class="py-2 font-medium text-right text-green-600 dark:text-green-400">
+                        ✓ Redundant Inputs
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
               {data.power.notes && (
-                <div>
-                  <dt class="text-sm font-medium text-muted-foreground mb-1">Notes</dt>
-                  <dd class="text-sm text-muted-foreground leading-relaxed">{data.power.notes}</dd>
-                </div>
-              )}
-            </dl>
-          </CardContent>
-        </Card>
-
-        <!-- I/O -->
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Package className="w-5 h-5" />
-              Connectivity & I/O
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
-              <div class="flex flex-col items-center p-3 bg-muted/50 rounded-lg">
-                <Database className="w-6 h-6 mb-2 text-primary" />
-                <dt class="text-xs text-muted-foreground mb-1">UARTs</dt>
-                <dd class="text-2xl font-bold">{data.io.uarts}</dd>
-              </div>
-              <div class="flex flex-col items-center p-3 bg-muted/50 rounded-lg">
-                <Wifi className="w-6 h-6 mb-2 text-primary" />
-                <dt class="text-xs text-muted-foreground mb-1">CAN</dt>
-                <dd class="text-2xl font-bold">{data.io.can}</dd>
-              </div>
-              <div class="flex flex-col items-center p-3 bg-muted/50 rounded-lg">
-                <Gauge className="w-6 h-6 mb-2 text-primary" />
-                <dt class="text-xs text-muted-foreground mb-1">PWM</dt>
-                <dd class="text-2xl font-bold">{data.io.pwm}</dd>
-              </div>
-              <div class="flex flex-col items-center p-3 bg-muted/50 rounded-lg">
-                <HardDrive className="w-6 h-6 mb-2 text-primary" />
-                <dt class="text-xs text-muted-foreground mb-1">SD Card</dt>
-                <dd class="text-lg font-bold">{data.io.sd_card ? '✓' : '✗'}</dd>
-              </div>
-              {data.io.ethernet !== undefined && (
-                <div class="flex flex-col items-center p-3 bg-muted/50 rounded-lg">
-                  <Wifi className="w-6 h-6 mb-2 text-primary" />
-                  <dt class="text-xs text-muted-foreground mb-1">Ethernet</dt>
-                  <dd class="text-lg font-bold">{data.io.ethernet ? '✓' : '✗'}</dd>
-                </div>
+                <p class="mt-2 text-xs text-muted-foreground">{data.power.notes}</p>
               )}
             </div>
-          </CardContent>
-        </Card>
 
-        <!-- Sensors -->
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Box className="w-5 h-5" />
-              Onboard Sensors
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div class="space-y-4">
-              {sensorDetails.imu.length > 0 && (
-                <div>
-                  <dt class="text-sm font-medium text-muted-foreground mb-2">IMU</dt>
-                  <dd class="space-y-1">
-                    {sensorDetails.imu.map((sensor) => (
-                      <div class="flex items-center justify-between p-2 bg-muted/50 rounded">
-                        <span class="font-medium">{sensor.name}</span>
-                        {sensor.count && sensor.count > 1 && (
-                          <Badge variant="secondary">×{sensor.count}</Badge>
-                        )}
-                      </div>
-                    ))}
-                  </dd>
-                </div>
-              )}
-              {sensorDetails.barometer.length > 0 && (
-                <div>
-                  <dt class="text-sm font-medium text-muted-foreground mb-2">Barometer</dt>
-                  <dd class="space-y-1">
-                    {sensorDetails.barometer.map((sensor) => (
-                      <div class="flex items-center justify-between p-2 bg-muted/50 rounded">
-                        <span class="font-medium">{sensor.name}</span>
-                        {sensor.count && sensor.count > 1 && (
-                          <Badge variant="secondary">×{sensor.count}</Badge>
-                        )}
-                      </div>
-                    ))}
-                  </dd>
-                </div>
-              )}
-              {sensorDetails.magnetometer.length > 0 && (
-                <div>
-                  <dt class="text-sm font-medium text-muted-foreground mb-2">Magnetometer</dt>
-                  <dd class="space-y-1">
-                    {sensorDetails.magnetometer.map((sensor) => (
-                      <div class="flex items-center justify-between p-2 bg-muted/50 rounded">
-                        <span class="font-medium">{sensor.name}</span>
-                        {sensor.count && sensor.count > 1 && (
-                          <Badge variant="secondary">×{sensor.count}</Badge>
-                        )}
-                      </div>
-                    ))}
-                  </dd>
-                </div>
-              )}
+            <!-- I/O Ports -->
+            <div>
+              <h3 class="text-sm font-semibold mb-3 flex items-center gap-2">
+                <Package className="w-4 h-4" />
+                Connectivity & I/O
+              </h3>
+              <table class="w-full text-sm">
+                <tbody class="divide-y divide-border">
+                  <tr>
+                    <td class="py-2 text-muted-foreground">UARTs</td>
+                    <td class="py-2 font-medium text-right">{data.io.uarts}</td>
+                  </tr>
+                  <tr>
+                    <td class="py-2 text-muted-foreground">CAN Bus</td>
+                    <td class="py-2 font-medium text-right">{data.io.can}</td>
+                  </tr>
+                  <tr>
+                    <td class="py-2 text-muted-foreground">PWM Outputs</td>
+                    <td class="py-2 font-medium text-right">{data.io.pwm}</td>
+                  </tr>
+                  <tr>
+                    <td class="py-2 text-muted-foreground">SD Card</td>
+                    <td class="py-2 font-medium text-right">{data.io.sd_card ? '✓ Yes' : '✗ No'}</td>
+                  </tr>
+                  {data.io.ethernet !== undefined && (
+                    <tr>
+                      <td class="py-2 text-muted-foreground">Ethernet</td>
+                      <td class="py-2 font-medium text-right">{data.io.ethernet ? '✓ Yes' : '✗ No'}</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
             </div>
+
+            <!-- Sensors -->
+            <div>
+              <h3 class="text-sm font-semibold mb-3 flex items-center gap-2">
+                <Box className="w-4 h-4" />
+                Onboard Sensors
+              </h3>
+              <table class="w-full text-sm">
+                <tbody class="divide-y divide-border">
+                  {sensorDetails.imu.length > 0 && (
+                    <tr>
+                      <td class="py-2 text-muted-foreground align-top">IMU</td>
+                      <td class="py-2 text-right">
+                        {sensorDetails.imu.map((sensor, idx) => (
+                          <div class="font-medium">
+                            {sensor.name}
+                            {sensor.count && sensor.count > 1 && (
+                              <span class="text-xs text-muted-foreground ml-1">×{sensor.count}</span>
+                            )}
+                          </div>
+                        ))}
+                      </td>
+                    </tr>
+                  )}
+                  {sensorDetails.barometer.length > 0 && (
+                    <tr>
+                      <td class="py-2 text-muted-foreground align-top">Barometer</td>
+                      <td class="py-2 text-right">
+                        {sensorDetails.barometer.map((sensor, idx) => (
+                          <div class="font-medium">
+                            {sensor.name}
+                            {sensor.count && sensor.count > 1 && (
+                              <span class="text-xs text-muted-foreground ml-1">×{sensor.count}</span>
+                            )}
+                          </div>
+                        ))}
+                      </td>
+                    </tr>
+                  )}
+                  {sensorDetails.magnetometer.length > 0 && (
+                    <tr>
+                      <td class="py-2 text-muted-foreground align-top">Magnetometer</td>
+                      <td class="py-2 text-right">
+                        {sensorDetails.magnetometer.map((sensor, idx) => (
+                          <div class="font-medium">
+                            {sensor.name}
+                            {sensor.count && sensor.count > 1 && (
+                              <span class="text-xs text-muted-foreground ml-1">×{sensor.count}</span>
+                            )}
+                          </div>
+                        ))}
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Features -->
+            {data.features && data.features.length > 0 && (
+              <div>
+                <h3 class="text-sm font-semibold mb-3 flex items-center gap-2">
+                  <Layers className="w-4 h-4" />
+                  Additional Features
+                </h3>
+                <ul class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 text-sm">
+                  {data.features.map((feature) => (
+                    <li class="flex items-start gap-2 py-1">
+                      <span class="text-green-600 dark:text-green-400 mt-0.5">✓</span>
+                      <span>{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </CardContent>
         </Card>
-
-        {data.features && data.features.length > 0 && (
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Layers className="w-5 h-5" />
-                Features
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ul class="space-y-2">
-                {data.features.map((feature) => (
-                  <li class="flex items-start gap-2">
-                    <CheckCircle2 className="w-4 h-4 mt-0.5 text-green-600 dark:text-green-400 flex-shrink-0" />
-                    <span class="text-sm">{feature}</span>
-                  </li>
-                ))}
-              </ul>
-            </CardContent>
-          </Card>
-        )}
       </div>
 
       <!-- Right Column - Firmware & Meta -->
@@ -342,68 +324,78 @@ const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
         <!-- Firmware Support -->
         <Card>
           <CardHeader>
-            <CardTitle>Firmware Support</CardTitle>
-            <CardDescription>Compatible autopilot software</CardDescription>
+            <CardTitle className="text-base">Firmware Support</CardTitle>
           </CardHeader>
           <CardContent>
-            <div class="space-y-3">
-              {firmware.map((fw) => (
-                <div class="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
-                  <span class="font-semibold">{fw.name}</span>
-                  <Badge className={firmwareStatusColor[fw.status]}>
-                    {fw.status}
-                  </Badge>
-                </div>
-              ))}
-            </div>
+            <table class="w-full text-sm">
+              <tbody class="divide-y divide-border">
+                {firmware.map((fw) => (
+                  <tr>
+                    <td class="py-2 font-medium">{fw.name}</td>
+                    <td class="py-2 text-right">
+                      <Badge className={firmwareStatusColor[fw.status] + " text-xs"}>
+                        {fw.status}
+                      </Badge>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </CardContent>
         </Card>
 
-        <!-- Verification Info -->
+        <!-- Quick Info -->
         <Card>
           <CardHeader>
-            <CardTitle>Data Verification</CardTitle>
+            <CardTitle className="text-base">Information</CardTitle>
           </CardHeader>
           <CardContent>
-            <dl class="space-y-3">
-              <div>
-                <dt class="text-sm text-muted-foreground mb-1">Status</dt>
-                <dd>
-                  <Badge className={verificationColor[data.verification.level]}>
-                    {data.verification.level.charAt(0).toUpperCase() + data.verification.level.slice(1)}
-                  </Badge>
-                </dd>
-              </div>
-              <div>
-                <dt class="text-sm text-muted-foreground mb-1">Last Updated</dt>
-                <dd class="text-sm font-medium">{data.verification.last_updated}</dd>
-              </div>
-              <div>
-                <dt class="text-sm text-muted-foreground mb-1">Sources</dt>
-                <dd class="text-sm font-medium">{data.sources.length} reference(s)</dd>
-              </div>
-            </dl>
+            <table class="w-full text-sm">
+              <tbody class="divide-y divide-border">
+                <tr>
+                  <td class="py-2 text-muted-foreground">Verification</td>
+                  <td class="py-2 text-right">
+                    <Badge className={verificationColor[data.verification.level] + " text-xs"}>
+                      {data.verification.level.charAt(0).toUpperCase() + data.verification.level.slice(1)}
+                    </Badge>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="py-2 text-muted-foreground">Hardware</td>
+                  <td class="py-2 text-right">
+                    <Badge className="bg-primary/10 text-primary border-primary/20 text-xs">
+                      {data.hardware.openness.charAt(0).toUpperCase() + data.hardware.openness.slice(1)}
+                    </Badge>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="py-2 text-muted-foreground">Last Updated</td>
+                  <td class="py-2 font-medium text-right">{data.verification.last_updated}</td>
+                </tr>
+                <tr>
+                  <td class="py-2 text-muted-foreground">Sources</td>
+                  <td class="py-2 font-medium text-right">{data.sources.length}</td>
+                </tr>
+                {manufacturer?.data.website && (
+                  <tr>
+                    <td class="py-2 text-muted-foreground">Manufacturer</td>
+                    <td class="py-2 text-right">
+                      <a 
+                        href={manufacturer.data.website} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        class="font-medium hover:text-primary transition-colors inline-flex items-center gap-1"
+                      >
+                        {manufacturer.data.name}
+                        <span class="text-xs">→</span>
+                      </a>
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
           </CardContent>
         </Card>
-
-        {manufacturer?.data.website && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Manufacturer</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <a 
-                href={manufacturer.data.website} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                class="flex items-center justify-between p-3 bg-muted/50 hover:bg-muted rounded-lg transition-colors group"
-              >
-                <span class="font-semibold">{manufacturer.data.name}</span>
-                <span class="text-xs text-muted-foreground group-hover:text-foreground">Visit →</span>
-              </a>
-            </CardContent>
-          </Card>
-        )}
       </div>
     </div>
     </div>
