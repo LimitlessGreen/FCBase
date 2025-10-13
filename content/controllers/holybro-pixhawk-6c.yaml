@@ -1,0 +1,57 @@
+id: holybro-pixhawk-6c
+title: Holybro Pixhawk 6C
+brand: holybro
+mcu: stmicro-stm32h743
+mounting: cube
+dimensions:
+  height_mm: 12.4
+  length_mm: 84.8
+  weight_g: 59.3
+  width_mm: 44
+power:
+  notes: Max input 6V with 0-36V servo rail tolerance; triple-redundant POWER1/POWER2/USB
+    inputs.
+  redundant: true
+  voltage_in: 4.9-5.5V primary inputs, USB 4.75-5.25V
+io:
+  can: 2
+  ethernet: false
+  pwm: 16
+  sd_card: true
+  uarts: 7
+sensors:
+  barometer:
+  - count: 1
+    id: meas-ms5611
+  imu:
+  - count: 1
+    id: bosch-bmi088
+  - count: 1
+    id: invensense-icm42688p
+  magnetometer:
+  - count: 1
+    id: ist-ist8310
+features:
+- Hardware-selectable PWM signal voltage
+- Integrated vibration isolation
+- Redundant IMU stack
+firmware_support:
+- id: ardupilot
+  status: stable
+- id: px4
+  status: stable
+sources:
+- ardupilot-holybro-pixhawk6c
+- holybro-pixhawk6c-product
+- px4-pixhawk6c
+verification:
+  last_updated: "2025-10-13"
+  level: community
+keywords:
+- ardupilot
+- holybro
+- pixhawk
+- px4
+- stm32h743
+notes: Pixhawk 6C ships in plastic or aluminum enclosures with optional bundled power
+  modules.

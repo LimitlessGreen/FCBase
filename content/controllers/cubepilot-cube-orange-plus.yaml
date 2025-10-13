@@ -1,0 +1,58 @@
+id: cubepilot-cube-orange-plus
+title: CubePilot Cube Orange+
+brand: cubepilot
+mcu: stmicro-stm32h757
+mounting: cube
+dimensions:
+  height_mm: 22.3
+  length_mm: 38.25
+  width_mm: 38.25
+power:
+  notes: POWER inputs 4.1-5.7V with redundant supply and USB input 4.75-5.25V.
+  redundant: true
+  voltage_in: 4.1-5.7V (power rails), USB 4.75-5.25V
+io:
+  can: 2
+  ethernet: false
+  pwm: 14
+  sd_card: true
+  uarts: 5
+sensors:
+  barometer:
+  - count: 2
+    id: meas-ms5611
+  imu:
+  - count: 1
+    id: invensense-icm20649
+  - count: 1
+    id: invensense-icm20948
+  - count: 1
+    id: invensense-icm42688p
+  magnetometer:
+  - count: 1
+    id: akm-ak09916
+  - count: 1
+    id: invensense-icm20948
+features:
+- ADS-B carrier compatibility
+- Integrated vibration isolation
+- Redundant power inputs
+firmware_support:
+- id: ardupilot
+  status: stable
+- id: px4
+  status: stable
+sources:
+- ardupilot-cube-orange-overview
+- px4-cube-orange-plus
+verification:
+  last_updated: "2025-10-13"
+  level: community
+keywords:
+- ardupilot
+- cube
+- cubepilot
+- px4
+- stm32h757
+notes: Cube Orange+ ships as a modular cube requiring a compatible carrier board for
+  IO breakout.

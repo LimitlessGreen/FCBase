@@ -1,0 +1,7 @@
+id: cubepilot
+name: CubePilot
+website: https://www.cubepilot.com/
+description: CubePilot develops the Cube series of modular autopilots and carrier
+  boards for professional UAV integration.
+sources:
+- px4-cube-orange-plus

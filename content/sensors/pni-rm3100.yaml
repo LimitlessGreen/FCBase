@@ -1,0 +1,9 @@
+id: pni-rm3100
+name: "PNI RM3100"
+manufacturer: PNI Sensor
+type: magnetometer
+axes: 3
+interface: i2c
+notes: "High-precision magnetic sensor providing low-drift compass measurements."
+sources:
+  - ardupilot-cuav-pixhawkv6x

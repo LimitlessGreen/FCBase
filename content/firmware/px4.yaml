@@ -1,0 +1,11 @@
+id: px4
+title: PX4 Autopilot
+maintainer: Dronecode Foundation
+license: BSD-3-Clause
+website: https://px4.io/
+supported_vehicle_types:
+- copter
+- plane
+- rover
+sources:
+- px4-home

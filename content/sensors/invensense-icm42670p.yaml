@@ -1,0 +1,9 @@
+id: invensense-icm42670p
+name: "TDK InvenSense ICM-42670-P"
+manufacturer: TDK InvenSense
+type: imu
+axes: 6
+interface: spi
+notes: "Low-noise 6-axis IMU used for redundant inertial sensing."
+sources:
+  - px4-pixhawk6x

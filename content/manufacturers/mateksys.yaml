@@ -1,0 +1,7 @@
+id: mateksys
+name: Matek Systems
+website: https://www.mateksys.com/
+description: Matek Systems produces fixed-wing and multirotor flight controllers and
+  power distribution hardware for hobbyist and commercial UAVs.
+sources:
+- mateksys-h743-wing-product

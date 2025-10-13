@@ -1,0 +1,52 @@
+id: cuav-pixhawk-v6x
+title: CUAV Pixhawk v6X
+brand: cuav
+mcu: stmicro-stm32h753
+mounting: cube
+power:
+  notes: Dual SMBus/I2C power module inputs with CAN power module included; servo
+    rail tolerant to 36V.
+  redundant: true
+  voltage_in: 4.9-5.5V primary inputs via CAN/SMBus power modules
+io:
+  can: 2
+  ethernet: true
+  pwm: 16
+  sd_card: true
+  uarts: 8
+sensors:
+  barometer:
+  - count: 2
+    id: tdk-icp20100
+  imu:
+  - count: 1
+    id: bosch-bmi088
+  - count: 1
+    id: invensense-icm20649
+  - count: 1
+    id: invensense-icm42688p
+  magnetometer:
+  - count: 1
+    id: pni-rm3100
+features:
+- CAN power module support
+- Ethernet mission computer link
+- Triple-redundant IMU domains
+firmware_support:
+- id: ardupilot
+  status: stable
+- id: px4
+  status: stable
+sources:
+- ardupilot-cuav-pixhawkv6x
+verification:
+  last_updated: "2025-10-13"
+  level: community
+keywords:
+- ardupilot
+- cuav
+- pixhawk
+- px4
+- stm32h753
+notes: Ships with a heat-dissipating aluminum enclosure and CAN power module in the
+  box.

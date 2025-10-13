@@ -1,0 +1,9 @@
+id: invensense-icm45686
+name: "TDK InvenSense ICM-45686"
+manufacturer: TDK InvenSense
+type: imu
+axes: 6
+interface: spi
+notes: "Industrial 6-axis IMU with BalancedGyro technology used on Pixhawk 6X revisions."
+sources:
+  - holybro-pixhawk6x-product

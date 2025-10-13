@@ -1,0 +1,149 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://fcbase.org/schema/controller.json",
+  "title": "FCBase Controller Schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "title",
+    "brand",
+    "mcu",
+    "mounting",
+    "power",
+    "io",
+    "sensors",
+    "firmware_support",
+    "sources",
+    "verification",
+    "keywords"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "title": { "type": "string" },
+    "brand": { "type": "string" },
+    "mcu": { "type": "string" },
+    "mounting": {
+      "type": "string",
+      "enum": ["20x20", "25.5x25.5", "30.5x30.5", "35x35", "cube", "wing", "custom"]
+    },
+    "dimensions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["width_mm", "length_mm"],
+      "properties": {
+        "width_mm": { "type": "number" },
+        "length_mm": { "type": "number" },
+        "height_mm": { "type": "number" },
+        "weight_g": { "type": "number" }
+      }
+    },
+    "power": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["voltage_in"],
+      "properties": {
+        "voltage_in": { "type": "string" },
+        "redundant": { "type": "boolean" },
+        "notes": { "type": "string" }
+      }
+    },
+    "io": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["uarts", "can", "pwm", "sd_card"],
+      "properties": {
+        "uarts": { "type": "integer", "minimum": 0 },
+        "can": { "type": "integer", "minimum": 0 },
+        "pwm": { "type": "integer", "minimum": 0 },
+        "ethernet": { "type": "boolean" },
+        "sd_card": { "type": "boolean" }
+      }
+    },
+    "sensors": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "imu": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id"],
+            "properties": {
+              "id": { "type": "string" },
+              "count": { "type": "integer", "minimum": 1 },
+              "notes": { "type": "string" }
+            }
+          }
+        },
+        "barometer": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id"],
+            "properties": {
+              "id": { "type": "string" },
+              "count": { "type": "integer", "minimum": 1 },
+              "notes": { "type": "string" }
+            }
+          }
+        },
+        "magnetometer": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id"],
+            "properties": {
+              "id": { "type": "string" },
+              "count": { "type": "integer", "minimum": 1 },
+              "notes": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "features": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "firmware_support": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "status"],
+        "properties": {
+          "id": { "type": "string" },
+          "status": { "type": "string", "enum": ["beta", "stable", "deprecated"] }
+        }
+      }
+    },
+    "sources": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string" }
+    },
+    "verification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["level", "last_updated"],
+      "properties": {
+        "level": { "type": "string", "enum": ["unverified", "community", "reviewed"] },
+        "last_updated": { "type": "string", "format": "date" }
+      }
+    },
+    "keywords": {
+      "type": "array",
+      "items": { "type": "string" },
+      "uniqueItems": true
+    },
+    "notes": { "type": "string" }
+  }
+}

@@ -1,0 +1,12 @@
+id: stmicro-stm32h757
+name: STM32H757
+manufacturer: STMicroelectronics
+architecture: ARM Cortex-M7 dual-core
+clock_speed_mhz: 400
+flash_mb: 2
+ram_mb: 1
+features:
+- Dual-core Cortex-M7/M4 design
+- Hardware crypto acceleration
+sources:
+- px4-cube-orange-plus

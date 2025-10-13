@@ -1,0 +1,10 @@
+id: invensense-icm20649
+name: "TDK InvenSense ICM-20649"
+manufacturer: TDK InvenSense
+type: imu
+axes: 6
+interface: spi
+notes: "32g/4000 dps 6-axis IMU for high-dynamic vehicles."
+sources:
+  - px4-cube-orange-plus
+  - px4-pixhawk6x

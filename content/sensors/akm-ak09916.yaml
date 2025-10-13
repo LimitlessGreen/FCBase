@@ -1,0 +1,9 @@
+id: akm-ak09916
+name: "AKM AK09916"
+manufacturer: Asahi Kasei Microdevices
+type: magnetometer
+axes: 3
+interface: spi
+notes: "3-axis magnetometer integrated with the ICM-20948 for Cube Orange+ redundancy."
+sources:
+  - ardupilot-cube-orange-overview

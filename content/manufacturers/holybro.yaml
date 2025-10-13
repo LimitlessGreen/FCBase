@@ -1,0 +1,7 @@
+id: holybro
+name: Holybro
+website: https://holybro.com/
+description: Holybro designs and manufactures Pixhawk-series flight controllers, peripherals,
+  and UAV components.
+sources:
+- px4-pixhawk6x

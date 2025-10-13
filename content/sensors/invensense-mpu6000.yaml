@@ -1,0 +1,10 @@
+id: invensense-mpu6000
+name: "TDK InvenSense MPU-6000"
+manufacturer: TDK InvenSense
+type: imu
+axes: 6
+interface: spi
+notes: "Legacy 6-axis IMU widely used on fixed-wing autopilots for its low noise."
+sources:
+  - ardupilot-matek-h743-wing
+  - mateksys-h743-wing-product

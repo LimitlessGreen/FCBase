@@ -1,0 +1,7 @@
+id: cuav
+name: CUAV
+website: https://store.cuav.net/
+description: CUAV manufactures Pixhawk-compatible flight controllers, power modules,
+  and UAV avionics systems.
+sources:
+- ardupilot-cuav-pixhawkv6x

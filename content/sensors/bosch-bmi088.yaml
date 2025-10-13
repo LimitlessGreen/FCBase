@@ -1,0 +1,10 @@
+id: bosch-bmi088
+name: Bosch Sensortec BMI088
+manufacturer: Bosch Sensortec
+type: imu
+axes: 6
+interface: spi
+notes: Automotive-grade 6-axis IMU combining BMI090L gyro and BMA456 accelerometer.
+sources:
+- ardupilot-cuav-pixhawkv6x
+- px4-pixhawk6x
