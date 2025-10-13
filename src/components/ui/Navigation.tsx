@@ -6,9 +6,10 @@ import { ThemeToggle } from "./ThemeToggle";
 
 interface NavigationProps {
   className?: string;
+  basePath?: string;
 }
 
-export function Navigation({ className }: NavigationProps) {
+export function Navigation({ className, basePath = "" }: NavigationProps) {
   const [isOpen, setIsOpen] = React.useState(false);
 
   return (
@@ -16,22 +17,22 @@ export function Navigation({ className }: NavigationProps) {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center gap-6">
-            <a href="/" className="flex items-center space-x-2">
+            <a href={`${basePath}/`} className="flex items-center space-x-2">
               <span className="font-bold text-xl">FCBase</span>
             </a>
           
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-6">
-            <a href="/controllers" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+            <a href={`${basePath}/controllers`} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
               Controllers
             </a>
-            <a href="/firmware" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+            <a href={`${basePath}/firmware`} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
               Firmware
             </a>
-            <a href="/sensors" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+            <a href={`${basePath}/sensors`} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
               Sensors
             </a>
-            <a href="/manufacturers" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+            <a href={`${basePath}/manufacturers`} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
               Manufacturers
             </a>
           </div>
@@ -61,16 +62,16 @@ export function Navigation({ className }: NavigationProps) {
       {isOpen && (
         <div className="md:hidden border-t">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4 flex flex-col gap-3">
-            <a href="/controllers" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors py-2 px-2 rounded-sm hover:bg-muted">
+            <a href={`${basePath}/controllers`} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors py-2 px-2 rounded-sm hover:bg-muted">
               Controllers
             </a>
-            <a href="/firmware" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors py-2 px-2 rounded-sm hover:bg-muted">
+            <a href={`${basePath}/firmware`} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors py-2 px-2 rounded-sm hover:bg-muted">
               Firmware
             </a>
-            <a href="/sensors" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors py-2 px-2 rounded-sm hover:bg-muted">
+            <a href={`${basePath}/sensors`} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors py-2 px-2 rounded-sm hover:bg-muted">
               Sensors
             </a>
-            <a href="/manufacturers" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors py-2 px-2 rounded-sm hover:bg-muted">
+            <a href={`${basePath}/manufacturers`} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors py-2 px-2 rounded-sm hover:bg-muted">
               Manufacturers
             </a>
           </div>
