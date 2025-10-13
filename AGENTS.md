@@ -110,6 +110,80 @@ Agents must:
 
 ---
 
+## 🎨 Frontend & Styling
+**FCBase** uses **Astro 5.14.4** with **React 19.2.0** and **Tailwind CSS v4.1.14** for the UI.
+
+### Tech Stack
+- **Astro**: Static site generator with React integration
+- **Tailwind CSS v4**: Using `@tailwindcss/vite` plugin (NOT `@astrojs/tailwind`)
+- **shadcn/ui**: Component library with Radix UI primitives
+- **React**: For interactive components (client:load directive)
+
+### CSS & Theming
+The project follows **shadcn/ui theming standards**:
+
+#### CSS Import (Tailwind v4)
+```css
+/* ✅ Correct - in globals.css */
+@import "tailwindcss";
+
+/* ❌ Don't use v3 syntax */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+```
+
+#### Theme Colors
+Theme colors are registered using `@theme inline`:
+```css
+@theme inline {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-primary: hsl(var(--primary));
+  --color-muted: hsl(var(--muted));
+  /* ... etc */
+}
+```
+
+This automatically generates utilities like:
+- `bg-background`, `bg-primary`, `bg-muted`
+- `text-foreground`, `text-primary-foreground`, `text-muted-foreground`
+- `border-input`, `ring-ring`
+
+#### Utility Class Updates (v3 → v4)
+- `shadow-sm` → `shadow-xs`
+- `rounded-md` → `rounded-sm`
+- `outline-none` → `outline-hidden`
+
+#### Border Colors
+Border color is set globally via CSS variable:
+```css
+* {
+  border-color: hsl(var(--border));
+}
+```
+
+**Don't use** `border-border` (not a valid utility):
+```html
+<!-- ✅ Good -->
+<div class="border">...</div>
+
+<!-- ❌ Bad -->
+<div class="border border-border">...</div>
+```
+
+### Component Guidelines
+- Use `cn()` utility from `@/lib/utils` for class merging
+- React components must use `client:load` in Astro files
+- Follow shadcn/ui component patterns (CVA for variants)
+- Path aliases: `@/*` maps to `./src/*`
+
+### References
+- [shadcn/ui Theming](https://ui.shadcn.com/docs/theming)
+- [Tailwind CSS v4 Docs](https://tailwindcss.com/docs)
+
+---
+
 ## 🪪 Metadata for Agents
 ```yaml
 agent:
