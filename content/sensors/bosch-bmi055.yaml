@@ -1,0 +1,9 @@
+id: bosch-bmi055
+name: "Bosch Sensortec BMI055"
+manufacturer: Bosch Sensortec
+type: imu
+axes: 6
+interface: spi
+notes: "6-axis IMU combining BMG160 gyroscope and BMA280 accelerometer."
+sources:
+  - px4-pixhawk6c

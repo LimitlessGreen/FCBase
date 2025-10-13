@@ -1,0 +1,12 @@
+id: stmicro-stm32h753
+name: STM32H753
+manufacturer: STMicroelectronics
+architecture: ARM Cortex-M7
+clock_speed_mhz: 480
+flash_mb: 2
+ram_mb: 1
+features:
+- Includes DSP and floating-point unit
+- Integrated Ethernet MAC
+sources:
+- px4-pixhawk6x

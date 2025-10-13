@@ -1,0 +1,9 @@
+id: invensense-icm20602
+name: "TDK InvenSense ICM-20602"
+manufacturer: TDK InvenSense
+type: imu
+axes: 6
+interface: spi
+notes: "High-rate 6-axis IMU paired with MPU6000 on Matek H743 series."
+sources:
+  - ardupilot-matek-h743-wing

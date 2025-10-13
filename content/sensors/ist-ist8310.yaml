@@ -1,0 +1,10 @@
+id: ist-ist8310
+name: IST8310
+manufacturer: IST
+type: magnetometer
+axes: 3
+interface: i2c
+notes: 3-axis magnetometer used on Pixhawk 6C for compass measurements.
+sources:
+- holybro-pixhawk6c-product
+- px4-pixhawk6c

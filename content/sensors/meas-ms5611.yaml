@@ -1,0 +1,9 @@
+id: meas-ms5611
+name: "TE Connectivity MS5611"
+manufacturer: TE Connectivity
+type: barometer
+interface: spi
+notes: "High-resolution MEMS barometric pressure sensor used for altitude estimation."
+sources:
+  - px4-cube-orange-plus
+  - px4-pixhawk6c

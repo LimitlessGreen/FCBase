@@ -1,0 +1,11 @@
+id: ardupilot
+title: ArduPilot
+maintainer: ArduPilot community
+license: GPLv3
+website: https://ardupilot.org/
+supported_vehicle_types:
+- copter
+- plane
+- rover
+sources:
+- ardupilot-home

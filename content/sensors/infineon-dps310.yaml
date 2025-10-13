@@ -1,0 +1,9 @@
+id: infineon-dps310
+name: "Infineon DPS310"
+manufacturer: Infineon Technologies
+type: barometer
+interface: i2c
+notes: "High-resolution barometric pressure sensor used on Matek H743 wing variants."
+sources:
+  - ardupilot-matek-h743-wing
+  - mateksys-h743-wing-product

@@ -1,0 +1,9 @@
+id: bosch-bmm150
+name: "Bosch Sensortec BMM150"
+manufacturer: Bosch Sensortec
+type: magnetometer
+axes: 3
+interface: i2c
+notes: "Geomagnetic sensor providing 3-axis compass data for autopilot heading."
+sources:
+  - px4-pixhawk6x

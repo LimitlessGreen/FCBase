@@ -1,0 +1,49 @@
+id: mateksys-h743-wing
+title: Mateksys H743-Wing
+brand: mateksys
+mcu: stmicro-stm32h743
+mounting: wing
+dimensions:
+  height_mm: 13
+  length_mm: 54
+  weight_g: 30
+  width_mm: 36
+power:
+  notes: 9-36V main input with multiple onboard BEC rails for peripherals and servos.
+  redundant: false
+  voltage_in: 9-36V DC
+io:
+  can: 1
+  ethernet: false
+  pwm: 13
+  sd_card: true
+  uarts: 7
+sensors:
+  barometer:
+  - count: 1
+    id: infineon-dps310
+  imu:
+  - count: 1
+    id: invensense-icm20602
+  - count: 1
+    id: invensense-mpu6000
+features:
+- Built-in OSD
+- Dual camera switching
+- Integrated current sensing
+firmware_support:
+- id: ardupilot
+  status: stable
+sources:
+- ardupilot-matek-h743-wing
+- mateksys-h743-wing-product
+verification:
+  last_updated: "2025-10-13"
+  level: community
+keywords:
+- ardupilot
+- mateksys
+- stm32h743
+- wing
+notes: Shares firmware family with SLIM and MINI variants; ensure correct pin mapping
+  per airframe.

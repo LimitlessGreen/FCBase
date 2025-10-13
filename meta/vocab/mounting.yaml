@@ -1,0 +1,8 @@
+allowed:
+  - 20x20
+  - 25.5x25.5
+  - 30.5x30.5
+  - 35x35
+  - cube
+  - wing
+  - custom
