@@ -1,0 +1,56 @@
+id: holybro-durandal
+title: Holybro Durandal
+brand: holybro
+mcu: stmicro-stm32h743
+mounting: custom
+dimensions:
+  height_mm: 20.5
+  length_mm: 80
+  width_mm: 45
+  weight_g: 64
+power:
+  voltage_in: 4.9-5.5V regulated inputs, USB 4.75-5.25V, servo rail up to 36V
+  redundant: true
+  notes: Dual power module inputs with over-current protection on peripheral rails.
+io:
+  uarts: 6
+  can: 2
+  pwm: 16
+  ethernet: false
+  sd_card: true
+sensors:
+  barometer:
+  - count: 1
+    id: meas-ms5611
+  imu:
+  - count: 1
+    id: invensense-icm20689
+  - count: 1
+    id: bosch-bmi088
+  magnetometer:
+  - count: 1
+    id: ist-ist8310
+features:
+- Built-in IMU heater for thermal stability
+- Dual USB-C and JST-GH debug connectivity
+- Integrated vibration damping chassis
+firmware_support:
+- id: ardupilot
+  status: stable
+- id: px4
+  status: community
+sources:
+- ardupilot-holybro-durandal
+- holybro-durandal-product
+verification:
+  last_updated: "2025-10-13"
+  level: community
+hardware:
+  openness: closed
+keywords:
+- ardupilot
+- durandal
+- holybro
+- px4
+- stm32h743
+notes: Additional PWM groups can be reassigned as GPIO, enabling flexible payload integration on large airframes.

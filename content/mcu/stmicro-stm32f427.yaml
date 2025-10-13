@@ -1,0 +1,9 @@
+id: stmicro-stm32f427
+name: STMicroelectronics STM32F427
+architecture: Arm Cortex-M4
+clock_mhz: 168
+flash_kb: 2048
+sram_kb: 256
+notes: High-reliability STM32F4 MCU with floating point unit powering earlier Pixhawk and Cube-class flight controllers.
+sources:
+  - ardupilot-thecube-overview
