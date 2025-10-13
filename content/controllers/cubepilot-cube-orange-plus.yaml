@@ -43,11 +43,14 @@ firmware_support:
 - id: px4
   status: stable
 sources:
+- ardupilot-autopilots
 - ardupilot-cube-orange-overview
 - px4-cube-orange-plus
 verification:
   last_updated: "2025-10-13"
   level: community
+hardware:
+  openness: open
 keywords:
 - ardupilot
 - cube

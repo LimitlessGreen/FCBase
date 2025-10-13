@@ -1,0 +1,49 @@
+id: mro-pixracer-pro
+title: mRo Pixracer Pro
+brand: mro
+mcu: stmicro-stm32h743
+mounting: custom
+power:
+  voltage_in: 5.0-5.5V via USB-C or PowerBrick connector
+  notes: Ultra-low-noise regulators recommended with optional ACSP4 power supply.
+io:
+  uarts: 7
+  can: 2
+  pwm: 8
+  ethernet: false
+  sd_card: true
+sensors:
+  imu:
+  - count: 1
+    id: invensense-icm20602
+  - count: 1
+    id: invensense-icm20948
+  - count: 1
+    id: bosch-bmi088
+  barometer:
+  - count: 1
+    id: infineon-dps310
+  magnetometer:
+  - count: 1
+    id: invensense-icm20948
+features:
+- 256KB FRAM and microSD logging for high-rate data capture
+- Dual DroneCAN ports and dedicated FrSky telemetry UART
+- Selectable 3.3V or 5V servo rail levels for ESC compatibility
+firmware_support:
+- id: ardupilot
+  status: stable
+sources:
+- ardupilot-autopilots
+- ardupilot-mro-pixracer-pro
+verification:
+  last_updated: "2025-10-13"
+  level: community
+hardware:
+  openness: closed
+keywords:
+- ardupilot
+- mro
+- pixracer
+- stm32h743
+notes: ArduPilot notes the Pixracer Pro is still evolving, so users should review release updates when deploying new firmware builds.

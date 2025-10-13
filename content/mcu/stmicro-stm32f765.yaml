@@ -1,0 +1,9 @@
+id: stmicro-stm32f765
+name: STMicroelectronics STM32F765
+architecture: Arm Cortex-M7
+clock_mhz: 216
+flash_kb: 2048
+sram_kb: 512
+notes: High-performance STM32F7 dual-precision floating point MCU with rich connectivity used in Pixhawk-class flight controllers.
+sources:
+  - ardupilot-holybro-ph5x

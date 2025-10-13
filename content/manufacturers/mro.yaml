@@ -1,0 +1,6 @@
+id: mro
+name: mRobotics
+website: https://store.mrobotics.io/
+description: mRobotics designs Pixhawk-compatible flight controllers and peripherals for small UAV platforms.
+sources:
+- ardupilot-mro-pixracer-pro

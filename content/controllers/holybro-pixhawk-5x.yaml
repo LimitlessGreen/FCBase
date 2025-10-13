@@ -1,0 +1,55 @@
+id: holybro-pixhawk-5x
+title: Holybro Pixhawk 5X
+brand: holybro
+mcu: stmicro-stm32f765
+mounting: cube
+dimensions:
+  width_mm: 31.8
+  length_mm: 38.8
+  height_mm: 14.6
+  weight_g: 23
+power:
+  voltage_in: Max 6V power inputs, USB 4.75-5.25V, servo rail 0-36V
+  redundant: true
+  notes: Dual SMBus power ports with high-voltage tolerant servo rail and optional USB power.
+io:
+  uarts: 8
+  can: 2
+  pwm: 16
+  ethernet: true
+  sd_card: false
+sensors:
+  imu:
+  - count: 1
+    id: invensense-icm20602
+  - count: 1
+    id: invensense-icm20649
+  - count: 1
+    id: invensense-icm42688p
+  barometer:
+  - count: 2
+    id: bosch-bmp388
+  magnetometer:
+  - count: 1
+    id: bosch-bmm150
+features:
+- Integrated Ethernet interface (not enabled on F7 firmware)
+- Triple-redundant IMUs with vibration isolation and heating
+- Two CAN buses with dedicated power monitor inputs
+firmware_support:
+- id: ardupilot
+  status: stable
+sources:
+- ardupilot-autopilots
+- ardupilot-holybro-ph5x
+verification:
+  last_updated: "2025-10-13"
+  level: community
+hardware:
+  openness: closed
+keywords:
+- ardupilot
+- holybro
+- pixhawk
+- stm32f765
+notes: ArduPilot notes integrated Ethernet hardware is present but disabled on the STM32F7 platform firmware.
