@@ -43,24 +43,30 @@ const firmware = await Promise.all(
 
 // Fetch sensor details
 const sensorDetails = {
-  imu: data.sensors.imu ? await Promise.all(
-    data.sensors.imu.map(async (s) => {
-      const entry = await getEntry('sensors', s.id);
-      return { ...s, name: entry?.data.title || entry?.data.name || s.id };
-    })
-  ) : [],
-  barometer: data.sensors.barometer ? await Promise.all(
-    data.sensors.barometer.map(async (s) => {
-      const entry = await getEntry('sensors', s.id);
-      return { ...s, name: entry?.data.title || entry?.data.name || s.id };
-    })
-  ) : [],
-  magnetometer: data.sensors.magnetometer ? await Promise.all(
-    data.sensors.magnetometer.map(async (s) => {
-      const entry = await getEntry('sensors', s.id);
-      return { ...s, name: entry?.data.title || entry?.data.name || s.id };
-    })
-  ) : [],
+  imu: data.sensors?.imu
+    ? await Promise.all(
+        data.sensors.imu.map(async (s) => {
+          const entry = await getEntry('sensors', s.id);
+          return { ...s, name: entry?.data.title || entry?.data.name || s.id };
+        })
+      )
+    : [],
+  barometer: data.sensors?.barometer
+    ? await Promise.all(
+        data.sensors.barometer.map(async (s) => {
+          const entry = await getEntry('sensors', s.id);
+          return { ...s, name: entry?.data.title || entry?.data.name || s.id };
+        })
+      )
+    : [],
+  magnetometer: data.sensors?.magnetometer
+    ? await Promise.all(
+        data.sensors.magnetometer.map(async (s) => {
+          const entry = await getEntry('sensors', s.id);
+          return { ...s, name: entry?.data.title || entry?.data.name || s.id };
+        })
+      )
+    : [],
 };
 
 // Format mounting type
@@ -243,12 +249,16 @@ const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
                     <td class="py-2 px-3 text-muted-foreground font-medium align-top text-xs uppercase">IMU</td>
                     <td colspan="3" class="py-2 px-3">
                       {sensorDetails.imu.map((sensor, idx) => (
-                        <span class="inline-flex items-center mr-4 mb-1">
-                          <span class="font-mono font-semibold text-sm">{sensor.name}</span>
+                        <a
+                          key={`${sensor.id}-${idx}`}
+                          href={`${basePath}/sensors/${sensor.id}`}
+                          class="inline-flex items-center mr-4 mb-1 text-foreground hover:text-primary transition-colors"
+                        >
+                          <span class="font-mono font-semibold text-sm">{sensor.name ?? sensor.id}</span>
                           {sensor.count && sensor.count > 1 && (
                             <span class="text-xs text-muted-foreground ml-1.5 font-medium">×{sensor.count}</span>
                           )}
-                        </span>
+                        </a>
                       ))}
                     </td>
                   </tr>
@@ -258,12 +268,16 @@ const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
                     <td class="py-2 px-3 text-muted-foreground font-medium align-top text-xs uppercase">Barometer</td>
                     <td colspan="3" class="py-2 px-3">
                       {sensorDetails.barometer.map((sensor, idx) => (
-                        <span class="inline-flex items-center mr-4 mb-1">
-                          <span class="font-mono font-semibold text-sm">{sensor.name}</span>
+                        <a
+                          key={`${sensor.id}-${idx}`}
+                          href={`${basePath}/sensors/${sensor.id}`}
+                          class="inline-flex items-center mr-4 mb-1 text-foreground hover:text-primary transition-colors"
+                        >
+                          <span class="font-mono font-semibold text-sm">{sensor.name ?? sensor.id}</span>
                           {sensor.count && sensor.count > 1 && (
                             <span class="text-xs text-muted-foreground ml-1.5 font-medium">×{sensor.count}</span>
                           )}
-                        </span>
+                        </a>
                       ))}
                     </td>
                   </tr>
@@ -273,12 +287,16 @@ const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
                     <td class="py-2 px-3 text-muted-foreground font-medium align-top text-xs uppercase">Magnetometer</td>
                     <td colspan="3" class="py-2 px-3">
                       {sensorDetails.magnetometer.map((sensor, idx) => (
-                        <span class="inline-flex items-center mr-4 mb-1">
-                          <span class="font-mono font-semibold text-sm">{sensor.name}</span>
+                        <a
+                          key={`${sensor.id}-${idx}`}
+                          href={`${basePath}/sensors/${sensor.id}`}
+                          class="inline-flex items-center mr-4 mb-1 text-foreground hover:text-primary transition-colors"
+                        >
+                          <span class="font-mono font-semibold text-sm">{sensor.name ?? sensor.id}</span>
                           {sensor.count && sensor.count > 1 && (
                             <span class="text-xs text-muted-foreground ml-1.5 font-medium">×{sensor.count}</span>
                           )}
-                        </span>
+                        </a>
                       ))}
                     </td>
                   </tr>
