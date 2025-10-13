@@ -1,0 +1,117 @@
+---
+import { getCollection, getEntry } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import MainLayout from '@/layouts/MainLayout.astro';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Badge } from '@/components/ui/Badge';
+
+// Load all controllers
+const allControllers = await getCollection('controllers');
+
+// Fetch manufacturer names
+const controllersWithMeta = await Promise.all(
+  allControllers.map(async (controller) => {
+    const manufacturer = controller.data.brand 
+      ? await getEntry('manufacturers', controller.data.brand)
+      : null;
+    
+    return {
+      ...controller,
+      manufacturerName: manufacturer?.data.name || manufacturer?.data.title || controller.data.brand,
+    };
+  })
+);
+
+// Sort by title
+controllersWithMeta.sort((a, b) => a.data.title.localeCompare(b.data.title));
+
+// Format mounting type
+const mountingDisplay: Record<string, string> = {
+  '20x20': '20×20mm',
+  '25.5x25.5': '25.5×25.5mm',
+  '30.5x30.5': '30.5×30.5mm',
+  '35x35': '35×35mm',
+  'cube': 'Cube',
+  'wing': 'Wing',
+  'custom': 'Custom',
+};
+---
+
+<BaseLayout
+  title="Flight Controllers - FCBase"
+  description="Browse all flight controllers in the FCBase database. Compare specs, firmware support, and find the perfect board for your project."
+>
+  <MainLayout>
+    <!-- Header -->
+    <div class="mb-8">
+      <nav class="mb-4 flex items-center gap-2 text-sm text-muted-foreground">
+        <a href="/" class="hover:text-foreground transition-colors">Home</a>
+        <span>/</span>
+        <span class="text-foreground">Controllers</span>
+      </nav>
+      
+      <h1 class="text-4xl font-bold tracking-tight mb-3">Flight Controllers</h1>
+      <p class="text-lg text-muted-foreground">
+        Browse {controllersWithMeta.length} flight controllers from various manufacturers
+      </p>
+    </div>
+
+    <!-- Controllers Grid -->
+    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 mb-12">
+      {controllersWithMeta.map((controller) => (
+        <a
+          href={`/controllers/${controller.id}`}
+          class="group block"
+        >
+          <Card client:load class="h-full transition-all hover:shadow-lg hover:-translate-y-1">
+            <div class="relative aspect-video w-full bg-gradient-to-br from-muted via-background to-muted overflow-hidden rounded-t-xl">
+              <div class="absolute inset-0 flex items-center justify-center px-6 text-center">
+                <div class="flex flex-col items-center gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="w-12 h-12 text-muted-foreground/40">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 3v1.5M4.5 8.25H3m18 0h-1.5M4.5 12H3m18 0h-1.5m-15 3.75H3m18 0h-1.5M8.25 19.5V21M12 3v1.5m0 15V21m3.75-18v1.5m0 15V21m-9-1.5h10.5a2.25 2.25 0 0 0 2.25-2.25V6.75a2.25 2.25 0 0 0-2.25-2.25H6.75A2.25 2.25 0 0 0 4.5 6.75v10.5a2.25 2.25 0 0 0 2.25 2.25Zm.75-12h9v9h-9v-9Z" />
+                  </svg>
+                  <span class="text-xs font-medium text-muted-foreground">
+                    {controller.data.title}
+                  </span>
+                </div>
+              </div>
+            </div>
+            <CardHeader>
+              <CardTitle class="group-hover:text-primary transition-colors">
+                {controller.data.title}
+              </CardTitle>
+              <CardDescription>{controller.manufacturerName}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div class="space-y-3">
+                <div class="flex items-center justify-between text-sm">
+                  <span class="text-muted-foreground">MCU</span>
+                  <span class="font-medium">
+                    {controller.data.mcu.toUpperCase().replace('STMICRO-', '')}
+                  </span>
+                </div>
+                <div class="flex items-center justify-between text-sm">
+                  <span class="text-muted-foreground">Mounting</span>
+                  <span class="font-medium">{mountingDisplay[controller.data.mounting]}</span>
+                </div>
+                <div class="flex items-center justify-between text-sm">
+                  <span class="text-muted-foreground">I/O</span>
+                  <span class="font-medium">
+                    {controller.data.io.uarts}U • {controller.data.io.can}C • {controller.data.io.pwm}P
+                  </span>
+                </div>
+                <div class="flex flex-wrap gap-1.5 pt-2">
+                  {controller.data.firmware_support.map((fw) => (
+                    <Badge variant="secondary" className="text-xs uppercase">
+                      {fw.id}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </a>
+      ))}
+    </div>
+  </MainLayout>
+</BaseLayout>
