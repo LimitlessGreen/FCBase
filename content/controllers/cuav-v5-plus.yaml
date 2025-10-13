@@ -1,0 +1,59 @@
+id: cuav-v5-plus
+title: CUAV V5 Plus
+brand: cuav
+mcu: stmicro-stm32f765
+mounting: custom
+dimensions:
+  height_mm: 33
+  length_mm: 85.5
+  weight_g: 90
+  width_mm: 42
+power:
+  voltage_in: 4.3-5.4V regulated inputs, USB 4.75-5.25V; servo rail up to 36V passthrough
+  redundant: true
+  notes: Dual power module inputs and USB enable triple-redundant supply paths while the servo rail remains isolated from the FMU.
+io:
+  uarts: 5
+  can: 2
+  pwm: 14
+  ethernet: false
+  sd_card: true
+sensors:
+  barometer:
+    - count: 1
+      id: meas-ms5611
+  imu:
+    - count: 1
+      id: bosch-bmi055
+    - count: 1
+      id: invensense-icm20602
+    - count: 1
+      id: invensense-icm20689
+  magnetometer:
+    - count: 1
+      id: ist-ist8310
+features:
+  - Dual redundant power module inputs with DroneCAN support
+  - Integrated IOMCU providing 8 FMU PWM outputs
+  - Pixhawk-standard modular carrier board design
+firmware_support:
+  - id: ardupilot
+    status: stable
+  - id: px4
+    status: stable
+sources:
+  - ardupilot-cuav-v5plus-overview
+  - cuav-v5plus-docs
+  - cuav-v5plus-manual
+verification:
+  last_updated: "2025-10-13"
+  level: community
+hardware:
+  openness: mixed
+keywords:
+  - ardupilot
+  - cuav
+  - pixhawk
+  - stm32f765
+  - v5-plus
+notes: Carrier board exposes 14 PWM outputs split between the IOMCU and FMU, with DroneCAN-capable power module support on Power C.

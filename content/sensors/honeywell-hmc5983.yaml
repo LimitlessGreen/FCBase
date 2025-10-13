@@ -1,0 +1,16 @@
+id: honeywell-hmc5983
+name: Honeywell HMC5983
+manufacturer: Honeywell
+type: magnetometer
+axes: 3
+interface: i2c
+notes: 3-axis digital compass with temperature compensation for stable heading sensing.
+datasheet:
+  title: "Honeywell HMC5983 3-Axis Magnetometer Datasheet"
+  publisher: Honeywell
+  year: 2013
+  url: https://www.analog.com/media/en/technical-documentation/data-sheets/HMC5983.pdf
+  retrieved: 2025-10-13
+  language: en
+sources:
+  - ardupilot-pixracer-overview

@@ -1,0 +1,16 @@
+id: invensense-icm20608
+name: TDK InvenSense ICM-20608
+manufacturer: TDK InvenSense
+type: imu
+axes: 6
+interface: spi
+notes: Low-noise 6-axis IMU combining a 3-axis accelerometer and 3-axis gyroscope for high-rate flight control loops.
+datasheet:
+  title: "TDK InvenSense ICM-20608 Datasheet"
+  publisher: TDK InvenSense
+  year: 2015
+  url: https://www.mouser.com/datasheet/2/400/DS-000145-ICM-20608-v1.0-1145225.pdf
+  retrieved: 2025-10-13
+  language: en
+sources:
+  - ardupilot-pixracer-overview

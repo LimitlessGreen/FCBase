@@ -1,0 +1,56 @@
+id: mro-pixracer-r14
+title: mRo Pixracer R14
+brand: mro
+mcu: stmicro-stm32f427
+mounting: 30.5x30.5
+dimensions:
+  length_mm: 36
+  width_mm: 36
+power:
+  voltage_in: 5-5.5V regulated input via USB or PowerBrick connector
+  redundant: false
+  notes: Optional ACSP4 power module provides additional 12V rail but does not feed the autopilot directly.
+io:
+  uarts: 6
+  can: 1
+  pwm: 6
+  ethernet: false
+  sd_card: true
+sensors:
+  barometer:
+    - count: 1
+      id: meas-ms5611
+  imu:
+    - count: 1
+      id: invensense-icm20608
+    - count: 1
+      id: invensense-mpu9250
+  magnetometer:
+    - count: 1
+      id: honeywell-hmc5983
+features:
+  - Compact FMUv4 footprint for small airframes
+  - Integrated ESP8266 Wi-Fi telemetry
+  - Onboard FrSky telemetry inverter
+firmware_support:
+  - id: ardupilot
+    status: stable
+  - id: px4
+    status: stable
+sources:
+  - ardupilot-pixracer-overview
+  - ardupilot-pixracer-serial-names
+  - mro-pixracer-r14-product
+verification:
+  last_updated: "2025-10-13"
+  level: community
+hardware:
+  openness: open
+keywords:
+  - ardupilot
+  - fmuv4
+  - mro
+  - pixracer
+  - stm32f427
+  - wifi
+notes: Ships with a plug-in ESP-01 Wi-Fi module for wireless configuration and logging access.
