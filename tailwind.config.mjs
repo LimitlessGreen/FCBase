@@ -9,13 +9,13 @@ export default {
       padding: {
         DEFAULT: "1rem",    // 16px - Mobile
         sm: "2rem",         // 32px - Tablet portrait
-        md: "2rem",         // 32px - Tablet landscape  
-        lg: "2rem",         // 32px - Laptop
-        xl: "2rem",         // 32px - Desktop
-        "2xl": "2rem",      // 32px - Large screens
+        md: "3rem",         // 48px - Tablet landscape  
+        lg: "4rem",         // 64px - Laptop
+        xl: "5rem",         // 80px - Desktop (1920px)
+        "2xl": "10rem",     // 160px - Large screens (ultra-wide 2560px+)
       },
       screens: {
-        "2xl": "1400px",
+        "2xl": "1536px",    // Wider content area for large screens
       },
     },
     extend: {

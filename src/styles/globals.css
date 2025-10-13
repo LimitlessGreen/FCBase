@@ -78,4 +78,10 @@
     background-color: hsl(var(--background));
     color: hsl(var(--foreground));
   }
+  
+  /* Force container to be truly centered */
+  .container {
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
 }
