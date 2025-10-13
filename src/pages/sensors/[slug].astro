@@ -54,99 +54,63 @@ const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
       </nav>
 
       <!-- Header -->
-      <div class="mb-8">
-        <h1 class="text-4xl font-bold tracking-tight mb-2">{data.name || data.title || sensor.id}</h1>
+      <div class="mb-6">
+        <h1 class="text-3xl font-bold tracking-tight mb-1">{data.name || data.title || sensor.id}</h1>
         {data.manufacturer && (
-          <p class="text-lg text-muted-foreground mb-4">
+          <p class="text-base text-muted-foreground mb-2">
             by {data.manufacturer}
           </p>
         )}
-
         {data.notes && (
-          <p class="text-sm text-muted-foreground mb-4">{data.notes}</p>
+          <p class="text-sm text-muted-foreground">{data.notes}</p>
         )}
       </div>
 
-      <!-- Compact Specs -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-        <!-- Sensor Specifications -->
-        <div class="lg:col-span-2">
-          <Card client:load>
-            <CardHeader>
-              <h2 class="text-lg font-semibold">Sensor Specifications</h2>
-            </CardHeader>
-            <CardContent>
-              <table class="w-full text-sm">
-                <tbody class="divide-y divide-border">
-                  {data.type && (
-                    <tr>
-                      <td class="py-2 text-muted-foreground">Type</td>
-                      <td class="py-2 font-medium text-right">{typeDisplay[data.type] || data.type}</td>
-                    </tr>
-                  )}
-                  {data.interface && (
-                    <tr>
-                      <td class="py-2 text-muted-foreground">Interface</td>
-                      <td class="py-2 font-medium text-right uppercase">
-                        {Array.isArray(data.interface) ? data.interface.join(' / ') : data.interface}
-                      </td>
-                    </tr>
-                  )}
+      <!-- Compact Single Row Specs -->
+      <div class="mb-6">
+        <Card client:load>
+          <CardContent class="pt-3 pb-3">
+            <table class="w-full text-sm">
+              <tbody class="divide-y divide-border">
+                <tr>
+                  <td class="py-1.5 px-2 text-muted-foreground w-1/4">Type</td>
+                  <td class="py-1.5 px-2 font-medium w-1/4">{typeDisplay[data.type] || data.type}</td>
+                  <td class="py-1.5 px-2 text-muted-foreground w-1/4">Interface</td>
+                  <td class="py-1.5 px-2 font-medium w-1/4 uppercase">
+                    {Array.isArray(data.interface) ? data.interface.join(' / ') : data.interface}
+                  </td>
+                </tr>
+                <tr>
                   {data.axes && (
-                    <tr>
-                      <td class="py-2 text-muted-foreground">Axes</td>
-                      <td class="py-2 font-medium text-right">{data.axes}-axis</td>
-                    </tr>
+                    <>
+                      <td class="py-1.5 px-2 text-muted-foreground">Axes</td>
+                      <td class="py-1.5 px-2 font-medium">{data.axes}-axis</td>
+                    </>
                   )}
+                  <td class="py-1.5 px-2 text-muted-foreground">Used in Controllers</td>
+                  <td class="py-1.5 px-2 font-medium">{controllersUsingSensor.length}</td>
+                </tr>
+                {data.datasheet?.url && (
                   <tr>
-                    <td class="py-2 text-muted-foreground">Used in Controllers</td>
-                    <td class="py-2 font-medium text-right">{controllersUsingSensor.length}</td>
+                    <td class="py-1.5 px-2 text-muted-foreground">Datasheet</td>
+                    <td colspan="3" class="py-1.5 px-2">
+                      <a
+                        href={data.datasheet.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="inline-flex items-center gap-1 text-primary hover:underline font-medium text-sm"
+                      >
+                        <ExternalLink className="h-3 w-3" />
+                        PDF
+                        {data.datasheet.year && <span class="text-xs text-muted-foreground">({data.datasheet.year})</span>}
+                      </a>
+                    </td>
                   </tr>
-                  {data.datasheet?.url && (
-                    <tr>
-                      <td class="py-2 text-muted-foreground">Datasheet</td>
-                      <td class="py-2 text-right">
-                        <a
-                          href={data.datasheet.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          class="inline-flex items-center gap-1 text-primary hover:underline font-medium"
-                        >
-                          <ExternalLink className="h-3 w-3" />
-                          PDF
-                          {data.datasheet.year && <span class="text-xs text-muted-foreground">({data.datasheet.year})</span>}
-                        </a>
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </CardContent>
-          </Card>
-        </div>
-
-        <!-- Quick Stats -->
-        <div>
-          <Card client:load>
-            <CardHeader>
-              <h2 class="text-base font-semibold">Quick Info</h2>
-            </CardHeader>
-            <CardContent>
-              <div class="space-y-3">
-                <div class="text-center p-4 bg-muted/50 rounded-lg">
-                  <p class="text-3xl font-bold">{controllersUsingSensor.length}</p>
-                  <p class="text-xs text-muted-foreground mt-1">Controllers</p>
-                </div>
-                {data.type && (
-                  <div class="text-center p-3 bg-muted/50 rounded-lg">
-                    <p class="text-sm font-medium">{typeDisplay[data.type] || data.type}</p>
-                    <p class="text-xs text-muted-foreground mt-0.5">Sensor Type</p>
-                  </div>
                 )}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+              </tbody>
+            </table>
+          </CardContent>
+        </Card>
       </div>
 
       <!-- Controllers Using This Sensor -->
