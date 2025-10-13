@@ -7,11 +7,12 @@ export default {
     container: {
       center: true,
       padding: {
-        DEFAULT: "1rem",
-        sm: "2rem",
-        lg: "4rem",
-        xl: "5rem",
-        "2xl": "6rem",
+        DEFAULT: "1rem",    // 16px - Mobile
+        sm: "2rem",         // 32px - Tablet portrait
+        md: "2rem",         // 32px - Tablet landscape  
+        lg: "2rem",         // 32px - Laptop
+        xl: "2rem",         // 32px - Desktop
+        "2xl": "2rem",      // 32px - Large screens
       },
       screens: {
         "2xl": "1400px",
