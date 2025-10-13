@@ -3,18 +3,28 @@ import { getCollection } from 'astro:content';
 import MainLayout from "@/layouts/MainLayout.astro";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
+import { ControllerSearch } from "@/components/ui/ControllerSearch";
 
 const title = "FCBase – Open Flight Controller Database";
 const description = "Search and compare ArduPilot, PX4, and iNAV flight controllers – open, community-driven.";
 
-const filters = [
-  { label: "MCU", value: "STM32H743" },
-  { label: "Form Factor", value: "35x35" },
-  { label: "Firmware", value: "ArduPilot" },
-];
-
 // Load actual controllers from content collection
 const allControllers = await getCollection('controllers');
+
+// Prepare data for search component (all controllers)
+const searchControllers = allControllers.map((controller) => ({
+  id: controller.id,
+  title: controller.data.title,
+  brand: controller.data.brand,
+  mcu: controller.data.mcu,
+  mounting: controller.data.mounting,
+  firmware: controller.data.firmware_support.map(fw => fw.id),
+  uarts: controller.data.io.uarts,
+  can: controller.data.io.can || 0,
+  pwm: controller.data.io.pwm || 0,
+}));
+
+// First 6 controllers for grid preview
 const controllers = allControllers.slice(0, 6).map((controller) => ({
   slug: controller.id,
   name: controller.data.title,
@@ -90,44 +100,17 @@ const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
   <!-- Search Section -->
   <section class="w-full bg-muted/40 py-12 md:py-16 lg:py-24">
     <div class="container">
-      <div class="flex flex-col gap-6 md:gap-8 max-w-4xl mx-auto">
+      <div class="flex flex-col gap-6 md:gap-8 max-w-6xl mx-auto">
         <div class="flex flex-col gap-2 md:gap-3 text-center">
           <h2 class="text-2xl md:text-3xl font-bold tracking-tight lg:text-4xl">
             Find your flight controller
           </h2>
           <p class="text-base md:text-lg text-muted-foreground">
-            Quickly search by MCU, form factor, or supported firmware
+            Search by name, MCU, form factor, or supported firmware
           </p>
         </div>
 
-        <Card client:load>
-          <CardContent class="pt-6">
-            <div class="relative">
-              <div class="absolute left-3 top-1/2 -translate-y-1/2">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="h-5 w-5 text-muted-foreground">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-4.35-4.35m1.35-4.15a6.5 6.5 0 1 1-13 0 6.5 6.5 0 0 1 13 0Z" />
-                </svg>
-              </div>
-              <input
-                type="search"
-                name="q"
-                placeholder="Search controllers, MCUs, ports..."
-                class="w-full rounded-sm border border-input bg-background px-10 py-3 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                disabled
-              />
-              <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-muted-foreground hidden sm:inline">Coming soon</span>
-            </div>
-          </CardContent>
-        </Card>
-
-        <div class="flex flex-wrap gap-2 md:gap-3 justify-center px-4">
-          {filters.map((filter) => (
-            <Button variant="secondary" size="sm" key={filter.label} client:load>
-              <span class="text-xs uppercase tracking-wide text-muted-foreground mr-2">{filter.label}</span>
-              {filter.value}
-            </Button>
-          ))}
-        </div>
+        <ControllerSearch client:load controllers={searchControllers} basePath={basePath} />
       </div>
     </div>
   </section>
