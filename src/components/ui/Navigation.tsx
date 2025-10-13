@@ -2,6 +2,7 @@ import * as React from "react";
 import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "./Button";
+import { ThemeToggle } from "./ThemeToggle";
 
 interface NavigationProps {
   className?: string;
@@ -37,24 +38,22 @@ export function Navigation({ className }: NavigationProps) {
         </div>
 
         {/* Desktop Actions */}
-        <div className="hidden md:flex items-center gap-4">
-          <Button variant="ghost" size="sm">
-            Sign In
-          </Button>
-          <Button size="sm">
-            Get Started
-          </Button>
+        <div className="hidden md:flex items-center gap-2">
+          <ThemeToggle />
         </div>
 
         {/* Mobile Menu Button */}
-        <Button
-          variant="ghost"
-          size="icon"
-          className="md:hidden"
-          onClick={() => setIsOpen(!isOpen)}
-        >
-          {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </Button>
+        <div className="flex md:hidden items-center gap-2">
+          <ThemeToggle />
+          <Button
+            variant="ghost"
+            size="icon"
+            className="md:hidden"
+            onClick={() => setIsOpen(!isOpen)}
+          >
+            {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </Button>
+        </div>
         </div>
       </div>
 
@@ -74,14 +73,6 @@ export function Navigation({ className }: NavigationProps) {
             <a href="/manufacturers" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors py-2 px-2 rounded-sm hover:bg-muted">
               Manufacturers
             </a>
-            <div className="pt-4 flex flex-col gap-3">
-              <Button variant="ghost" className="w-full justify-start">
-                Sign In
-              </Button>
-              <Button className="w-full">
-                Get Started
-              </Button>
-            </div>
           </div>
         </div>
       )}
