@@ -1,0 +1,44 @@
+id: aocoda-h743dual
+title: Aocoda-RC H743Dual
+brand: aocoda-rc
+mcu: stmicro-stm32h743
+mounting: 30.5x30.5
+power:
+  voltage_in: 3-6S LiPo input with onboard 5V/2.5A and 9V/3A BEC outputs
+  notes: Includes dual power monitor inputs and dedicated DJI VTX feed.
+io:
+  uarts: 7
+  can: 0
+  pwm: 12
+  ethernet: false
+  sd_card: false
+sensors:
+  imu:
+  - count: 1
+    id: invensense-mpu6000
+  - count: 2
+    id: bosch-bmi270
+  barometer:
+  - count: 1
+    id: infineon-dps310
+features:
+- STM32H743 flight controller with 128 MB flash logging storage.
+- Dual BEC design providing 5 V / 2.5 A and 9 V / 3 A rails for peripherals and video systems.
+- Integrated MAX7456 OSD with DJI HD connector and DShot-capable PWM groups.
+firmware_support:
+- id: ardupilot
+  status: stable
+sources:
+- ardupilot-autopilots
+- ardupilot-aocoda-h743dual
+verification:
+  last_updated: "2025-10-13"
+  level: community
+hardware:
+  openness: closed
+keywords:
+- 30x30-stack
+- aocoda
+- dshot
+- stm32h743
+notes: Ships in MPU6000 and dual-BMI270 variants; external compass recommended because no magnetometer is included.
