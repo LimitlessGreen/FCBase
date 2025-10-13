@@ -1,4 +1,8 @@
 ---
+import MainLayout from "@/layouts/MainLayout.astro";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/Card";
+import { Button } from "@/components/ui/Button";
+
 const title = "FCBase – Open Flight Controller Database";
 const description = "Search and compare ArduPilot, PX4, and iNAV flight controllers – open, community-driven.";
 
@@ -34,132 +38,172 @@ const controllers = [
     imageAlt: "Placeholder image for Kakute H743 Wing flight controller",
   },
 ];
+
+const features = [
+  {
+    title: "Comprehensive Database",
+    description: "Access detailed specifications for hundreds of flight controllers from major manufacturers.",
+    icon: "database",
+  },
+  {
+    title: "Multi-Firmware Support",
+    description: "Compare boards compatible with ArduPilot, PX4, and iNAV firmware platforms.",
+    icon: "layers",
+  },
+  {
+    title: "Open Source",
+    description: "Community-driven with open data under CC-BY 4.0. Contribute and help grow the database.",
+    icon: "github",
+  },
+];
 ---
 
-<head>
-  <title>{title}</title>
-  <meta name="description" content={description} />
-</head>
-
-<div class="min-h-screen bg-[#f8f9fb] text-slate-900 antialiased dark:bg-slate-950 dark:text-slate-100">
-  <main class="mx-auto flex max-w-6xl flex-col gap-16 px-6 pb-16 pt-12 sm:px-8 lg:px-10">
-    <header class="flex flex-col gap-6 rounded-3xl bg-white/70 p-10 shadow-lg ring-1 ring-slate-200 backdrop-blur dark:bg-slate-900/60 dark:ring-slate-800">
-      <div class="flex flex-col gap-2">
-        <span class="inline-flex items-center gap-2 text-sm font-medium uppercase tracking-[0.2em] text-sky-600 dark:text-sky-400">
-          Open Hardware Index
-        </span>
-        <h1 class="text-4xl font-semibold tracking-tight text-slate-900 dark:text-slate-100 sm:text-5xl">
+<MainLayout title={title} description={description}>
+  <!-- Hero Section -->
+  <section class="w-full bg-gradient-to-b from-background to-muted/20">
+    <div class="container py-16 md:py-24">
+      <div class="flex flex-col items-center text-center gap-6 max-w-3xl mx-auto">
+        <div class="inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm">
+          <span class="font-medium text-primary">Open Hardware Index</span>
+        </div>
+        <h1 class="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
           FCBase
         </h1>
-        <p class="max-w-2xl text-base text-slate-600 dark:text-slate-300 sm:text-lg">
+        <p class="text-xl text-muted-foreground max-w-2xl">
           The open database for flight controllers: compare ArduPilot-, PX4-, and iNAV-compatible boards by MCU, ports, and features.
         </p>
-      </div>
-      <div class="flex flex-wrap items-center gap-3">
-        <a
-          href="/controllers"
-          class="inline-flex items-center justify-center rounded-full bg-sky-600 px-6 py-3 text-sm font-semibold text-white shadow-md transition hover:bg-sky-500 hover:shadow-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600"
-        >
-          Browse Controllers
-        </a>
-        <a
-          href="/contribute"
-          class="inline-flex items-center justify-center rounded-full border border-sky-200 bg-white px-6 py-3 text-sm font-semibold text-sky-600 shadow-sm transition hover:border-sky-300 hover:bg-sky-50 hover:text-sky-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600 dark:border-sky-800 dark:bg-slate-900 dark:text-sky-300 dark:hover:border-sky-700 dark:hover:bg-slate-800"
-        >
-          Contribute
-        </a>
-      </div>
-    </header>
-
-    <section class="flex flex-col gap-8">
-      <div class="rounded-3xl bg-white/70 p-8 shadow-lg ring-1 ring-slate-200 backdrop-blur dark:bg-slate-900/60 dark:ring-slate-800">
-        <div class="flex flex-col gap-6">
-          <div class="flex flex-col gap-3">
-            <h2 class="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
-              Find your flight controller
-            </h2>
-            <p class="text-sm text-slate-600 dark:text-slate-400">
-              Quickly search by MCU, form factor, or supported firmware. The search is provided client-side as a React island with shadcn/ui components.
-            </p>
-          </div>
-
-          <!-- React Island placeholder: SearchBox component (client:load) mounts here -->
-          <div class="relative flex items-center rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm transition focus-within:border-sky-400 focus-within:ring-2 focus-within:ring-sky-200 dark:border-slate-700 dark:bg-slate-950">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="h-5 w-5 text-slate-400">
-              <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-4.35-4.35m1.35-4.15a6.5 6.5 0 1 1-13 0 6.5 6.5 0 0 1 13 0Z" />
-            </svg>
-            <input
-              type="search"
-              name="q"
-              placeholder="Search controllers, MCUs, ports..."
-              class="w-full border-0 bg-transparent px-3 py-2 text-base text-slate-700 placeholder:text-slate-400 focus:outline-none dark:text-slate-200"
-              disabled
-              aria-disabled="true"
-            />
-            <span class="text-xs font-medium text-slate-400">Search (soon)</span>
-          </div>
-
-          <div class="flex flex-wrap gap-3">
-            {filters.map((filter) => (
-              <button
-                type="button"
-                class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-sm font-medium text-slate-600 transition hover:border-sky-300 hover:bg-sky-50 hover:text-sky-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-500 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-sky-600 dark:hover:bg-slate-800"
-                key={filter.label}
-              >
-                <span class="text-xs uppercase tracking-wide text-slate-400 dark:text-slate-500">{filter.label}</span>
-                {filter.value}
-              </button>
-            ))}
-          </div>
+        <div class="flex flex-wrap gap-4 justify-center mt-4">
+          <Button size="lg" asChild client:load>
+            <a href="/controllers">Browse Controllers</a>
+          </Button>
+          <Button variant="outline" size="lg" asChild client:load>
+            <a href="/contribute">Contribute</a>
+          </Button>
         </div>
       </div>
+    </div>
+  </section>
 
+  <!-- Features Section -->
+  <section class="w-full py-16 md:py-24">
+    <div class="container">
+      <div class="grid gap-8 md:grid-cols-3">
+        {features.map((feature) => (
+          <Card key={feature.title} client:load>
+            <CardHeader>
+              <CardTitle>{feature.title}</CardTitle>
+              <CardDescription>{feature.description}</CardDescription>
+            </CardHeader>
+          </Card>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Search Section -->
+  <section class="w-full bg-muted/40 py-16 md:py-24">
+    <div class="container">
+      <div class="flex flex-col gap-8 max-w-4xl mx-auto">
+        <div class="flex flex-col gap-3 text-center">
+          <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">
+            Find your flight controller
+          </h2>
+          <p class="text-lg text-muted-foreground">
+            Quickly search by MCU, form factor, or supported firmware
+          </p>
+        </div>
+
+        <Card client:load>
+          <CardContent class="pt-6">
+            <div class="relative">
+              <div class="absolute left-3 top-1/2 -translate-y-1/2">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="h-5 w-5 text-muted-foreground">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-4.35-4.35m1.35-4.15a6.5 6.5 0 1 1-13 0 6.5 6.5 0 0 1 13 0Z" />
+                </svg>
+              </div>
+              <input
+                type="search"
+                name="q"
+                placeholder="Search controllers, MCUs, ports..."
+                class="w-full rounded-md border border-input bg-background px-10 py-3 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                disabled
+              />
+              <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-muted-foreground">Coming soon</span>
+            </div>
+          </CardContent>
+        </Card>
+
+        <div class="flex flex-wrap gap-3 justify-center">
+          {filters.map((filter) => (
+            <Button variant="secondary" size="sm" key={filter.label} client:load>
+              <span class="text-xs uppercase tracking-wide text-muted-foreground mr-2">{filter.label}</span>
+              {filter.value}
+            </Button>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Controllers Grid -->
+  <section class="w-full py-16 md:py-24">
+    <div class="container">
       <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
         {controllers.map((controller) => (
           <a
             href={`/controllers/${controller.slug}`}
-            class="group flex flex-col overflow-hidden rounded-2xl bg-white shadow-md transition hover:-translate-y-1 hover:shadow-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-sky-500 dark:bg-slate-900"
+            class="group"
             key={controller.slug}
           >
-            <div class="relative aspect-video w-full bg-gradient-to-br from-slate-200 via-slate-100 to-slate-300 dark:from-slate-800 dark:via-slate-900 dark:to-slate-800">
-              <span class="absolute inset-0 flex items-center justify-center px-6 text-center text-sm font-medium text-slate-500 dark:text-slate-400">
-                {controller.imageAlt}
-              </span>
-            </div>
-            <div class="flex flex-1 flex-col gap-4 p-6">
-              <div class="flex flex-col gap-1">
-                <h3 class="text-xl font-semibold text-slate-900 transition group-hover:text-sky-600 dark:text-slate-100 dark:group-hover:text-sky-400">
+            <Card client:load class="h-full transition-all hover:shadow-lg hover:-translate-y-1">
+              <div class="relative aspect-video w-full bg-gradient-to-br from-muted via-background to-muted overflow-hidden rounded-t-xl">
+                <span class="absolute inset-0 flex items-center justify-center px-6 text-center text-sm font-medium text-muted-foreground">
+                  {controller.imageAlt}
+                </span>
+              </div>
+              <CardHeader>
+                <CardTitle class="group-hover:text-primary transition-colors">
                   {controller.name}
-                </h3>
-                <p class="text-sm text-slate-500 dark:text-slate-400">{controller.mcu}</p>
-              </div>
-              <p class="text-sm text-slate-600 dark:text-slate-300">{controller.ports}</p>
-              <div class="mt-auto flex flex-wrap gap-2">
-                {controller.badges.map((badge) => (
-                  <span class="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-medium uppercase tracking-wide text-slate-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300" key={badge}>
-                    {badge}
-                  </span>
-                ))}
-              </div>
-            </div>
+                </CardTitle>
+                <CardDescription>{controller.mcu}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p class="text-sm text-muted-foreground mb-4">{controller.ports}</p>
+                <div class="flex flex-wrap gap-2">
+                  {controller.badges.map((badge) => (
+                    <span class="inline-flex items-center rounded-md border border-border bg-secondary px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wide" key={badge}>
+                      {badge}
+                    </span>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
           </a>
         ))}
       </div>
-    </section>
-  </main>
-
-  <footer class="border-t border-slate-200 bg-white/80 py-10 text-sm text-slate-500 backdrop-blur dark:border-slate-800 dark:bg-slate-950/60 dark:text-slate-400">
-    <div class="mx-auto flex max-w-6xl flex-col gap-4 px-6 sm:flex-row sm:items-center sm:justify-between sm:px-8 lg:px-10">
-      <p>Content licensed under <strong>CC-BY 4.0</strong> &amp; code under <strong>MIT</strong>.</p>
-      <a
-        href="https://github.com/"
-        class="inline-flex items-center gap-2 text-slate-600 transition hover:text-sky-600 dark:text-slate-300 dark:hover:text-sky-400"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-5 w-5">
-          <path fill-rule="evenodd" d="M12 2C6.477 2 2 6.552 2 12.122c0 4.468 2.865 8.248 6.839 9.59.5.095.682-.219.682-.488 0-.242-.009-.884-.014-1.736-2.782.617-3.369-1.373-3.369-1.373-.454-1.175-1.11-1.49-1.11-1.49-.908-.626.069-.614.069-.614 1.003.072 1.531 1.05 1.531 1.05.892 1.553 2.341 1.105 2.91.845.091-.657.35-1.105.636-1.36-2.222-.257-4.555-1.133-4.555-5.043 0-1.115.39-2.026 1.029-2.741-.104-.258-.447-1.296.098-2.702 0 0 .84-.27 2.75 1.045a9.349 9.349 0 0 1 2.503-.344 9.35 9.35 0 0 1 2.503.344c1.91-1.316 2.748-1.045 2.748-1.045.547 1.406.204 2.444.1 2.702.64.715 1.028 1.626 1.028 2.741 0 3.921-2.337 4.783-4.566 5.035.36.316.68.94.68 1.896 0 1.37-.012 2.474-.012 2.811 0 .27.18.586.688.486C19.138 20.367 22 16.588 22 12.122 22 6.552 17.523 2 12 2Z" clip-rule="evenodd" />
-        </svg>
-        GitHub
-      </a>
     </div>
-  </footer>
-</div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="w-full bg-primary text-primary-foreground py-16 md:py-24">
+    <div class="container">
+      <div class="flex flex-col items-center text-center gap-6 max-w-3xl mx-auto">
+        <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">
+          Ready to contribute?
+        </h2>
+        <p class="text-lg opacity-90">
+          Help us build the most comprehensive flight controller database. Add new boards, update specifications, or improve documentation.
+        </p>
+        <div class="flex flex-wrap gap-4 justify-center mt-4">
+          <Button variant="secondary" size="lg" asChild client:load>
+            <a href="https://github.com">View on GitHub</a>
+          </Button>
+          <Button variant="outline" size="lg" asChild client:load class="bg-primary-foreground/10 hover:bg-primary-foreground/20 text-primary-foreground border-primary-foreground/20">
+            <a href="/docs">Read Documentation</a>
+          </Button>
+        </div>
+      </div>
+    </div>
+  </section>
+</MainLayout>
+
