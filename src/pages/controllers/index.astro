@@ -35,6 +35,8 @@ const mountingDisplay: Record<string, string> = {
   'wing': 'Wing',
   'custom': 'Custom',
 };
+
+const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 
 <BaseLayout
@@ -42,25 +44,26 @@ const mountingDisplay: Record<string, string> = {
   description="Browse all flight controllers in the FCBase database. Compare specs, firmware support, and find the perfect board for your project."
 >
   <MainLayout>
-    <!-- Header -->
-    <div class="mb-8">
-      <nav class="mb-4 flex items-center gap-2 text-sm text-muted-foreground">
-        <a href="/" class="hover:text-foreground transition-colors">Home</a>
-        <span>/</span>
-        <span class="text-foreground">Controllers</span>
-      </nav>
-      
-      <h1 class="text-4xl font-bold tracking-tight mb-3">Flight Controllers</h1>
-      <p class="text-lg text-muted-foreground">
-        Browse {controllersWithMeta.length} flight controllers from various manufacturers
-      </p>
-    </div>
+    <div class="container py-8">
+      <!-- Header -->
+      <div class="mb-8">
+        <nav class="mb-4 flex items-center gap-2 text-sm text-muted-foreground">
+          <a href={`${basePath}/`} class="hover:text-foreground transition-colors">Home</a>
+          <span>/</span>
+          <span class="text-foreground">Controllers</span>
+        </nav>
+        
+        <h1 class="text-4xl font-bold tracking-tight mb-3">Flight Controllers</h1>
+        <p class="text-lg text-muted-foreground">
+          Browse {controllersWithMeta.length} flight controllers from various manufacturers
+        </p>
+      </div>
 
-    <!-- Controllers Grid -->
-    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 mb-12">
+      <!-- Controllers Grid -->
+      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 mb-12">
       {controllersWithMeta.map((controller) => (
         <a
-          href={`/controllers/${controller.id}`}
+          href={`${basePath}/controllers/${controller.id}`}
           class="group block"
         >
           <Card client:load class="h-full transition-all hover:shadow-lg hover:-translate-y-1">
@@ -112,6 +115,7 @@ const mountingDisplay: Record<string, string> = {
           </Card>
         </a>
       ))}
+    </div>
     </div>
   </MainLayout>
 </BaseLayout>

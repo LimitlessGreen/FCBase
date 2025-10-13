@@ -17,5 +17,5 @@ const basePath = import.meta.env.BASE_URL.replace(/\/$/, ''); // Remove trailing
   <main class="flex-1">
     <slot />
   </main>
-  <Footer client:load />
+  <Footer client:load basePath={basePath} />
 </BaseLayout>

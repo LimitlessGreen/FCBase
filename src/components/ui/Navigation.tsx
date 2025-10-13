@@ -14,7 +14,7 @@ export function Navigation({ className, basePath = "" }: NavigationProps) {
 
   return (
     <nav className={cn("border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60", className)}>
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="container">
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center gap-6">
             <a href={`${basePath}/`} className="flex items-center space-x-2">
@@ -61,7 +61,7 @@ export function Navigation({ className, basePath = "" }: NavigationProps) {
       {/* Mobile Navigation */}
       {isOpen && (
         <div className="md:hidden border-t">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4 flex flex-col gap-3">
+          <div className="container py-4 flex flex-col gap-3">
             <a href={`${basePath}/controllers`} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors py-2 px-2 rounded-sm hover:bg-muted">
               Controllers
             </a>

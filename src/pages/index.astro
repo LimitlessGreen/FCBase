@@ -41,28 +41,30 @@ const features = [
     icon: "github",
   },
 ];
+
+const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 
 <MainLayout title={title} description={description}>
   <!-- Hero Section -->
   <section class="w-full bg-gradient-to-b from-background to-muted/20">
     <div class="container py-12 md:py-16 lg:py-24">
-      <div class="flex flex-col items-center text-center gap-4 md:gap-6 max-w-3xl mx-auto px-4">
+      <div class="flex flex-col items-center text-center gap-4 md:gap-6 max-w-3xl mx-auto">
         <div class="inline-flex items-center gap-2 rounded-full border px-3 py-1.5 md:px-4 md:py-2 text-xs md:text-sm">
           <span class="font-medium text-primary">Open Hardware Index</span>
         </div>
         <h1 class="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl">
           FCBase
         </h1>
-        <p class="text-base md:text-lg lg:text-xl text-muted-foreground max-w-2xl px-4">
+        <p class="text-base md:text-lg lg:text-xl text-muted-foreground max-w-2xl">
           The open database for flight controllers: compare ArduPilot-, PX4-, and iNAV-compatible boards by MCU, ports, and features.
         </p>
-        <div class="flex flex-col sm:flex-row flex-wrap gap-3 md:gap-4 justify-center mt-2 md:mt-4 w-full sm:w-auto px-4">
+        <div class="flex flex-col sm:flex-row flex-wrap gap-3 md:gap-4 justify-center mt-2 md:mt-4 w-full sm:w-auto">
           <Button size="lg" asChild client:load class="w-full sm:w-auto">
-            <a href="/controllers">Browse Controllers</a>
+            <a href={`${basePath}/controllers`}>Browse Controllers</a>
           </Button>
           <Button variant="outline" size="lg" asChild client:load class="w-full sm:w-auto">
-            <a href="/contribute">Contribute</a>
+            <a href={`${basePath}/contribute`}>Contribute</a>
           </Button>
         </div>
       </div>
@@ -71,7 +73,7 @@ const features = [
 
   <!-- Features Section -->
   <section class="w-full py-12 md:py-16 lg:py-24">
-    <div class="container px-4">
+    <div class="container">
       <div class="grid gap-6 md:gap-8 sm:grid-cols-2 lg:grid-cols-3">
         {features.map((feature) => (
           <Card key={feature.title} client:load>
@@ -87,9 +89,9 @@ const features = [
 
   <!-- Search Section -->
   <section class="w-full bg-muted/40 py-12 md:py-16 lg:py-24">
-    <div class="container px-4">
+    <div class="container">
       <div class="flex flex-col gap-6 md:gap-8 max-w-4xl mx-auto">
-        <div class="flex flex-col gap-2 md:gap-3 text-center px-4">
+        <div class="flex flex-col gap-2 md:gap-3 text-center">
           <h2 class="text-2xl md:text-3xl font-bold tracking-tight lg:text-4xl">
             Find your flight controller
           </h2>
@@ -132,11 +134,11 @@ const features = [
 
   <!-- Controllers Grid -->
   <section class="w-full py-12 md:py-16 lg:py-24">
-    <div class="container px-4">
+    <div class="container">
       <div class="grid gap-6 md:gap-8 sm:grid-cols-2 lg:grid-cols-3">
         {controllers.map((controller) => (
           <a
-            href={`/controllers/${controller.slug}`}
+            href={`${basePath}/controllers/${controller.slug}`}
             class="group"
             key={controller.slug}
           >
@@ -171,12 +173,12 @@ const features = [
 
   <!-- CTA Section -->
   <section class="w-full bg-primary text-primary-foreground py-12 md:py-16 lg:py-24">
-    <div class="container px-4">
+    <div class="container">
       <div class="flex flex-col items-center text-center gap-4 md:gap-6 max-w-3xl mx-auto">
         <h2 class="text-2xl md:text-3xl font-bold tracking-tight lg:text-4xl">
           Ready to contribute?
         </h2>
-        <p class="text-base md:text-lg opacity-90 px-4">
+        <p class="text-base md:text-lg opacity-90">
           Help us build the most comprehensive flight controller database. Add new boards, update specifications, or improve documentation.
         </p>
         <div class="flex flex-col sm:flex-row flex-wrap gap-3 md:gap-4 justify-center mt-2 md:mt-4 w-full sm:w-auto px-4">
@@ -184,7 +186,7 @@ const features = [
             <a href="https://github.com">View on GitHub</a>
           </Button>
           <Button variant="outline" size="lg" asChild client:load class="w-full sm:w-auto bg-primary-foreground/10 hover:bg-primary-foreground/20 text-primary-foreground border-primary-foreground/20">
-            <a href="/docs">Read Documentation</a>
+            <a href={`${basePath}/docs`}>Read Documentation</a>
           </Button>
         </div>
       </div>
