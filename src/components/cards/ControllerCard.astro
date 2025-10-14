@@ -27,8 +27,6 @@
  * />
  */
 
-import { Card, CardContent } from '@/components/ui/Card';
-import { Badge } from '@/components/ui/Badge';
 import type { ImageMetadata } from 'astro';
 import { buildResponsivePicture } from '@/lib/responsive-image';
 
@@ -96,15 +94,6 @@ const mountingDisplay = mounting
     : mounting.replace('x', '×') + 'mm'
   : undefined;
 
-// Build port summary (like "10 UARTs • 2 CAN • 16 PWM")
-const portSummary = [
-  uarts ? `${uarts} UART${uarts > 1 ? 's' : ''}` : null,
-  can ? `${can} CAN` : null,
-  pwm ? `${pwm} PWM` : null,
-]
-  .filter(Boolean)
-  .join(' • ');
-
 const imageAlt = image?.alt ?? title;
 
 const localPicture = image?.src && typeof image.src !== 'string'
@@ -121,7 +110,9 @@ const remoteImage = image?.src && typeof image.src === 'string'
 ---
 
 <a href={`${basePath}/controllers/${id}`} class={`group block ${className || ''}`}>
-  <Card class="h-full transition-all hover:shadow-lg hover:-translate-y-1 overflow-hidden">
+  <div
+    class="h-full overflow-hidden rounded-xl border bg-card text-card-foreground shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg"
+  >
     {/* Image Banner with Overlays */}
     {showImage && (
       <div class="relative aspect-video w-full overflow-hidden bg-gradient-to-br from-muted via-background to-muted">
@@ -234,7 +225,7 @@ const remoteImage = image?.src && typeof image.src === 'string'
     )}
 
     {/* Ultra-Compact Grid Layout */}
-    <CardContent class="p-3 pt-4">
+    <div class="p-3 pt-4">
       {/* Single Row: MCU + Mounting */}
       <div class="flex gap-1.5 mb-2">
         <span class="inline-flex items-center rounded-sm border px-1.5 py-0.5 text-[10px] font-mono font-bold">
@@ -274,6 +265,6 @@ const remoteImage = image?.src && typeof image.src === 'string'
           {barometer && <span>✓ Baro</span>}
         </div>
       </div>
-    </CardContent>
-  </Card>
+    </div>
+  </div>
 </a>
