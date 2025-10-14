@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Github, Twitter, Mail } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { GITHUB_REPO_URL } from "@/lib/constants";
 
 interface FooterProps {
   className?: string;
@@ -21,7 +22,12 @@ export function Footer({ className, basePath = "" }: FooterProps) {
               Your comprehensive flight controller database.
             </p>
             <div className="flex gap-4">
-              <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
+              <a
+                href={GITHUB_REPO_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-muted-foreground hover:text-foreground transition-colors"
+              >
                 <Github className="h-5 w-5" />
               </a>
               <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
