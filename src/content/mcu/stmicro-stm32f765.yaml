@@ -62,7 +62,7 @@ datasheet:
   title: "STM32F765xx/767xx/769xx data sheet"
   publisher: STMicroelectronics
   url: https://www.st.com/resource/en/datasheet/stm32f765zg.pdf
-  retrieved: 2025-02-14
+  retrieved: "2025-02-14"
   language: en
 sources:
   - stmicro-stm32f765-datasheet
