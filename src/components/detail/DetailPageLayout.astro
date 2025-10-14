@@ -1,0 +1,45 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import MainLayout from '@/layouts/MainLayout.astro';
+
+interface Breadcrumb {
+  label: string;
+  href?: string;
+}
+
+interface Props {
+  title: string;
+  description?: string;
+  editPath?: string;
+  breadcrumbs?: Breadcrumb[];
+}
+
+const { title, description, editPath, breadcrumbs = [] }: Props = Astro.props;
+const hasBreadcrumbs = breadcrumbs.length > 0;
+---
+
+<BaseLayout title={title} description={description}>
+  <MainLayout editPath={editPath}>
+    <div class="container py-8">
+      {hasBreadcrumbs && (
+        <nav class="mb-6 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+          {breadcrumbs.map((crumb, index) => (
+            <span class="inline-flex items-center gap-2" key={`${crumb.label}-${index}`}>
+              {index > 0 && <span>/</span>}
+              {crumb.href ? (
+                <a href={crumb.href} class="transition-colors hover:text-foreground">
+                  {crumb.label}
+                </a>
+              ) : (
+                <span class="text-foreground">{crumb.label}</span>
+              )}
+            </span>
+          ))}
+        </nav>
+      )}
+
+      <slot name="header" />
+      <slot />
+    </div>
+  </MainLayout>
+</BaseLayout>
