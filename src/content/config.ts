@@ -240,7 +240,23 @@ const sensorsCollection = defineCollection({
   }),
 });
 
-// Firmware collection
+// Sources collection
+const sourcesCollection = defineCollection({
+  type: 'data',
+  schema: z.object({
+    id: z.string(),
+    title: z.string(),
+    publisher: z.string().optional(),
+    author: z.string().optional(),
+    url: z.string().url(),
+    date: z.string().optional(),
+    year: z.number().optional(),
+    retrieved: z.string().optional(),
+    language: z.string().optional(),
+    notes: z.string().optional(),
+  }),
+});
+
 const firmwareCollection = defineCollection({
   type: 'data',
   schema: z.object({
@@ -261,5 +277,6 @@ export const collections = {
   'manufacturers': manufacturersCollection,
   'mcu': mcuCollection,
   'sensors': sensorsCollection,
+  'sources': sourcesCollection,
   'firmware': firmwareCollection,
 };
