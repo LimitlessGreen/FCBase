@@ -70,6 +70,30 @@ const sensorDetails = {
     : [],
 };
 
+const hardwareRevisions = data.hardware?.revisions
+  ? await Promise.all(
+      data.hardware.revisions.map(async (revision) => {
+        const sourceEntries = revision.sources
+          ? await Promise.all(
+              revision.sources.map(async (sourceId) => {
+                const entry = await getEntry('sources', sourceId);
+                return {
+                  id: sourceId,
+                  title: entry?.data.title ?? sourceId,
+                  url: entry?.data.url ?? null,
+                };
+              })
+            )
+          : [];
+
+        return {
+          ...revision,
+          sourceEntries,
+        };
+      })
+    )
+  : [];
+
 // Format mounting type
 const mountingDisplay = {
   '20x20': '20×20mm',
@@ -589,6 +613,80 @@ const formatVoltageRange = (voltage?: {
             </table>
           </CardContent>
         </Card>
+        {hardwareRevisions.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base font-bold uppercase tracking-wide text-primary">
+                Hardware Revisions
+              </CardTitle>
+              {data.hardware.notes && (
+                <CardDescription className="text-xs text-muted-foreground leading-relaxed">
+                  {data.hardware.notes}
+                </CardDescription>
+              )}
+            </CardHeader>
+            <CardContent>
+              <div class="space-y-3">
+                {hardwareRevisions.map((revision) => (
+                  <div
+                    key={revision.id}
+                    class="rounded-sm border border-border/40 bg-background/70 p-3 shadow-xs"
+                  >
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                      <span class="font-semibold text-sm text-foreground">{revision.name}</span>
+                      {revision.released && (
+                        <Badge className="text-[10px] uppercase tracking-wide bg-primary/10 text-primary border-primary/20">
+                          {revision.released}
+                        </Badge>
+                      )}
+                    </div>
+                    {revision.notes && (
+                      <p class="mt-1 text-xs leading-snug text-muted-foreground">{revision.notes}</p>
+                    )}
+                    {revision.changes && revision.changes.length > 0 && (
+                      <ul class="mt-2 space-y-1">
+                        {revision.changes.map((change, changeIdx) => (
+                          <li
+                            key={`${revision.id}-change-${changeIdx}`}
+                            class="flex items-start gap-2 text-xs text-muted-foreground"
+                          >
+                            <span class="text-primary font-bold mt-0.5">•</span>
+                            <span class="leading-snug text-foreground">{change}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                    {revision.sourceEntries.length > 0 && (
+                      <div class="mt-2 flex flex-wrap gap-1.5">
+                        {revision.sourceEntries.map((source) =>
+                          source.url ? (
+                            <a
+                              key={source.id}
+                              href={source.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              class="text-[10px] uppercase tracking-wide font-semibold inline-flex items-center gap-1 rounded-sm border border-primary/30 bg-primary/5 px-2 py-1 text-primary hover:bg-primary/10 transition-colors"
+                            >
+                              {source.title}
+                              <span>↗</span>
+                            </a>
+                          ) : (
+                            <span
+                              key={source.id}
+                              class="text-[10px] uppercase tracking-wide font-semibold inline-flex items-center gap-1 rounded-sm border border-border/40 bg-muted/30 px-2 py-1 text-muted-foreground"
+                            >
+                              {source.title}
+                            </span>
+                          )
+                        )}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
     </div>

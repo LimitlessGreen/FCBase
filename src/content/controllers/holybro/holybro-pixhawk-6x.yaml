@@ -140,6 +140,18 @@ verification:
   level: community
 hardware:
   openness: open
+  revisions:
+  - id: icm-45686
+    name: "ICM-45686 Edition"
+    notes: Holybro's product page highlights the Pixhawk 6X variant with the InvenSense ICM-45686 IMU set.
+    sources:
+    - holybro-pixhawk6x-product
+    - px4-pixhawk6x
+  - id: rev-a
+    name: "Rev A"
+    notes: ArduPilot's Pixhawk 6X guide documents the initial production hardware configuration.
+    sources:
+    - ardupilot-holybro-pixhawk6x
 keywords:
 - ardupilot
 - ethernet
