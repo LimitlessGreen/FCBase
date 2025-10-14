@@ -4,6 +4,7 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import MainLayout from '@/layouts/MainLayout.astro';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
+import { ControllerSearch } from '@/components/ui/ControllerSearch';
 
 // Load all controllers
 const allControllers = await getCollection('controllers');
@@ -11,16 +12,33 @@ const allControllers = await getCollection('controllers');
 // Fetch manufacturer names
 const controllersWithMeta = await Promise.all(
   allControllers.map(async (controller) => {
-    const manufacturer = controller.data.brand 
+    const manufacturer = controller.data.brand
       ? await getEntry('manufacturers', controller.data.brand)
       : null;
-    
+
     return {
       ...controller,
       manufacturerName: manufacturer?.data.name || manufacturer?.data.title || controller.data.brand,
     };
   })
 );
+
+// Prepare data for search component
+const searchControllers = controllersWithMeta.map((controller) => ({
+  id: controller.id,
+  title: controller.data.title,
+  brand: controller.data.brand,
+  mcu: controller.data.mcu,
+  mounting: controller.data.mounting,
+  firmware: controller.data.firmware_support.map((fw) => fw.id),
+  uarts: controller.data.io.uarts,
+  can: controller.data.io.can || 0,
+  pwm: controller.data.io.pwm || 0,
+  sdCard: controller.data.io.sd_card,
+  ethernet: controller.data.io.ethernet,
+  barometer: (controller.data.sensors?.barometer?.length ?? 0) > 0,
+  redundant: controller.data.power?.redundant,
+}));
 
 // Sort by title
 controllersWithMeta.sort((a, b) => a.data.title.localeCompare(b.data.title));
@@ -57,6 +75,17 @@ const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
         <p class="text-lg text-muted-foreground">
           Browse {controllersWithMeta.length} flight controllers from various manufacturers
         </p>
+      </div>
+
+      <!-- Search -->
+      <div class="mb-12 space-y-4">
+        <div class="flex flex-col gap-2 text-center">
+          <h2 class="text-2xl font-semibold tracking-tight md:text-3xl">Find your flight controller</h2>
+          <p class="text-base text-muted-foreground md:text-lg">
+            Search by name, MCU, form factor, or supported firmware to narrow down the perfect board.
+          </p>
+        </div>
+        <ControllerSearch client:load controllers={searchControllers} basePath={basePath} />
       </div>
 
       <!-- Controllers Grid -->
