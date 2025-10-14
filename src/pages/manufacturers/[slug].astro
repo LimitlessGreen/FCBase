@@ -2,7 +2,6 @@
 import { getCollection, getEntry } from 'astro:content';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import MainLayout from '@/layouts/MainLayout.astro';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { ExternalLink } from 'lucide-react';
 
@@ -91,38 +90,36 @@ const editPath = `src/content/manufacturers/${manufacturer.id}.yaml`;
                 href={`${basePath}/controllers/${controller.id}`}
                 class="group block"
               >
-                <Card client:load class="h-full transition-all hover:shadow-lg hover:-translate-y-1">
-                  <div class="relative aspect-video w-full bg-gradient-to-br from-muted via-background to-muted overflow-hidden rounded-t-xl">
+                <div class="h-full rounded-xl border bg-card text-card-foreground shadow-sm transition-all hover:shadow-lg hover:-translate-y-1">
+                  <div class="relative aspect-video w-full overflow-hidden rounded-t-xl bg-gradient-to-br from-muted via-background to-muted">
                     <div class="absolute inset-0 flex items-center justify-center px-6 text-center">
                       <div class="space-y-2">
-                        <h3 class="font-bold text-lg line-clamp-2">{controller.data.title}</h3>
+                        <h3 class="line-clamp-2 text-lg font-bold">{controller.data.title}</h3>
                         <p class="text-sm text-muted-foreground">{controller.data.mounting}</p>
                       </div>
                     </div>
                   </div>
-                  <CardContent class="pt-4">
-                    <div class="space-y-3">
-                      <div class="flex flex-wrap gap-1.5">
-                        <Badge variant="outline" class="text-xs">
-                          {controller.data.mcu.replace('stmicro-', '').toUpperCase()}
-                        </Badge>
-                        <Badge variant="outline" class="text-xs">
-                          {controller.data.mounting}
-                        </Badge>
-                      </div>
-                      <p class="text-xs text-muted-foreground">
-                        {controller.data.io.uarts} UART • {controller.data.io.can || 0} CAN • {controller.data.io.pwm || 0} PWM
-                      </p>
-                      <div class="flex flex-wrap gap-1.5">
-                        {controller.data.firmware_support.map((fw) => (
-                          <Badge key={fw.id} class="text-xs bg-primary/10 text-primary border-primary/20">
-                            {fw.id.toUpperCase()}
-                          </Badge>
-                        ))}
-                      </div>
+                  <div class="space-y-3 p-6 pt-4">
+                    <div class="flex flex-wrap gap-1.5">
+                      <Badge variant="outline" class="text-xs">
+                        {controller.data.mcu.replace('stmicro-', '').toUpperCase()}
+                      </Badge>
+                      <Badge variant="outline" class="text-xs">
+                        {controller.data.mounting}
+                      </Badge>
                     </div>
-                  </CardContent>
-                </Card>
+                    <p class="text-xs text-muted-foreground">
+                      {controller.data.io.uarts} UART • {controller.data.io.can || 0} CAN • {controller.data.io.pwm || 0} PWM
+                    </p>
+                    <div class="flex flex-wrap gap-1.5">
+                      {controller.data.firmware_support.map((fw) => (
+                        <Badge key={fw.id} class="border-primary/20 bg-primary/10 text-xs text-primary">
+                          {fw.id.toUpperCase()}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                </div>
               </a>
             ))}
           </div>
