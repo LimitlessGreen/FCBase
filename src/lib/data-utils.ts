@@ -242,11 +242,108 @@ export function getPowerTypeLabel(type?: string): string | null {
 /**
  * Format peripheral type label (snake_case to Title Case)
  */
+const PERIPHERAL_LABEL_SYNONYMS: Record<string, string> = {
+  usb: 'USB',
+  uart: 'UART',
+  can: 'CAN',
+  pwm: 'PWM',
+  ppm: 'PPM',
+  spi: 'SPI',
+  i2c: 'I2C',
+  i2s: 'I2S',
+  mavlink: 'MAVLink',
+  sbus: 'SBUS',
+  sbus2: 'SBUS2',
+  dsm: 'DSM',
+  fport: 'FPort',
+  crsf: 'CRSF',
+  srxl2: 'SRXL2',
+  dshot: 'DShot',
+  smbus: 'SMBus',
+  esc: 'ESC',
+  rc: 'RC',
+  led: 'LED',
+  leds: 'LEDs',
+  gps: 'GPS',
+  adc: 'ADC',
+  jtag: 'JTAG',
+  uavcan: 'UAVCAN',
+  dronecan: 'DroneCAN',
+};
+
+function canonicalizePeripheralLabel(label?: string): string {
+  if (!label) return '';
+
+  const sanitized = label
+    .replace(/[_-]+/g, ' ')
+    .replace(/\s*\/\s*/g, ' / ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  if (!sanitized) return '';
+
+  const lower = sanitized.toLowerCase();
+  const fullMatch = PERIPHERAL_LABEL_SYNONYMS[lower];
+  if (fullMatch) {
+    return fullMatch;
+  }
+
+  const words = sanitized.split(' ').map((word) => {
+    if (word === '/' || word === '&') {
+      return word;
+    }
+
+    const normalized = word.toLowerCase();
+    const synonym = PERIPHERAL_LABEL_SYNONYMS[normalized];
+    if (synonym) {
+      return synonym;
+    }
+
+    if (/^[a-z0-9]+$/.test(normalized) && /[0-9]/.test(normalized)) {
+      return normalized.toUpperCase();
+    }
+
+    if (/^[a-z]+$/.test(normalized) && normalized.length <= 3) {
+      return normalized.toUpperCase();
+    }
+
+    return normalized.charAt(0).toUpperCase() + normalized.slice(1);
+  });
+
+  return words
+    .join(' ')
+    .replace(/\s+\/\s+/g, ' / ')
+    .replace(/\s+&\s+/g, ' & ')
+    .trim();
+}
+
 export function formatPeripheralType(type: string): string {
-  return type
-    .split('_')
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(' ');
+  return canonicalizePeripheralLabel(type);
+}
+
+export function normalizePeripheralInterfaces(
+  interfaces?: string[],
+): { label: string; count: number }[] {
+  if (!interfaces || interfaces.length === 0) {
+    return [];
+  }
+
+  const seen = new Map<string, { label: string; count: number }>();
+
+  for (const raw of interfaces) {
+    const canonical = canonicalizePeripheralLabel(raw);
+    if (!canonical) continue;
+
+    const key = canonical.toLowerCase();
+    const entry = seen.get(key);
+    if (entry) {
+      entry.count += 1;
+    } else {
+      seen.set(key, { label: canonical, count: 1 });
+    }
+  }
+
+  return Array.from(seen.values());
 }
 
 /**
