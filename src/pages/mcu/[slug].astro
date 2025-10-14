@@ -4,6 +4,8 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import MainLayout from '@/layouts/MainLayout.astro';
 import { Card, CardContent, CardHeader } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
+import SourceList from '@/components/content/SourceList.astro';
+import { resolveSources } from '@/lib/sources';
 
 export async function getStaticPaths() {
   const mcus = await getCollection('mcu');
@@ -39,6 +41,7 @@ const ramKb =
 
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
 const editPath = `src/content/mcu/${mcu.id}.yaml`;
+const sourceEntries = await resolveSources(Array.isArray(data.sources) ? data.sources : []);
 ---
 
 <BaseLayout
@@ -113,15 +116,11 @@ const editPath = `src/content/mcu/${mcu.id}.yaml`;
                     </td>
                   </tr>
                 )}
-                {Array.isArray(data.sources) && data.sources.length > 0 && (
+                {sourceEntries.length > 0 && (
                   <tr class="hover:bg-muted/10 transition-colors">
-                    <td class="py-2 px-3 text-muted-foreground font-medium text-xs uppercase">Sources</td>
+                    <td class="py-2 px-3 text-muted-foreground font-medium text-xs uppercase align-top">Sources</td>
                     <td colspan="3" class="py-2 px-3">
-                      <div class="flex flex-wrap gap-2">
-                        {data.sources.map((sourceId) => (
-                          <Badge variant="outline" className="text-xs uppercase">{sourceId}</Badge>
-                        ))}
-                      </div>
+                      <SourceList orientation="inline" sources={sourceEntries} />
                     </td>
                   </tr>
                 )}

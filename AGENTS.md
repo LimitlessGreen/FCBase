@@ -107,6 +107,8 @@ Agents must:
 - Arrays sorted alphabetically
 - Date format: `YYYY-MM-DD`
 - Empty optional fields omitted, not `null`
+- Every data file must include a `sources` list referencing entries in `/content/sources/`
+- Frontend views must surface human-readable source attributions with working links for each entry
 
 ---
 

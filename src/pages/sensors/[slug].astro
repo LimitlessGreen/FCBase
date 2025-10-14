@@ -2,8 +2,10 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import MainLayout from '@/layouts/MainLayout.astro';
-import { Card, CardContent, CardHeader } from '@/components/ui/Card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
+import SourceList from '@/components/content/SourceList.astro';
+import { resolveSources } from '@/lib/sources';
 import { ExternalLink } from 'lucide-react';
 
 export async function getStaticPaths() {
@@ -40,6 +42,7 @@ const typeDisplay: Record<string, string> = {
 
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
 const editPath = `src/content/sensors/${sensor.id}.yaml`;
+const sourceEntries = await resolveSources(data.sources);
 ---
 
 <BaseLayout
@@ -69,6 +72,22 @@ const editPath = `src/content/sensors/${sensor.id}.yaml`;
           <p class="text-sm text-muted-foreground">{data.notes}</p>
         )}
       </div>
+
+      {sourceEntries.length > 0 && (
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle className="text-base font-bold uppercase tracking-wide text-primary">
+              Data Sources
+            </CardTitle>
+            <CardDescription className="text-xs text-muted-foreground">
+              Evidence supporting this sensor profile.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <SourceList sources={sourceEntries} />
+          </CardContent>
+        </Card>
+      )}
 
       <!-- Professional Specs Card -->
       <div class="mb-6">

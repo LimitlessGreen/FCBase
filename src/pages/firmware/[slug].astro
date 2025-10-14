@@ -2,8 +2,10 @@
 import { getCollection, getEntry } from 'astro:content';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import MainLayout from '@/layouts/MainLayout.astro';
-import { Card, CardContent } from '@/components/ui/Card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
+import SourceList from '@/components/content/SourceList.astro';
+import { resolveSources } from '@/lib/sources';
 import { ExternalLink } from 'lucide-react';
 
 export async function getStaticPaths() {
@@ -28,6 +30,7 @@ compatibleControllers.sort((a, b) => a.data.title.localeCompare(b.data.title));
 
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
 const editPath = `src/content/firmware/${firmware.id}.yaml`;
+const sourceEntries = await resolveSources(data.sources);
 ---
 
 <BaseLayout
@@ -95,14 +98,30 @@ const editPath = `src/content/firmware/${firmware.id}.yaml`;
           </div>
         )}
 
-        <div class="flex items-center gap-4 text-sm mt-4">
-          <Badge variant="secondary" className="text-sm">
-            {compatibleControllers.length} Compatible {compatibleControllers.length === 1 ? 'Controller' : 'Controllers'}
-          </Badge>
-        </div>
+      <div class="flex items-center gap-4 text-sm mt-4">
+        <Badge variant="secondary" className="text-sm">
+          {compatibleControllers.length} Compatible {compatibleControllers.length === 1 ? 'Controller' : 'Controllers'}
+        </Badge>
       </div>
+    </div>
 
-      <!-- Compatible Controllers -->
+    {sourceEntries.length > 0 && (
+      <Card className="mb-10">
+        <CardHeader>
+          <CardTitle className="text-base font-bold uppercase tracking-wide text-primary">
+            Data Sources
+          </CardTitle>
+          <CardDescription className="text-xs text-muted-foreground">
+            References cited for this firmware profile.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <SourceList sources={sourceEntries} />
+        </CardContent>
+      </Card>
+    )}
+
+    <!-- Compatible Controllers -->
       {compatibleControllers.length > 0 ? (
         <>
           <h2 class="text-2xl font-bold tracking-tight mb-6">Compatible Controllers</h2>

@@ -1,0 +1,112 @@
+---
+import { cn } from '@/lib/utils';
+import type { SourceEntry } from '@/lib/sources';
+
+interface Props {
+  sources: SourceEntry[];
+  orientation?: 'stacked' | 'inline';
+  align?: 'left' | 'center' | 'right';
+  showPublisher?: boolean;
+  showRetrieved?: boolean;
+  class?: string;
+}
+
+const {
+  sources,
+  orientation = 'stacked',
+  align = 'left',
+  showPublisher = true,
+  showRetrieved = true,
+  class: className,
+} = Astro.props as Props;
+
+if (!sources || sources.length === 0) {
+  return null;
+}
+
+const isInline = orientation === 'inline';
+const justifyClass =
+  align === 'right'
+    ? 'justify-end text-right'
+    : align === 'center'
+    ? 'justify-center text-center'
+    : 'justify-start text-left';
+const stackAlignClass =
+  align === 'right'
+    ? 'items-end text-right'
+    : align === 'center'
+    ? 'items-center text-center'
+    : 'items-start text-left';
+---
+<div
+  class={cn(
+    isInline ? 'flex flex-wrap gap-2' : 'space-y-2',
+    isInline ? justifyClass : stackAlignClass,
+    className
+  )}
+>
+  {sources.map((source) => (
+    isInline ? (
+      source.url ? (
+        <a
+          key={source.id}
+          href={source.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center gap-1 rounded-sm border border-primary/30 bg-primary/5 px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-primary transition-colors hover:bg-primary/10"
+        >
+          {source.title}
+          <span aria-hidden="true">↗</span>
+        </a>
+      ) : (
+        <span
+          key={source.id}
+          class="inline-flex items-center gap-1 rounded-sm border border-border/40 bg-muted/30 px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground"
+        >
+          {source.title}
+        </span>
+      )
+    ) : (
+      <div
+        key={source.id}
+        class={cn(
+          'w-full rounded-sm border border-border/40 bg-muted/20 px-3 py-2',
+          stackAlignClass
+        )}
+      >
+        <div class="text-sm font-semibold text-foreground">
+          {source.url ? (
+            <a
+              href={source.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center gap-1 hover:text-primary transition-colors"
+            >
+              {source.title}
+              <span aria-hidden="true">↗</span>
+            </a>
+          ) : (
+            <span>{source.title}</span>
+          )}
+        </div>
+        <div class="mt-1 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-muted-foreground">
+          <span class="font-mono uppercase tracking-wide">ID: {source.id}</span>
+          {showPublisher && (source.publisher || source.author) && (
+            <span>
+              {(source.publisher && `Publisher: ${source.publisher}`) ||
+                (source.author && `Author: ${source.author}`)}
+            </span>
+          )}
+        </div>
+        {showRetrieved && source.retrieved && (
+          <div class="mt-0.5 text-xs text-muted-foreground">
+            Retrieved: {source.retrieved}
+          </div>
+        )}
+        {source.notes && (
+          <div class="mt-0.5 text-xs text-muted-foreground">{source.notes}</div>
+        )}
+      </div>
+    )
+  ))}
+</div>
