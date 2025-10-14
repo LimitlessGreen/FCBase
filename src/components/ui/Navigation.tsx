@@ -32,6 +32,9 @@ export function Navigation({ className, basePath = "" }: NavigationProps) {
             <a href={`${basePath}/sensors`} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
               Sensors
             </a>
+            <a href={`${basePath}/mcu`} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+              MCUs
+            </a>
             <a href={`${basePath}/manufacturers`} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
               Manufacturers
             </a>
@@ -70,6 +73,9 @@ export function Navigation({ className, basePath = "" }: NavigationProps) {
             </a>
             <a href={`${basePath}/sensors`} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors py-2 px-2 rounded-sm hover:bg-muted">
               Sensors
+            </a>
+            <a href={`${basePath}/mcu`} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors py-2 px-2 rounded-sm hover:bg-muted">
+              MCUs
             </a>
             <a href={`${basePath}/manufacturers`} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors py-2 px-2 rounded-sm hover:bg-muted">
               Manufacturers
