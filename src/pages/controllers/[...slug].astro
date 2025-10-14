@@ -7,7 +7,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/Badge';
 import StatusBadge from '@/components/ui/StatusBadge.astro';
 import SpecItem from '@/components/ui/SpecItem.astro';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs';
 import ProfessionalTable from '@/components/table/ProfessionalTable.astro';
 import TableSection from '@/components/table/TableSection.astro';
 import TableRow from '@/components/table/TableRow.astro';
@@ -123,6 +122,7 @@ const hardwareRevisionSummaries = revisionVariantsWithSensors.filter(
 
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
 const controllerSlug = (controller as { slug?: string }).slug ?? controller.id;
+const tabsIdBase = `controller-tabs-${controllerSlug.replace(/[^a-z0-9-]+/gi, '-').toLowerCase()}`;
 const editPath = `src/content/controllers/${controllerSlug}.yaml`;
 const mcuName = mcu?.data.title ?? mcu?.data.name ?? data.mcu;
 const formattedMounting = data.mounting ? formatMounting(data.mounting) : 'Custom';
@@ -570,20 +570,59 @@ const hasLinkItems = linkItems.length > 0;
     </div>
   )}
 
-  <Tabs defaultValue="specs" className="mt-10">
-    <TabsList className="grid w-full max-w-xl grid-cols-3 gap-2 rounded-lg border border-border/60 bg-muted/40 p-1">
-      <TabsTrigger value="specs" className="text-xs font-semibold uppercase tracking-wide">
+  <div
+    class="mt-10"
+    data-tabs-root
+    data-default-tab="specs"
+    id={tabsIdBase}
+  >
+    <div
+      role="tablist"
+      aria-label="Controller detail sections"
+      class="grid w-full max-w-xl grid-cols-3 gap-2 rounded-lg border border-border/60 bg-muted/40 p-1"
+    >
+      <button
+        type="button"
+        role="tab"
+        data-tab="specs"
+        aria-selected="true"
+        aria-controls={`${tabsIdBase}-panel-specs`}
+        id={`${tabsIdBase}-tab-specs`}
+        class="controller-tab-trigger inline-flex min-w-[80px] items-center justify-center whitespace-nowrap rounded-md px-3 py-1.5 text-xs font-semibold uppercase tracking-wide transition-all focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-background text-foreground shadow-xs"
+      >
         Specs
-      </TabsTrigger>
-      <TabsTrigger value="issues" className="text-xs font-semibold uppercase tracking-wide">
+      </button>
+      <button
+        type="button"
+        role="tab"
+        data-tab="issues"
+        aria-selected="false"
+        aria-controls={`${tabsIdBase}-panel-issues`}
+        id={`${tabsIdBase}-tab-issues`}
+        class="controller-tab-trigger inline-flex min-w-[80px] items-center justify-center whitespace-nowrap rounded-md px-3 py-1.5 text-xs font-semibold uppercase tracking-wide transition-all focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-muted-foreground"
+      >
         Issues
-      </TabsTrigger>
-      <TabsTrigger value="links" className="text-xs font-semibold uppercase tracking-wide">
+      </button>
+      <button
+        type="button"
+        role="tab"
+        data-tab="links"
+        aria-selected="false"
+        aria-controls={`${tabsIdBase}-panel-links`}
+        id={`${tabsIdBase}-tab-links`}
+        class="controller-tab-trigger inline-flex min-w-[80px] items-center justify-center whitespace-nowrap rounded-md px-3 py-1.5 text-xs font-semibold uppercase tracking-wide transition-all focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-muted-foreground"
+      >
         Links
-      </TabsTrigger>
-    </TabsList>
+      </button>
+    </div>
 
-    <TabsContent value="specs" className="space-y-6">
+    <div
+      role="tabpanel"
+      data-tab-panel="specs"
+      id={`${tabsIdBase}-panel-specs`}
+      aria-labelledby={`${tabsIdBase}-tab-specs`}
+      class="space-y-6"
+    >
       <Card className="border border-border/60 bg-background/80 shadow-xs">
         <CardHeader className="pb-4">
           <CardTitle className="text-base font-semibold">Core Specifications</CardTitle>
@@ -1222,9 +1261,15 @@ const hasLinkItems = linkItems.length > 0;
         )}
       </div>
     </div>
-    </TabsContent>
+    </div>
 
-    <TabsContent value="issues" className="space-y-4">
+    <div
+      role="tabpanel"
+      data-tab-panel="issues"
+      id={`${tabsIdBase}-panel-issues`}
+      aria-labelledby={`${tabsIdBase}-tab-issues`}
+      class="space-y-4"
+    >
       {hasKnownIssues ? (
         <div class="space-y-4">
           {knownIssues.map((issue, index) => (
@@ -1297,9 +1342,15 @@ const hasLinkItems = linkItems.length > 0;
           </CardContent>
         </Card>
       )}
-    </TabsContent>
+    </div>
 
-    <TabsContent value="links" className="space-y-4">
+    <div
+      role="tabpanel"
+      data-tab-panel="links"
+      id={`${tabsIdBase}-panel-links`}
+      aria-labelledby={`${tabsIdBase}-tab-links`}
+      class="space-y-4"
+    >
       {hasLinkItems ? (
         <div class="grid gap-3 md:grid-cols-2">
           {linkItems.map((link) => {
@@ -1336,6 +1387,104 @@ const hasLinkItems = linkItems.length > 0;
           </CardHeader>
         </Card>
       )}
-    </TabsContent>
-  </Tabs>
+    </div>
+  </div>
+
+  <script is:inline>
+    (() => {
+      const scriptEl = document.currentScript;
+      if (!scriptEl) return;
+      const root = scriptEl.previousElementSibling;
+      if (!root || !(root instanceof HTMLElement)) return;
+
+      const defaultTab = root.dataset.defaultTab;
+      const tabButtons = Array.from(
+        root.querySelectorAll('button[data-tab]')
+      ).filter((el) => el instanceof HTMLElement);
+      const panels = Array.from(
+        root.querySelectorAll('[data-tab-panel]')
+      ).filter((el) => el instanceof HTMLElement);
+
+      if (tabButtons.length === 0 || panels.length === 0) return;
+
+      const activate = (targetId) => {
+        tabButtons.forEach((button) => {
+          const isActive = button.dataset.tab === targetId;
+          button.setAttribute('aria-selected', isActive ? 'true' : 'false');
+          button.tabIndex = isActive ? 0 : -1;
+          button.classList.toggle('bg-background', isActive);
+          button.classList.toggle('text-foreground', isActive);
+          button.classList.toggle('shadow-xs', isActive);
+          button.classList.toggle('text-muted-foreground', !isActive);
+        });
+
+        panels.forEach((panel) => {
+          const isActive = panel.dataset.tabPanel === targetId;
+          panel.toggleAttribute('hidden', !isActive);
+          panel.setAttribute('aria-hidden', isActive ? 'false' : 'true');
+          if (isActive) {
+            panel.removeAttribute('tabindex');
+          } else {
+            panel.setAttribute('tabindex', '-1');
+          }
+        });
+      };
+
+      const cycleTabs = (currentIndex, delta) => {
+        const total = tabButtons.length;
+        const nextIndex = (currentIndex + delta + total) % total;
+        const nextButton = tabButtons[nextIndex];
+        if (nextButton?.dataset.tab) {
+          activate(nextButton.dataset.tab);
+          nextButton.focus();
+        }
+      };
+
+      tabButtons.forEach((button, index) => {
+        button.addEventListener('click', () => {
+          if (button.dataset.tab) {
+            activate(button.dataset.tab);
+          }
+        });
+
+        button.addEventListener('keydown', (event) => {
+          if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
+            event.preventDefault();
+            cycleTabs(index, 1);
+            return;
+          }
+          if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
+            event.preventDefault();
+            cycleTabs(index, -1);
+            return;
+          }
+          if (event.key === 'Home') {
+            event.preventDefault();
+            const first = tabButtons[0];
+            first?.focus();
+            if (first?.dataset.tab) {
+              activate(first.dataset.tab);
+            }
+            return;
+          }
+          if (event.key === 'End') {
+            event.preventDefault();
+            const last = tabButtons[tabButtons.length - 1];
+            last?.focus();
+            if (last?.dataset.tab) {
+              activate(last.dataset.tab);
+            }
+          }
+        });
+      });
+
+      const initial =
+        defaultTab && tabButtons.some((btn) => btn.dataset.tab === defaultTab)
+          ? defaultTab
+          : tabButtons[0]?.dataset.tab;
+      if (initial) {
+        activate(initial);
+      }
+    })();
+  </script>
 </DetailPageLayout>
