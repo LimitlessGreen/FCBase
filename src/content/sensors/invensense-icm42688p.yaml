@@ -18,7 +18,7 @@ datasheet:
   publisher: TDK InvenSense
   year: 2020
   url: https://uploadcdn.oneyac.com/attachments/files/brand_pdf/tdk/product/sensor/mortion-inertial/imu/data_sheet/ds-000347-icm-42688-p-v1.2.pdf
-  retrieved: 2025-01-16
+  retrieved: "2025-01-16"
   language: en
 specs:
   supply_voltage_v:

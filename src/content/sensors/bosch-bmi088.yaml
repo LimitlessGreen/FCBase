@@ -10,7 +10,7 @@ datasheet:
   publisher: Bosch Sensortec
   year: 2025
   url: https://www.mouser.com/datasheet/2/783/BST-BMI088-DS000-1501734.pdf
-  retrieved: 2025-10-13
+  retrieved: "2025-10-13"
   language: en
 sources:
   - ardupilot-cuav-pixhawkv6x

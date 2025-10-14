@@ -9,7 +9,7 @@ datasheet:
   publisher: Bosch Sensortec
   year: 2025
   url: https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bmp581-ds004.pdf
-  retrieved: 2025-10-13
+  retrieved: "2025-10-13"
   language: en
 sources:
   - ardupilot-cuav-7-nano

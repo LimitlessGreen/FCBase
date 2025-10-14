@@ -9,7 +9,7 @@ datasheet:
   publisher: TE Connectivity
   year: 2025
   url: https://www.mouser.com/datasheet/2/418/ENG_DS_MS5611-01BA03_B1-1133474.pdf
-  retrieved: 2025-10-13
+  retrieved: "2025-10-13"
   language: en
 sources:
   - px4-cube-orange-plus

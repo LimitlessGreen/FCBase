@@ -16,7 +16,7 @@ datasheet:
   publisher: Bosch Sensortec
   year: 2020
   url: https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bmp388-ds001.pdf
-  retrieved: 2025-01-16
+  retrieved: "2025-01-16"
   language: en
 specs:
   supply_voltage_v:

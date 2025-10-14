@@ -10,7 +10,7 @@ datasheet:
   publisher: Bosch Sensortec
   year: 2025
   url: https://www.mouser.com/datasheet/2/783/BST-BMI055-DS000-1506567.pdf
-  retrieved: 2025-10-13
+  retrieved: "2025-10-13"
   language: en
 sources:
   - px4-pixhawk6c

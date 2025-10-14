@@ -10,7 +10,7 @@ datasheet:
   publisher: TDK InvenSense
   year: 2020
   url: https://invensense.tdk.com/wp-content/uploads/2015/02/DS-000189-ICM-20689-v1.0.pdf
-  retrieved: 2025-10-13
+  retrieved: "2025-10-13"
   language: en
 sources:
   - ardupilot-cuav-nora-overview

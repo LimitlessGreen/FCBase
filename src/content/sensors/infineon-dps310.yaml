@@ -9,7 +9,7 @@ datasheet:
   publisher: Infineon Technologies
   year: 2025
   url: https://www.infineon.com/assets/row/public/documents/24/49/infineon-dps310-datasheet-en.pdf
-  retrieved: 2025-10-13
+  retrieved: "2025-10-13"
   language: en
 sources:
   - ardupilot-matek-h743-wing
