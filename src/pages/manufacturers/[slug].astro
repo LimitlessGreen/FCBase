@@ -1,10 +1,11 @@
 ---
-import { getCollection, getEntry } from 'astro:content';
+import { getCollection } from 'astro:content';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import MainLayout from '@/layouts/MainLayout.astro';
 import ControllerCard from '@/components/cards/ControllerCard.astro';
 import { Badge } from '@/components/ui/Badge';
 import { ExternalLink } from 'lucide-react';
+import { createControllerCardModels } from '@/lib/controller-card-model';
 
 export async function getStaticPaths() {
   const manufacturers = await getCollection('manufacturers');
@@ -25,6 +26,8 @@ const manufacturerControllers = allControllers.filter(
 
 // Sort by title
 manufacturerControllers.sort((a, b) => a.data.title.localeCompare(b.data.title));
+
+const controllerCards = await createControllerCardModels(manufacturerControllers);
 
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
 const editPath = `src/content/manufacturers/${manufacturer.id}.yaml`;
@@ -86,21 +89,22 @@ const editPath = `src/content/manufacturers/${manufacturer.id}.yaml`;
         <>
           <h2 class="text-2xl font-bold tracking-tight mb-6">Controllers</h2>
           <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {manufacturerControllers.map((controller) => (
+            {controllerCards.map((controller) => (
               <ControllerCard
                 key={controller.id}
                 id={controller.id}
-                title={controller.data.title}
-                manufacturer={data.name || data.title}
-                mcu={controller.data.mcu}
-                mounting={controller.data.mounting}
-                uarts={controller.data.io.uarts}
-                can={controller.data.io.can}
-                pwm={controller.data.io.pwm}
-                sdCard={controller.data.io.sd_card}
-                barometer={(controller.data.sensors?.barometer?.length ?? 0) > 0}
-                firmwares={controller.data.firmware_support.map(fw => fw.id)}
-                showImage={false}
+                title={controller.title}
+                manufacturer={controller.manufacturer || data.name || data.title}
+                mcu={controller.mcu}
+                mounting={controller.mounting}
+                uarts={controller.uarts}
+                can={controller.can}
+                pwm={controller.pwm}
+                sdCard={controller.sdCard}
+                barometer={controller.barometer}
+                firmwares={controller.firmwares}
+                image={controller.image}
+                showImage={true}
                 basePath={basePath}
               />
             ))}
