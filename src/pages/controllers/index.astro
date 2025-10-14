@@ -166,27 +166,29 @@ const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
         <ControllerSearch client:load controllers={searchControllers} basePath={basePath} />
       </div>
 
-      <!-- Controllers Grid -->
-      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 mb-12">
-      {controllersWithMeta.map((controller) => (
-        <ControllerCard
-          key={controller.id}
-          id={controller.id}
-          title={controller.data.title}
-          manufacturer={controller.manufacturerName}
-          mcu={controller.data.mcu}
-          mounting={controller.data.mounting}
-          uarts={controller.data.io.uarts}
-          can={controller.data.io.can}
-          pwm={controller.data.io.pwm}
-          sdCard={controller.data.io.sd_card}
-          barometer={(controller.data.sensors?.barometer?.length ?? 0) > 0}
-          firmwares={controller.data.firmware_support.map((fw) => fw.id)}
-          image={controller.preview}
-          basePath={basePath}
-        />
-      ))}
-    </div>
+      <!-- SSR Controllers Grid (hidden by default, shown only if JavaScript is disabled) -->
+      <noscript>
+        <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 mb-12">
+          {controllersWithMeta.map((controller) => (
+            <ControllerCard
+              key={controller.id}
+              id={controller.id}
+              title={controller.data.title}
+              manufacturer={controller.manufacturerName}
+              mcu={controller.data.mcu}
+              mounting={controller.data.mounting}
+              uarts={controller.data.io.uarts}
+              can={controller.data.io.can}
+              pwm={controller.data.io.pwm}
+              sdCard={controller.data.io.sd_card}
+              barometer={(controller.data.sensors?.barometer?.length ?? 0) > 0}
+              firmwares={controller.data.firmware_support.map((fw) => fw.id)}
+              image={controller.preview}
+              basePath={basePath}
+            />
+          ))}
+        </div>
+      </noscript>
     </div>
   </MainLayout>
 </BaseLayout>

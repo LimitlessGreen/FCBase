@@ -79,9 +79,32 @@
     color: hsl(var(--foreground));
   }
   
-  /* Force container to be truly centered */
+  /* Force container to be truly centered with proper padding */
   .container {
     margin-left: auto !important;
     margin-right: auto !important;
+    padding-left: 1rem !important;  /* 16px on mobile */
+    padding-right: 1rem !important;
+  }
+  
+  @media (min-width: 640px) {
+    .container {
+      padding-left: 1.5rem !important;  /* 24px on tablet */
+      padding-right: 1.5rem !important;
+    }
+  }
+  
+  @media (min-width: 1024px) {
+    .container {
+      padding-left: 2rem !important;  /* 32px on desktop */
+      padding-right: 2rem !important;
+    }
+  }
+  
+  @media (min-width: 1280px) {
+    .container {
+      padding-left: 3rem !important;  /* 48px on large desktop */
+      padding-right: 3rem !important;
+    }
   }
 }

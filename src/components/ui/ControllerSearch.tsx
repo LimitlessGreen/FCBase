@@ -409,41 +409,66 @@ export function ControllerSearch({ controllers, basePath = "" }: ControllerSearc
             href={`${basePath}/controllers/${controller.id}`}
             className="group block"
           >
-            <Card className="h-full transition-all hover:shadow-lg hover:-translate-y-1">
-              <div className="relative aspect-video w-full bg-gradient-to-br from-muted via-background to-muted overflow-hidden rounded-t-xl">
-                <div className="absolute inset-0 flex items-center justify-center px-6 text-center">
-                  <div className="space-y-2">
-                    <h3 className="font-bold text-lg line-clamp-2">{controller.title}</h3>
-                    <p className="text-sm text-muted-foreground">{controller.brand}</p>
-                  </div>
+            <Card className="h-full transition-all hover:shadow-lg hover:-translate-y-1 overflow-hidden">
+              {/* Image Banner with Overlays */}
+              <div className="relative aspect-video w-full overflow-hidden bg-gradient-to-br from-muted via-background to-muted">
+                {/* Title & Manufacturer Overlay (top-left) */}
+                <div className="absolute top-2 left-2 max-w-[60%]">
+                  <h3 className="font-bold text-sm leading-tight line-clamp-2 text-foreground bg-background/90 backdrop-blur-sm px-2 py-1 rounded-sm shadow-sm group-hover:text-primary transition-colors">
+                    {controller.title}
+                  </h3>
+                  <p className="text-xs text-muted-foreground bg-background/90 backdrop-blur-sm px-2 py-0.5 rounded-sm shadow-sm mt-1 inline-block">
+                    {controller.brand}
+                  </p>
                 </div>
-              </div>
-              <CardContent className="pt-4">
-                <div className="space-y-3">
-                  <div className="flex flex-wrap gap-1.5">
-                    <Badge variant="outline" className="text-xs">
-                      {controller.mcu.replace('stmicro-', '').toUpperCase()}
-                    </Badge>
-                    <Badge variant="outline" className="text-xs">
-                      {controller.mounting}
-                    </Badge>
-                  </div>
-                  <div className="flex flex-wrap gap-1.5">
-                    {controller.firmware.map(fw => (
-                      <Badge key={fw} variant="secondary" className="text-xs">
+                {/* Firmware Badges Overlay (top-right) */}
+                {controller.firmware.length > 0 && (
+                  <div className="absolute top-2 right-2 flex flex-wrap gap-1.5 justify-end">
+                    {controller.firmware.map((fw) => (
+                      <span
+                        key={fw}
+                        className="inline-flex items-center rounded-sm border bg-background/90 backdrop-blur-sm px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider shadow-sm"
+                      >
                         {fw.toUpperCase()}
-                      </Badge>
+                      </span>
                     ))}
                   </div>
-                  <div className="text-xs text-muted-foreground space-y-1">
-                    <div>UARTs: {controller.uarts} • CAN: {controller.can} • PWM: {controller.pwm}</div>
-                    {(controller.sdCard || controller.ethernet || controller.barometer) && (
-                      <div className="flex flex-wrap gap-1">
-                        {controller.sdCard && <span>✓ SD</span>}
-                        {controller.ethernet && <span>✓ Ethernet</span>}
-                        {controller.barometer && <span>✓ Baro</span>}
+                )}
+              </div>
+              
+              {/* Ultra-Compact Grid Layout */}
+              <CardContent className="p-3 pt-4">
+                {/* Single Row: MCU + Mounting */}
+                <div className="flex gap-1.5 mb-2">
+                  <span className="inline-flex items-center rounded-sm border px-1.5 py-0.5 text-[10px] font-mono font-bold">
+                    {controller.mcu.replace('stmicro-', '').toUpperCase()}
+                  </span>
+                  <span className="inline-flex items-center rounded-sm border px-1.5 py-0.5 text-[10px] font-semibold">
+                    {controller.mounting}
+                  </span>
+                </div>
+
+                {/* Ultra-Compact Stats Grid */}
+                <div className="flex items-center justify-between text-[11px] border-t pt-2">
+                  <div className="flex gap-3">
+                    <div className="text-center">
+                      <div className="font-bold">{controller.uarts}</div>
+                      <div className="text-muted-foreground text-[9px]">UART</div>
+                    </div>
+                    {controller.can > 0 && (
+                      <div className="text-center">
+                        <div className="font-bold">{controller.can}</div>
+                        <div className="text-muted-foreground text-[9px]">CAN</div>
                       </div>
                     )}
+                    <div className="text-center">
+                      <div className="font-bold">{controller.pwm}</div>
+                      <div className="text-muted-foreground text-[9px]">PWM</div>
+                    </div>
+                  </div>
+                  <div className="flex gap-2 text-[11px] text-muted-foreground">
+                    {controller.sdCard && <span>✓ SD</span>}
+                    {controller.barometer && <span>✓ Baro</span>}
                   </div>
                 </div>
               </CardContent>

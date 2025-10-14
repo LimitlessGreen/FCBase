@@ -104,10 +104,10 @@ const imageAlt = title;
 ---
 
 <a href={`${basePath}/controllers/${id}`} class={`group block ${className || ''}`}>
-  <Card class="h-full transition-all hover:shadow-lg hover:-translate-y-1 border-2 hover:border-primary/30">
-    {/* Image Banner with Title + Subtitle */}
+  <Card class="h-full transition-all hover:shadow-lg hover:-translate-y-1 overflow-hidden">
+    {/* Image Banner with Overlays */}
     {showImage && (
-      <div class="relative aspect-video w-full overflow-hidden rounded-t-xl bg-gradient-to-br from-muted via-background to-muted">
+      <div class="relative aspect-video w-full overflow-hidden bg-gradient-to-br from-muted via-background to-muted">
         {image?.src ? (
           <>
             <img
@@ -116,6 +116,30 @@ const imageAlt = title;
               loading="lazy"
               class="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
             />
+            {/* Title & Manufacturer Overlay (top-left) */}
+            <div class="absolute top-2 left-2 max-w-[60%]">
+              <h3 class="font-bold text-sm leading-tight line-clamp-2 text-foreground bg-background/90 backdrop-blur-sm px-2 py-1 rounded-sm shadow-sm group-hover:text-primary transition-colors">
+                {title}
+              </h3>
+              {manufacturer && (
+                <p class="text-xs text-muted-foreground bg-background/90 backdrop-blur-sm px-2 py-0.5 rounded-sm shadow-sm mt-1 inline-block">
+                  {manufacturer}
+                </p>
+              )}
+            </div>
+            {/* Firmware Badges Overlay (top-right) */}
+            {firmwares.length > 0 && (
+              <div class="absolute top-2 right-2 flex flex-wrap gap-1.5 justify-end">
+                {firmwares.map((firmware) => (
+                  <span
+                    key={firmware}
+                    class="inline-flex items-center rounded-sm border bg-background/90 backdrop-blur-sm px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider shadow-sm"
+                  >
+                    {firmware.toUpperCase()}
+                  </span>
+                ))}
+              </div>
+            )}
             {image.credit && (
               <span class="absolute bottom-2 right-2 rounded bg-background/80 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
                 {image.sourceUrl ? (
@@ -135,65 +159,77 @@ const imageAlt = title;
             )}
           </>
         ) : (
-          <div class="absolute inset-0 flex items-center justify-center px-6 text-center">
-            <div class="space-y-2">
-              <h3 class="font-bold text-lg line-clamp-2 group-hover:text-primary transition-colors">
+          <>
+            {/* Title & Manufacturer Overlay for placeholder (same as with image) */}
+            <div class="absolute top-2 left-2 max-w-[60%]">
+              <h3 class="font-bold text-sm leading-tight line-clamp-2 text-foreground bg-background/90 backdrop-blur-sm px-2 py-1 rounded-sm shadow-sm group-hover:text-primary transition-colors">
                 {title}
               </h3>
               {manufacturer && (
-                <p class="text-sm text-muted-foreground">{manufacturer}</p>
+                <p class="text-xs text-muted-foreground bg-background/90 backdrop-blur-sm px-2 py-0.5 rounded-sm shadow-sm mt-1 inline-block">
+                  {manufacturer}
+                </p>
               )}
             </div>
-          </div>
+            {/* Firmware Badges for placeholder */}
+            {firmwares.length > 0 && (
+              <div class="absolute top-2 right-2 flex flex-wrap gap-1.5 justify-end">
+                {firmwares.map((firmware) => (
+                  <span
+                    key={firmware}
+                    class="inline-flex items-center rounded-sm border bg-background/90 backdrop-blur-sm px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider shadow-sm"
+                  >
+                    {firmware.toUpperCase()}
+                  </span>
+                ))}
+              </div>
+            )}
+          </>
         )}
       </div>
     )}
 
-    {/* Compact Content */}
-    <CardContent class="pt-4 pb-3 px-3">
-      <div class="space-y-3">
-        {/* MCU + Mounting Badges */}
-        <div class="flex flex-wrap gap-1.5">
-          <span class="inline-flex items-center rounded-sm border px-1.5 py-0.5 text-xs font-mono font-semibold">
-            {mcuDisplay}
+    {/* Ultra-Compact Grid Layout */}
+    <CardContent class="p-3 pt-4">
+      {/* Single Row: MCU + Mounting */}
+      <div class="flex gap-1.5 mb-2">
+        <span class="inline-flex items-center rounded-sm border px-1.5 py-0.5 text-[10px] font-mono font-bold">
+          {mcuDisplay}
+        </span>
+        {mounting && (
+          <span class="inline-flex items-center rounded-sm border px-1.5 py-0.5 text-[10px] font-semibold">
+            {mountingDisplay}
           </span>
-          {mounting && (
-            <span class="inline-flex items-center rounded-sm border px-1.5 py-0.5 text-xs font-medium">
-              {mountingDisplay}
-            </span>
-          )}
-        </div>
-
-        {/* Firmware Badges */}
-        {firmwares.length > 0 && (
-          <div class="flex flex-wrap gap-1.5">
-            {firmwares.map((firmware) => (
-              <span
-                key={firmware}
-                class="inline-flex items-center rounded-sm border bg-secondary px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wide"
-              >
-                {firmware.toUpperCase()}
-              </span>
-            ))}
-          </div>
         )}
-
-        {/* Port Summary + Feature Checkmarks */}
-        <div class="text-xs text-muted-foreground space-y-1">
-          {/* Port Summary Line */}
-          {portSummary && (
-            <div class="font-mono font-semibold">{portSummary}</div>
-          )}
-          
-          {/* Feature Checkmarks */}
-          {(sdCard !== undefined || barometer !== undefined) && (
-            <div class="flex flex-wrap gap-1">
-              {sdCard && <span>✓ SD</span>}
-              {barometer && <span>✓ Baro</span>}
-            </div>
-          )}
-        </div>
       </div>
+
+        {/* Ultra-Compact Stats Grid */}
+        <div class="flex items-center justify-between text-[11px] border-t pt-2">
+          <div class="flex gap-3">
+            {uarts !== undefined && (
+              <div class="text-center">
+                <div class="font-bold">{uarts}</div>
+                <div class="text-muted-foreground text-[9px]">UART</div>
+              </div>
+            )}
+            {can !== undefined && can > 0 && (
+              <div class="text-center">
+                <div class="font-bold">{can}</div>
+                <div class="text-muted-foreground text-[9px]">CAN</div>
+              </div>
+            )}
+            {pwm !== undefined && (
+              <div class="text-center">
+                <div class="font-bold">{pwm}</div>
+                <div class="text-muted-foreground text-[9px]">PWM</div>
+              </div>
+            )}
+          </div>
+          <div class="flex gap-2 text-[11px] text-muted-foreground">
+            {sdCard && <span>✓ SD</span>}
+        {barometer && <span>✓ Baro</span>}
+      </div>
+    </div>
     </CardContent>
   </Card>
 </a>
