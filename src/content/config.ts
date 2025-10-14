@@ -7,6 +7,12 @@ const sensorSchema = z.object({
   notes: z.string().optional(),
 });
 
+const sensorsSpecSchema = z.object({
+  imu: z.array(sensorSchema).optional(),
+  barometer: z.array(sensorSchema).optional(),
+  magnetometer: z.array(sensorSchema).optional(),
+});
+
 // Firmware support schema
 const firmwareSchema = z.object({
   id: z.string(),
@@ -86,6 +92,25 @@ const powerInputSchema = z
     }
   });
 
+const powerSchemaBase = z.object({
+  voltage_in: z.string().optional(),
+  inputs: z.array(powerInputSchema).min(1).optional(),
+  redundant: z.boolean().optional(),
+  notes: z.string().optional(),
+});
+
+const powerSchema = powerSchemaBase.superRefine((value, ctx) => {
+  if (!value.voltage_in && (!value.inputs || value.inputs.length === 0)) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'define either power.voltage_in or power.inputs',
+      path: ['voltage_in'],
+    });
+  }
+});
+
+const powerOverrideSchema = powerSchemaBase;
+
 const peripheralSchema = z.object({
   name: z.string(),
   type: z.enum([
@@ -117,7 +142,33 @@ const peripheralSchema = z.object({
   notes: z.string().optional(),
 });
 
-const hardwareRevisionSchema = z
+const ioSchemaBase = z.object({
+  uarts: z.number().int().min(0),
+  can: z.number().int().min(0),
+  pwm: z.number().int().min(0),
+  ethernet: z.boolean().optional(),
+  sd_card: z.boolean(),
+  peripherals: z.array(peripheralSchema).optional(),
+});
+
+const ioOverrideSchema = ioSchemaBase.partial();
+
+const ioSchema = ioSchemaBase;
+
+const hardwareRevisionOverridesSchema = z
+  .object({
+    sensors: sensorsSpecSchema.optional(),
+    io: ioOverrideSchema.optional(),
+    power: powerOverrideSchema.optional(),
+  })
+  .refine(
+    (value) => value.sensors !== undefined || value.io !== undefined || value.power !== undefined,
+    {
+      message: 'hardware revision overrides must include at least one section',
+    }
+  );
+
+export const hardwareRevisionSchema = z
   .object({
     id: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
     name: z.string(),
@@ -128,6 +179,7 @@ const hardwareRevisionSchema = z
     notes: z.string().optional(),
     changes: z.array(z.string()).min(1).optional(),
     sources: z.array(z.string()).min(1).optional(),
+    overrides: hardwareRevisionOverridesSchema.optional(),
   })
   .refine(
     (value) =>
@@ -140,65 +192,229 @@ const hardwareRevisionSchema = z
   );
 
 // Controllers collection schema
-const controllersCollection = defineCollection({
-  type: 'data',
-  schema: z.object({
-    id: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
-    title: z.string(),
-    brand: z.string(),
-    mcu: z.string(),
-    mounting: z.enum(['20x20', '25.5x25.5', '30.5x30.5', '35x35', 'cube', 'wing', 'custom']),
-    dimensions: z.object({
+const controllerSchema = z.object({
+  id: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
+  title: z.string(),
+  brand: z.string(),
+  mcu: z.string(),
+  mounting: z.enum(['20x20', '25.5x25.5', '30.5x30.5', '35x35', 'cube', 'wing', 'custom']),
+  dimensions: z
+    .object({
       width_mm: z.number().optional(),
       length_mm: z.number().optional(),
       height_mm: z.number().optional(),
       weight_g: z.number().optional(),
-    }).optional(),
-    power: z
-      .object({
-        voltage_in: z.string().optional(),
-        inputs: z.array(powerInputSchema).min(1).optional(),
-        redundant: z.boolean().optional(),
-        notes: z.string().optional(),
-      })
-      .superRefine((value, ctx) => {
-        if (!value.voltage_in && (!value.inputs || value.inputs.length === 0)) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: 'define either power.voltage_in or power.inputs',
-            path: ['voltage_in'],
-          });
-        }
-      }),
-    io: z.object({
-      uarts: z.number().int().min(0),
-      can: z.number().int().min(0),
-      pwm: z.number().int().min(0),
-      ethernet: z.boolean().optional(),
-      sd_card: z.boolean(),
-      peripherals: z.array(peripheralSchema).optional(),
-    }),
-    hardware: z.object({
-      openness: z.enum(['open', 'closed', 'mixed']),
-      notes: z.string().optional(),
-      revisions: z.array(hardwareRevisionSchema).min(1).optional(),
-    }),
-    sensors: z.object({
-      imu: z.array(sensorSchema).optional(),
-      barometer: z.array(sensorSchema).optional(),
-      magnetometer: z.array(sensorSchema).optional(),
-    }),
-    features: z.array(z.string()).optional(),
-    firmware_support: z.array(firmwareSchema).min(1),
-    sources: z.array(z.string()).min(1),
-    verification: z.object({
-      level: z.enum(['unverified', 'community', 'reviewed']),
-      last_updated: z.string(),
-    }),
-    keywords: z.array(z.string()),
+    })
+    .optional(),
+  power: powerSchema,
+  io: ioSchema,
+  hardware: z.object({
+    openness: z.enum(['open', 'closed', 'mixed']),
     notes: z.string().optional(),
+    revisions: z.array(hardwareRevisionSchema).min(1).optional(),
   }),
+  sensors: sensorsSpecSchema,
+  features: z.array(z.string()).optional(),
+  firmware_support: z.array(firmwareSchema).min(1),
+  sources: z.array(z.string()).min(1),
+  verification: z.object({
+    level: z.enum(['unverified', 'community', 'reviewed']),
+    last_updated: z.string(),
+  }),
+  keywords: z.array(z.string()),
+  notes: z.string().optional(),
 });
+
+const controllersCollection = defineCollection({
+  type: 'data',
+  schema: controllerSchema,
+});
+
+export type ControllerData = z.infer<typeof controllerSchema>;
+export type HardwareRevision = z.infer<typeof hardwareRevisionSchema>;
+type RevisionOverrides = z.infer<typeof hardwareRevisionOverridesSchema>;
+type ControllerSensors = ControllerData['sensors'];
+type ControllerIo = ControllerData['io'];
+type ControllerPower = ControllerData['power'];
+
+const cloneSensorList = (
+  list?: NonNullable<ControllerSensors[keyof ControllerSensors]>
+) => list?.map((sensor) => ({ ...sensor }));
+
+const mergeSensors = (
+  base: ControllerSensors,
+  override?: RevisionOverrides['sensors']
+): ControllerSensors => {
+  const merged: ControllerSensors = {};
+  (['imu', 'barometer', 'magnetometer'] as const).forEach((category) => {
+    const overrideList = override?.[category];
+    if (overrideList !== undefined) {
+      merged[category] = cloneSensorList(overrideList) ?? [];
+      return;
+    }
+
+    const baseList = base?.[category];
+    if (baseList !== undefined) {
+      merged[category] = cloneSensorList(baseList);
+    }
+  });
+
+  return merged;
+};
+
+const clonePeripherals = (peripherals?: ControllerIo['peripherals']) =>
+  peripherals?.map((peripheral) => ({
+    ...peripheral,
+    interfaces: peripheral.interfaces ? [...peripheral.interfaces] : undefined,
+  }));
+
+const mergeIo = (
+  base: ControllerIo,
+  override?: z.infer<typeof ioOverrideSchema>
+): ControllerIo => {
+  const merged: ControllerIo = {
+    ...base,
+    peripherals: clonePeripherals(base.peripherals),
+  };
+
+  if (!override) {
+    return merged;
+  }
+
+  if (override.uarts !== undefined) merged.uarts = override.uarts;
+  if (override.can !== undefined) merged.can = override.can;
+  if (override.pwm !== undefined) merged.pwm = override.pwm;
+  if (override.ethernet !== undefined) merged.ethernet = override.ethernet;
+  if (override.sd_card !== undefined) merged.sd_card = override.sd_card;
+  if (override.peripherals !== undefined) {
+    merged.peripherals = clonePeripherals(override.peripherals) ?? [];
+  }
+
+  return merged;
+};
+
+const cloneVoltage = (voltage?: z.infer<typeof voltageRangeSchema>) =>
+  voltage
+    ? {
+        ...voltage,
+        cells: voltage.cells ? { ...voltage.cells } : undefined,
+      }
+    : undefined;
+
+const cloneCurrent = (current?: z.infer<typeof currentSpecSchema>) =>
+  current ? { ...current } : undefined;
+
+const clonePowerInputs = (inputs?: ControllerPower['inputs']) =>
+  inputs?.map((input) => ({
+    ...input,
+    voltage: cloneVoltage(input.voltage),
+    current: cloneCurrent(input.current),
+  }));
+
+const mergePower = (
+  base: ControllerPower,
+  override?: z.infer<typeof powerOverrideSchema>
+): ControllerPower => {
+  const merged: ControllerPower = {
+    ...base,
+    inputs: clonePowerInputs(base.inputs),
+  };
+
+  if (!override) {
+    return merged;
+  }
+
+  if (override.voltage_in !== undefined) merged.voltage_in = override.voltage_in;
+  if (override.inputs !== undefined) merged.inputs = clonePowerInputs(override.inputs) ?? [];
+  if (override.redundant !== undefined) merged.redundant = override.redundant;
+  if (override.notes !== undefined) merged.notes = override.notes;
+
+  return merged;
+};
+
+const cloneRevision = (revision: HardwareRevision): HardwareRevision => ({
+  ...revision,
+  changes: revision.changes ? [...revision.changes] : undefined,
+  sources: revision.sources ? [...revision.sources] : undefined,
+  overrides: revision.overrides
+    ? {
+        ...revision.overrides,
+        sensors: revision.overrides.sensors
+          ? mergeSensors({} as ControllerSensors, revision.overrides.sensors)
+          : undefined,
+        io: revision.overrides.io
+          ? {
+              ...revision.overrides.io,
+              peripherals: clonePeripherals(revision.overrides.io.peripherals),
+            }
+          : undefined,
+        power: revision.overrides.power
+          ? {
+              ...revision.overrides.power,
+              inputs: clonePowerInputs(revision.overrides.power.inputs),
+            }
+          : undefined,
+      }
+    : undefined,
+});
+
+export type RevisionVariant = {
+  id: string;
+  label: string;
+  spec: ControllerData;
+  revision?: HardwareRevision;
+  isBase: boolean;
+};
+
+export const mergeControllerRevision = (
+  controller: ControllerData,
+  revision: HardwareRevision
+): ControllerData => {
+  const overrides = revision.overrides;
+  const merged: ControllerData = {
+    ...controller,
+    power: mergePower(controller.power, overrides?.power),
+    io: mergeIo(controller.io, overrides?.io),
+    sensors: mergeSensors(controller.sensors, overrides?.sensors),
+    hardware: {
+      ...controller.hardware,
+      revisions: controller.hardware.revisions?.map(cloneRevision),
+    },
+  };
+
+  return merged;
+};
+
+export const buildRevisionVariants = (
+  controller: ControllerData
+): RevisionVariant[] => {
+  const baseVariant: RevisionVariant = {
+    id: 'base',
+    label: 'Base Hardware',
+    spec: {
+      ...controller,
+      power: mergePower(controller.power),
+      io: mergeIo(controller.io),
+      sensors: mergeSensors(controller.sensors),
+      hardware: {
+        ...controller.hardware,
+        revisions: controller.hardware.revisions?.map(cloneRevision),
+      },
+    },
+    revision: undefined,
+    isBase: true,
+  };
+
+  const revisionVariants = (controller.hardware.revisions ?? []).map((revision) => ({
+    id: revision.id,
+    label: revision.name,
+    spec: mergeControllerRevision(controller, revision),
+    revision,
+    isBase: false,
+  }));
+
+  return [baseVariant, ...revisionVariants];
+};
 
 // Manufacturers collection
 const manufacturersCollection = defineCollection({

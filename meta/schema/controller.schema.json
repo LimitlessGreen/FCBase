@@ -110,6 +110,100 @@
         "voltage": { "type": "string" },
         "notes": { "type": "string" }
       }
+    },
+    "ioBase": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "uarts": { "type": "integer", "minimum": 0 },
+        "can": { "type": "integer", "minimum": 0 },
+        "pwm": { "type": "integer", "minimum": 0 },
+        "ethernet": { "type": "boolean" },
+        "sd_card": { "type": "boolean" },
+        "peripherals": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/peripheral" }
+        }
+      }
+    },
+    "ioSpec": {
+      "allOf": [
+        { "$ref": "#/definitions/ioBase" },
+        { "required": ["uarts", "can", "pwm", "sd_card"] }
+      ]
+    },
+    "ioOverride": {
+      "$ref": "#/definitions/ioBase"
+    },
+    "powerBase": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "voltage_in": { "type": "string" },
+        "inputs": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/powerInput" },
+          "minItems": 1
+        },
+        "redundant": { "type": "boolean" },
+        "notes": { "type": "string" }
+      }
+    },
+    "powerSpec": {
+      "allOf": [
+        { "$ref": "#/definitions/powerBase" },
+        {
+          "anyOf": [
+            { "required": ["voltage_in"] },
+            { "required": ["inputs"] }
+          ]
+        }
+      ]
+    },
+    "powerOverride": {
+      "$ref": "#/definitions/powerBase"
+    },
+    "sensorEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id"],
+      "properties": {
+        "id": { "type": "string" },
+        "count": { "type": "integer", "minimum": 1 },
+        "notes": { "type": "string" }
+      }
+    },
+    "sensorsSpec": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "imu": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/sensorEntry" }
+        },
+        "barometer": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/sensorEntry" }
+        },
+        "magnetometer": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/sensorEntry" }
+        }
+      }
+    },
+    "revisionOverrides": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "sensors": { "$ref": "#/definitions/sensorsSpec" },
+        "io": { "$ref": "#/definitions/ioOverride" },
+        "power": { "$ref": "#/definitions/powerOverride" }
+      },
+      "anyOf": [
+        { "required": ["sensors"] },
+        { "required": ["io"] },
+        { "required": ["power"] }
+      ]
     }
   },
   "required": [
@@ -150,40 +244,8 @@
         "weight_g": { "type": "number" }
       }
     },
-    "power": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "voltage_in": { "type": "string" },
-        "inputs": {
-          "type": "array",
-          "items": { "$ref": "#/definitions/powerInput" },
-          "minItems": 1
-        },
-        "redundant": { "type": "boolean" },
-        "notes": { "type": "string" }
-      },
-      "anyOf": [
-        { "required": ["voltage_in"] },
-        { "required": ["inputs"] }
-      ]
-    },
-    "io": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["uarts", "can", "pwm", "sd_card"],
-      "properties": {
-        "uarts": { "type": "integer", "minimum": 0 },
-        "can": { "type": "integer", "minimum": 0 },
-        "pwm": { "type": "integer", "minimum": 0 },
-        "ethernet": { "type": "boolean" },
-        "sd_card": { "type": "boolean" },
-        "peripherals": {
-          "type": "array",
-          "items": { "$ref": "#/definitions/peripheral" }
-        }
-      }
-    },
+    "power": { "$ref": "#/definitions/powerSpec" },
+    "io": { "$ref": "#/definitions/ioSpec" },
     "hardware": {
       "type": "object",
       "additionalProperties": false,
@@ -221,6 +283,9 @@
                 "type": "array",
                 "items": { "type": "string" },
                 "minItems": 1
+              },
+              "overrides": {
+                "$ref": "#/definitions/revisionOverrides"
               }
             },
             "anyOf": [
@@ -232,51 +297,7 @@
         }
       }
     },
-    "sensors": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "imu": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": ["id"],
-            "properties": {
-              "id": { "type": "string" },
-              "count": { "type": "integer", "minimum": 1 },
-              "notes": { "type": "string" }
-            }
-          }
-        },
-        "barometer": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": ["id"],
-            "properties": {
-              "id": { "type": "string" },
-              "count": { "type": "integer", "minimum": 1 },
-              "notes": { "type": "string" }
-            }
-          }
-        },
-        "magnetometer": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": ["id"],
-            "properties": {
-              "id": { "type": "string" },
-              "count": { "type": "integer", "minimum": 1 },
-              "notes": { "type": "string" }
-            }
-          }
-        }
-      }
-    },
+    "sensors": { "$ref": "#/definitions/sensorsSpec" },
     "features": {
       "type": "array",
       "items": { "type": "string" }
