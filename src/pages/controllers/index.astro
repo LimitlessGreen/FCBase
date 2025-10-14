@@ -6,6 +6,95 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/Badge';
 import { ControllerSearch } from '@/components/ui/ControllerSearch';
 
+const controllerPreviewImages: Record<string, { src: string; credit: string; sourceUrl?: string }> = {
+  'aocoda-h743dual': {
+    src: 'https://ardupilot.org/copter/_images/aocoda_h743dual.jpg',
+    credit: 'ArduPilot Documentation',
+    sourceUrl: 'https://ardupilot.org/copter/docs/common-aocoda-h743dual.html',
+  },
+  'cuav-7-nano': {
+    src: 'https://ardupilot.org/copter/_images/7-nano.jpg',
+    credit: 'ArduPilot Documentation',
+    sourceUrl: 'https://ardupilot.org/copter/docs/common-CUAV-7-Nano.html',
+  },
+  'cuav-nora': {
+    src: 'https://ardupilot.org/copter/_images/nora.png',
+    credit: 'ArduPilot Documentation',
+    sourceUrl: 'https://ardupilot.org/copter/docs/common-cuav-nora-overview.html',
+  },
+  'cuav-pixhawk-v6x': {
+    src: 'https://ardupilot.org/copter/_images/cuav-pixhawk-v6x.jpg',
+    credit: 'ArduPilot Documentation',
+    sourceUrl:
+      'https://raw.githubusercontent.com/ArduPilot/ardupilot_wiki/master/common/source/docs/common-cuav-pixhawkv6X.rst',
+  },
+  'cubepilot-cube-black': {
+    src: 'https://ardupilot.org/copter/_images/pixhawk2-overhead.jpg',
+    credit: 'ArduPilot Documentation',
+    sourceUrl: 'https://ardupilot.org/copter/docs/common-thecube-overview.html',
+  },
+  'cubepilot-cube-orange-plus': {
+    src: 'https://ardupilot.org/copter/_images/Cube_orange_module.jpg',
+    credit: 'ArduPilot Documentation',
+    sourceUrl: 'https://ardupilot.org/copter/docs/common-thecubeorange-overview.html',
+  },
+  'holybro-durandal': {
+    src: 'https://holybro.com/cdn/shop/products/Durandal-1.jpg?v=1751249914',
+    credit: 'Holybro Store',
+    sourceUrl: 'https://holybro.com/products/durandal',
+  },
+  'holybro-kakute-h7-v2': {
+    src: 'https://holybro.com/cdn/shop/products/11058V2_1.jpg?v=1679456428',
+    credit: 'Holybro Store',
+    sourceUrl: 'https://holybro.com/products/kakute-h7-v2',
+  },
+  'holybro-pixhawk-4': {
+    src: 'https://holybro.com/cdn/shop/files/110321_4.jpg?v=1750816088',
+    credit: 'Holybro Store',
+    sourceUrl: 'https://holybro.com/products/pixhawk-4',
+  },
+  'holybro-pixhawk-4-mini': {
+    src: 'https://docs.px4.io/main/assets/pixhawk4mini_iso_1.ROPjkdrL.png',
+    credit: 'PX4 Documentation',
+    sourceUrl: 'https://docs.px4.io/main/en/flight_controller/pixhawk4_mini.html',
+  },
+  'holybro-pixhawk-5x': {
+    src: 'https://holybro.com/cdn/shop/files/sku11045_4_grande.jpg?v=1723722819',
+    credit: 'Holybro Store',
+    sourceUrl: 'https://holybro.com/products/pixhawk-5x',
+  },
+  'holybro-pixhawk-6c': {
+    src: 'https://holybro.com/cdn/shop/products/11054Pixhawk6C-Plasticcase_1_grande.jpg?v=1749537511',
+    credit: 'Holybro Store',
+    sourceUrl: 'https://holybro.com/products/pixhawk-6c',
+  },
+  'holybro-pixhawk-6x': {
+    src: 'https://holybro.com/cdn/shop/files/SKU11073_4_grande.jpg?v=1721904825',
+    credit: 'Holybro Store',
+    sourceUrl: 'https://holybro.com/products/pixhawk-6x',
+  },
+  'mateksys-f405-wing': {
+    src: 'https://www.mateksys.com/wp-content/uploads/2018/04/F405-WING_1-1500x600.jpg',
+    credit: 'Mateksys',
+    sourceUrl: 'https://www.mateksys.com/?portfolio=f405-wing',
+  },
+  'mateksys-f765-wing': {
+    src: 'https://www.mateksys.com/wp-content/uploads/2019/08/F765-WING_1-1500x600.jpg',
+    credit: 'Mateksys',
+    sourceUrl: 'https://www.mateksys.com/?portfolio=f765-wing',
+  },
+  'mateksys-h743-wing': {
+    src: 'https://www.mateksys.com/wp-content/uploads/2020/07/H743-WING_1.jpg',
+    credit: 'Mateksys',
+    sourceUrl: 'https://www.mateksys.com/?portfolio=h743-wing',
+  },
+  'mro-pixracer-pro': {
+    src: 'https://ardupilot.org/copter/_images/pixracer-pro-top.png',
+    credit: 'ArduPilot Documentation',
+    sourceUrl: 'https://ardupilot.org/copter/docs/common-pixracer-pro.html',
+  },
+};
+
 // Load all controllers
 const allControllers = await getCollection('controllers');
 
@@ -19,6 +108,7 @@ const controllersWithMeta = await Promise.all(
     return {
       ...controller,
       manufacturerName: manufacturer?.data.name || manufacturer?.data.title || controller.data.brand,
+      preview: controllerPreviewImages[controller.id] ?? null,
     };
   })
 );
@@ -96,17 +186,37 @@ const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
           class="group block"
         >
           <Card client:load class="h-full transition-all hover:shadow-lg hover:-translate-y-1">
-            <div class="relative aspect-video w-full bg-gradient-to-br from-muted via-background to-muted overflow-hidden rounded-t-xl">
-              <div class="absolute inset-0 flex items-center justify-center px-6 text-center">
-                <div class="flex flex-col items-center gap-2">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="w-12 h-12 text-muted-foreground/40">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 3v1.5M4.5 8.25H3m18 0h-1.5M4.5 12H3m18 0h-1.5m-15 3.75H3m18 0h-1.5M8.25 19.5V21M12 3v1.5m0 15V21m3.75-18v1.5m0 15V21m-9-1.5h10.5a2.25 2.25 0 0 0 2.25-2.25V6.75a2.25 2.25 0 0 0-2.25-2.25H6.75A2.25 2.25 0 0 0 4.5 6.75v10.5a2.25 2.25 0 0 0 2.25 2.25Zm.75-12h9v9h-9v-9Z" />
-                  </svg>
-                  <span class="text-xs font-medium text-muted-foreground">
-                    {controller.data.title}
-                  </span>
-                </div>
-              </div>
+            <div class="relative aspect-video w-full overflow-hidden rounded-t-xl bg-gradient-to-br from-muted via-background to-muted">
+              {controller.preview?.src ? (
+                <>
+                  <img
+                    src={controller.preview.src}
+                    alt={controller.data.title}
+                    loading="lazy"
+                    class="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                  />
+                  {controller.preview.credit && (
+                    <span class="absolute bottom-2 right-2 rounded bg-background/80 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+                      {controller.preview.sourceUrl ? (
+                        <a
+                          href={controller.preview.sourceUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          class="hover:underline"
+                        >
+                          {controller.preview.credit}
+                        </a>
+                      ) : (
+                        controller.preview.credit
+                      )}
+                    </span>
+                  )}
+                </>
+              ) : (
+                <span class="absolute inset-0 flex items-center justify-center px-6 text-center text-sm font-medium text-muted-foreground">
+                  {controller.data.title}
+                </span>
+              )}
             </div>
             <CardHeader>
               <CardTitle class="group-hover:text-primary transition-colors">
