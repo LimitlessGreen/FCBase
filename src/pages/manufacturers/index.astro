@@ -2,7 +2,6 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import MainLayout from '@/layouts/MainLayout.astro';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 
 // Load all manufacturers
@@ -53,10 +52,10 @@ const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
             href={`${basePath}/manufacturers/${manufacturer.id}`}
             class="group block"
           >
-            <Card client:load class="h-full transition-all hover:shadow-lg hover:-translate-y-1">
-              <CardHeader>
-                <div class="flex items-start justify-between mb-2">
-                  <div class="h-12 w-12 rounded-lg bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
+            <div class="h-full rounded-xl border bg-card text-card-foreground shadow-sm transition-all hover:shadow-lg hover:-translate-y-1">
+              <div class="flex flex-col gap-4 p-6 pb-4">
+                <div class="flex items-start justify-between">
+                  <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-primary/20 to-primary/5">
                     <span class="text-xl font-bold text-primary">
                       {manufacturer.data.name.charAt(0)}
                     </span>
@@ -67,17 +66,19 @@ const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
                     </Badge>
                   )}
                 </div>
-                <CardTitle className="group-hover:text-primary transition-colors">
-                  {manufacturer.data.name}
-                </CardTitle>
-                {manufacturer.data.description && (
-                  <CardDescription className="line-clamp-2">
-                    {manufacturer.data.description}
-                  </CardDescription>
-                )}
-              </CardHeader>
+                <div class="space-y-2">
+                  <h3 class="text-lg font-semibold transition-colors group-hover:text-primary">
+                    {manufacturer.data.name}
+                  </h3>
+                  {manufacturer.data.description && (
+                    <p class="line-clamp-2 text-sm text-muted-foreground">
+                      {manufacturer.data.description}
+                    </p>
+                  )}
+                </div>
+              </div>
               {manufacturer.data.website && (
-                <CardContent>
+                <div class="border-t px-6 py-4">
                   <div class="flex items-center gap-2 text-xs text-muted-foreground">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-3.5 w-3.5">
                       <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
@@ -85,9 +86,9 @@ const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
                     </svg>
                     <span class="truncate">{manufacturer.data.website.replace('https://', '').replace('http://', '')}</span>
                   </div>
-                </CardContent>
+                </div>
               )}
-            </Card>
+            </div>
           </a>
         ))}
       </div>
