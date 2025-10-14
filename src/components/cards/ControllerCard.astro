@@ -247,33 +247,33 @@ const remoteImage = image?.src && typeof image.src === 'string'
         )}
       </div>
 
-        {/* Ultra-Compact Stats Grid */}
-        <div class="flex items-center justify-between text-[11px] border-t pt-2">
-          <div class="flex gap-3">
-            {uarts !== undefined && (
-              <div class="text-center">
-                <div class="font-bold">{uarts}</div>
-                <div class="text-muted-foreground text-[9px]">UART</div>
-              </div>
-            )}
-            {can !== undefined && can > 0 && (
-              <div class="text-center">
-                <div class="font-bold">{can}</div>
-                <div class="text-muted-foreground text-[9px]">CAN</div>
-              </div>
-            )}
-            {pwm !== undefined && (
-              <div class="text-center">
-                <div class="font-bold">{pwm}</div>
-                <div class="text-muted-foreground text-[9px]">PWM</div>
-              </div>
-            )}
-          </div>
-          <div class="flex gap-2 text-[11px] text-muted-foreground">
-            {sdCard && <span>✓ SD</span>}
-        {barometer && <span>✓ Baro</span>}
+      {/* Ultra-Compact Stats Grid */}
+      <div class="flex items-center justify-between text-[11px] border-t pt-2">
+        <div class="flex gap-3">
+          {uarts !== undefined && (
+            <div class="text-center">
+              <div class="font-bold">{uarts}</div>
+              <div class="text-muted-foreground text-[9px]">UART</div>
+            </div>
+          )}
+          {can !== undefined && can > 0 && (
+            <div class="text-center">
+              <div class="font-bold">{can}</div>
+              <div class="text-muted-foreground text-[9px]">CAN</div>
+            </div>
+          )}
+          {pwm !== undefined && (
+            <div class="text-center">
+              <div class="font-bold">{pwm}</div>
+              <div class="text-muted-foreground text-[9px]">PWM</div>
+            </div>
+          )}
+        </div>
+        <div class="flex gap-2 text-[11px] text-muted-foreground">
+          {sdCard && <span>✓ SD</span>}
+          {barometer && <span>✓ Baro</span>}
+        </div>
       </div>
-    </div>
     </CardContent>
   </Card>
 </a>

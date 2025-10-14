@@ -4,60 +4,17 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import MainLayout from '@/layouts/MainLayout.astro';
 import ControllerCard from '@/components/cards/ControllerCard.astro';
 import { ControllerGrid } from '@/components/controllers/ControllerGrid';
+import { getManufacturersMap } from '@/lib/content-cache';
+import { createControllerCardModels } from '@/lib/controller-card-model';
 
 const controllers = await getCollection('controllers');
 const totalControllers = controllers.length;
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
 
-// Load manufacturers for display names
-const manufacturers = await getCollection('manufacturers');
-const manufacturerMap = new Map(
-  manufacturers.map(m => [m.id, m.data.name])
-);
-
-// Prepare controller data with images
-const controllerData = await Promise.all(
-  controllers.map(async (controller) => {
-    const { data } = controller;
-    
-    // Get manufacturer name
-    const manufacturerName = manufacturerMap.get(data.brand) || data.brand;
-    
-    // Load image if available
-    let imageData = undefined;
-    if (data.images && data.images.length > 0) {
-      const mainImage = data.images[0];
-      try {
-        // Try to load local image
-        const images = import.meta.glob<{ default: ImageMetadata }>('/src/assets/images/controllers/**/*.{jpg,jpeg,png,webp,avif}');
-        const imagePath = `/src/assets/images/controllers/${mainImage.src}`;
-        
-        if (images[imagePath]) {
-          const imageModule = await images[imagePath]();
-          imageData = {
-            src: imageModule.default,
-            alt: mainImage.alt,
-            credit: mainImage.credit,
-            sourceUrl: mainImage.source_url,
-          };
-        }
-      } catch (err) {
-        console.warn(`Failed to load image for ${controller.id}:`, err);
-      }
-    }
-    
-    // Get firmware support
-    const firmwares = data.firmware_support?.map(f => f.firmware).filter(Boolean) || [];
-    
-    return {
-      id: controller.id,
-      data,
-      manufacturerName,
-      imageData,
-      firmwares,
-    };
-  })
-);
+const manufacturers = await getManufacturersMap();
+const controllerCards = await createControllerCardModels(controllers, {
+  manufacturersMap: manufacturers,
+});
 ---
 
 <BaseLayout
@@ -93,21 +50,21 @@ const controllerData = await Promise.all(
 
       <!-- Controller Cards Grid (Server-rendered with data attributes for filtering) -->
       <div id="controller-cards-grid" class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-        {controllerData.map(({ id, data, manufacturerName, imageData, firmwares }) => (
-          <div data-controller-id={id}>
+        {controllerCards.map((controller) => (
+          <div data-controller-id={controller.id}>
             <ControllerCard
-              id={id}
-              title={data.title}
-              manufacturer={manufacturerName}
-              mcu={data.mcu || 'unknown'}
-              mounting={data.mounting}
-              uarts={data.io?.uarts}
-              can={data.connectivity?.can?.ports}
-              pwm={data.io?.pwm_outputs}
-              sdCard={data.storage?.sd_card || false}
-              barometer={data.sensors?.barometer ? true : false}
-              firmwares={firmwares}
-              image={imageData}
+              id={controller.id}
+              title={controller.title}
+              manufacturer={controller.manufacturer}
+              mcu={controller.mcu}
+              mounting={controller.mounting}
+              uarts={controller.uarts}
+              can={controller.can}
+              pwm={controller.pwm}
+              sdCard={controller.sdCard}
+              barometer={controller.barometer}
+              firmwares={controller.firmwares}
+              image={controller.image}
               basePath={basePath}
               showImage={true}
             />

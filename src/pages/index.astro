@@ -5,8 +5,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/Button";
 import { GITHUB_REPO_URL } from "@/lib/constants";
 import ControllerCard from "@/components/cards/ControllerCard.astro";
-import { resolveControllerPreviewImage } from "@/lib/controller-images";
 import { getManufacturersMap } from "@/lib/content-cache";
+import { createControllerCardModels } from "@/lib/controller-card-model";
 
 const title = "FCBase – Open Flight Controller Database";
 const description = "Search and compare ArduPilot, PX4, and iNAV flight controllers plus EdgeTX transmitters – open, community-driven.";
@@ -16,29 +16,9 @@ const allControllers = await getCollection('controllers');
 
 // First 6 controllers for grid preview
 const manufacturers = await getManufacturersMap();
-
-const controllers = await Promise.all(
-  allControllers.slice(0, 6).map(async (controller) => {
-    const preview = resolveControllerPreviewImage(controller);
-    const manufacturer = controller.data.brand
-      ? manufacturers.get(controller.data.brand) ?? null
-      : null;
-
-    return {
-      id: controller.id,
-      title: controller.data.title,
-      manufacturer: manufacturer?.data.name || manufacturer?.data.title || controller.data.brand,
-      mcu: controller.data.mcu,
-      mounting: controller.data.mounting,
-      uarts: controller.data.io.uarts,
-      can: controller.data.io.can,
-      pwm: controller.data.io.pwm,
-      sdCard: controller.data.io.sd_card,
-      barometer: (controller.data.sensors?.barometer?.length ?? 0) > 0,
-      firmwares: controller.data.firmware_support.map((fw) => fw.id),
-      image: preview,
-    };
-  })
+const controllers = await createControllerCardModels(
+  allControllers.slice(0, 6),
+  { manufacturersMap: manufacturers }
 );
 
 const features = [
