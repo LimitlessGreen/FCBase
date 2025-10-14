@@ -18,6 +18,77 @@ io:
   pwm: 11
   ethernet: false
   sd_card: true
+  peripherals:
+  - name: TELEM ports
+    type: uart
+    count: 2
+    interfaces:
+    - uart
+    - mavlink
+    connector: JST-GH 6-pin
+    notes: Telem1 and Telem2 with RTS/CTS for radios or companion links.
+  - name: GPS & I2C
+    type: gps
+    interfaces:
+    - uart
+    - i2c
+    connector: JST-GH 10-pin
+    notes: Combined GPS/compass header supplying 5 V and shared I2C bus.
+  - name: CAN bus
+    type: can
+    count: 1
+    interfaces:
+    - can
+    connector: JST-GH 4-pin
+    notes: DroneCAN connector for smart peripherals or power modules.
+  - name: Power modules
+    type: power
+    count: 2
+    interfaces:
+    - power
+    connector: 6-pin power monitor
+    notes: Redundant POWER1/POWER2 connectors with voltage and current feedback.
+  - name: Servo outputs
+    type: pwm
+    count: 11
+    interfaces:
+    - pwm
+    connector: Servo rail and auxiliary pads
+    notes: Eleven PWM outputs with selectable signal voltage via solder bridge.
+  - name: RC input
+    type: rc
+    interfaces:
+    - ppm
+    - sbus
+    - spektrum
+    connector: JST-GH 6-pin
+    notes: Supports PPM, S.BUS, and Spektrum satellite receivers.
+  - name: USB
+    type: usb
+    interfaces:
+    - usb
+    connector: Micro-USB
+    notes: Configuration and firmware flashing interface.
+  - name: I2C expansion
+    type: i2c
+    count: 2
+    interfaces:
+    - i2c
+    connector: JST-GH 4-pin
+    notes: External I2C ports for compasses and digital sensors.
+  - name: Buzzer and safety switch
+    type: buzzer
+    interfaces:
+    - buzzer
+    - safety
+    connector: JST harness
+    notes: External safety button with high-power buzzer driver.
+  - name: MicroSD slot
+    type: storage
+    interfaces:
+    - microsd
+    connector: Internal microSD
+    notes: Integrated microSD logging slot.
 sensors:
   imu:
   - count: 1

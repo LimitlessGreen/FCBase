@@ -13,6 +13,79 @@ io:
   pwm: 14
   ethernet: false
   sd_card: true
+  peripherals:
+  - name: TELEM ports
+    type: uart
+    count: 2
+    interfaces:
+    - uart
+    - mavlink
+    connector: JST-GH 6-pin
+    voltage: 5 V supply / 3.3 V logic
+    notes: Dual telemetry ports with full hardware flow control on the standard carrier board.
+  - name: GPS1
+    type: gps
+    interfaces:
+    - uart
+    - i2c
+    - safety
+    connector: JST-GH 10-pin
+    notes: Primary GPS/compass header also routes safety switch, LED, and buzzer lines.
+  - name: GPS2
+    type: gps
+    interfaces:
+    - uart
+    - i2c
+    connector: JST-GH 6-pin
+    notes: Secondary GPS or companion serial device with shared I2C bus.
+  - name: I2C expansion
+    type: i2c
+    interfaces:
+    - i2c
+    connector: JST-GH 4-pin
+    notes: External I2C bus for digital airspeed sensors, compasses, or peripheral hubs.
+  - name: ADC port
+    type: analog
+    interfaces:
+    - analog
+    connector: JST-GH 3-pin
+    notes: General-purpose analog input for airspeed or differential pressure sensors.
+  - name: CAN bus
+    type: can
+    count: 2
+    interfaces:
+    - can
+    connector: JST-GH 4-pin
+    voltage: 5 V auxiliary supply / 12 V CAN lines
+    notes: Twin DroneCAN connectors with regulated auxiliary power.
+  - name: Power inputs
+    type: power
+    count: 2
+    interfaces:
+    - power
+    connector: 6-pin power monitor
+    notes: Redundant power module connectors with current and voltage sense lines.
+  - name: USB service
+    type: usb
+    interfaces:
+    - usb
+    connector: Micro-USB
+    notes: Provides configuration access and carries buzzer plus status LED signals on the breakout harness.
+  - name: RC input
+    type: rc
+    interfaces:
+    - cppm
+    - sbus
+    - dsm
+    connector: JST-GH 6-pin
+    notes: Supports CPPM, Spektrum/DSM, and S.Bus receivers via the carrier board input block.
+  - name: RSSI input
+    type: analog
+    interfaces:
+    - analog
+    - pwm
+    connector: JST-GH 3-pin
+    notes: Dedicated analog or PWM RSSI sense available on carrier pin 103.
 sensors:
   barometer:
   - count: 2

@@ -12,6 +12,62 @@ io:
   pwm: 9
   ethernet: false
   sd_card: false
+  peripherals:
+  - name: UART ports
+    type: uart
+    count: 6
+    interfaces:
+    - uart
+    - mavlink
+    connector: JST-GH and solder pads
+    notes: Six hardware-inverted UARTs for telemetry, GPS, VTX, and receiver links.
+  - name: PWM outputs
+    type: pwm
+    count: 9
+    interfaces:
+    - pwm
+    - dshot
+    connector: 9-pin motor header
+    notes: Nine DShot-capable motor outputs with soft-mounted gyro timing.
+  - name: Power rails
+    type: power
+    interfaces:
+    - power
+    connector: XT60 / solder pads
+    notes: Main LiPo input with onboard 9V/1.5A and 5V BEC rails for peripherals.
+  - name: USB-C
+    type: usb
+    interfaces:
+    - usb
+    connector: USB Type-C
+    notes: Firmware flashing, configuration, and VTX power switching.
+  - name: RC input
+    type: rc
+    interfaces:
+    - sbus
+    - crsf
+    - fport
+    - dsm
+    connector: JST-SH and solder pads
+    notes: Serial receiver pads supporting inverted and non-inverted signals.
+  - name: I2C expansion
+    type: i2c
+    interfaces:
+    - i2c
+    connector: JST-GH 4-pin
+    notes: External I2C bus for compass or digital sensors.
+  - name: VTX power
+    type: video
+    interfaces:
+    - vtx
+    connector: JST-GH 6-pin
+    notes: Switchable 9 V video transmitter output for HD systems.
+  - name: Onboard flash
+    type: storage
+    interfaces:
+    - flash
+    connector: Internal
+    notes: 128 MB flash logging for data capture when microSD is unavailable.
 sensors:
   imu:
   - count: 1

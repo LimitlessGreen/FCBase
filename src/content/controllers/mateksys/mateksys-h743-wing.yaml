@@ -18,6 +18,76 @@ io:
   pwm: 13
   sd_card: true
   uarts: 7
+  peripherals:
+  - name: UART ports
+    type: uart
+    count: 7
+    interfaces:
+    - uart
+    - mavlink
+    connector: JST-GH and solder pads
+    notes: Seven UARTs for telemetry radios, GPS, receivers, and VTX control.
+  - name: PWM outputs
+    type: pwm
+    count: 13
+    interfaces:
+    - pwm
+    - dshot
+    connector: Servo headers and solder pads
+    notes: Thirteen motor/servo outputs supporting DShot on appropriate channels.
+  - name: CAN bus
+    type: can
+    count: 1
+    interfaces:
+    - can
+    connector: JST-GH 4-pin
+    notes: Single DroneCAN connector for smart peripherals.
+  - name: Power inputs
+    type: power
+    interfaces:
+    - power
+    connector: XT60 / solder pads
+    notes: 9-36 V LiPo main input with onboard 5 V and 9 V BEC rails.
+  - name: USB-C
+    type: usb
+    interfaces:
+    - usb
+    connector: USB Type-C
+    notes: Configuration, firmware flashing, and Betaflight passthrough.
+  - name: RC input
+    type: rc
+    interfaces:
+    - sbus
+    - crsf
+    - fport
+    - dsm
+    connector: JST-GH 6-pin
+    notes: Serial receiver header supporting inverted and non-inverted protocols.
+  - name: I2C expansion
+    type: i2c
+    count: 2
+    interfaces:
+    - i2c
+    connector: JST-GH 4-pin
+    notes: External I2C buses for compass, airspeed, and peripheral sensors.
+  - name: Dual camera switch
+    type: video
+    interfaces:
+    - video
+    connector: JST-GH 3-pin
+    notes: Integrated camera switch feeding the onboard OSD and video transmitter.
+  - name: OSD output
+    type: video
+    interfaces:
+    - osd
+    connector: JST-GH 3-pin
+    notes: Analog video OSD output for FPV transmitters.
+  - name: MicroSD slot
+    type: storage
+    interfaces:
+    - microsd
+    connector: Push-push microSD
+    notes: Onboard microSD logging for high-rate data capture.
 sensors:
   barometer:
   - count: 1

@@ -18,6 +18,85 @@ io:
   pwm: 16
   ethernet: false
   sd_card: true
+  peripherals:
+  - name: TELEM ports
+    type: uart
+    count: 2
+    interfaces:
+    - uart
+    - mavlink
+    connector: JST-GH 6-pin
+    notes: Dual telemetry headers with full RTS/CTS handshaking.
+  - name: GPS port
+    type: gps
+    interfaces:
+    - uart
+    - i2c
+    - safety
+    connector: JST-GH 10-pin
+    notes: Combined GPS/compass connector with safety switch, LED, and buzzer lines.
+  - name: I2C expansion
+    type: i2c
+    count: 2
+    interfaces:
+    - i2c
+    connector: JST-GH 4-pin
+    notes: External I2CA and I2CB ports for compasses, airspeed sensors, and peripherals.
+  - name: CAN buses
+    type: can
+    count: 2
+    interfaces:
+    - can
+    connector: JST-GH 4-pin
+    notes: DroneCAN connectors supplying 5 V auxiliary power and isolated bus lines.
+  - name: Power modules
+    type: power
+    count: 2
+    interfaces:
+    - power
+    connector: 6-pin power monitor
+    notes: Dual power module inputs with current and voltage sensing.
+  - name: Servo outputs
+    type: pwm
+    count: 16
+    interfaces:
+    - pwm
+    - dshot
+    connector: Servo rail and auxiliary headers
+    notes: Eight IOMCU-controlled and eight FMU-controlled PWM outputs.
+  - name: RC input
+    type: rc
+    interfaces:
+    - ppm
+    - sbus
+    - spektrum
+    connector: JST-GH 6-pin
+    notes: Supports PPM, S.BUS, and Spektrum satellite receivers via dedicated port.
+  - name: USB
+    type: usb
+    interfaces:
+    - usb
+    connector: Micro-USB
+    notes: Console and firmware flashing interface.
+  - name: ADC port
+    type: analog
+    interfaces:
+    - analog
+    connector: JST-GH 3-pin
+    notes: Analog input header for airspeed or auxiliary sensing.
+  - name: Debug port
+    type: debug
+    interfaces:
+    - swd
+    - uart
+    connector: JST-GH 6-pin
+    notes: SWD and console breakout for development and board bring-up.
+  - name: MicroSD slot
+    type: storage
+    interfaces:
+    - microsd
+    connector: Internal microSD
+    notes: Built-in microSD card slot for logging.
 sensors:
   imu:
   - count: 1

@@ -18,6 +18,81 @@ io:
   pwm: 16
   ethernet: true
   sd_card: false
+  peripherals:
+  - name: UART ports
+    type: uart
+    count: 8
+    interfaces:
+    - uart
+    - mavlink
+    connector: JST-GH mixed pitch
+    notes: Eight assignable UARTs including dedicated telemetry, GPS, and user serial headers.
+  - name: GPS connectors
+    type: gps
+    count: 2
+    interfaces:
+    - uart
+    - i2c
+    connector: JST-GH 10-pin and 6-pin
+    notes: Dual GPS/compass headers with integrated safety switch wiring.
+  - name: CAN buses
+    type: can
+    count: 2
+    interfaces:
+    - can
+    connector: JST-GH 4-pin
+    notes: DroneCAN connectors with auxiliary power for smart peripherals.
+  - name: Power modules
+    type: power
+    count: 2
+    interfaces:
+    - power
+    - smbus
+    connector: 6-pin power monitor
+    notes: Dual SMBus power module inputs supporting voltage and current telemetry.
+  - name: Servo outputs
+    type: pwm
+    count: 16
+    interfaces:
+    - pwm
+    - dshot
+    connector: Servo rail and auxiliary headers
+    notes: Sixteen PWM outputs with IOMCU and FMU control domains.
+  - name: RC input
+    type: rc
+    interfaces:
+    - ppm
+    - sbus
+    - spektrum
+    - fport
+    connector: JST-GH 6-pin
+    notes: Supports serial RC systems via dedicated or reassigned UART pins.
+  - name: Ethernet
+    type: ethernet
+    interfaces:
+    - ethernet
+    connector: RJ45 breakout
+    notes: Integrated Ethernet PHY routed to a breakout for companion networking.
+  - name: USB
+    type: usb
+    interfaces:
+    - usb
+    connector: Micro-USB
+    notes: Primary console and firmware update interface.
+  - name: I2C expansion
+    type: i2c
+    count: 2
+    interfaces:
+    - i2c
+    connector: JST-GH 4-pin
+    notes: External I2C ports for airspeed sensors, compasses, or peripheral hubs.
+  - name: Buzzer and safety switch
+    type: buzzer
+    interfaces:
+    - buzzer
+    - safety
+    connector: JST harness
+    notes: External safety switch with audible buzzer indicator.
 sensors:
   imu:
   - count: 1
