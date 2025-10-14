@@ -69,7 +69,7 @@ const editPath = `src/content/sensors/${sensor.id}.yaml`;
   title={`${data.name || data.title || sensor.id} - Sensors - FCBase`}
   description={`${data.name || data.title} sensor. ${data.manufacturer ? `Manufactured by ${data.manufacturer}.` : ''} ${data.notes || ''}`}
 >
-  <MainLayout editPath={editPath}>
+  <MainLayout editPath={editPath} showEditBar>
     <div class="container py-8">
       <!-- Breadcrumb -->
       <nav class="mb-6 flex items-center gap-2 text-sm text-muted-foreground">

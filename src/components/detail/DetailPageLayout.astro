@@ -20,7 +20,7 @@ const hasBreadcrumbs = breadcrumbs.length > 0;
 
 <BaseLayout title={title} description={description}>
   <slot name="head" slot="head" />
-  <MainLayout editPath={editPath}>
+  <MainLayout editPath={editPath} showEditBar>
     <div class="container py-8">
       {hasBreadcrumbs && (
         <nav class="mb-6 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">

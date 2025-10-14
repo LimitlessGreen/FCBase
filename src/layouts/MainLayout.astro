@@ -9,9 +9,10 @@ export interface Props {
   title?: string;
   description?: string;
   editPath?: string;
+  showEditBar?: boolean;
 }
 
-const { title, description, editPath } = Astro.props;
+const { title, description, editPath, showEditBar = false } = Astro.props;
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, ''); // Remove trailing slash
 const normalizedEditPath = editPath?.replace(/^\/+/, "");
 const editUrl = normalizedEditPath
@@ -23,7 +24,7 @@ const historyUrl = normalizedEditPath
 const contributors = normalizedEditPath ? getFileContributors(normalizedEditPath) : [];
 const lastModified = normalizedEditPath ? getFileLastModified(normalizedEditPath) : null;
 const lastModifiedDate = lastModified ? new Date(lastModified) : null;
-const showTopBar = Boolean(editUrl);
+const showTopBar = Boolean(editUrl && showEditBar);
 const showBottomBar = Boolean(contributors.length > 0 || historyUrl || lastModifiedDate);
 ---
 
