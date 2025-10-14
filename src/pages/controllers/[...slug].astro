@@ -12,8 +12,7 @@ import TableSection from '@/components/table/TableSection.astro';
 import TableRow from '@/components/table/TableRow.astro';
 import TableRow2Col from '@/components/table/TableRow2Col.astro';
 import SensorList from '@/components/SensorList.astro';
-import { getImage } from 'astro:assets';
-import type { ImageMetadata } from 'astro';
+import { buildResponsivePicture } from '@/lib/responsive-image';
 import {
   extractUniqueSensorIds,
   fetchSensorNameMap,
@@ -53,33 +52,6 @@ const { data } = controller;
 
 const previewImage = resolveControllerPreviewImage(controller) ?? null;
 const heroAlt = previewImage?.alt ?? data.title;
-
-const buildResponsivePicture = async (imageMeta: ImageMetadata, sizes: string) => {
-  const widths = [320, 640, 960, 1280];
-  const formats: Array<'avif' | 'webp'> = ['avif', 'webp'];
-  const sources = await Promise.all(
-    formats.map(async (format) => {
-      const result = await getImage({ src: imageMeta, format, widths, sizes });
-      const srcset = result.srcSet.attribute || result.src;
-      return { type: `image/${format}`, srcset };
-    })
-  );
-
-  const fallbackFormat = imageMeta.format === 'png' ? 'png' : 'jpeg';
-  const fallback = await getImage({ src: imageMeta, format: fallbackFormat, widths, sizes });
-  const fallbackWidth = Number(fallback.attributes.width ?? fallback.options.width ?? imageMeta.width);
-  const fallbackHeight = Number(fallback.attributes.height ?? fallback.options.height ?? imageMeta.height);
-
-  return {
-    sources,
-    img: {
-      src: fallback.src,
-      srcset: fallback.srcSet.attribute || undefined,
-      width: fallbackWidth,
-      height: fallbackHeight,
-    },
-  };
-};
 
 const heroPicture = previewImage?.src && typeof previewImage.src !== 'string'
   ? await buildResponsivePicture(previewImage.src, '(max-width: 1024px) 100vw, 960px')
