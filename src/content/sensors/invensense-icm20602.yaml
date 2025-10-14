@@ -13,4 +13,7 @@ datasheet:
   retrieved: "2025-10-13"
   language: en
 sources:
+  - ardupilot-matek-f765-wing
   - ardupilot-matek-h743-wing
+  - mateksys-f765-wing-product
+  - mateksys-h743-wing-product

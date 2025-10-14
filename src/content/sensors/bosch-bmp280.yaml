@@ -14,3 +14,7 @@ datasheet:
   language: en
 sources:
   - ardupilot-holybro-kakuteh7-v2
+  - ardupilot-matek-f405-wing
+  - ardupilot-matek-f765-wing
+  - mateksys-f405-wing-product
+  - mateksys-f765-wing-product

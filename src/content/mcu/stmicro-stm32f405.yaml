@@ -1,0 +1,9 @@
+id: stmicro-stm32f405
+name: STMicroelectronics STM32F405
+architecture: Arm Cortex-M4
+clock_mhz: 168
+flash_kb: 1024
+sram_kb: 192
+notes: 32-bit STM32F4 MCU with single-precision floating point used on legacy Pixhawk-class wing controllers.
+sources:
+  - ardupilot-matek-f405-wing

@@ -1,0 +1,109 @@
+id: mateksys-f405-wing
+title: Mateksys F405-Wing
+brand: mateksys
+mcu: stmicro-stm32f405
+mounting: wing
+dimensions:
+  length_mm: 56
+  width_mm: 36
+  height_mm: 15
+  weight_g: 25
+power:
+  voltage_in: 9-30V DC main input
+  notes: Onboard regulators power the flight controller and provide dedicated outputs for peripherals and video transmitters.
+io:
+  uarts: 6
+  can: 0
+  pwm: 10
+  ethernet: false
+  sd_card: false
+  peripherals:
+  - name: UART ports
+    type: uart
+    count: 6
+    interfaces:
+    - uart
+    - mavlink
+    connector: JST-SH headers and solder pads
+    notes: Six assignable serial ports including telemetry, GPS, receiver, and user UARTs documented in the default port table.
+  - name: PWM outputs
+    type: pwm
+    count: 10
+    interfaces:
+    - pwm
+    - dshot
+    connector: Servo headers and solder pads
+    notes: Ten motor or servo outputs grouped for PWM or DShot operation with LED-marked channel 10.
+  - name: RC input
+    type: rc
+    interfaces:
+    - ppm
+    - sbus
+    connector: Dedicated receiver header with inverter
+    notes: Supports PWM/PPM and SBUS receivers with optional UART remapping for bi-directional protocols.
+  - name: I2C expansion
+    type: i2c
+    interfaces:
+    - i2c
+    connector: 4-pin JST-SH
+    notes: Shared external I2C bus for GPS compass and digital airspeed sensors.
+  - name: USB console
+    type: usb
+    interfaces:
+    - usb
+    connector: Micro-USB
+    notes: Primary console for firmware loading and parameter tuning.
+  - name: Power monitor
+    type: power
+    interfaces:
+    - power
+    connector: XT60 and solder pad harness
+    notes: Integrated voltage and current sensing calibrated via ArduPilot battery monitor parameters.
+  - name: Analog video OSD
+    type: video
+    interfaces:
+    - analog-osd
+    connector: Solder pads
+    notes: Built-in OSD supports analog FPV wiring with camera and VTX pads.
+sensors:
+  imu:
+  - count: 1
+    id: invensense-mpu6000
+  barometer:
+  - count: 1
+    id: bosch-bmp280
+features:
+- STM32F405 flight controller tailored for fixed-wing and VTOL builds.
+- Integrated current and voltage monitoring with ArduPilot defaults for calibration.
+- Onboard analog OSD and 10 DShot-capable outputs for motor and servo control.
+firmware_support:
+- id: ardupilot
+  status: stable
+sources:
+- ardupilot-matek-f405-wing
+- mateksys-f405-wing-product
+verification:
+  last_updated: "2025-10-14"
+  level: community
+hardware:
+  openness: closed
+  revisions:
+  - id: dps310-barometer
+    name: "DPS310 Barometer"
+    notes: Later production batches replace the BMP280 with an Infineon DPS310 sensor.
+    changes:
+    - Switches the barometer to Infineon DPS310 for improved pressure resolution.
+    sources:
+    - ardupilot-matek-f405-wing
+    - mateksys-f405-wing-product
+    overrides:
+      sensors:
+        barometer:
+        - count: 1
+          id: infineon-dps310
+keywords:
+- ardupilot
+- mateksys
+- stm32f405
+- wing-controller
+notes: Board does not include an onboard compass; use an external GPS/compass module for autonomous flight modes.
