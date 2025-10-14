@@ -91,6 +91,8 @@ const mcuCollection = defineCollection({
   }),
 });
 
+const numericRange = z.tuple([z.number(), z.number()]);
+
 // Sensors collection
 const sensorsCollection = defineCollection({
   type: 'data',
@@ -101,7 +103,56 @@ const sensorsCollection = defineCollection({
     type: z.enum(['imu', 'barometer', 'magnetometer']).optional(),
     manufacturer: z.string().optional(),
     interface: z.union([z.string(), z.array(z.string())]).optional(),
+    axes: z.number().int().min(1).optional(),
+    description: z.string().optional(),
+    package: z.string().optional(),
+    features: z.array(z.string()).optional(),
+    datasheet: z.object({
+      title: z.string(),
+      publisher: z.string().optional(),
+      year: z.number().optional(),
+      url: z.string().url(),
+      retrieved: z.string().optional(),
+      language: z.string().optional(),
+    }).optional(),
+    specs: z.object({
+      supply_voltage_v: numericRange.optional(),
+      temperature_range_c: numericRange.optional(),
+      package_mm: z.tuple([z.number(), z.number(), z.number()]).optional(),
+      fifo_bytes: z.number().int().optional(),
+      interface_max_speed_mhz: z.number().optional(),
+      current_consumption_ma: z.object({
+        normal: z.number().optional(),
+        low_power: z.number().optional(),
+        standby: z.number().optional(),
+      }).optional(),
+      accelerometer: z.object({
+        range_g: numericRange.optional(),
+        noise_mg_sqrtHz: z.number().optional(),
+        max_odr_hz: z.number().optional(),
+        sensitivity_mg_lsb: z.number().optional(),
+      }).optional(),
+      gyroscope: z.object({
+        range_dps: numericRange.optional(),
+        noise_mdps_sqrtHz: z.number().optional(),
+        max_odr_hz: z.number().optional(),
+        sensitivity_mdps_lsb: z.number().optional(),
+      }).optional(),
+      magnetometer: z.object({
+        range_uT: numericRange.optional(),
+        sensitivity_uT_lsb: z.number().optional(),
+        max_odr_hz: z.number().optional(),
+        noise_nT_rms: z.number().optional(),
+      }).optional(),
+      barometer: z.object({
+        pressure_range_hpa: numericRange.optional(),
+        relative_accuracy_pa: z.number().optional(),
+        absolute_accuracy_pa: z.number().optional(),
+        noise_pa_rms: z.number().optional(),
+      }).optional(),
+    }).optional(),
     sources: z.array(z.string()).optional(),
+    notes: z.string().optional(),
   }),
 });
 
