@@ -2,57 +2,10 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import MainLayout from '@/layouts/MainLayout.astro';
-import { ControllerSearch } from '@/components/ui/ControllerSearch';
-import ControllerCard from '@/components/cards/ControllerCard.astro';
-import { resolveControllerPreviewImage } from '@/lib/controller-images';
-import { getManufacturersMap } from '@/lib/content-cache';
+import { SearchAndFilters } from '@/components/controllers/SearchAndFilters';
 
-// Load all controllers
-const allControllers = await getCollection('controllers');
-
-const manufacturers = await getManufacturersMap();
-
-// Fetch manufacturer names
-const controllersWithMeta = await Promise.all(
-  allControllers.map(async (controller) => {
-    const manufacturer = controller.data.brand
-      ? manufacturers.get(controller.data.brand) ?? null
-      : null;
-
-    return {
-      ...controller,
-      manufacturerName: manufacturer?.data.name || manufacturer?.data.title || controller.data.brand,
-      preview: resolveControllerPreviewImage(controller) ?? null,
-    };
-  })
-);
-
-// Prepare data for search component
-const searchControllers = controllersWithMeta.map((controller) => ({
-  id: controller.id,
-  title: controller.data.title,
-  brand: controller.data.brand,
-  mcu: controller.data.mcu,
-  mounting: controller.data.mounting,
-  firmware: controller.data.firmware_support.map((fw) => fw.id),
-  uarts: controller.data.io.uarts,
-  can: controller.data.io.can || 0,
-  pwm: controller.data.io.pwm || 0,
-  sdCard: controller.data.io.sd_card,
-  ethernet: controller.data.io.ethernet,
-  barometer: (controller.data.sensors?.barometer?.length ?? 0) > 0,
-  redundant: controller.data.power?.redundant,
-  image: controller.preview ? {
-    src: typeof controller.preview.src === 'string' ? controller.preview.src : controller.preview.src.src,
-    alt: controller.preview.alt,
-    credit: controller.preview.credit,
-    sourceUrl: controller.preview.sourceUrl,
-  } : undefined,
-}));
-
-// Sort by title
-controllersWithMeta.sort((a, b) => a.data.title.localeCompare(b.data.title));
-
+const controllers = await getCollection('controllers');
+const totalControllers = controllers.length;
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 
@@ -72,7 +25,7 @@ const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
         
         <h1 class="text-4xl font-bold tracking-tight mb-3">Flight Controllers</h1>
         <p class="text-lg text-muted-foreground">
-          Browse {controllersWithMeta.length} flight controllers from various manufacturers
+          Browse {totalControllers} flight controllers from various manufacturers
         </p>
       </div>
 
@@ -84,29 +37,7 @@ const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
             Search by name, MCU, form factor, or supported firmware to narrow down the perfect board.
           </p>
         </div>
-        <ControllerSearch client:load controllers={searchControllers} basePath={basePath} />
-      </div>
-
-      <!-- SSR Controllers Grid (rendered server-side so thumbnails are available even if client JS fails) -->
-      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 mb-12">
-        {controllersWithMeta.map((controller) => (
-          <ControllerCard
-            key={controller.id}
-            id={controller.id}
-            title={controller.data.title}
-            manufacturer={controller.manufacturerName}
-            mcu={controller.data.mcu}
-            mounting={controller.data.mounting}
-            uarts={controller.data.io.uarts}
-            can={controller.data.io.can}
-            pwm={controller.data.io.pwm}
-            sdCard={controller.data.io.sd_card}
-            barometer={(controller.data.sensors?.barometer?.length ?? 0) > 0}
-            firmwares={controller.data.firmware_support.map((fw) => fw.id)}
-            image={controller.preview}
-            basePath={basePath}
-          />
-        ))}
+        <SearchAndFilters client:load basePath={basePath} totalControllers={totalControllers} />
       </div>
     </div>
   </MainLayout>

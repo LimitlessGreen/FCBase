@@ -1,7 +1,10 @@
 import { defineConfig } from "astro/config";
 import { execSync } from "node:child_process";
+import { fileURLToPath } from "node:url";
+import path from "node:path";
 import react from "@astrojs/react";
 import tailwindcss from "@tailwindcss/vite";
+import { buildControllerPagefindIndex } from "./scripts/build-pagefind-index.mjs";
 
 function getGitValue(command) {
   try {
@@ -57,12 +60,24 @@ const githubRepoUrl =
   deriveGithubRepoUrl(remoteOriginUrl) || "https://github.com/LimitlessGreen/FCBase";
 const githubEditBaseUrl = githubRepoUrl ? `${githubRepoUrl}/edit/HEAD` : "";
 
+const pagefindIntegration = () => ({
+  name: "fcbase-pagefind",
+  hooks: {
+    "astro:build:done": async ({ dir }) => {
+      const outputDir = path.join(fileURLToPath(dir), "pagefind");
+      console.info(`[pagefind] Building controller search index at ${outputDir}`);
+      await buildControllerPagefindIndex({ outputDir });
+    },
+  },
+});
+
 export default defineConfig({
   site: "https://limitlessgreen.github.io",
   base: "/FCBase",
   output: "static",
   integrations: [
     react(),
+    pagefindIntegration(),
   ],
   vite: {
     plugins: [tailwindcss()],
