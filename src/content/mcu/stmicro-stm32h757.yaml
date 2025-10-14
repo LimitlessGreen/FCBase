@@ -61,7 +61,7 @@ datasheet:
   title: "STM32H757xI/G data sheet"
   publisher: STMicroelectronics
   url: https://www.st.com/resource/en/datasheet/stm32h757xi.pdf
-  retrieved: 2025-02-14
+  retrieved: "2025-02-14"
   language: en
 sources:
   - stmicro-stm32h757-datasheet

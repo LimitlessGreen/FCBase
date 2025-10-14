@@ -62,7 +62,7 @@ datasheet:
   title: "STM32H753xI/G data sheet"
   publisher: STMicroelectronics
   url: https://www.st.com/resource/en/datasheet/stm32h753xi.pdf
-  retrieved: 2025-02-14
+  retrieved: "2025-02-14"
   language: en
 sources:
   - stmicro-stm32h753-datasheet

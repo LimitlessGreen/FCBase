@@ -2,6 +2,6 @@ id: stmicro-stm32f405-datasheet
 title: "STM32F405xx/407xx data sheet"
 publisher: STMicroelectronics
 url: https://www.st.com/resource/en/datasheet/stm32f405rg.pdf
-retrieved: 2025-02-14
+retrieved: "2025-02-14"
 language: en
 notes: "Official device data sheet covering STM32F405/407 families including electrical characteristics and peripheral counts."
