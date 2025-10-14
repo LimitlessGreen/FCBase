@@ -4,6 +4,7 @@ import type { APIContext } from 'astro';
 import { getCollection, getEntry } from 'astro:content';
 import { jsx, jsxs } from 'react/jsx-runtime';
 import { formatMounting, getManufacturerName } from '@/lib/data-utils';
+import { getManufacturersMap } from '@/lib/content-cache';
 
 export const prerender = true;
 
@@ -52,9 +53,8 @@ export async function GET({ params }: APIContext) {
   }
 
   const { data } = controller;
-  const manufacturerEntry = data.brand
-    ? await getEntry('manufacturers', data.brand).catch(() => null)
-    : null;
+  const manufacturers = await getManufacturersMap();
+  const manufacturerEntry = data.brand ? manufacturers.get(data.brand) ?? null : null;
   const manufacturerName = getManufacturerName(manufacturerEntry, data.brand);
   const mcuEntry = data.mcu ? await getEntry('mcu', data.mcu).catch(() => null) : null;
   const mcuName = mcuEntry?.data.title ?? mcuEntry?.data.name ?? data.mcu ?? 'Unknown MCU';

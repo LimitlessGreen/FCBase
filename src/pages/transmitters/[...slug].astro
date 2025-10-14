@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/Badge';
 import StatusBadge from '@/components/ui/StatusBadge.astro';
 import ProfessionalTable from '@/components/table/ProfessionalTable.astro';
 import TableRow from '@/components/table/TableRow.astro';
+import { getManufacturersMap } from '@/lib/content-cache';
 
 interface SourceMeta {
   id: string;
@@ -25,7 +26,8 @@ export async function getStaticPaths() {
 const { transmitter } = Astro.props;
 const { data } = transmitter;
 
-const manufacturer = data.brand ? await getEntry('manufacturers', data.brand) : null;
+const manufacturers = await getManufacturersMap();
+const manufacturer = data.brand ? manufacturers.get(data.brand) ?? null : null;
 const manufacturerName =
   manufacturer?.data.name ??
   (manufacturer?.data as { title?: string } | undefined)?.title ??

@@ -1,16 +1,19 @@
 ---
-import { getCollection, getEntry } from 'astro:content';
+import { getCollection } from 'astro:content';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import MainLayout from '@/layouts/MainLayout.astro';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
+import { getManufacturersMap } from '@/lib/content-cache';
 
 const allTransmitters = await getCollection('transmitters');
+
+const manufacturers = await getManufacturersMap();
 
 const transmittersWithMeta = await Promise.all(
   allTransmitters.map(async (transmitter) => {
     const manufacturer = transmitter.data.brand
-      ? await getEntry('manufacturers', transmitter.data.brand)
+      ? manufacturers.get(transmitter.data.brand) ?? null
       : null;
 
     return {

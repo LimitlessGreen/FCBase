@@ -1,11 +1,12 @@
 ---
-import { getCollection, getEntry } from 'astro:content';
+import { getCollection } from 'astro:content';
 import MainLayout from "@/layouts/MainLayout.astro";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { GITHUB_REPO_URL } from "@/lib/constants";
 import ControllerCard from "@/components/cards/ControllerCard.astro";
 import { resolveControllerPreviewImage } from "@/lib/controller-images";
+import { getManufacturersMap } from "@/lib/content-cache";
 
 const title = "FCBase – Open Flight Controller Database";
 const description = "Search and compare ArduPilot, PX4, and iNAV flight controllers plus EdgeTX transmitters – open, community-driven.";
@@ -14,11 +15,13 @@ const description = "Search and compare ArduPilot, PX4, and iNAV flight controll
 const allControllers = await getCollection('controllers');
 
 // First 6 controllers for grid preview
+const manufacturers = await getManufacturersMap();
+
 const controllers = await Promise.all(
   allControllers.slice(0, 6).map(async (controller) => {
     const preview = resolveControllerPreviewImage(controller);
     const manufacturer = controller.data.brand
-      ? await getEntry('manufacturers', controller.data.brand)
+      ? manufacturers.get(controller.data.brand) ?? null
       : null;
 
     return {

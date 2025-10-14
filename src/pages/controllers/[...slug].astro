@@ -27,6 +27,7 @@ import {
   normalizePeripheralInterfaces,
 } from '@/lib/data-utils';
 import { resolveControllerPreviewImage } from '@/lib/controller-images';
+import { getManufacturersMap } from '@/lib/content-cache';
 import { 
   Cpu, 
   Package,
@@ -90,7 +91,8 @@ const remotePreview = previewImage && typeof previewImage.src === 'string'
   : null;
 
 // Fetch related data
-const manufacturer = data.brand ? await getEntry('manufacturers', data.brand) : null;
+const manufacturers = await getManufacturersMap();
+const manufacturer = data.brand ? manufacturers.get(data.brand) ?? null : null;
 const manufacturerName = getManufacturerName(manufacturer, data.brand);
 const mcu = data.mcu ? await getEntry('mcu', data.mcu) : null;
 const firmware = await Promise.all(
