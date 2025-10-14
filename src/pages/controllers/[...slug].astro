@@ -11,6 +11,7 @@ import TableSection from '@/components/table/TableSection.astro';
 import TableRow from '@/components/table/TableRow.astro';
 import TableRow2Col from '@/components/table/TableRow2Col.astro';
 import SensorList from '@/components/SensorList.astro';
+import { Picture } from 'astro:assets';
 import {
   extractUniqueSensorIds,
   fetchSensorNameMap,
@@ -32,6 +33,9 @@ import {
   Layers,
 } from 'lucide-react';
 
+// Import local images
+import holybroPixhawk6xImage from '@/assets/images/controllers/holybro-pixhawk-6x.jpg';
+
 export async function getStaticPaths() {
   const controllers = await getCollection('controllers');
   return controllers.map((controller) => ({
@@ -42,6 +46,97 @@ export async function getStaticPaths() {
 
 const { controller } = Astro.props;
 const { data } = controller;
+
+// Controller preview images
+const controllerPreviewImages: Record<string, { src: any; credit: string; sourceUrl?: string }> = {
+  'aocoda/aocoda-h743dual': {
+    src: 'https://ardupilot.org/copter/_images/aocoda_h743dual.jpg',
+    credit: 'ArduPilot Documentation',
+    sourceUrl: 'https://ardupilot.org/copter/docs/common-aocoda-h743dual.html',
+  },
+  'cuav/cuav-7-nano': {
+    src: 'https://ardupilot.org/copter/_images/7-nano.jpg',
+    credit: 'ArduPilot Documentation',
+    sourceUrl: 'https://ardupilot.org/copter/docs/common-CUAV-7-Nano.html',
+  },
+  'cuav/cuav-nora': {
+    src: 'https://ardupilot.org/copter/_images/nora.png',
+    credit: 'ArduPilot Documentation',
+    sourceUrl: 'https://ardupilot.org/copter/docs/common-cuav-nora-overview.html',
+  },
+  'cuav/cuav-pixhawk-v6x': {
+    src: 'https://ardupilot.org/copter/_images/cuav-pixhawk-v6x.jpg',
+    credit: 'ArduPilot Documentation',
+    sourceUrl: 'https://raw.githubusercontent.com/ArduPilot/ardupilot_wiki/master/common/source/docs/common-cuav-pixhawkv6X.rst',
+  },
+  'cubepilot/cubepilot-cube-black': {
+    src: 'https://ardupilot.org/copter/_images/pixhawk2-overhead.jpg',
+    credit: 'ArduPilot Documentation',
+    sourceUrl: 'https://ardupilot.org/copter/docs/common-thecube-overview.html',
+  },
+  'cubepilot/cubepilot-cube-orange-plus': {
+    src: 'https://ardupilot.org/copter/_images/Cube_orange_module.jpg',
+    credit: 'ArduPilot Documentation',
+    sourceUrl: 'https://ardupilot.org/copter/docs/common-thecubeorange-overview.html',
+  },
+  'holybro/holybro-durandal': {
+    src: 'https://holybro.com/cdn/shop/products/Durandal-1.jpg?v=1751249914',
+    credit: 'Holybro Store',
+    sourceUrl: 'https://holybro.com/products/durandal',
+  },
+  'holybro/holybro-kakute-h7-v2': {
+    src: 'https://holybro.com/cdn/shop/products/11058V2_1.jpg?v=1679456428',
+    credit: 'Holybro Store',
+    sourceUrl: 'https://holybro.com/products/kakute-h7-v2',
+  },
+  'holybro/holybro-pixhawk-4': {
+    src: 'https://holybro.com/cdn/shop/files/110321_4.jpg?v=1750816088',
+    credit: 'Holybro Store',
+    sourceUrl: 'https://holybro.com/products/pixhawk-4',
+  },
+  'holybro/holybro-pixhawk-4-mini': {
+    src: 'https://docs.px4.io/main/assets/pixhawk4mini_iso_1.ROPjkdrL.png',
+    credit: 'PX4 Documentation',
+    sourceUrl: 'https://docs.px4.io/main/en/flight_controller/pixhawk4_mini.html',
+  },
+  'holybro/holybro-pixhawk-5x': {
+    src: 'https://holybro.com/cdn/shop/files/sku11045_4_grande.jpg?v=1723722819',
+    credit: 'Holybro Store',
+    sourceUrl: 'https://holybro.com/products/pixhawk-5x',
+  },
+  'holybro/holybro-pixhawk-6c': {
+    src: 'https://holybro.com/cdn/shop/products/11054Pixhawk6C-Plasticcase_1_grande.jpg?v=1749537511',
+    credit: 'Holybro Store',
+    sourceUrl: 'https://holybro.com/products/pixhawk-6c',
+  },
+  'holybro/holybro-pixhawk-6x': {
+    src: holybroPixhawk6xImage, // Local image - will be optimized to AVIF/WebP
+    credit: 'Holybro Store',
+    sourceUrl: 'https://holybro.com/products/pixhawk-6x',
+  },
+  'mateksys/mateksys-f405-wing': {
+    src: 'https://www.mateksys.com/wp-content/uploads/2018/04/F405-WING_1-1500x600.jpg',
+    credit: 'Mateksys',
+    sourceUrl: 'https://www.mateksys.com/?portfolio=f405-wing',
+  },
+  'mateksys/mateksys-f765-wing': {
+    src: 'https://www.mateksys.com/wp-content/uploads/2019/08/F765-WING_1-1500x600.jpg',
+    credit: 'Mateksys',
+    sourceUrl: 'https://www.mateksys.com/?portfolio=f765-wing',
+  },
+  'mateksys/mateksys-h743-wing': {
+    src: 'https://www.mateksys.com/wp-content/uploads/2020/07/H743-WING_1.jpg',
+    credit: 'Mateksys',
+    sourceUrl: 'https://www.mateksys.com/?portfolio=h743-wing',
+  },
+  'mro/mro-pixracer-pro': {
+    src: 'https://ardupilot.org/copter/_images/pixracer-pro-top.png',
+    credit: 'ArduPilot Documentation',
+    sourceUrl: 'https://ardupilot.org/copter/docs/common-pixracer-pro.html',
+  },
+};
+
+const previewImage = controllerPreviewImages[controller.id] ?? null;
 
 // Fetch related data
 const manufacturer = data.brand ? await getEntry('manufacturers', data.brand) : null;
@@ -133,6 +228,53 @@ const editPath = `src/content/controllers/${controllerSlug}.yaml`;
       {data.hardware.openness.charAt(0).toUpperCase() + data.hardware.openness.slice(1)} Hardware
     </StatusBadge>
   </DetailHeader>
+
+  <!-- Hero Image Banner -->
+  {previewImage && (
+    <div class="relative w-full mb-8 overflow-hidden rounded-xl border border-border shadow-lg bg-gradient-to-br from-muted via-background to-muted">
+      <div class="relative aspect-[21/9]">
+        {typeof previewImage.src === 'string' ? (
+          <img
+            src={previewImage.src}
+            alt={data.title}
+            loading="eager"
+            class="h-full w-full object-contain"
+          />
+        ) : (
+          <Picture
+            src={previewImage.src}
+            alt={data.title}
+            formats={['avif', 'webp', 'jpg']}
+            widths={[1200, 1600, 2000]}
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 1200px"
+            loading="eager"
+            class="h-full w-full object-contain"
+          />
+        )}
+        
+        <!-- Image Credit Overlay -->
+        {previewImage.credit && (
+          <div class="absolute bottom-4 right-4 rounded-sm bg-background/90 backdrop-blur-sm px-3 py-2 shadow-sm border border-border/40">
+            {previewImage.sourceUrl ? (
+              <a
+                href={previewImage.sourceUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-1.5"
+              >
+                <span>Image: {previewImage.credit}</span>
+                <span class="text-primary">↗</span>
+              </a>
+            ) : (
+              <span class="text-xs font-medium text-muted-foreground">
+                Image: {previewImage.credit}
+              </span>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  )}
 
   <!-- Main Content - Ultra Compact Layout -->
   <div class="grid grid-cols-1 gap-4 mb-8 lg:grid-cols-4">
