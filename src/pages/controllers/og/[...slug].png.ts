@@ -5,6 +5,7 @@ import { getCollection, getEntry } from 'astro:content';
 import { jsx, jsxs } from 'react/jsx-runtime';
 import { formatMounting, getManufacturerName } from '@/lib/data-utils';
 import { getManufacturersMap } from '@/lib/content-cache';
+import { resolveControllerSummary } from '@/lib/controller-seo';
 
 export const prerender = true;
 
@@ -16,29 +17,6 @@ function resolveSlug(slug: APIContext['params']['slug']): string | null {
     return slug.join('/');
   }
   return slug;
-}
-
-function createSummary(data: any): string {
-  const seoSummary = typeof data?.seo?.summary === 'string' ? data.seo.summary.trim() : '';
-  if (seoSummary) {
-    return seoSummary.length > 160 ? `${seoSummary.slice(0, 157)}…` : seoSummary;
-  }
-
-  const notes = (() => {
-    if (typeof data?.notes === 'string') return data.notes;
-    if (Array.isArray(data?.notes)) return data.notes.join(' ');
-    return '';
-  })()
-    .replace(/\s+/g, ' ')
-    .trim();
-
-  if (notes) {
-    return notes.length > 160 ? `${notes.slice(0, 157)}…` : notes;
-  }
-
-  const mcu = data?.mcu ?? 'featured';
-  const mounting = data?.mounting ? formatMounting(data.mounting) : 'custom';
-  return `Flight controller with ${mcu} MCU and ${mounting} mounting.`;
 }
 
 export async function GET({ params }: APIContext) {
@@ -58,7 +36,12 @@ export async function GET({ params }: APIContext) {
   const manufacturerName = getManufacturerName(manufacturerEntry, data.brand);
   const mcuEntry = data.mcu ? await getEntry('mcu', data.mcu).catch(() => null) : null;
   const mcuName = mcuEntry?.data.title ?? mcuEntry?.data.name ?? data.mcu ?? 'Unknown MCU';
-  const summary = createSummary(data);
+  const summaryResult = resolveControllerSummary(data, () => {
+    const fallbackMcu = mcuName ?? 'featured';
+    const fallbackMounting = data.mounting ? formatMounting(data.mounting) : 'custom';
+    return `Flight controller with ${fallbackMcu} MCU and ${fallbackMounting} mounting.`;
+  });
+  const summary = summaryResult.metaDescription;
   const mountingLabel = data.mounting ? formatMounting(data.mounting) : 'Custom';
   const ioSummaryParts = [
     typeof data.io?.uarts === 'number'

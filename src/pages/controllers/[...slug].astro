@@ -29,6 +29,7 @@ import {
 } from '@/lib/data-utils';
 import { resolveControllerPreviewImage } from '@/lib/controller-images';
 import { getFirmwareMap, getManufacturersMap, getSourcesMap } from '@/lib/content-cache';
+import { createControllerProductLd, resolveControllerSummary } from '@/lib/controller-seo';
 import {
   Cpu,
   Package,
@@ -127,25 +128,10 @@ const tabsIdBase = `controller-tabs-${controllerSlug.replace(/[^a-z0-9-]+/gi, '-
 const editPath = `src/content/controllers/${controllerSlug}.yaml`;
 const mcuName = mcu?.data.title ?? mcu?.data.name ?? data.mcu;
 const formattedMounting = data.mounting ? formatMounting(data.mounting) : 'Custom';
-const seoSummary = typeof data.seo?.summary === 'string' ? data.seo.summary.trim() : '';
-const sanitizedSeoSummary = seoSummary
-  ? seoSummary.length > 160
-    ? `${seoSummary.slice(0, 157)}…`
-    : seoSummary
-  : '';
-const notesText = (() => {
-  if (typeof data.notes === 'string') return data.notes;
-  if (Array.isArray(data.notes)) return data.notes.join(' ');
-  return '';
-})();
-const normalizedNotes = notesText.replace(/\s+/g, ' ').trim();
-const truncatedNotes = normalizedNotes
-  ? normalizedNotes.slice(0, 140) + (normalizedNotes.length > 140 ? '…' : '')
-  : '';
-const pageDescription =
-  sanitizedSeoSummary ||
-  truncatedNotes ||
-  `Detailed specifications for the ${data.title} flight controller by ${manufacturerName}, built around the ${mcuName ?? 'primary'} MCU with a ${formattedMounting} mounting pattern.`;
+const summaryResult = resolveControllerSummary(data, () =>
+  `Detailed specifications for the ${data.title} flight controller by ${manufacturerName}, built around the ${mcuName ?? 'primary'} MCU with a ${formattedMounting} mounting pattern.`
+);
+const pageDescription = summaryResult.metaDescription;
 const pageTitle = `${data.title} by ${manufacturerName} | FCBase`;
 const canonicalUrl = Astro.site
   ? new URL(`controllers/${controllerSlug}`, Astro.site).toString()
@@ -173,21 +159,15 @@ const additionalProperties = [
     ? { '@type': 'PropertyValue', name: 'Mounting', value: formattedMounting }
     : null,
 ].filter(Boolean);
-const productLd: Record<string, unknown> = {
-  '@context': 'https://schema.org',
-  '@type': 'Product',
-  name: data.title,
-  description: pageDescription,
-  sku: controller.id,
-  url: canonicalUrl,
-  image: ogImageUrl,
-};
-if (manufacturerName) {
-  productLd.brand = { '@type': 'Brand', name: manufacturerName };
-}
-if (additionalProperties.length > 0) {
-  productLd.additionalProperty = additionalProperties;
-}
+const productLd = createControllerProductLd({
+  controllerId: controller.id,
+  title: data.title,
+  description: summaryResult.summary,
+  canonicalUrl,
+  imageUrl: ogImageUrl,
+  manufacturerName,
+  additionalProperties,
+});
 const productLdJson = JSON.stringify(productLd, null, 2);
 
 const normalizedEditPath = editPath.replace(/^\/+/, '');
