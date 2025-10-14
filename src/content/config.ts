@@ -117,6 +117,28 @@ const peripheralSchema = z.object({
   notes: z.string().optional(),
 });
 
+const hardwareRevisionSchema = z
+  .object({
+    id: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
+    name: z.string(),
+    released: z
+      .string()
+      .regex(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/)
+      .optional(),
+    notes: z.string().optional(),
+    changes: z.array(z.string()).min(1).optional(),
+    sources: z.array(z.string()).min(1).optional(),
+  })
+  .refine(
+    (value) =>
+      value.notes !== undefined ||
+      (value.changes !== undefined && value.changes.length > 0) ||
+      value.released !== undefined,
+    {
+      message: 'hardware revisions should include a release date, notes, or change list',
+    }
+  );
+
 // Controllers collection schema
 const controllersCollection = defineCollection({
   type: 'data',
@@ -159,6 +181,7 @@ const controllersCollection = defineCollection({
     hardware: z.object({
       openness: z.enum(['open', 'closed', 'mixed']),
       notes: z.string().optional(),
+      revisions: z.array(hardwareRevisionSchema).min(1).optional(),
     }),
     sensors: z.object({
       imu: z.array(sensorSchema).optional(),
