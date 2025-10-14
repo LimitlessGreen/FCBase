@@ -4,9 +4,10 @@ brand: aocoda-rc
 mcu: stmicro-stm32h743
 mounting: 30.5x30.5
 images:
-- alt: "Top-down view of the Aocoda-RC H743Dual flight controller with dual-stack connectors and labeled ports."
-  credit: "ArduPilot Documentation"
-  source_url: "https://ardupilot.org/copter/docs/common-aocoda-h743dual.html"
+  - src: aocoda-h743dual.jpg
+    alt: "Top-down view of the Aocoda-RC H743Dual flight controller with dual-stack connectors and labeled ports."
+    credit: "ArduPilot Documentation"
+    source_url: "https://ardupilot.org/copter/docs/common-aocoda-h743dual.html"
 power:
   inputs:
   - name: BATTERY

@@ -771,12 +771,12 @@ export function SearchAndFilters({
         </CardContent>
       </Card>
 
-      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3 auto-rows-fr">
         {results.map((controller) => (
           <a
             key={controller.id}
             href={controller.url}
-            className="group rounded-lg border bg-card p-4 shadow-xs transition-all hover:-translate-y-1 hover:shadow-md"
+            className="group flex flex-col rounded-lg border bg-card p-4 shadow-xs transition-all hover:-translate-y-1 hover:shadow-md"
           >
             <div className="flex items-start justify-between gap-4">
               <div className="space-y-1">

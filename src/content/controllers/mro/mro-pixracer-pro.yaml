@@ -4,9 +4,10 @@ brand: mro
 mcu: stmicro-stm32h743
 mounting: custom
 images:
-- alt: "mRo Pixracer Pro flight controller board with JST-GH connectors across the top edge."
-  credit: "ArduPilot Documentation"
-  source_url: "https://ardupilot.org/copter/docs/common-pixracer-pro.html"
+  - src: mro-pixracer-pro.png
+    alt: "mRo Pixracer Pro flight controller board with JST-GH connectors across the top edge."
+    credit: "ArduPilot Documentation"
+    source_url: "https://ardupilot.org/copter/docs/common-pixracer-pro.html"
 power:
   inputs:
   - name: USB

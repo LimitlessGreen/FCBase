@@ -2,11 +2,62 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import MainLayout from '@/layouts/MainLayout.astro';
-import { SearchAndFilters } from '@/components/controllers/SearchAndFilters';
+import ControllerCard from '@/components/cards/ControllerCard.astro';
+import { ControllerGrid } from '@/components/controllers/ControllerGrid';
 
 const controllers = await getCollection('controllers');
 const totalControllers = controllers.length;
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+// Load manufacturers for display names
+const manufacturers = await getCollection('manufacturers');
+const manufacturerMap = new Map(
+  manufacturers.map(m => [m.id, m.data.name])
+);
+
+// Prepare controller data with images
+const controllerData = await Promise.all(
+  controllers.map(async (controller) => {
+    const { data } = controller;
+    
+    // Get manufacturer name
+    const manufacturerName = manufacturerMap.get(data.brand) || data.brand;
+    
+    // Load image if available
+    let imageData = undefined;
+    if (data.images && data.images.length > 0) {
+      const mainImage = data.images[0];
+      try {
+        // Try to load local image
+        const images = import.meta.glob<{ default: ImageMetadata }>('/src/assets/images/controllers/**/*.{jpg,jpeg,png,webp,avif}');
+        const imagePath = `/src/assets/images/controllers/${mainImage.src}`;
+        
+        if (images[imagePath]) {
+          const imageModule = await images[imagePath]();
+          imageData = {
+            src: imageModule.default,
+            alt: mainImage.alt,
+            credit: mainImage.credit,
+            sourceUrl: mainImage.source_url,
+          };
+        }
+      } catch (err) {
+        console.warn(`Failed to load image for ${controller.id}:`, err);
+      }
+    }
+    
+    // Get firmware support
+    const firmwares = data.firmware_support?.map(f => f.firmware).filter(Boolean) || [];
+    
+    return {
+      id: controller.id,
+      data,
+      manufacturerName,
+      imageData,
+      firmwares,
+    };
+  })
+);
 ---
 
 <BaseLayout
@@ -29,15 +80,39 @@ const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
         </p>
       </div>
 
-      <!-- Search -->
-      <div class="mb-12 space-y-4">
+      <!-- Search & Filters -->
+      <div class="mb-8 space-y-4">
         <div class="flex flex-col gap-2 text-center">
           <h2 class="text-2xl font-semibold tracking-tight md:text-3xl">Find your flight controller</h2>
           <p class="text-base text-muted-foreground md:text-lg">
             Search by name, MCU, form factor, or supported firmware to narrow down the perfect board.
           </p>
         </div>
-        <SearchAndFilters client:load basePath={basePath} totalControllers={totalControllers} />
+        <ControllerGrid client:load totalControllers={totalControllers} />
+      </div>
+
+      <!-- Controller Cards Grid (Server-rendered with data attributes for filtering) -->
+      <div id="controller-cards-grid" class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+        {controllerData.map(({ id, data, manufacturerName, imageData, firmwares }) => (
+          <div data-controller-id={id}>
+            <ControllerCard
+              id={id}
+              title={data.title}
+              manufacturer={manufacturerName}
+              mcu={data.mcu || 'unknown'}
+              mounting={data.mounting}
+              uarts={data.io?.uarts}
+              can={data.connectivity?.can?.ports}
+              pwm={data.io?.pwm_outputs}
+              sdCard={data.storage?.sd_card || false}
+              barometer={data.sensors?.barometer ? true : false}
+              firmwares={firmwares}
+              image={imageData}
+              basePath={basePath}
+              showImage={true}
+            />
+          </div>
+        ))}
       </div>
     </div>
   </MainLayout>

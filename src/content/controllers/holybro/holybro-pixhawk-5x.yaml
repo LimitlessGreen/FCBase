@@ -4,9 +4,10 @@ brand: holybro
 mcu: stmicro-stm32f765
 mounting: cube
 images:
-- alt: "Holybro Pixhawk 5X modular flight controller with cube module seated on its baseboard."
-  credit: "Holybro Store"
-  source_url: "https://holybro.com/products/pixhawk-5x"
+  - src: holybro-pixhawk-5x.jpg
+    alt: "Holybro Pixhawk 5X modular flight controller with cube module seated on its baseboard."
+    credit: "Holybro Store"
+    source_url: "https://holybro.com/products/pixhawk-5x"
 dimensions:
   width_mm: 31.8
   length_mm: 38.8

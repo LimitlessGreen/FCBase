@@ -71,6 +71,32 @@ const pagefindIntegration = () => ({
   },
 });
 
+// Vite plugin to handle pagefind imports in dev mode
+const pagefindDevPlugin = () => ({
+  name: "pagefind-dev-handler",
+  resolveId(id) {
+    if (id === "/pagefind/pagefind.js") {
+      return id;
+    }
+  },
+  load(id) {
+    if (id === "/pagefind/pagefind.js") {
+      // Return a mock module for dev mode
+      return `
+        export async function init() {
+          throw new Error("Pagefind not available in dev mode");
+        }
+        export async function search() {
+          return { results: [] };
+        }
+        export async function filters() {
+          return {};
+        }
+      `;
+    }
+  },
+});
+
 export default defineConfig({
   site: "https://limitlessgreen.github.io",
   base: "/FCBase",
@@ -80,7 +106,12 @@ export default defineConfig({
     pagefindIntegration(),
   ],
   vite: {
-    plugins: [tailwindcss()],
+    plugins: [tailwindcss(), pagefindDevPlugin()],
+    build: {
+      rollupOptions: {
+        external: ["/pagefind/pagefind.js"],
+      },
+    },
     define: {
       "import.meta.env.PUBLIC_GIT_COMMIT_HASH": JSON.stringify(commitHashShort),
       "import.meta.env.PUBLIC_GIT_COMMIT_HASH_FULL": JSON.stringify(commitHashFull),

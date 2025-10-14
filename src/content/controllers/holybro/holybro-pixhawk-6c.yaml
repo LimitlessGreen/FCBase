@@ -4,9 +4,10 @@ brand: holybro
 mcu: stmicro-stm32h743
 mounting: cube
 images:
-- alt: "Holybro Pixhawk 6C autopilot in its plastic enclosure with side connector array."
-  credit: "Holybro Store"
-  source_url: "https://holybro.com/products/pixhawk-6c"
+  - src: holybro-pixhawk-6c.jpg
+    alt: "Holybro Pixhawk 6C autopilot in its plastic enclosure with side connector array."
+    credit: "Holybro Store"
+    source_url: "https://holybro.com/products/pixhawk-6c"
 dimensions:
   height_mm: 12.4
   length_mm: 84.8

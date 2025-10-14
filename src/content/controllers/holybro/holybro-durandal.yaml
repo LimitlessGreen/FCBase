@@ -4,9 +4,10 @@ brand: holybro
 mcu: stmicro-stm32h743
 mounting: custom
 images:
-- alt: "Holybro Durandal autopilot with red aluminum heat sink and exposed carrier board connectors."
-  credit: "Holybro Store"
-  source_url: "https://holybro.com/products/durandal"
+  - src: holybro-durandal.jpg
+    alt: "Holybro Durandal autopilot with red aluminum heat sink and exposed carrier board connectors."
+    credit: "Holybro Store"
+    source_url: "https://holybro.com/products/durandal"
 dimensions:
   height_mm: 20.5
   length_mm: 80

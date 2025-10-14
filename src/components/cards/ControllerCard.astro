@@ -87,7 +87,7 @@ const {
 } = Astro.props;
 
 // Format MCU name (remove vendor prefix, uppercase)
-const mcuDisplay = mcu.toUpperCase().replace(/^(STMICRO-|ATMEGA-)/, '');
+const mcuDisplay = mcu ? mcu.toUpperCase().replace(/^(STMICRO-|ATMEGA-)/, '') : 'UNKNOWN';
 
 // Format mounting (20x20 → 20×20mm, 30.5x30.5 → 30×30mm, cube → Cube, wing → Wing, custom → Custom)
 const mountingDisplay = mounting

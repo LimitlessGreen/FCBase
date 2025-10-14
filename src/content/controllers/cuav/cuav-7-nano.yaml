@@ -4,9 +4,10 @@ brand: cuav
 mcu: stmicro-stm32h753
 mounting: custom
 images:
-- alt: "CUAV 7 Nano autopilot showing its compact aluminum enclosure with labeled connector ports."
-  credit: "ArduPilot Documentation"
-  source_url: "https://ardupilot.org/copter/docs/common-CUAV-7-Nano.html"
+  - src: cuav-7-nano.jpg
+    alt: "CUAV 7 Nano autopilot showing its compact aluminum enclosure with labeled connector ports."
+    credit: "ArduPilot Documentation"
+    source_url: "https://ardupilot.org/copter/docs/common-CUAV-7-Nano.html"
 power:
   inputs:
   - type: power_module

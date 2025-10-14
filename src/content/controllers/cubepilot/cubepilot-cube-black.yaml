@@ -4,9 +4,10 @@ brand: cubepilot
 mcu: stmicro-stm32f427
 mounting: cube
 images:
-- alt: "CubePilot Cube Black autopilot module seated on its carrier board with exposed connectors."
-  credit: "ArduPilot Documentation"
-  source_url: "https://ardupilot.org/copter/docs/common-thecube-overview.html"
+  - src: cubepilot-cube-black.jpg
+    alt: "CubePilot Cube Black autopilot module seated on its carrier board with exposed connectors."
+    credit: "ArduPilot Documentation"
+    source_url: "https://ardupilot.org/copter/docs/common-thecube-overview.html"
 power:
   inputs:
   - name: POWER1

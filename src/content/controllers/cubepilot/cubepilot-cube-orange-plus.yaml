@@ -4,9 +4,10 @@ brand: cubepilot
 mcu: stmicro-stm32h757
 mounting: cube
 images:
-- alt: "CubePilot Cube Orange+ autopilot module resting on its orange carrier board."
-  credit: "ArduPilot Documentation"
-  source_url: "https://ardupilot.org/copter/docs/common-thecubeorange-overview.html"
+  - src: cubepilot-cube-orange-plus.jpg
+    alt: "CubePilot Cube Orange+ autopilot module resting on its orange carrier board."
+    credit: "ArduPilot Documentation"
+    source_url: "https://ardupilot.org/copter/docs/common-thecubeorange-overview.html"
 dimensions:
   height_mm: 22.3
   length_mm: 38.25

@@ -4,9 +4,10 @@ brand: holybro
 mcu: stmicro-stm32f765
 mounting: custom
 images:
-- alt: "Holybro Pixhawk 4 autopilot enclosure with white housing and labeled connectors."
-  credit: "Holybro Store"
-  source_url: "https://holybro.com/products/pixhawk-4"
+  - src: holybro-pixhawk-4.jpg
+    alt: "Holybro Pixhawk 4 autopilot enclosure with white housing and labeled connectors."
+    credit: "Holybro Store"
+    source_url: "https://holybro.com/products/pixhawk-4"
 dimensions:
   length_mm: 84
   width_mm: 44
