@@ -208,11 +208,75 @@ const hardwareRevisionSummaries = revisionVariantsWithSensors.filter(
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
 const controllerSlug = (controller as { slug?: string }).slug ?? controller.id;
 const editPath = `src/content/controllers/${controllerSlug}.yaml`;
+const mcuName = mcu?.data.title ?? mcu?.data.name ?? data.mcu;
+const formattedMounting = data.mounting ? formatMounting(data.mounting) : 'Custom';
+const seoSummary = typeof data.seo?.summary === 'string' ? data.seo.summary.trim() : '';
+const sanitizedSeoSummary = seoSummary
+  ? seoSummary.length > 160
+    ? `${seoSummary.slice(0, 157)}…`
+    : seoSummary
+  : '';
+const notesText = (() => {
+  if (typeof data.notes === 'string') return data.notes;
+  if (Array.isArray(data.notes)) return data.notes.join(' ');
+  return '';
+})();
+const normalizedNotes = notesText.replace(/\s+/g, ' ').trim();
+const truncatedNotes = normalizedNotes
+  ? normalizedNotes.slice(0, 140) + (normalizedNotes.length > 140 ? '…' : '')
+  : '';
+const pageDescription =
+  sanitizedSeoSummary ||
+  truncatedNotes ||
+  `Detailed specifications for the ${data.title} flight controller by ${manufacturerName}, built around the ${mcuName ?? 'primary'} MCU with a ${formattedMounting} mounting pattern.`;
+const pageTitle = `${data.title} by ${manufacturerName} | FCBase`;
+const canonicalUrl = Astro.site
+  ? new URL(`controllers/${controllerSlug}`, Astro.site).toString()
+  : `${basePath}/controllers/${controllerSlug}`;
+const ogTitle = pageTitle;
+const ogImagePath = `${basePath}/controllers/og/${controllerSlug}.png`;
+const ogImageUrl = Astro.site
+  ? new URL(`controllers/og/${controllerSlug}.png`, Astro.site).toString()
+  : ogImagePath;
+const ogImageAlt = `${data.title} flight controller technical summary`;
+const additionalProperties = [
+  data.mcu
+    ? { '@type': 'PropertyValue', name: 'MCU', value: mcuName ?? data.mcu }
+    : null,
+  typeof data.io?.uarts === 'number'
+    ? { '@type': 'PropertyValue', name: 'UARTs', value: data.io.uarts }
+    : null,
+  typeof data.io?.can === 'number'
+    ? { '@type': 'PropertyValue', name: 'CAN', value: data.io.can }
+    : null,
+  typeof data.io?.sd_card === 'boolean'
+    ? { '@type': 'PropertyValue', name: 'SD', value: data.io.sd_card ? 'Yes' : 'No' }
+    : null,
+  data.mounting
+    ? { '@type': 'PropertyValue', name: 'Mounting', value: formattedMounting }
+    : null,
+].filter(Boolean);
+const productLd: Record<string, unknown> = {
+  '@context': 'https://schema.org',
+  '@type': 'Product',
+  name: data.title,
+  description: pageDescription,
+  sku: controller.id,
+  url: canonicalUrl,
+  image: ogImageUrl,
+};
+if (manufacturerName) {
+  productLd.brand = { '@type': 'Brand', name: manufacturerName };
+}
+if (additionalProperties.length > 0) {
+  productLd.additionalProperty = additionalProperties;
+}
+const productLdJson = JSON.stringify(productLd, null, 2);
 ---
 
 <DetailPageLayout
-  title={`${data.title} - Flight Controller Database`}
-  description={`${data.title} by ${manufacturerName} - ${data.mounting} mounting, ${data.mcu} MCU. Supports ${firmware.map(f => f.name).join(', ')}.`}
+  title={pageTitle}
+  description={pageDescription}
   editPath={editPath}
   breadcrumbs={[
     { href: `${basePath}/`, label: 'Home' },
@@ -220,6 +284,24 @@ const editPath = `src/content/controllers/${controllerSlug}.yaml`;
     { label: data.title },
   ]}
 >
+  <Fragment slot="head">
+    <link rel="canonical" href={canonicalUrl} />
+    <meta property="og:title" content={ogTitle} />
+    <meta property="og:description" content={pageDescription} />
+    <meta property="og:type" content="product" />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:alt" content={ogImageAlt} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:site_name" content="FCBase" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={ogTitle} />
+    <meta name="twitter:description" content={pageDescription} />
+    <meta name="twitter:image" content={ogImageUrl} />
+    <meta name="twitter:image:alt" content={ogImageAlt} />
+    <script type="application/ld+json" is:inline>{productLdJson}</script>
+  </Fragment>
   <DetailHeader
     slot="header"
     title={data.title}
