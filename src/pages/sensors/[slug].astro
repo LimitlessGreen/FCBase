@@ -39,13 +39,14 @@ const typeDisplay: Record<string, string> = {
 };
 
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
+const editPath = `content/sensors/${sensor.id}.yaml`;
 ---
 
 <BaseLayout
   title={`${data.name || data.title || sensor.id} - Sensors - FCBase`}
   description={`${data.name || data.title} sensor. ${data.manufacturer ? `Manufactured by ${data.manufacturer}.` : ''} ${data.notes || ''}`}
 >
-  <MainLayout>
+  <MainLayout editPath={editPath}>
     <div class="container py-8">
       <!-- Breadcrumb -->
       <nav class="mb-6 flex items-center gap-2 text-sm text-muted-foreground">

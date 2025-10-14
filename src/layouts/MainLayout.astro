@@ -2,19 +2,41 @@
 import BaseLayout from "./BaseLayout.astro";
 import { Header } from "@/components/ui/Header";
 import { Footer } from "@/components/ui/Footer";
+import { GITHUB_EDIT_BASE_URL } from "@/lib/constants";
 
 export interface Props {
   title?: string;
   description?: string;
+  editPath?: string;
 }
 
-const { title, description } = Astro.props;
+const { title, description, editPath } = Astro.props;
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, ''); // Remove trailing slash
+const normalizedEditPath = editPath?.replace(/^\/+/, "");
+const editUrl = normalizedEditPath
+  ? `${GITHUB_EDIT_BASE_URL}/${normalizedEditPath}`
+  : undefined;
 ---
 
 <BaseLayout title={title} description={description}>
   <Header client:load basePath={basePath} />
   <main class="flex-1">
+    {editUrl && (
+      <div class="border-b border-border bg-muted/20 text-sm text-muted-foreground">
+        <div class="mx-auto flex max-w-7xl flex-col gap-2 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
+          <span class="font-medium text-foreground">Found an issue with this page?</span>
+          <a
+            class="inline-flex items-center gap-2 text-primary transition-colors hover:text-primary/80"
+            href={editUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Edit on GitHub
+            <span aria-hidden="true">→</span>
+          </a>
+        </div>
+      </div>
+    )}
     <slot />
   </main>
   <Footer client:load basePath={basePath} />

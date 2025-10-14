@@ -96,6 +96,7 @@ const firmwareStatusColor = {
 };
 
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
+const editPath = `content/controllers/${controller.id}.yaml`;
 
 const powerTypeLabels = {
   power_module: 'Power Module',
@@ -160,7 +161,7 @@ const formatVoltageRange = (voltage?: {
   title={`${data.title} - Flight Controller Database`}
   description={`${data.title} by ${manufacturer?.data.name || data.brand} - ${data.mounting} mounting, ${data.mcu} MCU. Supports ${firmware.map(f => f.name).join(', ')}.`}
 >
-  <MainLayout>
+  <MainLayout editPath={editPath}>
     <div class="container py-8">
       <!-- Breadcrumb -->
       <nav class="mb-6 flex items-center gap-2 text-sm text-muted-foreground">
