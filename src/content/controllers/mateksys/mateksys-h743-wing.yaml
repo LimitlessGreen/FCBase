@@ -121,7 +121,7 @@ sources:
   - ardupilot-matek-h743-wing
   - mateksys-h743-wing-product
 verification:
-  last_updated: 2025-10-13
+  last_updated: "2025-10-13"
   level: community
 hardware:
   openness: closed

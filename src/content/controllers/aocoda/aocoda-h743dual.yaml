@@ -19,9 +19,11 @@ power:
   - name: POWER_MON1
     type: power_module
     connector: 6-pin power monitor
+    notes: Optional power monitor input for current/voltage sensing
   - name: POWER_MON2
     type: power_module
     connector: 6-pin power monitor
+    notes: Secondary power monitor input
   notes: Includes dual power monitor inputs and dedicated DJI VTX feed. Onboard 5V/2.5A and 9V/3A BEC outputs for peripherals and video systems.
 io:
   uarts: 7

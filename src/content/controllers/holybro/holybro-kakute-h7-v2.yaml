@@ -101,7 +101,7 @@ sources:
   - ardupilot-autopilots
   - ardupilot-holybro-kakuteh7-v2
 verification:
-  last_updated: 2025-10-13
+  last_updated: "2025-10-13"
   level: community
 hardware:
   openness: closed

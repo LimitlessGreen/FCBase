@@ -124,7 +124,7 @@ sources:
   - ardupilot-matek-f765-wing
   - mateksys-f765-wing-product
 verification:
-  last_updated: 2025-10-14
+  last_updated: "2025-10-14"
   level: community
 hardware:
   openness: closed

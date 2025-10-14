@@ -151,7 +151,7 @@ sources:
   - ardupilot-autopilots
   - ardupilot-cuav-pixhawkv6x
 verification:
-  last_updated: 2025-10-13
+  last_updated: "2025-10-13"
   level: community
 hardware:
   openness: open
