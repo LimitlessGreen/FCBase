@@ -53,6 +53,11 @@ const getInitialResolvedTheme = (): ResolvedTheme => {
 export function ThemeToggle() {
   const [mode, setMode] = React.useState<ThemeMode>(getInitialMode);
   const [resolvedTheme, setResolvedTheme] = React.useState<ResolvedTheme>(getInitialResolvedTheme);
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   React.useEffect(() => {
     if (typeof document === "undefined") {
@@ -113,7 +118,10 @@ export function ThemeToggle() {
     system: <Laptop className="h-5 w-5" />,
   }[mode];
 
-  const label = `Toggle theme (current: ${mode === "system" ? `system · ${resolvedTheme}` : mode} mode)`;
+  // Use static label during SSR to prevent hydration mismatch
+  const label = mounted 
+    ? `Toggle theme (current: ${mode === "system" ? `system · ${resolvedTheme}` : mode} mode)`
+    : "Toggle theme";
 
   return (
     <Button

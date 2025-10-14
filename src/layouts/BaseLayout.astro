@@ -27,34 +27,36 @@ const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
 
     <!-- Theme initialization script - prevents FOUC -->
     <script is:inline>
-      const THEME_STORAGE_KEY = 'theme';
-      const THEME_MODES = ['light', 'dark', 'system'];
+      (function() {
+        const THEME_STORAGE_KEY = 'theme';
+        const THEME_MODES = ['light', 'dark', 'system'];
 
-      const getStoredTheme = () => {
-        if (typeof localStorage === 'undefined') return null;
-        const value = localStorage.getItem(THEME_STORAGE_KEY);
-        return THEME_MODES.includes(value) ? value : null;
-      };
+        const getStoredTheme = () => {
+          if (typeof localStorage === 'undefined') return null;
+          const value = localStorage.getItem(THEME_STORAGE_KEY);
+          return THEME_MODES.includes(value) ? value : null;
+        };
 
-      const resolveTheme = (mode) => {
-        if (mode === 'dark' || mode === 'light') {
-          return mode;
+        const resolveTheme = (mode) => {
+          if (mode === 'dark' || mode === 'light') {
+            return mode;
+          }
+          return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        };
+
+        const themeMode = getStoredTheme() ?? 'system';
+        const resolvedTheme = resolveTheme(themeMode);
+
+        const root = document.documentElement;
+        root.dataset.themeMode = themeMode;
+        root.dataset.themeResolved = resolvedTheme;
+
+        if (resolvedTheme === 'dark') {
+          root.classList.add('dark');
+        } else {
+          root.classList.remove('dark');
         }
-        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-      };
-
-      const themeMode = getStoredTheme() ?? 'system';
-      const resolvedTheme = resolveTheme(themeMode);
-
-      const root = document.documentElement;
-      root.dataset.themeMode = themeMode;
-      root.dataset.themeResolved = resolvedTheme;
-
-      if (resolvedTheme === 'dark') {
-        root.classList.add('dark');
-      } else {
-        root.classList.remove('dark');
-      }
+      })();
     </script>
   </head>
   <body class="min-h-screen flex flex-col">
