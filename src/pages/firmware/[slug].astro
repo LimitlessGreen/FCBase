@@ -34,7 +34,7 @@ const editPath = `src/content/firmware/${firmware.id}.yaml`;
   title={`${data.title} - Firmware - FCBase`}
   description={`${data.title} firmware platform. ${data.maintainer ? `Maintained by ${data.maintainer}.` : ''} Browse ${compatibleControllers.length} compatible controllers.`}
 >
-  <MainLayout editPath={editPath}>
+  <MainLayout editPath={editPath} showEditBar>
     <div class="container py-8">
       <!-- Breadcrumb -->
       <nav class="mb-6 flex items-center gap-2 text-sm text-muted-foreground">
