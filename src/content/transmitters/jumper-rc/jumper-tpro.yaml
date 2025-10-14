@@ -1,0 +1,32 @@
+id: jumper-tpro
+title: Jumper T-Pro
+brand: jumper-rc
+support:
+  level: official
+  since_version: v2.6
+  status: sunset
+  last_version: v2.11
+  notes: EdgeTX v2.11 is the final release supporting the original T-Pro hardware.
+hardware:
+  revisions:
+  - id: tpro
+    name: T-Pro
+    notes: EdgeTX sunset notice applies after firmware v2.11 per the official list.
+    sources:
+    - edgetx-supportedradios
+compliance:
+- type: fcc
+  id: 2AV3U-JP4IN1
+  url: https://fccid.io/2AV3U-JP4IN1
+sources:
+- edgetx-supportedradios
+- fcc-jumper-jp4in1
+keywords:
+- EdgeTX
+- JumperRC
+- T-Pro
+- transmitter
+verification:
+  level: community
+  last_updated: "2025-10-14"
+notes: EdgeTX support matrix marks firmware v2.11 as the final build for this radio.

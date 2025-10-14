@@ -1,0 +1,7 @@
+id: helloradiosky
+name: HelloRadioSky
+website: https://helloradiosky.com/
+description: HelloRadioSky focuses on compact ExpressLRS-ready transmitters tailored for EdgeTX.
+sources:
+- helloradiosky-home
+- edgetx-supportedradios

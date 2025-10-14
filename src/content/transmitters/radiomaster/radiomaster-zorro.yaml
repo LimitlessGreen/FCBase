@@ -1,0 +1,29 @@
+id: radiomaster-zorro
+title: RadioMaster Zorro
+brand: radiomaster
+support:
+  level: official
+  since_version: v2.6
+  status: supported
+hardware:
+  revisions:
+  - id: zorro
+    name: Zorro
+    notes: Included in the EdgeTX official support matrix starting at v2.6.
+    sources:
+    - edgetx-supportedradios
+compliance:
+- type: fcc
+  id: 2A2UN-ZORRO
+  url: https://fccid.io/2A2UN-ZORRO
+sources:
+- edgetx-supportedradios
+- fcc-radiomaster-zorro
+keywords:
+- EdgeTX
+- RadioMaster
+- Zorro
+- transmitter
+verification:
+  level: community
+  last_updated: "2025-10-14"

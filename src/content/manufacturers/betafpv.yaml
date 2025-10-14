@@ -1,0 +1,7 @@
+id: betafpv
+name: BETAFPV
+website: https://www.betafpv.com/
+description: BETAFPV produces micro FPV aircraft, ExpressLRS gear, and LiteRadio transmitters with EdgeTX support.
+sources:
+- betafpv-home
+- edgetx-supportedradios

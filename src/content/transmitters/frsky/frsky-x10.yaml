@@ -1,0 +1,56 @@
+id: frsky-x10
+title: FrSky X10 Series
+brand: frsky
+support:
+  level: community
+  since_version: v2.4
+  status: supported
+hardware:
+  revisions:
+  - id: x10
+    name: X10
+    notes: Community EdgeTX builds added support for the Horus X10 with firmware v2.4.
+    sources:
+    - edgetx-supportedradios
+  - id: x10s
+    name: X10S
+    notes: Enhanced X10S variant is included in the same support bracket.
+    sources:
+    - edgetx-supportedradios
+  - id: x10-express
+    name: X10 Express
+    notes: Express refresh retains support per the EdgeTX community list.
+    sources:
+    - edgetx-supportedradios
+  - id: x10s-express
+    name: X10S Express
+    notes: EdgeTX documents identical support status for the X10S Express variant.
+    sources:
+    - edgetx-supportedradios
+compliance:
+- type: fcc
+  id: XYF-X10
+  url: https://fccid.io/XYF-X10
+- type: fcc
+  id: XYF-X10S
+  url: https://fccid.io/XYF-X10S
+- type: fcc
+  id: XYF-X10EXPRESS
+  url: https://fccid.io/XYF-X10EXPRESS
+- type: fcc
+  id: XYF-X10SEXPRESS
+  url: https://fccid.io/XYF-X10SEXPRESS
+sources:
+- edgetx-supportedradios
+- fcc-frsky-x10
+- fcc-frsky-x10s
+- fcc-frsky-x10express
+- fcc-frsky-x10sexpress
+keywords:
+- EdgeTX
+- FrSky
+- X10
+- transmitter
+verification:
+  level: community
+  last_updated: "2025-10-14"

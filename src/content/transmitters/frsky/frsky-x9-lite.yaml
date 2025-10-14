@@ -1,0 +1,41 @@
+id: frsky-x9-lite
+title: FrSky X9 Lite Series
+brand: frsky
+support:
+  level: community
+  since_version: v2.4
+  status: sunset
+  last_version: v2.11
+  notes: EdgeTX v2.11 is the final release supporting the X9 Lite line.
+hardware:
+  revisions:
+  - id: x9-lite
+    name: X9 Lite
+    notes: Supported through EdgeTX v2.11 per the community list.
+    sources:
+    - edgetx-supportedradios
+  - id: x9-lite-s
+    name: X9 Lite S
+    notes: Listed with the same end-of-support window in the EdgeTX matrix.
+    sources:
+    - edgetx-supportedradios
+compliance:
+- type: fcc
+  id: XYF-X9LITE
+  url: https://fccid.io/XYF-X9LITE
+- type: fcc
+  id: XYF-X9LITES
+  url: https://fccid.io/XYF-X9LITES
+sources:
+- edgetx-supportedradios
+- fcc-frsky-x9lite
+- fcc-frsky-x9lites
+keywords:
+- EdgeTX
+- FrSky
+- X9 Lite
+- transmitter
+verification:
+  level: community
+  last_updated: "2025-10-14"
+notes: The EdgeTX support matrix identifies v2.11 as the retirement release for the X9 Lite family.

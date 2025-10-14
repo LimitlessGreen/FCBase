@@ -1,0 +1,7 @@
+id: fatfish
+name: FatFish FPV
+website: https://fatfishfpv.com/
+description: FatFish FPV develops FPV components and the F16 EdgeTX-compatible radio platform.
+sources:
+- fatfish-home
+- edgetx-supportedradios

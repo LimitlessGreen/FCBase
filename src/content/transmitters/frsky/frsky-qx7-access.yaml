@@ -1,0 +1,39 @@
+id: frsky-qx7-access
+title: FrSky QX7 ACCESS Series
+brand: frsky
+support:
+  level: community
+  since_version: v2.4
+  status: supported
+hardware:
+  revisions:
+  - id: qx7-access
+    name: QX7 ACCESS
+    notes: Community-led EdgeTX builds support the ACCESS refresh beginning in v2.4.
+    sources:
+    - edgetx-supportedradios
+  - id: qx7s-access
+    name: QX7S ACCESS
+    notes: The ACCESS QX7S variant shares the same support profile in the EdgeTX list.
+    sources:
+    - edgetx-supportedradios
+compliance:
+- type: fcc
+  id: XYF-QX7ACCESS
+  url: https://fccid.io/XYF-QX7ACCESS
+- type: fcc
+  id: XYF-QX7SACCESS
+  url: https://fccid.io/XYF-QX7SACCESS
+sources:
+- edgetx-supportedradios
+- fcc-frsky-qx7access
+- fcc-frsky-qx7saccess
+keywords:
+- ACCESS
+- EdgeTX
+- FrSky
+- QX7
+- transmitter
+verification:
+  level: community
+  last_updated: "2025-10-14"

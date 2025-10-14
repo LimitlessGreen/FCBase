@@ -1,0 +1,29 @@
+id: jumper-bumblebee
+title: Jumper Bumblebee
+brand: jumper-rc
+support:
+  level: official
+  since_version: v2.10.5
+  status: supported
+hardware:
+  revisions:
+  - id: bumblebee
+    name: Bumblebee
+    notes: EdgeTX lists the Jumper Bumblebee as officially supported starting with v2.10.5.
+    sources:
+    - edgetx-supportedradios
+compliance:
+- type: fcc
+  id: 2AV3U-BUMBLEBEE
+  url: https://fccid.io/2AV3U-BUMBLEBEE
+sources:
+- edgetx-supportedradios
+- fcc-jumper-bumblebee
+keywords:
+- Bumblebee
+- EdgeTX
+- JumperRC
+- transmitter
+verification:
+  level: community
+  last_updated: "2025-10-14"

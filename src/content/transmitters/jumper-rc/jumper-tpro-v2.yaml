@@ -1,0 +1,29 @@
+id: jumper-tpro-v2
+title: Jumper T-Pro V2
+brand: jumper-rc
+support:
+  level: official
+  since_version: v2.10
+  status: supported
+hardware:
+  revisions:
+  - id: tpro-v2
+    name: T-Pro V2
+    notes: Introduced on the EdgeTX support list with firmware v2.10.
+    sources:
+    - edgetx-supportedradios
+compliance:
+- type: fcc
+  id: 2AV3U-TPROV2
+  url: https://fccid.io/2AV3U-TPROV2
+sources:
+- edgetx-supportedradios
+- fcc-jumper-tprov2
+keywords:
+- EdgeTX
+- JumperRC
+- T-Pro V2
+- transmitter
+verification:
+  level: community
+  last_updated: "2025-10-14"

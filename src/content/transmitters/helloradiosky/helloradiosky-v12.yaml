@@ -1,0 +1,31 @@
+id: helloradiosky-v12
+title: HelloRadioSky V12
+brand: helloradiosky
+support:
+  level: manufacturer
+  since_version: v2.11
+  status: planned
+  notes: EdgeTX lists the V12 with support to be delivered once the radio is released.
+hardware:
+  revisions:
+  - id: v12
+    name: V12
+    notes: Future HelloRadioSky platform noted as pending release in the EdgeTX matrix.
+    sources:
+    - edgetx-supportedradios
+compliance:
+- type: fcc
+  id: V12
+  url: https://fccid.io/V12
+sources:
+- edgetx-supportedradios
+- fcc-helloradiosky-v12
+keywords:
+- EdgeTX
+- HelloRadioSky
+- V12
+- transmitter
+verification:
+  level: community
+  last_updated: "2025-10-14"
+notes: Support status depends on the radio’s retail availability per the EdgeTX listing.

@@ -1,0 +1,32 @@
+id: radiomaster-t8-pro
+title: RadioMaster T8 Pro
+brand: radiomaster
+support:
+  level: official
+  since_version: v2.4
+  status: sunset
+  last_version: v2.11
+  notes: EdgeTX marks v2.11 as the final firmware supporting the T8 Pro handheld.
+hardware:
+  revisions:
+  - id: t8-pro
+    name: T8 Pro
+    notes: Listed among the EdgeTX-supported radios with a sunset after v2.11.
+    sources:
+    - edgetx-supportedradios
+compliance:
+- type: fcc
+  id: 2A2UN-T8PRO
+  url: https://fccid.io/2A2UN-T8PRO
+sources:
+- edgetx-supportedradios
+- fcc-radiomaster-t8pro
+keywords:
+- EdgeTX
+- RadioMaster
+- T8 Pro
+- transmitter
+verification:
+  level: community
+  last_updated: "2025-10-14"
+notes: EdgeTX documentation specifies that support concludes with firmware v2.11.

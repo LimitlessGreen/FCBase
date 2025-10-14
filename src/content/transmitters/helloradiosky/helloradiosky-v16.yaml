@@ -1,0 +1,29 @@
+id: helloradiosky-v16
+title: HelloRadioSky V16
+brand: helloradiosky
+support:
+  level: manufacturer
+  since_version: v2.11
+  status: supported
+hardware:
+  revisions:
+  - id: v16
+    name: V16
+    notes: Official manufacturer support begins at EdgeTX v2.11 according to the matrix.
+    sources:
+    - edgetx-supportedradios
+compliance:
+- type: fcc
+  id: V16
+  url: https://fccid.io/V16
+sources:
+- edgetx-supportedradios
+- fcc-helloradiosky-v16
+keywords:
+- EdgeTX
+- HelloRadioSky
+- V16
+- transmitter
+verification:
+  level: community
+  last_updated: "2025-10-14"

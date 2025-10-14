@@ -1,0 +1,29 @@
+id: fatfish-f16
+title: FatFish F16
+brand: fatfish
+support:
+  level: manufacturer
+  since_version: v2.11
+  status: supported
+hardware:
+  revisions:
+  - id: f16
+    name: F16
+    notes: EdgeTX lists the FatFish F16 under manufacturer-maintained support starting in v2.11.
+    sources:
+    - edgetx-supportedradios
+compliance:
+- type: fcc
+  id: 2A7KX-F16
+  url: https://fccid.io/2A7KX-F16
+sources:
+- edgetx-supportedradios
+- fcc-fatfish-f16
+keywords:
+- EdgeTX
+- FatFish
+- F16
+- transmitter
+verification:
+  level: community
+  last_updated: "2025-10-14"

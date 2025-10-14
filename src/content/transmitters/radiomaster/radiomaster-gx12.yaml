@@ -1,0 +1,29 @@
+id: radiomaster-gx12
+title: RadioMaster GX12
+brand: radiomaster
+support:
+  level: official
+  since_version: v2.11
+  status: supported
+hardware:
+  revisions:
+  - id: gx12
+    name: GX12
+    notes: Added to the EdgeTX supported radios list with firmware v2.11.
+    sources:
+    - edgetx-supportedradios
+compliance:
+- type: fcc
+  id: 2A2UN-GX12
+  url: https://fccid.io/2A2UN-GX12
+sources:
+- edgetx-supportedradios
+- fcc-radiomaster-gx12
+keywords:
+- EdgeTX
+- GX12
+- RadioMaster
+- transmitter
+verification:
+  level: community
+  last_updated: "2025-10-14"

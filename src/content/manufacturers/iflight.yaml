@@ -1,0 +1,7 @@
+id: iflight
+name: iFlight
+website: https://www.iflight-rc.com/
+description: iFlight builds FPV drones and radio equipment, including the Commando series transmitters.
+sources:
+- iflight-home
+- edgetx-supportedradios

@@ -543,8 +543,56 @@ const firmwareCollection = defineCollection({
   }),
 });
 
+const transmitterSupportLevelEnum = z.enum(['official', 'manufacturer', 'community']);
+const transmitterSupportStatusEnum = z.enum(['supported', 'limited', 'sunset', 'planned']);
+
+const complianceSchema = z.object({
+  type: z.enum(['fcc']),
+  id: z.string(),
+  url: z.string().url(),
+  notes: z.string().optional(),
+});
+
+const transmitterHardwareSchema = z
+  .object({
+    form_factor: z.enum(['handheld', 'tray', 'gamepad']).optional(),
+    display: z.enum(['color', 'monochrome']).optional(),
+    notes: z.string().optional(),
+    revisions: z.array(hardwareRevisionSchema).optional(),
+  })
+  .optional();
+
+const transmitterSchema = z.object({
+  id: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
+  title: z.string(),
+  brand: z.string(),
+  support: z.object({
+    level: transmitterSupportLevelEnum,
+    since_version: z.string(),
+    status: transmitterSupportStatusEnum,
+    last_version: z.string().optional(),
+    notes: z.string().optional(),
+  }),
+  hardware: transmitterHardwareSchema,
+  features: z.array(z.string()).optional(),
+  compliance: z.array(complianceSchema).optional(),
+  sources: z.array(z.string()).min(1),
+  keywords: z.array(z.string()),
+  verification: z.object({
+    level: z.enum(['unverified', 'community', 'reviewed']),
+    last_updated: z.string(),
+  }),
+  notes: z.string().optional(),
+});
+
+const transmittersCollection = defineCollection({
+  type: 'data',
+  schema: transmitterSchema,
+});
+
 export const collections = {
   'controllers': controllersCollection,
+  'transmitters': transmittersCollection,
   'manufacturers': manufacturersCollection,
   'mcu': mcuCollection,
   'sensors': sensorsCollection,

@@ -1,0 +1,38 @@
+id: frsky-x12s
+title: FrSky X12S Series
+brand: frsky
+support:
+  level: community
+  since_version: v2.4
+  status: supported
+hardware:
+  revisions:
+  - id: x12s
+    name: X12S
+    notes: Horus X12S platform supported by community EdgeTX builds from v2.4 onward.
+    sources:
+    - edgetx-supportedradios
+  - id: x12s-irsm
+    name: X12S-IRSM
+    notes: EdgeTX includes the IRSM edition in the same support category.
+    sources:
+    - edgetx-supportedradios
+compliance:
+- type: fcc
+  id: XYF-X12S
+  url: https://fccid.io/XYF-X12S
+- type: fcc
+  id: XYF-X12S-IRSM
+  url: https://fccid.io/XYF-X12S-IRSM
+sources:
+- edgetx-supportedradios
+- fcc-frsky-x12s
+- fcc-frsky-x12s-irsm
+keywords:
+- EdgeTX
+- FrSky
+- X12S
+- transmitter
+verification:
+  level: community
+  last_updated: "2025-10-14"

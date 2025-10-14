@@ -1,0 +1,29 @@
+id: radiomaster-tx12-mk2
+title: RadioMaster TX12 Mark II
+brand: radiomaster
+support:
+  level: official
+  since_version: v2.8
+  status: supported
+hardware:
+  revisions:
+  - id: tx12-mark-ii
+    name: TX12 Mark II
+    notes: EdgeTX references the updated TX12 Mark II as officially supported beginning with v2.8.
+    sources:
+    - edgetx-supportedradios
+compliance:
+- type: fcc
+  id: 2A2UN-TX12MKII
+  url: https://fccid.io/2A2UN-TX12MKII
+sources:
+- edgetx-supportedradios
+- fcc-radiomaster-tx12mkii
+keywords:
+- EdgeTX
+- RadioMaster
+- TX12 Mark II
+- transmitter
+verification:
+  level: community
+  last_updated: "2025-10-14"

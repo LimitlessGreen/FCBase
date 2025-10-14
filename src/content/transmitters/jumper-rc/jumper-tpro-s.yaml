@@ -1,0 +1,29 @@
+id: jumper-tpro-s
+title: Jumper T-Pro S
+brand: jumper-rc
+support:
+  level: official
+  since_version: v2.10.3
+  status: supported
+hardware:
+  revisions:
+  - id: tpro-s
+    name: T-Pro S
+    notes: EdgeTX lists the T-Pro S as an officially supported update starting with v2.10.3.
+    sources:
+    - edgetx-supportedradios
+compliance:
+- type: fcc
+  id: 2AV3U-JP4IN1S
+  url: https://fccid.io/2AV3U-JP4IN1S
+sources:
+- edgetx-supportedradios
+- fcc-jumper-jp4in1s
+keywords:
+- EdgeTX
+- JumperRC
+- T-Pro S
+- transmitter
+verification:
+  level: community
+  last_updated: "2025-10-14"

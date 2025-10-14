@@ -1,0 +1,29 @@
+id: iflight-commando8
+title: iFlight Commando 8
+brand: iflight
+support:
+  level: manufacturer
+  since_version: v2.8
+  status: supported
+hardware:
+  revisions:
+  - id: commando8
+    name: Commando 8
+    notes: Manufacturer-maintained EdgeTX build integrated from firmware v2.8.
+    sources:
+    - edgetx-supportedradios
+compliance:
+- type: fcc
+  id: 2A6X7-COMMANDO8
+  url: https://fccid.io/2A6X7-COMMANDO8
+sources:
+- edgetx-supportedradios
+- fcc-iflight-commando8
+keywords:
+- Commando 8
+- EdgeTX
+- iFlight
+- transmitter
+verification:
+  level: community
+  last_updated: "2025-10-14"

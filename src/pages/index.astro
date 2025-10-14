@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/Button";
 import { GITHUB_REPO_URL } from "@/lib/constants";
 
 const title = "FCBase – Open Flight Controller Database";
-const description = "Search and compare ArduPilot, PX4, and iNAV flight controllers – open, community-driven.";
+const description = "Search and compare ArduPilot, PX4, and iNAV flight controllers plus EdgeTX transmitters – open, community-driven.";
 
 // Load actual controllers from content collection
 const allControllers = await getCollection('controllers');
@@ -95,11 +95,14 @@ const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
           FCBase
         </h1>
         <p class="text-base md:text-lg lg:text-xl text-muted-foreground max-w-2xl">
-          The open hardware knowledge base for the ArduPilot, PX4, and iNAV ecosystems. Discover components, compare specifications, and plan your next build.
+          The open hardware knowledge base for the ArduPilot, PX4, and iNAV ecosystems. Discover flight controllers, EdgeTX transmitters, compare specifications, and plan your next build.
         </p>
         <div class="flex flex-col sm:flex-row flex-wrap gap-3 md:gap-4 justify-center mt-2 md:mt-4 w-full sm:w-auto">
           <Button size="lg" asChild client:load class="w-full sm:w-auto">
             <a href={`${basePath}/controllers`}>Browse Controllers</a>
+          </Button>
+          <Button variant="outline" size="lg" asChild client:load class="w-full sm:w-auto">
+            <a href={`${basePath}/transmitters`}>Browse Transmitters</a>
           </Button>
           <Button variant="outline" size="lg" asChild client:load class="w-full sm:w-auto">
             <a href={`${basePath}/contribute`}>Contribute</a>
@@ -150,6 +153,21 @@ const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
               <CardContent>
                 <Button variant="outline" class="w-full" client:load>
                   Browse flight controllers
+                </Button>
+              </CardContent>
+            </Card>
+          </a>
+          <a href={`${basePath}/transmitters`} class="group">
+            <Card client:load class="h-full transition-colors group-hover:border-primary">
+              <CardHeader>
+                <CardTitle class="text-xl">Transmitters</CardTitle>
+                <CardDescription>
+                  Explore EdgeTX radios, track support versions, and jump to FCC compliance records.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Button variant="outline" class="w-full" client:load>
+                  Browse transmitters
                 </Button>
               </CardContent>
             </Card>

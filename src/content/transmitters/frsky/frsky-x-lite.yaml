@@ -1,0 +1,50 @@
+id: frsky-x-lite
+title: FrSky X-Lite Series
+brand: frsky
+support:
+  level: community
+  since_version: v2.4
+  status: sunset
+  last_version: v2.11
+  notes: EdgeTX v2.11 is the last community-supported firmware for the X-Lite family.
+hardware:
+  revisions:
+  - id: x-lite
+    name: X-Lite
+    notes: Supported from EdgeTX v2.4 through the sunset release in v2.11.
+    sources:
+    - edgetx-supportedradios
+  - id: x-lite-s
+    name: X-Lite S
+    notes: EdgeTX lists the S model with the same retirement schedule.
+    sources:
+    - edgetx-supportedradios
+  - id: x-lite-pro
+    name: X-Lite Pro
+    notes: Pro edition also sunsets after EdgeTX v2.11 per the support matrix.
+    sources:
+    - edgetx-supportedradios
+compliance:
+- type: fcc
+  id: XYF-XLITE
+  url: https://fccid.io/XYF-XLITE
+- type: fcc
+  id: XYF-XLITES
+  url: https://fccid.io/XYF-XLITES
+- type: fcc
+  id: XYF-XLITEPRO
+  url: https://fccid.io/XYF-XLITEPRO
+sources:
+- edgetx-supportedradios
+- fcc-frsky-xlite
+- fcc-frsky-xlites
+- fcc-frsky-xlitepro
+keywords:
+- EdgeTX
+- FrSky
+- X-Lite
+- transmitter
+verification:
+  level: community
+  last_updated: "2025-10-14"
+notes: The EdgeTX supported radios list announces the retirement of the X-Lite variants at firmware v2.11.

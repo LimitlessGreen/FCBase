@@ -1,0 +1,47 @@
+id: jumper-t18
+title: Jumper T18 Series
+brand: jumper-rc
+support:
+  level: official
+  since_version: v2.4
+  status: supported
+hardware:
+  revisions:
+  - id: t18
+    name: T18
+    notes: Supported since EdgeTX v2.4 per the official matrix.
+    sources:
+    - edgetx-supportedradios
+  - id: t18-lite
+    name: T18 Lite
+    notes: Shares the same EdgeTX support level as the base T18 according to the list.
+    sources:
+    - edgetx-supportedradios
+  - id: t18-pro
+    name: T18 Pro
+    notes: EdgeTX documents the Pro variant alongside the base T18 in the supported radio list.
+    sources:
+    - edgetx-supportedradios
+compliance:
+- type: fcc
+  id: 2AV3U-T18
+  url: https://fccid.io/2AV3U-T18
+- type: fcc
+  id: 2AV3U-T18LITE
+  url: https://fccid.io/2AV3U-T18LITE
+- type: fcc
+  id: 2AV3U-T18PRO
+  url: https://fccid.io/2AV3U-T18PRO
+sources:
+- edgetx-supportedradios
+- fcc-jumper-t18
+- fcc-jumper-t18lite
+- fcc-jumper-t18pro
+keywords:
+- EdgeTX
+- JumperRC
+- T18
+- transmitter
+verification:
+  level: community
+  last_updated: "2025-10-14"

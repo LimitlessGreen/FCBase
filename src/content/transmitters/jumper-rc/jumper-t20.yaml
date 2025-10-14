@@ -1,0 +1,29 @@
+id: jumper-t20
+title: Jumper T20
+brand: jumper-rc
+support:
+  level: official
+  since_version: v2.10
+  status: supported
+hardware:
+  revisions:
+  - id: t20
+    name: T20
+    notes: Added to the official EdgeTX list with the v2.10 release.
+    sources:
+    - edgetx-supportedradios
+compliance:
+- type: fcc
+  id: 2AV3U-T20
+  url: https://fccid.io/2AV3U-T20
+sources:
+- edgetx-supportedradios
+- fcc-jumper-t20
+keywords:
+- EdgeTX
+- JumperRC
+- T20
+- transmitter
+verification:
+  level: community
+  last_updated: "2025-10-14"

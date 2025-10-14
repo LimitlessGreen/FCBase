@@ -1,0 +1,50 @@
+id: jumper-t12
+title: Jumper T12 Series
+brand: jumper-rc
+support:
+  level: official
+  since_version: v2.4
+  status: sunset
+  last_version: v2.11
+  notes: EdgeTX v2.11 is the last official build supporting the T12 family.
+hardware:
+  revisions:
+  - id: t12
+    name: T12
+    notes: Original T12 hardware included in the EdgeTX support table with sunset at v2.11.
+    sources:
+    - edgetx-supportedradios
+  - id: t12-plus
+    name: T12 Plus
+    notes: Shares the same EdgeTX support window as the base T12 per the official list.
+    sources:
+    - edgetx-supportedradios
+  - id: t12-pro-hall
+    name: T12 Pro Hall
+    notes: EdgeTX records identical support and retirement timing for the Hall gimbal edition.
+    sources:
+    - edgetx-supportedradios
+compliance:
+- type: fcc
+  id: 2AV3U-T12
+  url: https://fccid.io/2AV3U-T12
+- type: fcc
+  id: 2AV3U-T12PLUS
+  url: https://fccid.io/2AV3U-T12PLUS
+- type: fcc
+  id: 2AV3U-T12PRO
+  url: https://fccid.io/2AV3U-T12PRO
+sources:
+- edgetx-supportedradios
+- fcc-jumper-t12
+- fcc-jumper-t12plus
+- fcc-jumper-t12pro
+keywords:
+- EdgeTX
+- JumperRC
+- T12
+- transmitter
+verification:
+  level: community
+  last_updated: "2025-10-14"
+notes: EdgeTX documentation sets firmware v2.11 as the retirement release for the T12 generation.

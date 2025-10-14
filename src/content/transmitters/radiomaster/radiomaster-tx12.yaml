@@ -1,0 +1,32 @@
+id: radiomaster-tx12
+title: RadioMaster TX12
+brand: radiomaster
+support:
+  level: official
+  since_version: v2.4
+  status: sunset
+  last_version: v2.11
+  notes: EdgeTX v2.11 is the last release supporting the first-generation TX12.
+hardware:
+  revisions:
+  - id: tx12
+    name: TX12
+    notes: Original TX12 hardware sunsets after EdgeTX v2.11 according to the support matrix.
+    sources:
+    - edgetx-supportedradios
+compliance:
+- type: fcc
+  id: 2A2UN-TX12
+  url: https://fccid.io/2A2UN-TX12
+sources:
+- edgetx-supportedradios
+- fcc-radiomaster-tx12
+keywords:
+- EdgeTX
+- RadioMaster
+- TX12
+- transmitter
+verification:
+  level: community
+  last_updated: "2025-10-14"
+notes: EdgeTX support table documents the retirement at firmware v2.11.

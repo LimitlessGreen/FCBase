@@ -1,0 +1,7 @@
+id: flysky
+name: Flysky
+website: https://www.flysky-cn.com/
+description: Flysky manufactures radio transmitters and receivers for RC hobbyists, including EdgeTX-supported platforms.
+sources:
+- flysky-home
+- edgetx-supportedradios

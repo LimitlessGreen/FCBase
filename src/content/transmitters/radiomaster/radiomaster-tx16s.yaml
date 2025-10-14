@@ -1,0 +1,39 @@
+id: radiomaster-tx16s
+title: RadioMaster TX16S Series
+brand: radiomaster
+support:
+  level: official
+  since_version: v2.4
+  status: supported
+hardware:
+  revisions:
+  - id: tx16s
+    name: TX16S
+    notes: EdgeTX has supported the TX16S since the project launch in v2.4.
+    sources:
+    - edgetx-supportedradios
+  - id: tx16s-max
+    name: TX16S MAX
+    notes: Premium MAX variant listed alongside the TX16S in the official EdgeTX support table.
+    sources:
+    - edgetx-supportedradios
+  - id: tx16s-mark-ii
+    name: TX16S Mark II
+    notes: EdgeTX recognizes the Mark II refresh as part of the supported TX16S family.
+    sources:
+    - edgetx-supportedradios
+compliance:
+- type: fcc
+  id: 2A2UN-TX16S
+  url: https://fccid.io/2A2UN-TX16S
+sources:
+- edgetx-supportedradios
+- fcc-radiomaster-tx16s
+keywords:
+- EdgeTX
+- RadioMaster
+- TX16S
+- transmitter
+verification:
+  level: community
+  last_updated: "2025-10-14"
