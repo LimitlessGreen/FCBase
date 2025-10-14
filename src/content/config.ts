@@ -13,6 +13,79 @@ const firmwareSchema = z.object({
   status: z.enum(['beta', 'stable', 'deprecated', 'community']),
 });
 
+// Shared power schemas
+const voltageRangeSchema = z
+  .object({
+    min: z.number().optional(),
+    max: z.number().optional(),
+    nominal: z.number().optional(),
+    cells: z
+      .object({
+        min: z.number().int().min(1).optional(),
+        max: z.number().int().min(1).optional(),
+      })
+      .refine(
+        (value) => value.min !== undefined || value.max !== undefined,
+        {
+          message: 'cells must include a min or max value',
+        }
+      )
+      .optional(),
+    unit: z.literal('V').optional(),
+    notes: z.string().optional(),
+  })
+  .refine(
+    (value) =>
+      value.min !== undefined ||
+      value.max !== undefined ||
+      value.nominal !== undefined ||
+      value.cells !== undefined ||
+      !!value.notes,
+    {
+      message: 'voltage range requires at least one value or note',
+    }
+  );
+
+const currentSpecSchema = z
+  .object({
+    continuous: z.number().optional(),
+    peak: z.number().optional(),
+    max: z.number().optional(),
+    unit: z.literal('A').optional(),
+    notes: z.string().optional(),
+  })
+  .refine(
+    (value) =>
+      value.continuous !== undefined ||
+      value.peak !== undefined ||
+      value.max !== undefined ||
+      !!value.notes,
+    {
+      message: 'current specification requires a value or note',
+    }
+  );
+
+const powerInputSchema = z
+  .object({
+    name: z.string(),
+    type: z
+      .enum(['power_module', 'usb', 'battery', 'regulator', 'servo_rail', 'other'])
+      .optional(),
+    connector: z.string().optional(),
+    voltage: voltageRangeSchema.optional(),
+    current: currentSpecSchema.optional(),
+    notes: z.string().optional(),
+  })
+  .superRefine((value, ctx) => {
+    if (!value.voltage && !value.notes) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'power inputs require voltage information or descriptive notes',
+        path: ['voltage'],
+      });
+    }
+  });
+
 // Controllers collection schema
 const controllersCollection = defineCollection({
   type: 'data',
@@ -28,11 +101,22 @@ const controllersCollection = defineCollection({
       height_mm: z.number().optional(),
       weight_g: z.number().optional(),
     }).optional(),
-    power: z.object({
-      voltage_in: z.string(),
-      redundant: z.boolean().optional(),
-      notes: z.string().optional(),
-    }),
+    power: z
+      .object({
+        voltage_in: z.string().optional(),
+        inputs: z.array(powerInputSchema).min(1).optional(),
+        redundant: z.boolean().optional(),
+        notes: z.string().optional(),
+      })
+      .superRefine((value, ctx) => {
+        if (!value.voltage_in && (!value.inputs || value.inputs.length === 0)) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: 'define either power.voltage_in or power.inputs',
+            path: ['voltage_in'],
+          });
+        }
+      }),
     io: z.object({
       uarts: z.number().int().min(0),
       can: z.number().int().min(0),
