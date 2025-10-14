@@ -1,5 +1,5 @@
 ---
-import { getCollection, getEntry } from 'astro:content';
+import { getCollection } from 'astro:content';
 import DetailHeader from '@/components/detail/DetailHeader.astro';
 import DetailPageLayout from '@/components/detail/DetailPageLayout.astro';
 import DetailSection from '@/components/detail/DetailSection.astro';
@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/Badge';
 import StatusBadge from '@/components/ui/StatusBadge.astro';
 import ProfessionalTable from '@/components/table/ProfessionalTable.astro';
 import TableRow from '@/components/table/TableRow.astro';
-import { getManufacturersMap } from '@/lib/content-cache';
+import { getManufacturersMap, getSourcesMap } from '@/lib/content-cache';
 
 interface SourceMeta {
   id: string;
@@ -56,16 +56,15 @@ for (const revision of hardwareRevisions) {
   revision.sources?.forEach((sourceId) => allSourceIds.add(sourceId));
 }
 
-const sourceEntries: SourceMeta[] = await Promise.all(
-  Array.from(allSourceIds).map(async (sourceId) => {
-    const entry = await getEntry('sources', sourceId);
-    return {
-      id: sourceId,
-      title: entry?.data.title ?? sourceId,
-      url: entry?.data.url ?? null,
-    } satisfies SourceMeta;
-  })
-);
+const sourcesMap = await getSourcesMap();
+const sourceEntries: SourceMeta[] = Array.from(allSourceIds).map((sourceId) => {
+  const entry = sourcesMap.get(sourceId);
+  return {
+    id: sourceId,
+    title: entry?.data.title ?? sourceId,
+    url: entry?.data.url ?? null,
+  } satisfies SourceMeta;
+});
 
 const sourceMap = new Map(sourceEntries.map((source) => [source.id, source]));
 const topLevelSources = data.sources

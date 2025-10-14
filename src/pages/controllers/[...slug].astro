@@ -27,7 +27,7 @@ import {
   normalizePeripheralInterfaces,
 } from '@/lib/data-utils';
 import { resolveControllerPreviewImage } from '@/lib/controller-images';
-import { getManufacturersMap } from '@/lib/content-cache';
+import { getFirmwareMap, getManufacturersMap, getSourcesMap } from '@/lib/content-cache';
 import { 
   Cpu, 
   Package,
@@ -95,48 +95,44 @@ const manufacturers = await getManufacturersMap();
 const manufacturer = data.brand ? manufacturers.get(data.brand) ?? null : null;
 const manufacturerName = getManufacturerName(manufacturer, data.brand);
 const mcu = data.mcu ? await getEntry('mcu', data.mcu) : null;
-const firmware = await Promise.all(
-  data.firmware_support.map(async (fw) => {
-    const entry = await getEntry('firmware', fw.id);
-    return { ...fw, name: entry?.data.title || entry?.data.name || fw.id };
-  })
-);
+const firmwareMap = await getFirmwareMap();
+const firmware = data.firmware_support.map((fw) => {
+  const entry = firmwareMap.get(fw.id);
+  return { ...fw, name: entry?.data.title || entry?.data.name || fw.id };
+});
 
 const revisionVariants = buildRevisionVariants(data);
 
 // Use data-utils for sensor deduplication
 const uniqueSensorIds = extractUniqueSensorIds(revisionVariants);
 const sensorNameMap = await fetchSensorNameMap(uniqueSensorIds);
+const sourcesMap = await getSourcesMap();
 
-const revisionVariantsWithSensors = await Promise.all(
-  revisionVariants.map(async (variant) => {
-    const revision = variant.revision;
-    const sourceEntries = revision?.sources
-      ? await Promise.all(
-          revision.sources.map(async (sourceId) => {
-            const entry = await getEntry('sources', sourceId);
-            return {
-              id: sourceId,
-              title: entry?.data.title ?? sourceId,
-              url: entry?.data.url ?? null,
-            };
-          })
-        )
-      : [];
+const revisionVariantsWithSensors = revisionVariants.map((variant) => {
+  const revision = variant.revision;
+  const sourceEntries = revision?.sources
+    ? revision.sources.map((sourceId) => {
+        const entry = sourcesMap.get(sourceId);
+        return {
+          id: sourceId,
+          title: entry?.data.title ?? sourceId,
+          url: entry?.data.url ?? null,
+        };
+      })
+    : [];
 
-    const sensorDetails = {
-      imu: mapSensorsWithNames(variant.spec.sensors?.imu, sensorNameMap),
-      barometer: mapSensorsWithNames(variant.spec.sensors?.barometer, sensorNameMap),
-      magnetometer: mapSensorsWithNames(variant.spec.sensors?.magnetometer, sensorNameMap),
-    };
+  const sensorDetails = {
+    imu: mapSensorsWithNames(variant.spec.sensors?.imu, sensorNameMap),
+    barometer: mapSensorsWithNames(variant.spec.sensors?.barometer, sensorNameMap),
+    magnetometer: mapSensorsWithNames(variant.spec.sensors?.magnetometer, sensorNameMap),
+  };
 
-    return {
-      ...variant,
-      sourceEntries,
-      sensorDetails,
-    };
-  })
-);
+  return {
+    ...variant,
+    sourceEntries,
+    sensorDetails,
+  };
+});
 
 const defaultVariantId = revisionVariantsWithSensors[0]?.id ?? 'base';
 const hasMultipleVariants = revisionVariantsWithSensors.length > 1;

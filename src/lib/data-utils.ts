@@ -8,8 +8,8 @@
  * - Common data transformations
  */
 
-import { getEntry } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
+import { getSensorsMap } from '@/lib/content-cache';
 
 /**
  * Sensor with enriched name data
@@ -72,18 +72,14 @@ export async function fetchSensorNameMap(
   sensorIds: Set<string> | string[]
 ): Promise<Map<string, string>> {
   const ids = Array.isArray(sensorIds) ? sensorIds : Array.from(sensorIds);
-  
-  const sensorEntries = await Promise.all(
-    ids.map(async (sensorId) => {
-      const entry = await getEntry('sensors', sensorId);
-      return {
-        id: sensorId,
-        name: entry?.data.title || entry?.data.name || sensorId,
-      };
-    })
-  );
-  
-  return new Map(sensorEntries.map((entry) => [entry.id, entry.name]));
+  const sensorsMap = await getSensorsMap();
+
+  return ids.reduce((map, sensorId) => {
+    const entry = sensorsMap.get(sensorId);
+    const name = entry?.data.title || entry?.data.name || sensorId;
+    map.set(sensorId, name);
+    return map;
+  }, new Map<string, string>());
 }
 
 /**
