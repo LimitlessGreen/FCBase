@@ -1,0 +1,207 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import MainLayout from '@/layouts/MainLayout.astro';
+import { Card, CardContent, CardHeader } from '@/components/ui/Card';
+import { Badge } from '@/components/ui/Badge';
+
+export async function getStaticPaths() {
+  const mcus = await getCollection('mcu');
+  return mcus.map((mcu) => ({
+    params: { slug: mcu.id },
+    props: { mcu },
+  }));
+}
+
+const { mcu } = Astro.props;
+const { data } = mcu;
+
+const allControllers = await getCollection('controllers');
+const controllersUsingMcu = allControllers
+  .filter((controller) => controller.data.mcu === mcu.id)
+  .sort((a, b) => a.data.title.localeCompare(b.data.title));
+
+const clockMhz =
+  data.clock_mhz ??
+  data.clock_speed_mhz ??
+  data.frequency_mhz ??
+  (typeof data.clock_speed === 'number' ? data.clock_speed : undefined);
+
+const flashKb =
+  data.flash_kb ??
+  (typeof data.flash_mb === 'number' ? data.flash_mb * 1024 : undefined) ??
+  (typeof data.flash === 'number' ? data.flash : undefined);
+
+const ramKb =
+  data.sram_kb ??
+  data.ram_kb ??
+  (typeof data.ram_mb === 'number' ? data.ram_mb * 1024 : undefined);
+
+const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout
+  title={`${data.name || data.title || mcu.id} - MCUs - FCBase`}
+  description={`Technical profile for ${data.name || data.title || mcu.id}. ${data.manufacturer ? `Manufactured by ${data.manufacturer}. ` : ''}${data.architecture ? `Architecture: ${data.architecture}. ` : ''}${data.notes || ''}`}
+>
+  <MainLayout>
+    <div class="container py-8">
+      <nav class="mb-6 flex items-center gap-2 text-sm text-muted-foreground">
+        <a href={`${basePath}/`} class="hover:text-foreground transition-colors">Home</a>
+        <span>/</span>
+        <a href={`${basePath}/mcu`} class="hover:text-foreground transition-colors">MCUs</a>
+        <span>/</span>
+        <span class="text-foreground">{data.name || data.title || mcu.id}</span>
+      </nav>
+
+      <div class="mb-6">
+        <h1 class="text-3xl font-bold tracking-tight mb-2">{data.name || data.title || mcu.id}</h1>
+        {(data.manufacturer || data.architecture) && (
+          <p class="text-base text-muted-foreground mb-2">
+            {[data.manufacturer, data.architecture].filter(Boolean).join(' • ')}
+          </p>
+        )}
+        {data.notes && <p class="text-sm text-muted-foreground max-w-3xl">{data.notes}</p>}
+      </div>
+
+      <div class="grid gap-6 lg:grid-cols-3">
+        <Card client:load class="lg:col-span-2">
+          <CardHeader>
+            <h2 class="text-base font-bold uppercase tracking-wide text-primary">Technical Specifications</h2>
+          </CardHeader>
+          <CardContent class="pt-0">
+            <table class="w-full text-sm border-collapse">
+              <tbody>
+                {(data.manufacturer || data.architecture) && (
+                  <tr class="border-b border-border hover:bg-muted/40 transition-colors">
+                    <td class="py-2 px-3 text-muted-foreground font-medium text-xs uppercase w-1/4">Manufacturer</td>
+                    <td class="py-2 px-3 font-semibold">{data.manufacturer || '—'}</td>
+                    <td class="py-2 px-3 text-muted-foreground font-medium text-xs uppercase w-1/4">Architecture</td>
+                    <td class="py-2 px-3 font-semibold">{data.architecture || '—'}</td>
+                  </tr>
+                )}
+                {(clockMhz || flashKb) && (
+                  <tr class="border-b border-border hover:bg-muted/30 transition-colors">
+                    <td class="py-2 px-3 text-muted-foreground font-medium text-xs uppercase">Clock</td>
+                    <td class="py-2 px-3 font-mono font-semibold">{clockMhz ? `${clockMhz} MHz` : '—'}</td>
+                    <td class="py-2 px-3 text-muted-foreground font-medium text-xs uppercase">Flash</td>
+                    <td class="py-2 px-3 font-mono font-semibold">
+                      {flashKb
+                        ? flashKb >= 1024
+                          ? `${(flashKb / 1024).toFixed(0)} MB`
+                          : `${flashKb} KB`
+                        : '—'}
+                    </td>
+                  </tr>
+                )}
+                {(ramKb || Array.isArray(data.features)) && (
+                  <tr class="border-b border-border hover:bg-muted/20 transition-colors align-top">
+                    <td class="py-2 px-3 text-muted-foreground font-medium text-xs uppercase">RAM</td>
+                    <td class="py-2 px-3 font-mono font-semibold">{ramKb ? (ramKb >= 1024 ? `${(ramKb / 1024).toFixed(0)} MB` : `${ramKb} KB`) : '—'}</td>
+                    <td class="py-2 px-3 text-muted-foreground font-medium text-xs uppercase">Features</td>
+                    <td class="py-2 px-3">
+                      {Array.isArray(data.features) && data.features.length > 0 ? (
+                        <ul class="list-disc pl-4 space-y-1 text-sm text-muted-foreground">
+                          {data.features.map((feature) => (
+                            <li>{feature}</li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <span class="text-muted-foreground">—</span>
+                      )}
+                    </td>
+                  </tr>
+                )}
+                {Array.isArray(data.sources) && data.sources.length > 0 && (
+                  <tr class="hover:bg-muted/10 transition-colors">
+                    <td class="py-2 px-3 text-muted-foreground font-medium text-xs uppercase">Sources</td>
+                    <td colspan="3" class="py-2 px-3">
+                      <div class="flex flex-wrap gap-2">
+                        {data.sources.map((sourceId) => (
+                          <Badge variant="outline" className="text-xs uppercase">{sourceId}</Badge>
+                        ))}
+                      </div>
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </CardContent>
+        </Card>
+
+        {controllersUsingMcu.length > 0 && (
+          <Card client:load>
+            <CardHeader>
+              <h2 class="text-base font-bold uppercase tracking-wide text-primary">Usage Overview</h2>
+            </CardHeader>
+            <CardContent class="pt-0">
+              <div class="space-y-2 text-sm">
+                <div class="flex items-center justify-between">
+                  <span class="text-muted-foreground uppercase text-xs">Controllers</span>
+                  <span class="font-semibold">{controllersUsingMcu.length}</span>
+                </div>
+                {clockMhz && (
+                  <div class="flex items-center justify-between">
+                    <span class="text-muted-foreground uppercase text-xs">Clock</span>
+                    <span class="font-mono font-semibold">{clockMhz} MHz</span>
+                  </div>
+                )}
+                {flashKb && (
+                  <div class="flex items-center justify-between">
+                    <span class="text-muted-foreground uppercase text-xs">Flash</span>
+                    <span class="font-mono font-semibold">
+                      {flashKb >= 1024 ? `${(flashKb / 1024).toFixed(0)} MB` : `${flashKb} KB`}
+                    </span>
+                  </div>
+                )}
+                {ramKb && (
+                  <div class="flex items-center justify-between">
+                    <span class="text-muted-foreground uppercase text-xs">RAM</span>
+                    <span class="font-mono font-semibold">
+                      {ramKb >= 1024 ? `${(ramKb / 1024).toFixed(0)} MB` : `${ramKb} KB`}
+                    </span>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+      </div>
+
+      <div class="mt-10">
+        <h2 class="text-xl font-bold tracking-tight mb-4 uppercase text-primary">Controllers Using This MCU</h2>
+        {controllersUsingMcu.length > 0 ? (
+          <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {controllersUsingMcu.map((controller) => (
+              <a href={`${basePath}/controllers/${controller.id}`} class="group block">
+                <Card client:load class="h-full transition-all hover:shadow-lg hover:-translate-y-1 border-2 hover:border-primary/30">
+                  <CardContent class="pt-4 pb-3 px-3">
+                    <h3 class="font-bold text-sm mb-1.5 line-clamp-2 group-hover:text-primary transition-colors">
+                      {controller.data.title}
+                    </h3>
+                    <p class="text-xs text-muted-foreground mb-2.5 font-medium">{controller.data.brand}</p>
+                    <div class="flex flex-wrap gap-1 mb-2.5">
+                      <Badge variant="outline" className="text-xs px-1.5 py-0.5 font-mono font-semibold">
+                        {controller.data.mcu.replace('stmicro-', '').toUpperCase()}
+                      </Badge>
+                      <Badge variant="outline" className="text-xs px-1.5 py-0.5 font-medium">
+                        {controller.data.mounting}
+                      </Badge>
+                    </div>
+                    <p class="text-xs text-muted-foreground font-mono font-semibold">
+                      {controller.data.io.uarts}U • {controller.data.io.can || 0}C • {controller.data.io.pwm || 0}PWM
+                    </p>
+                  </CardContent>
+                </Card>
+              </a>
+            ))}
+          </div>
+        ) : (
+          <div class="text-center py-8 bg-muted/30 rounded-lg border-2 border-dashed border-muted">
+            <p class="text-sm text-muted-foreground font-medium">No controllers using this MCU in the database yet.</p>
+          </div>
+        )}
+      </div>
+    </div>
+  </MainLayout>
+</BaseLayout>

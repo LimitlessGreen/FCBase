@@ -46,6 +46,9 @@ export function Footer({ className, basePath = "" }: FooterProps) {
               <a href={`${basePath}/sensors`} className="text-muted-foreground hover:text-foreground transition-colors">
                 Sensors
               </a>
+              <a href={`${basePath}/mcu`} className="text-muted-foreground hover:text-foreground transition-colors">
+                MCUs
+              </a>
               <a href={`${basePath}/manufacturers`} className="text-muted-foreground hover:text-foreground transition-colors">
                 Manufacturers
               </a>
