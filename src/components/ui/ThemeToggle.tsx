@@ -1,45 +1,129 @@
 import * as React from "react";
-import { Moon, Sun } from "lucide-react";
+import { Laptop, Moon, Sun } from "lucide-react";
 import { Button } from "./Button";
 
+type ThemeMode = "light" | "dark" | "system";
+type ResolvedTheme = "light" | "dark";
+
+const THEME_STORAGE_KEY = "theme";
+
+const isThemeMode = (value: unknown): value is ThemeMode =>
+  value === "light" || value === "dark" || value === "system";
+
+const getSystemPreference = (): ResolvedTheme => {
+  if (typeof window === "undefined") {
+    return "light";
+  }
+
+  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+};
+
+const resolveTheme = (mode: ThemeMode): ResolvedTheme =>
+  mode === "system" ? getSystemPreference() : mode;
+
+const getInitialMode = (): ThemeMode => {
+  if (typeof document !== "undefined") {
+    const datasetMode = document.documentElement.dataset.themeMode;
+    if (isThemeMode(datasetMode)) {
+      return datasetMode;
+    }
+  }
+
+  if (typeof window !== "undefined") {
+    const stored = window.localStorage.getItem(THEME_STORAGE_KEY);
+    if (isThemeMode(stored)) {
+      return stored;
+    }
+  }
+
+  return "system";
+};
+
+const getInitialResolvedTheme = (): ResolvedTheme => {
+  if (typeof document !== "undefined") {
+    const datasetResolved = document.documentElement.dataset.themeResolved;
+    if (datasetResolved === "dark" || datasetResolved === "light") {
+      return datasetResolved;
+    }
+  }
+
+  return resolveTheme(getInitialMode());
+};
+
 export function ThemeToggle() {
-  const [theme, setTheme] = React.useState<"light" | "dark">("light");
+  const [mode, setMode] = React.useState<ThemeMode>(getInitialMode);
+  const [resolvedTheme, setResolvedTheme] = React.useState<ResolvedTheme>(getInitialResolvedTheme);
 
   React.useEffect(() => {
-    // Get initial theme from localStorage or system preference
-    const isDark = localStorage.getItem("theme") === "dark" ||
-      (!localStorage.getItem("theme") && window.matchMedia("(prefers-color-scheme: dark)").matches);
-    
-    setTheme(isDark ? "dark" : "light");
-  }, []);
-
-  const toggleTheme = () => {
-    const newTheme = theme === "light" ? "dark" : "light";
-    setTheme(newTheme);
-    
-    // Update localStorage
-    localStorage.setItem("theme", newTheme);
-    
-    // Update DOM
-    if (newTheme === "dark") {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
+    if (typeof document === "undefined") {
+      return;
     }
+
+    const root = document.documentElement;
+    const nextResolvedTheme = resolveTheme(mode);
+
+    root.classList.toggle("dark", nextResolvedTheme === "dark");
+    root.dataset.themeMode = mode;
+    root.dataset.themeResolved = nextResolvedTheme;
+    setResolvedTheme(nextResolvedTheme);
+
+    if (typeof localStorage !== "undefined") {
+      localStorage.setItem(THEME_STORAGE_KEY, mode);
+    }
+  }, [mode]);
+
+  React.useEffect(() => {
+    if (mode !== "system" || typeof window === "undefined") {
+      return;
+    }
+
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    const handleChange = (event: MediaQueryListEvent) => {
+      const nextResolvedTheme: ResolvedTheme = event.matches ? "dark" : "light";
+      setResolvedTheme(nextResolvedTheme);
+
+      if (typeof document !== "undefined") {
+        const root = document.documentElement;
+        root.classList.toggle("dark", nextResolvedTheme === "dark");
+        root.dataset.themeResolved = nextResolvedTheme;
+      }
+    };
+
+    mediaQuery.addEventListener("change", handleChange);
+    return () => mediaQuery.removeEventListener("change", handleChange);
+  }, [mode]);
+
+  const cycleTheme = () => {
+    setMode((currentMode) => {
+      if (currentMode === "light") {
+        return "dark";
+      }
+
+      if (currentMode === "dark") {
+        return "system";
+      }
+
+      return "light";
+    });
   };
+
+  const icon = {
+    light: <Sun className="h-5 w-5" />,
+    dark: <Moon className="h-5 w-5" />,
+    system: <Laptop className="h-5 w-5" />,
+  }[mode];
+
+  const label = `Toggle theme (current: ${mode === "system" ? `system · ${resolvedTheme}` : mode} mode)`;
 
   return (
     <Button
       variant="ghost"
       size="icon"
-      onClick={toggleTheme}
-      aria-label="Toggle theme"
+      onClick={cycleTheme}
+      aria-label={label}
+      title={label}
     >
-      {theme === "light" ? (
-        <Moon className="h-5 w-5" />
-      ) : (
-        <Sun className="h-5 w-5" />
-      )}
+      {icon}
     </Button>
   );
 }

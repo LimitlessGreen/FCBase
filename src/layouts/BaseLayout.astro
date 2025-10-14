@@ -26,22 +26,33 @@ const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
     
     <!-- Theme initialization script - prevents FOUC -->
     <script is:inline>
-      // Check for saved theme preference or default to system preference
-      const theme = (() => {
-        if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
-          return localStorage.getItem('theme');
-        }
-        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-          return 'dark';
-        }
-        return 'light';
-      })();
+      const THEME_STORAGE_KEY = 'theme';
+      const THEME_MODES = ['light', 'dark', 'system'];
 
-      // Apply theme immediately before page renders
-      if (theme === 'dark') {
-        document.documentElement.classList.add('dark');
+      const getStoredTheme = () => {
+        if (typeof localStorage === 'undefined') return null;
+        const value = localStorage.getItem(THEME_STORAGE_KEY);
+        return THEME_MODES.includes(value) ? value : null;
+      };
+
+      const resolveTheme = (mode) => {
+        if (mode === 'dark' || mode === 'light') {
+          return mode;
+        }
+        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      };
+
+      const themeMode = getStoredTheme() ?? 'system';
+      const resolvedTheme = resolveTheme(themeMode);
+
+      const root = document.documentElement;
+      root.dataset.themeMode = themeMode;
+      root.dataset.themeResolved = resolvedTheme;
+
+      if (resolvedTheme === 'dark') {
+        root.classList.add('dark');
       } else {
-        document.documentElement.classList.remove('dark');
+        root.classList.remove('dark');
       }
     </script>
   </head>
