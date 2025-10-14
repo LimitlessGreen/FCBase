@@ -34,7 +34,7 @@ import {
 } from 'lucide-react';
 
 // Auto-import any local images placed in src/assets/images/controllers
-const localControllerImages = import.meta.glob('/src/assets/images/controllers/*.{jpg,jpeg,png,webp,avif}', { eager: true, as: 'url' });
+const localControllerImages = import.meta.glob('/src/assets/images/controllers/*.{jpg,jpeg,png,webp,avif}', { eager: true, query: '?url', import: 'default' });
 const localImageMap = Object.fromEntries(
   Object.entries(localControllerImages).map(([p, url]) => {
     const file = p.split('/').pop();
