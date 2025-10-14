@@ -3,6 +3,10 @@ title: CUAV Pixhawk v6X
 brand: cuav
 mcu: stmicro-stm32h753
 mounting: cube
+images:
+- alt: "CUAV Pixhawk V6X autopilot in its black aluminum enclosure with labeled power and data ports."
+  credit: "ArduPilot Documentation"
+  source_url: "https://raw.githubusercontent.com/ArduPilot/ardupilot_wiki/master/common/source/docs/common-cuav-pixhawkv6X.rst"
 power:
   notes: Dual SMBus/I2C power module inputs with CAN power module included; servo
     rail tolerant to 36V.

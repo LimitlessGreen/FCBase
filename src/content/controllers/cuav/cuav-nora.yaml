@@ -3,6 +3,10 @@ title: CUAV Nora
 brand: cuav
 mcu: stmicro-stm32h743
 mounting: custom
+images:
+- alt: "CUAV Nora autopilot cube resting on its base with connectors visible along the sides."
+  credit: "ArduPilot Documentation"
+  source_url: "https://ardupilot.org/copter/docs/common-cuav-nora-overview.html"
 dimensions:
   weight_g: 101
 power:

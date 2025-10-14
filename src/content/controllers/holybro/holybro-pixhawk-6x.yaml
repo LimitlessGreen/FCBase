@@ -3,6 +3,10 @@ title: Holybro Pixhawk 6X
 brand: holybro
 mcu: stmicro-stm32h753
 mounting: cube
+images:
+- alt: "Holybro Pixhawk 6X modular cube flight controller mounted on its baseboard."
+  credit: "Holybro Store"
+  source_url: "https://holybro.com/products/pixhawk-6x"
 dimensions:
   height_mm: 14.6
   length_mm: 38.8

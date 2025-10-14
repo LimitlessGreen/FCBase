@@ -3,6 +3,10 @@ title: Mateksys H743-Wing
 brand: mateksys
 mcu: stmicro-stm32h743
 mounting: wing
+images:
+- alt: "Mateksys H743-Wing board showing dual IMU shielding and servo headers across the edges."
+  credit: "Mateksys"
+  source_url: "https://www.mateksys.com/?portfolio=h743-wing"
 dimensions:
   height_mm: 13
   length_mm: 54

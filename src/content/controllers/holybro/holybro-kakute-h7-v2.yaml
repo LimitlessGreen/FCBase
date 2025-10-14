@@ -3,6 +3,10 @@ title: Holybro Kakute H7 V2
 brand: holybro
 mcu: stmicro-stm32h743
 mounting: custom
+images:
+- alt: "Holybro Kakute H7 V2 flight controller board shown at an angle highlighting the stacked layout."
+  credit: "Holybro Store"
+  source_url: "https://holybro.com/products/kakute-h7-v2"
 power:
   voltage_in: 2S-8S LiPo main input, USB 5V
   notes: Includes 9V/1.5A BEC for HD video systems and supports external current monitoring.

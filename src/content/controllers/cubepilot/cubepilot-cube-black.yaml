@@ -3,6 +3,10 @@ title: CubePilot Cube Black
 brand: cubepilot
 mcu: stmicro-stm32f427
 mounting: cube
+images:
+- alt: "CubePilot Cube Black autopilot module seated on its carrier board with exposed connectors."
+  credit: "ArduPilot Documentation"
+  source_url: "https://ardupilot.org/copter/docs/common-thecube-overview.html"
 power:
   voltage_in: 4.1-5.7V redundant power rails, USB 4.75-5.25V
   redundant: true
