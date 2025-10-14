@@ -40,10 +40,18 @@ function deriveGithubRepoUrl(remoteUrl) {
   return "";
 }
 
-const commitHashShort = getGitValue("git rev-parse --short HEAD");
-const commitHashFull = getGitValue("git rev-parse HEAD");
-const commitAuthor = getGitValue("git log -1 --pretty=format:%an");
-const commitDateIso = getGitValue("git log -1 --pretty=format:%cI");
+const gitLogOutput = getGitValue(
+  "git log -1 --pretty=format:%h%x1f%H%x1f%an%x1f%cI"
+);
+const gitLogFields = gitLogOutput
+  ? gitLogOutput.split("\x1f").map((value) => value.trim())
+  : [];
+const [
+  commitHashShort = "",
+  commitHashFull = "",
+  commitAuthor = "",
+  commitDateIso = "",
+] = gitLogFields;
 const remoteOriginUrl = getGitValue("git config --get remote.origin.url");
 const githubRepoUrl =
   deriveGithubRepoUrl(remoteOriginUrl) || "https://github.com/LimitlessGreen/FCBase";
