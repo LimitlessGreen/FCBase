@@ -1,19 +1,22 @@
 ---
-import { getCollection, getEntry } from 'astro:content';
+import { getCollection } from 'astro:content';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import MainLayout from '@/layouts/MainLayout.astro';
 import { ControllerSearch } from '@/components/ui/ControllerSearch';
 import ControllerCard from '@/components/cards/ControllerCard.astro';
 import { resolveControllerPreviewImage } from '@/lib/controller-images';
+import { getManufacturersMap } from '@/lib/content-cache';
 
 // Load all controllers
 const allControllers = await getCollection('controllers');
+
+const manufacturers = await getManufacturersMap();
 
 // Fetch manufacturer names
 const controllersWithMeta = await Promise.all(
   allControllers.map(async (controller) => {
     const manufacturer = controller.data.brand
-      ? await getEntry('manufacturers', controller.data.brand)
+      ? manufacturers.get(controller.data.brand) ?? null
       : null;
 
     return {
