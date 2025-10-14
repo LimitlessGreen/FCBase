@@ -3,12 +3,82 @@ import { Github, Twitter, Mail } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { GITHUB_REPO_URL } from "@/lib/constants";
 
+const RELATIVE_TIME_DIVISIONS: Array<{ amount: number; unit: Intl.RelativeTimeFormatUnit }> = [
+  { amount: 60, unit: "second" },
+  { amount: 60, unit: "minute" },
+  { amount: 24, unit: "hour" },
+  { amount: 7, unit: "day" },
+  { amount: 4.34524, unit: "week" },
+  { amount: 12, unit: "month" },
+  { amount: Number.POSITIVE_INFINITY, unit: "year" },
+];
+
+function getRelativeTimeFromIso(isoDate: string) {
+  if (!isoDate) {
+    return "";
+  }
+
+  const commitDate = new Date(isoDate);
+
+  if (Number.isNaN(commitDate.getTime())) {
+    return "";
+  }
+
+  const formatter = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
+  let duration = (commitDate.getTime() - Date.now()) / 1000;
+
+  for (const division of RELATIVE_TIME_DIVISIONS) {
+    if (Math.abs(duration) < division.amount) {
+      return formatter.format(Math.round(duration), division.unit);
+    }
+
+    duration /= division.amount;
+  }
+
+  return "";
+}
+
+function getFormattedCommitDate(isoDate: string) {
+  if (!isoDate) {
+    return "";
+  }
+
+  const commitDate = new Date(isoDate);
+
+  if (Number.isNaN(commitDate.getTime())) {
+    return "";
+  }
+
+  return new Intl.DateTimeFormat("en-US", {
+    dateStyle: "medium",
+    timeStyle: "short",
+  }).format(commitDate);
+}
+
 interface FooterProps {
   className?: string;
   basePath?: string;
 }
 
 export function Footer({ className, basePath = "" }: FooterProps) {
+  const commitHash = import.meta.env.PUBLIC_GIT_COMMIT_HASH;
+  const commitHashFull = import.meta.env.PUBLIC_GIT_COMMIT_HASH_FULL;
+  const commitAuthor = import.meta.env.PUBLIC_GIT_COMMIT_AUTHOR;
+  const commitDate = import.meta.env.PUBLIC_GIT_COMMIT_DATE;
+
+  const formattedDateRaw = React.useMemo(() => getFormattedCommitDate(commitDate), [commitDate]);
+  const formattedDate = formattedDateRaw || "Unknown date";
+  const relativeTime = React.useMemo(() => getRelativeTimeFromIso(commitDate), [commitDate]);
+  const commitUrl = React.useMemo(() => {
+    if (!commitHashFull) {
+      return "";
+    }
+
+    return `${GITHUB_REPO_URL}/commit/${commitHashFull}`;
+  }, [commitHashFull]);
+
+  const hasCommitInfo = Boolean(commitHash && commitAuthor);
+
   return (
     <footer className={cn("border-t bg-background", className)}>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 md:py-16">
@@ -100,10 +170,31 @@ export function Footer({ className, basePath = "" }: FooterProps) {
           </div>
         </div>
 
-        <div className="mt-12 border-t pt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <p className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} FCBase. All rights reserved.
-          </p>
+        <div className="mt-12 border-t pt-8 flex flex-col sm:flex-row justify-between items-center gap-6 sm:gap-4">
+          <div className="flex flex-col items-center sm:items-start gap-2 text-center sm:text-left">
+            <p className="text-sm text-muted-foreground">
+              © {new Date().getFullYear()} FCBase. All rights reserved.
+            </p>
+            {hasCommitInfo ? (
+              <p className="text-xs text-muted-foreground">
+                Latest commit {commitUrl ? (
+                  <a
+                    href={commitUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-medium text-foreground underline-offset-4 hover:underline"
+                  >
+                    {commitHash}
+                  </a>
+                ) : (
+                  <span className="font-medium text-foreground">{commitHash}</span>
+                )}{" "}
+                by <span className="font-medium text-foreground">{commitAuthor}</span>{" "}
+                on {formattedDate}
+                {relativeTime ? ` (${relativeTime})` : ""}.
+              </p>
+            ) : null}
+          </div>
           <div className="flex gap-4 text-sm text-muted-foreground">
             <a href={`${basePath}/privacy`} className="hover:text-foreground transition-colors">
               Privacy Policy
