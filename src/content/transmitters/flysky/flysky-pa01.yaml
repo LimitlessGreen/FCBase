@@ -1,0 +1,29 @@
+id: flysky-pa01
+title: Flysky PA01
+brand: flysky
+support:
+  level: official
+  since_version: v2.11.3
+  status: supported
+hardware:
+  revisions:
+  - id: pa01
+    name: PA01
+    notes: Added to the official EdgeTX support list with firmware v2.11.3.
+    sources:
+    - edgetx-supportedradios
+compliance:
+- type: fcc
+  id: 2AIFD-PA01
+  url: https://fccid.io/2AIFD-PA01
+sources:
+- edgetx-supportedradios
+- fcc-flysky-pa01
+keywords:
+- EdgeTX
+- Flysky
+- PA01
+- transmitter
+verification:
+  level: community
+  last_updated: "2025-10-14"

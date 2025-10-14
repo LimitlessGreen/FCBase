@@ -1,0 +1,38 @@
+id: frsky-x9d-2019
+title: FrSky X9D 2019 Series
+brand: frsky
+support:
+  level: community
+  since_version: v2.4
+  status: supported
+hardware:
+  revisions:
+  - id: x9d-plus-2019
+    name: X9D+ 2019
+    notes: Community maintained EdgeTX builds cover the 2019 refresh starting at v2.4.
+    sources:
+    - edgetx-supportedradios
+  - id: x9d-plus-se-2019
+    name: X9D+ SE 2019
+    notes: EdgeTX lists the SE 2019 variant with the same ongoing support status.
+    sources:
+    - edgetx-supportedradios
+compliance:
+- type: fcc
+  id: XYF-X9DPLUS2019
+  url: https://fccid.io/XYF-X9DPLUS2019
+- type: fcc
+  id: XYF-X9DS2019
+  url: https://fccid.io/XYF-X9DS2019
+sources:
+- edgetx-supportedradios
+- fcc-frsky-x9dplus2019
+- fcc-frsky-x9ds2019
+keywords:
+- EdgeTX
+- FrSky
+- X9D 2019
+- transmitter
+verification:
+  level: community
+  last_updated: "2025-10-14"

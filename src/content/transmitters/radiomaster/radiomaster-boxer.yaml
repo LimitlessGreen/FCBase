@@ -1,0 +1,29 @@
+id: radiomaster-boxer
+title: RadioMaster Boxer
+brand: radiomaster
+support:
+  level: official
+  since_version: v2.8.1
+  status: supported
+hardware:
+  revisions:
+  - id: boxer
+    name: Boxer
+    notes: EdgeTX lists the Boxer as officially supported starting with v2.8.1.
+    sources:
+    - edgetx-supportedradios
+compliance:
+- type: fcc
+  id: 2A2UN-BOXER
+  url: https://fccid.io/2A2UN-BOXER
+sources:
+- edgetx-supportedradios
+- fcc-radiomaster-boxer
+keywords:
+- Boxer
+- EdgeTX
+- RadioMaster
+- transmitter
+verification:
+  level: community
+  last_updated: "2025-10-14"

@@ -1,0 +1,54 @@
+id: frsky-x9d
+title: FrSky X9D Series
+brand: frsky
+support:
+  level: community
+  since_version: v2.4
+  status: sunset
+  last_version: v2.11
+  notes: EdgeTX v2.11 is the final release supporting the original X9D lineup.
+hardware:
+  revisions:
+  - id: x9d
+    name: X9D
+    notes: Community support spans from EdgeTX v2.4 through v2.11.
+    sources:
+    - edgetx-supportedradios
+  - id: x9d-plus
+    name: X9D+
+    notes: Listed with the same sunset timeline in the EdgeTX documentation.
+    sources:
+    - edgetx-supportedradios
+  - id: x9d-plus-se
+    name: X9D+ SE
+    notes: EdgeTX cites the SE variant in the same support grouping.
+    sources:
+    - edgetx-supportedradios
+compliance:
+- type: fcc
+  id: XYF-X9D
+  url: https://fccid.io/XYF-X9D
+- type: fcc
+  id: XYF-X9DS
+  url: https://fccid.io/XYF-X9DS
+- type: fcc
+  id: XYF-X9DPLUS
+  url: https://fccid.io/XYF-X9DPLUS
+- type: fcc
+  id: XYF-X9DPLUSS
+  url: https://fccid.io/XYF-X9DPLUSS
+sources:
+- edgetx-supportedradios
+- fcc-frsky-x9d
+- fcc-frsky-x9ds
+- fcc-frsky-x9dplus
+- fcc-frsky-x9dpluss
+keywords:
+- EdgeTX
+- FrSky
+- X9D
+- transmitter
+verification:
+  level: community
+  last_updated: "2025-10-14"
+notes: EdgeTX confirms the retirement of the X9D series after firmware v2.11.

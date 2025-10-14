@@ -1,0 +1,29 @@
+id: jumper-t15
+title: Jumper T15
+brand: jumper-rc
+support:
+  level: official
+  since_version: v2.10.1
+  status: supported
+hardware:
+  revisions:
+  - id: t15
+    name: T15
+    notes: EdgeTX officially supports the T15 beginning with firmware v2.10.1.
+    sources:
+    - edgetx-supportedradios
+compliance:
+- type: fcc
+  id: 2AV3U-T15
+  url: https://fccid.io/2AV3U-T15
+sources:
+- edgetx-supportedradios
+- fcc-jumper-t15
+keywords:
+- EdgeTX
+- JumperRC
+- T15
+- transmitter
+verification:
+  level: community
+  last_updated: "2025-10-14"

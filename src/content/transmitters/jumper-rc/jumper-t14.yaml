@@ -1,0 +1,29 @@
+id: jumper-t14
+title: Jumper T14
+brand: jumper-rc
+support:
+  level: official
+  since_version: v2.10
+  status: supported
+hardware:
+  revisions:
+  - id: t14
+    name: T14
+    notes: Official EdgeTX support begins in v2.10 according to the supported radios list.
+    sources:
+    - edgetx-supportedradios
+compliance:
+- type: fcc
+  id: 2AV3U-T14
+  url: https://fccid.io/2AV3U-T14
+sources:
+- edgetx-supportedradios
+- fcc-jumper-t14
+keywords:
+- EdgeTX
+- JumperRC
+- T14
+- transmitter
+verification:
+  level: community
+  last_updated: "2025-10-14"

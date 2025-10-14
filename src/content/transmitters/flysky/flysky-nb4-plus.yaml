@@ -1,0 +1,31 @@
+id: flysky-nb4-plus
+title: Flysky NB4+
+brand: flysky
+support:
+  level: official
+  since_version: v2.11
+  status: limited
+  notes: Hardware modifications are required for full EdgeTX functionality and the internal RF module remains unsupported.
+hardware:
+  revisions:
+  - id: nb4-plus
+    name: NB4+
+    notes: EdgeTX documents the NB4+ as limited support with required hardware modifications.
+    sources:
+    - edgetx-supportedradios
+compliance:
+- type: fcc
+  id: 2AIFD-NB4PLUS
+  url: https://fccid.io/2AIFD-NB4PLUS
+sources:
+- edgetx-supportedradios
+- fcc-flysky-nb4plus
+keywords:
+- EdgeTX
+- Flysky
+- NB4+
+- transmitter
+verification:
+  level: community
+  last_updated: "2025-10-14"
+notes: Limited support details and hardware caveats documented by the EdgeTX supported radios list.

@@ -1,0 +1,32 @@
+id: betafpv-literadio3-pro
+title: BETAFPV LiteRadio 3 Pro
+brand: betafpv
+support:
+  level: manufacturer
+  since_version: v2.8
+  status: sunset
+  last_version: v2.11
+  notes: EdgeTX indicates v2.11 as the last firmware version maintained for the LiteRadio 3 Pro.
+hardware:
+  revisions:
+  - id: literadio-3-pro
+    name: LiteRadio 3 Pro
+    notes: Manufacturer-provided EdgeTX build supported through v2.11 only.
+    sources:
+    - edgetx-supportedradios
+compliance:
+- type: fcc
+  id: LITERADIO3PRO
+  url: https://fccid.io/LITERADIO3PRO
+sources:
+- edgetx-supportedradios
+- fcc-betafpv-literadio3pro
+keywords:
+- BETAFPV
+- EdgeTX
+- LiteRadio 3 Pro
+- transmitter
+verification:
+  level: community
+  last_updated: "2025-10-14"
+notes: Support window and retirement are documented in the EdgeTX supported radios list.

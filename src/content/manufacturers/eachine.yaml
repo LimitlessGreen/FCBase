@@ -1,0 +1,7 @@
+id: eachine
+name: Eachine
+website: https://www.eachine.com/
+description: Eachine offers value-focused FPV gear including rebranded EdgeTX-capable transmitters.
+sources:
+- eachine-home
+- edgetx-supportedradios

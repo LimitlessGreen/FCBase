@@ -1,0 +1,29 @@
+id: eachine-tx16s
+title: Eachine TX16S
+brand: eachine
+support:
+  level: community
+  since_version: v2.4
+  status: supported
+hardware:
+  revisions:
+  - id: tx16s-eachine
+    name: TX16S
+    notes: Community maintained EdgeTX builds have supported this rebadged platform since v2.4.
+    sources:
+    - edgetx-supportedradios
+compliance:
+- type: fcc
+  id: 2AW7J-TX16S
+  url: https://fccid.io/2AW7J-TX16S
+sources:
+- edgetx-supportedradios
+- fcc-eachine-tx16s
+keywords:
+- Eachine
+- EdgeTX
+- TX16S
+- transmitter
+verification:
+  level: community
+  last_updated: "2025-10-14"

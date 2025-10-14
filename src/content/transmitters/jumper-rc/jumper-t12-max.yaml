@@ -1,0 +1,29 @@
+id: jumper-t12-max
+title: Jumper T12 Max
+brand: jumper-rc
+support:
+  level: official
+  since_version: v2.10.3
+  status: supported
+hardware:
+  revisions:
+  - id: t12-max
+    name: T12 Max
+    notes: EdgeTX added the T12 Max to the official support list with firmware v2.10.3.
+    sources:
+    - edgetx-supportedradios
+compliance:
+- type: fcc
+  id: 2AV3U-T12MAX
+  url: https://fccid.io/2AV3U-T12MAX
+sources:
+- edgetx-supportedradios
+- fcc-jumper-t12max
+keywords:
+- EdgeTX
+- JumperRC
+- T12 Max
+- transmitter
+verification:
+  level: community
+  last_updated: "2025-10-14"

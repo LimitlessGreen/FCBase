@@ -1,0 +1,7 @@
+id: frsky
+name: FrSky
+website: https://www.frsky-rc.com/
+description: FrSky develops ACCST and ACCESS radio systems and long-standing transmitters used with EdgeTX.
+sources:
+- frsky-home
+- edgetx-supportedradios

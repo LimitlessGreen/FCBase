@@ -1,0 +1,31 @@
+id: radiomaster-mt12
+title: RadioMaster MT12
+brand: radiomaster
+support:
+  level: official
+  since_version: v2.10
+  status: supported
+  notes: EdgeTX notes that Companion support will follow for the MT12 platform.
+hardware:
+  revisions:
+  - id: mt12
+    name: MT12
+    notes: Recognized as an officially supported handheld radio since EdgeTX v2.10.
+    sources:
+    - edgetx-supportedradios
+compliance:
+- type: fcc
+  id: 2A2UN-MT12
+  url: https://fccid.io/2A2UN-MT12
+sources:
+- edgetx-supportedradios
+- fcc-radiomaster-mt12
+keywords:
+- EdgeTX
+- MT12
+- RadioMaster
+- transmitter
+verification:
+  level: community
+  last_updated: "2025-10-14"
+notes: Companion availability status sourced from the EdgeTX supported radios documentation.

@@ -1,0 +1,31 @@
+id: flysky-st16
+title: Flysky ST16
+brand: flysky
+support:
+  level: official
+  since_version: v2.11
+  status: limited
+  notes: EdgeTX documents that the ST16 internal RF module and magnetometer are not supported.
+hardware:
+  revisions:
+  - id: st16
+    name: ST16
+    notes: Included as limited-support hardware in the EdgeTX official radio list.
+    sources:
+    - edgetx-supportedradios
+compliance:
+- type: fcc
+  id: 2AIFD-ST16
+  url: https://fccid.io/2AIFD-ST16
+sources:
+- edgetx-supportedradios
+- fcc-flysky-st16
+keywords:
+- EdgeTX
+- Flysky
+- ST16
+- transmitter
+verification:
+  level: community
+  last_updated: "2025-10-14"
+notes: Internal RF and magnetometer limitations highlighted by the EdgeTX support matrix.

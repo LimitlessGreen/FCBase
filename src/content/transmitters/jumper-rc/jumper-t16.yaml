@@ -1,0 +1,47 @@
+id: jumper-t16
+title: Jumper T16 Series
+brand: jumper-rc
+support:
+  level: official
+  since_version: v2.4
+  status: supported
+hardware:
+  revisions:
+  - id: t16
+    name: T16
+    notes: EdgeTX has supported the original T16 since firmware v2.4.
+    sources:
+    - edgetx-supportedradios
+  - id: t16-plus
+    name: T16 Plus
+    notes: Included alongside the T16 in the EdgeTX official support table.
+    sources:
+    - edgetx-supportedradios
+  - id: t16-pro-hall
+    name: T16 Pro Hall
+    notes: EdgeTX lists the Hall gimbal edition with the same support level.
+    sources:
+    - edgetx-supportedradios
+compliance:
+- type: fcc
+  id: 2AV3U-T16
+  url: https://fccid.io/2AV3U-T16
+- type: fcc
+  id: 2AV3U-T16PLUS
+  url: https://fccid.io/2AV3U-T16PLUS
+- type: fcc
+  id: 2AV3U-T16PRO
+  url: https://fccid.io/2AV3U-T16PRO
+sources:
+- edgetx-supportedradios
+- fcc-jumper-t16
+- fcc-jumper-t16plus
+- fcc-jumper-t16pro
+keywords:
+- EdgeTX
+- JumperRC
+- T16
+- transmitter
+verification:
+  level: community
+  last_updated: "2025-10-14"

@@ -1,0 +1,7 @@
+id: jumper-rc
+name: JumperRC
+website: https://www.jumper-rc.com/
+description: JumperRC develops multi-protocol radio transmitters and accessories popular with EdgeTX pilots.
+sources:
+- jumper-home
+- edgetx-supportedradios

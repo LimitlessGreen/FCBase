@@ -1,0 +1,40 @@
+id: flysky-pl18
+title: Flysky PL18 Series
+brand: flysky
+support:
+  level: official
+  since_version: v2.10
+  status: limited
+  notes: EdgeTX requires hardware modifications on the PL18 and PL18EV for complete support.
+hardware:
+  revisions:
+  - id: pl18
+    name: PL18
+    notes: Part of the officially supported EdgeTX list with hardware modification requirements.
+    sources:
+    - edgetx-supportedradios
+  - id: pl18ev
+    name: PL18EV
+    notes: EdgeTX documents the PL18EV with the same limited support conditions as the PL18.
+    sources:
+    - edgetx-supportedradios
+compliance:
+- type: fcc
+  id: 2AIFD-PL18
+  url: https://fccid.io/2AIFD-PL18
+- type: fcc
+  id: 2AIFD-PL18EV
+  url: https://fccid.io/2AIFD-PL18EV
+sources:
+- edgetx-supportedradios
+- fcc-flysky-pl18
+- fcc-flysky-pl18ev
+keywords:
+- EdgeTX
+- Flysky
+- PL18
+- transmitter
+verification:
+  level: community
+  last_updated: "2025-10-14"
+notes: Hardware modification guidance is referenced directly from the EdgeTX supported radios documentation.

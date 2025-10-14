@@ -1,0 +1,29 @@
+id: jumper-t20-v2
+title: Jumper T20 V2
+brand: jumper-rc
+support:
+  level: official
+  since_version: v2.10
+  status: supported
+hardware:
+  revisions:
+  - id: t20-v2
+    name: T20 V2
+    notes: EdgeTX recognizes the V2 hardware beginning with firmware v2.10.
+    sources:
+    - edgetx-supportedradios
+compliance:
+- type: fcc
+  id: 2AV3U-T20V2
+  url: https://fccid.io/2AV3U-T20V2
+sources:
+- edgetx-supportedradios
+- fcc-jumper-t20v2
+keywords:
+- EdgeTX
+- JumperRC
+- T20 V2
+- transmitter
+verification:
+  level: community
+  last_updated: "2025-10-14"

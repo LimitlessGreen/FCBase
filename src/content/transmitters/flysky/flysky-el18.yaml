@@ -1,0 +1,29 @@
+id: flysky-el18
+title: Flysky EL18
+brand: flysky
+support:
+  level: official
+  since_version: v2.8
+  status: supported
+hardware:
+  revisions:
+  - id: el18-base
+    name: EL18
+    notes: Listed as an officially supported EdgeTX radio since v2.8.
+    sources:
+    - edgetx-supportedradios
+compliance:
+- type: fcc
+  id: 2AIFD-EL18
+  url: https://fccid.io/2AIFD-EL18
+sources:
+- edgetx-supportedradios
+- fcc-flysky-el18
+keywords:
+- EdgeTX
+- EL18
+- Flysky
+- transmitter
+verification:
+  level: community
+  last_updated: "2025-10-14"

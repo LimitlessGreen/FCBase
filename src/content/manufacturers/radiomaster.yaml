@@ -1,0 +1,7 @@
+id: radiomaster
+name: RadioMaster
+website: https://www.radiomasterrc.com/
+description: RadioMaster designs open ecosystem radio transmitters and accessories for the FPV and RC community.
+sources:
+- radiomaster-home
+- edgetx-supportedradios

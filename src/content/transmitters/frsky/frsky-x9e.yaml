@@ -1,0 +1,38 @@
+id: frsky-x9e
+title: FrSky X9E Series
+brand: frsky
+support:
+  level: community
+  since_version: v2.4
+  status: supported
+hardware:
+  revisions:
+  - id: x9e
+    name: X9E
+    notes: Tray-style X9E platform supported by community EdgeTX builds since v2.4.
+    sources:
+    - edgetx-supportedradios
+  - id: x9e-hall
+    name: X9E Hall
+    notes: Hall gimbal edition retains the same support level in the EdgeTX listing.
+    sources:
+    - edgetx-supportedradios
+compliance:
+- type: fcc
+  id: XYF-X9E
+  url: https://fccid.io/XYF-X9E
+- type: fcc
+  id: XYF-X9EHALL
+  url: https://fccid.io/XYF-X9EHALL
+sources:
+- edgetx-supportedradios
+- fcc-frsky-x9e
+- fcc-frsky-x9ehall
+keywords:
+- EdgeTX
+- FrSky
+- X9E
+- transmitter
+verification:
+  level: community
+  last_updated: "2025-10-14"

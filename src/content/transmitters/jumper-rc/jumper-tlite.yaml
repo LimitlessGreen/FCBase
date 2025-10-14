@@ -1,0 +1,41 @@
+id: jumper-tlite
+title: Jumper T-Lite Series
+brand: jumper-rc
+support:
+  level: official
+  since_version: v2.4
+  status: sunset
+  last_version: v2.11
+  notes: EdgeTX v2.11 is the final release supporting the original T-Lite hardware family.
+hardware:
+  revisions:
+  - id: tlite
+    name: T-Lite
+    notes: EdgeTX support began with firmware v2.4 and ends after v2.11.
+    sources:
+    - edgetx-supportedradios
+  - id: tlite-v2
+    name: T-Lite V2
+    notes: Shares the same EdgeTX sunset schedule as the original T-Lite per the support matrix.
+    sources:
+    - edgetx-supportedradios
+compliance:
+- type: fcc
+  id: 2AV3U-TLITE
+  url: https://fccid.io/2AV3U-TLITE
+- type: fcc
+  id: 2AV3U-TLITEV2
+  url: https://fccid.io/2AV3U-TLITEV2
+sources:
+- edgetx-supportedradios
+- fcc-jumper-tlite
+- fcc-jumper-tlitev2
+keywords:
+- EdgeTX
+- JumperRC
+- T-Lite
+- transmitter
+verification:
+  level: community
+  last_updated: "2025-10-14"
+notes: EdgeTX release notes call out v2.11 as the final build for the Jumper T-Lite family.

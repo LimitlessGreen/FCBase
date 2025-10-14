@@ -26,6 +26,9 @@ export function Navigation({ className, basePath = "" }: NavigationProps) {
             <a href={`${basePath}/controllers`} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
               Controllers
             </a>
+            <a href={`${basePath}/transmitters`} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+              Transmitters
+            </a>
             <a href={`${basePath}/firmware`} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
               Firmware
             </a>
@@ -67,6 +70,9 @@ export function Navigation({ className, basePath = "" }: NavigationProps) {
           <div className="container py-4 flex flex-col gap-3">
             <a href={`${basePath}/controllers`} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors py-2 px-2 rounded-sm hover:bg-muted">
               Controllers
+            </a>
+            <a href={`${basePath}/transmitters`} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors py-2 px-2 rounded-sm hover:bg-muted">
+              Transmitters
             </a>
             <a href={`${basePath}/firmware`} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors py-2 px-2 rounded-sm hover:bg-muted">
               Firmware

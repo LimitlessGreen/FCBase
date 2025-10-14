@@ -1,0 +1,31 @@
+id: radiomaster-tx15
+title: RadioMaster TX15
+brand: radiomaster
+support:
+  level: official
+  since_version: v3.0
+  status: planned
+  notes: EdgeTX indicates support will begin with the v3.0 firmware release; users should use RadioMaster factory images until then.
+hardware:
+  revisions:
+  - id: tx15
+    name: TX15
+    notes: Marked as pending official EdgeTX firmware availability in the support list.
+    sources:
+    - edgetx-supportedradios
+compliance:
+- type: fcc
+  id: 2A2UN-TX15
+  url: https://fccid.io/2A2UN-TX15
+sources:
+- edgetx-supportedradios
+- fcc-radiomaster-tx15
+keywords:
+- EdgeTX
+- RadioMaster
+- TX15
+- transmitter
+verification:
+  level: community
+  last_updated: "2025-10-14"
+notes: EdgeTX recommends using factory firmware until v3.0 is released for this radio.

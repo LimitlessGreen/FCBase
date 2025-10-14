@@ -1,0 +1,41 @@
+id: frsky-qx7
+title: FrSky QX7 Series
+brand: frsky
+support:
+  level: community
+  since_version: v2.4
+  status: sunset
+  last_version: v2.11
+  notes: EdgeTX v2.11 is the final release with community maintenance for the QX7 generation.
+hardware:
+  revisions:
+  - id: qx7
+    name: QX7
+    notes: Community builds supported the QX7 from v2.4 through v2.11.
+    sources:
+    - edgetx-supportedradios
+  - id: qx7s
+    name: QX7S
+    notes: Shares the same EdgeTX support window as the base QX7 according to the listing.
+    sources:
+    - edgetx-supportedradios
+compliance:
+- type: fcc
+  id: XYF-QX7
+  url: https://fccid.io/XYF-QX7
+- type: fcc
+  id: XYF-QX7S
+  url: https://fccid.io/XYF-QX7S
+sources:
+- edgetx-supportedradios
+- fcc-frsky-qx7
+- fcc-frsky-qx7s
+keywords:
+- EdgeTX
+- FrSky
+- QX7
+- transmitter
+verification:
+  level: community
+  last_updated: "2025-10-14"
+notes: EdgeTX documentation calls out v2.11 as the final firmware for these ACCESS predecessors.

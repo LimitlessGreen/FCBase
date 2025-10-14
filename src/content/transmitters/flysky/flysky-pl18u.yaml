@@ -1,0 +1,29 @@
+id: flysky-pl18u
+title: Flysky PL18U
+brand: flysky
+support:
+  level: official
+  since_version: v2.11.2
+  status: supported
+hardware:
+  revisions:
+  - id: pl18u
+    name: PL18U
+    notes: EdgeTX lists the PL18U with official firmware support starting in v2.11.2.
+    sources:
+    - edgetx-supportedradios
+compliance:
+- type: fcc
+  id: 2AIFD-PL18U
+  url: https://fccid.io/2AIFD-PL18U
+sources:
+- edgetx-supportedradios
+- fcc-flysky-pl18u
+keywords:
+- EdgeTX
+- Flysky
+- PL18U
+- transmitter
+verification:
+  level: community
+  last_updated: "2025-10-14"

@@ -1,0 +1,30 @@
+id: flysky-nv14
+title: Flysky NV14 Nirvana
+brand: flysky
+support:
+  level: official
+  since_version: v2.5
+  status: supported
+  notes: EdgeTX notes that some external RF modules may not receive sufficient power on this platform.
+hardware:
+  revisions:
+  - id: nv14
+    name: NV14 Nirvana
+    notes: Listed in the EdgeTX supported radios table since v2.5.
+    sources:
+    - edgetx-supportedradios
+compliance:
+- type: fcc
+  id: 2AIFD-NV14
+  url: https://fccid.io/2AIFD-NV14
+sources:
+- edgetx-supportedradios
+- fcc-flysky-nv14
+keywords:
+- EdgeTX
+- Flysky
+- NV14
+- transmitter
+verification:
+  level: community
+  last_updated: "2025-10-14"

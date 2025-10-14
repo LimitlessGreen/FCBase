@@ -1,0 +1,29 @@
+id: radiomaster-pocket
+title: RadioMaster Pocket
+brand: radiomaster
+support:
+  level: official
+  since_version: v2.10
+  status: supported
+hardware:
+  revisions:
+  - id: pocket
+    name: Pocket
+    notes: EdgeTX supports the Pocket from firmware v2.10 onward.
+    sources:
+    - edgetx-supportedradios
+compliance:
+- type: fcc
+  id: 2A2UN-POCKET
+  url: https://fccid.io/2A2UN-POCKET
+sources:
+- edgetx-supportedradios
+- fcc-radiomaster-pocket
+keywords:
+- EdgeTX
+- Pocket
+- RadioMaster
+- transmitter
+verification:
+  level: community
+  last_updated: "2025-10-14"
