@@ -112,14 +112,16 @@ export function ThemeToggle() {
     });
   };
 
-  const icon = {
+  const icons: Record<ThemeMode, JSX.Element> = {
     light: <Sun className="h-5 w-5" />,
     dark: <Moon className="h-5 w-5" />,
     system: <Laptop className="h-5 w-5" />,
-  }[mode];
+  };
+
+  const icon = mounted ? icons[mode] : icons.system;
 
   // Use static label during SSR to prevent hydration mismatch
-  const label = mounted 
+  const label = mounted
     ? `Toggle theme (current: ${mode === "system" ? `system · ${resolvedTheme}` : mode} mode)`
     : "Toggle theme";
 
