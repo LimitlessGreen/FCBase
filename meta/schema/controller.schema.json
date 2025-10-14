@@ -163,6 +163,51 @@
     "powerOverride": {
       "$ref": "#/definitions/powerBase"
     },
+    "linkEntry": {
+      "anyOf": [
+        { "type": "string", "format": "uri" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["url"],
+          "properties": {
+            "url": { "type": "string", "format": "uri" },
+            "label": { "type": "string" },
+            "description": { "type": "string" }
+          }
+        }
+      ]
+    },
+    "knownIssue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["title", "severity", "date", "source"],
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "severity": {
+          "type": "string",
+          "enum": ["info", "low", "medium", "high", "critical"]
+        },
+        "date": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+        },
+        "source": { "type": "string" },
+        "url": { "type": "string", "format": "uri" },
+        "description": { "type": "string" }
+      }
+    },
+    "links": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "docs": { "$ref": "#/definitions/linkEntry" },
+        "pinout": { "$ref": "#/definitions/linkEntry" },
+        "vendor": { "$ref": "#/definitions/linkEntry" },
+        "github": { "$ref": "#/definitions/linkEntry" }
+      }
+    },
     "sensorEntry": {
       "type": "object",
       "additionalProperties": false,
@@ -315,6 +360,11 @@
         }
       }
     },
+    "known_issues": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/knownIssue" }
+    },
+    "links": { "$ref": "#/definitions/links" },
     "sources": {
       "type": "array",
       "minItems": 1,

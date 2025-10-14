@@ -3,11 +3,13 @@ interface Props {
   title: string;
   subtitle?: string;
   description?: string;
+  compareId?: string;
 }
 
-const { title, subtitle, description }: Props = Astro.props;
+const { title, subtitle, description, compareId }: Props = Astro.props;
 const hasBadges = Astro.slots.has('badges');
 const hasDescription = Boolean(description) || Astro.slots.has('description');
+const compareIdJson = compareId ? JSON.stringify(compareId) : null;
 ---
 
 <div class="mb-6">
@@ -16,11 +18,30 @@ const hasDescription = Boolean(description) || Astro.slots.has('description');
       <h1 class="text-3xl font-bold tracking-tight mb-1">{title}</h1>
       {subtitle && <p class="text-base text-muted-foreground">{subtitle}</p>}
     </div>
-    {hasBadges && (
-      <div class="flex flex-wrap gap-1.5">
-        <slot name="badges" />
-      </div>
-    )}
+    <div class="flex flex-col gap-2 sm:items-end">
+      {compareId && (
+        <div class="sticky top-24 z-10 flex items-center gap-2 rounded-full border border-border/60 bg-background/90 px-3 py-1.5 shadow-xs backdrop-blur supports-[backdrop-filter]:backdrop-blur-sm">
+          <input
+            id={`compare-toggle-${compareId}`}
+            type="checkbox"
+            class="h-4 w-4 rounded-sm border border-border/60 text-primary focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40"
+            data-compare-toggle={compareId}
+            aria-label="Add controller to comparison"
+          />
+          <label
+            for={`compare-toggle-${compareId}`}
+            class="text-xs font-semibold uppercase tracking-wide text-muted-foreground"
+          >
+            Compare
+          </label>
+        </div>
+      )}
+      {hasBadges && (
+        <div class="flex flex-wrap gap-1.5 sm:justify-end">
+          <slot name="badges" />
+        </div>
+      )}
+    </div>
   </div>
   {hasDescription && (
     <div class="mt-3 space-y-2 text-sm leading-relaxed text-muted-foreground">
@@ -29,3 +50,59 @@ const hasDescription = Boolean(description) || Astro.slots.has('description');
     </div>
   )}
 </div>
+
+{compareIdJson && (
+  <script is:inline>
+    {`(() => {
+      const STORAGE_KEY = 'fcbase:compare';
+      const COMPARE_ID = ${compareIdJson};
+      const selector = 'input[data-compare-toggle="' + COMPARE_ID + '"]';
+      if (typeof window === 'undefined') {
+        return;
+      }
+
+      const toggle = document.querySelector(selector);
+      if (!(toggle instanceof HTMLInputElement)) {
+        return;
+      }
+
+      const readList = () => {
+        try {
+          const raw = window.localStorage.getItem(STORAGE_KEY);
+          const parsed = raw ? JSON.parse(raw) : [];
+          return Array.isArray(parsed) ? parsed : [];
+        } catch {
+          return [];
+        }
+      };
+
+      const writeList = (list) => {
+        window.localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+      };
+
+      const syncFromStorage = () => {
+        const list = readList();
+        toggle.checked = list.includes(COMPARE_ID);
+      };
+
+      toggle.addEventListener('change', () => {
+        const list = readList();
+        const index = list.indexOf(COMPARE_ID);
+        if (toggle.checked && index === -1) {
+          list.push(COMPARE_ID);
+        } else if (!toggle.checked && index !== -1) {
+          list.splice(index, 1);
+        }
+        writeList(list);
+      });
+
+      window.addEventListener('storage', (event) => {
+        if (event.key === STORAGE_KEY) {
+          syncFromStorage();
+        }
+      });
+
+      syncFromStorage();
+    })();`}
+  </script>
+)}
