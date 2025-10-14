@@ -77,12 +77,28 @@ const typeDisplay: Record<string, string> = {
 
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
 const editPath = `src/content/sensors/${sensor.id}.yaml`;
+const sensorTitle = data.name || data.title || sensor.id;
+const canonicalUrl = Astro.site
+  ? new URL(`sensors/${sensor.id}`, Astro.site).toString()
+  : `${basePath}/sensors/${sensor.id}`;
+const sensorSummary = data.summary || data.notes || `Technical specification for the ${sensorTitle} sensor used in FCBase controllers.`;
 ---
 
 <BaseLayout
   title={`${data.name || data.title || sensor.id} - Sensors - FCBase`}
   description={`${data.name || data.title} sensor. ${data.manufacturer ? `Manufactured by ${data.manufacturer}.` : ''} ${data.notes || ''}`}
 >
+  <Fragment slot="head">
+    <link rel="canonical" href={canonicalUrl} />
+    <meta name="pagefind:meta:id" content={sensor.id} />
+    <meta name="pagefind:meta:type" content="sensor" />
+    <meta name="pagefind:filter:type" content="sensor" />
+    <meta name="pagefind:meta:title" content={sensorTitle} />
+    {data.manufacturer && <meta name="pagefind:meta:manufacturer" content={data.manufacturer} />}
+    {data.type && <meta name="pagefind:meta:sensor_type" content={data.type} />}
+    <meta name="pagefind:meta:summary" content={sensorSummary} />
+    <meta name="pagefind:meta:url" content={canonicalUrl} />
+  </Fragment>
   <MainLayout editPath={editPath} showEditBar>
     <div class="container py-8">
       <!-- Breadcrumb -->

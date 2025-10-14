@@ -2,19 +2,11 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import MainLayout from '@/layouts/MainLayout.astro';
-import ControllerCard from '@/components/cards/ControllerCard.astro';
-import { ControllerGrid } from '@/components/controllers/ControllerGrid';
-import { getManufacturersMap } from '@/lib/content-cache';
-import { createControllerCardModels } from '@/lib/controller-card-model';
+import ControllerSearch from '@/components/search/ControllerSearch';
 
 const controllers = await getCollection('controllers');
 const totalControllers = controllers.length;
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
-
-const manufacturers = await getManufacturersMap();
-const controllerCards = await createControllerCardModels(controllers, {
-  manufacturersMap: manufacturers,
-});
 ---
 
 <BaseLayout
@@ -38,39 +30,24 @@ const controllerCards = await createControllerCardModels(controllers, {
       </div>
 
       <!-- Search & Filters -->
-      <div class="mb-8 space-y-4">
+      <div class="mb-10 space-y-6">
         <div class="flex flex-col gap-2 text-center">
           <h2 class="text-2xl font-semibold tracking-tight md:text-3xl">Find your flight controller</h2>
           <p class="text-base text-muted-foreground md:text-lg">
-            Search by name, MCU, form factor, or supported firmware to narrow down the perfect board.
+            Pagefind provides instant search with MCU, mounting, CAN, MicroSD, and lifecycle facets generated at build-time.
           </p>
         </div>
-        <ControllerGrid client:load totalControllers={totalControllers} />
+        <ControllerSearch client:load totalControllers={totalControllers} />
       </div>
 
-      <!-- Controller Cards Grid (Server-rendered with data attributes for filtering) -->
-      <div id="controller-cards-grid" class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-        {controllerCards.map((controller) => (
-          <div data-controller-id={controller.id}>
-            <ControllerCard
-              id={controller.id}
-              title={controller.title}
-              manufacturer={controller.manufacturer}
-              mcu={controller.mcu}
-              mounting={controller.mounting}
-              uarts={controller.uarts}
-              can={controller.can}
-              pwm={controller.pwm}
-              sdCard={controller.sdCard}
-              barometer={controller.barometer}
-              firmwares={controller.firmwares}
-              image={controller.image}
-              basePath={basePath}
-              showImage={true}
-            />
-          </div>
-        ))}
-      </div>
+      <noscript>
+        <div class="rounded-lg border border-dashed bg-muted/20 p-6 text-sm text-muted-foreground">
+          <p class="font-medium text-foreground">Interactive search requires JavaScript.</p>
+          <p>
+            Enable JavaScript or browse individual controller pages from the sitemap to explore the full FCBase catalogue.
+          </p>
+        </div>
+      </noscript>
     </div>
   </MainLayout>
 </BaseLayout>
