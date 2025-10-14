@@ -5,7 +5,10 @@ import MainLayout from '@/layouts/MainLayout.astro';
 import { ControllerSearch } from '@/components/ui/ControllerSearch';
 import ControllerCard from '@/components/cards/ControllerCard.astro';
 
-const controllerPreviewImages: Record<string, { src: string; credit: string; sourceUrl?: string }> = {
+// Import local images (these will be optimized automatically)
+import holybroPixhawk6xImage from '@/assets/images/controllers/holybro-pixhawk-6x.jpg';
+
+const controllerPreviewImages: Record<string, { src: any; credit: string; sourceUrl?: string }> = {
   'aocoda-h743dual': {
     src: 'https://ardupilot.org/copter/_images/aocoda_h743dual.jpg',
     credit: 'ArduPilot Documentation',
@@ -67,8 +70,8 @@ const controllerPreviewImages: Record<string, { src: string; credit: string; sou
     credit: 'Holybro Store',
     sourceUrl: 'https://holybro.com/products/pixhawk-6c',
   },
-  'holybro-pixhawk-6x': {
-    src: 'https://holybro.com/cdn/shop/files/SKU11073_4_grande.jpg?v=1721904825',
+  'holybro/holybro-pixhawk-6x': {
+    src: holybroPixhawk6xImage, // Local image - will be optimized to AVIF/WebP
     credit: 'Holybro Store',
     sourceUrl: 'https://holybro.com/products/pixhawk-6x',
   },
@@ -127,6 +130,12 @@ const searchControllers = controllersWithMeta.map((controller) => ({
   ethernet: controller.data.io.ethernet,
   barometer: (controller.data.sensors?.barometer?.length ?? 0) > 0,
   redundant: controller.data.power?.redundant,
+  image: controller.preview ? {
+    src: typeof controller.preview.src === 'string' ? controller.preview.src : controller.preview.src.src,
+    alt: controller.data.title,
+    credit: controller.preview.credit,
+    sourceUrl: controller.preview.sourceUrl,
+  } : undefined,
 }));
 
 // Sort by title

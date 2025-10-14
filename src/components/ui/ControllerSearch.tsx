@@ -19,6 +19,12 @@ interface Controller {
   ethernet?: boolean;
   barometer?: boolean;
   redundant?: boolean;
+  image?: {
+    src: string;
+    alt: string;
+    credit?: string;
+    sourceUrl?: string;
+  };
 }
 
 interface ControllerSearchProps {
@@ -412,6 +418,16 @@ export function ControllerSearch({ controllers, basePath = "" }: ControllerSearc
             <Card className="h-full transition-all hover:shadow-lg hover:-translate-y-1 overflow-hidden">
               {/* Image Banner with Overlays */}
               <div className="relative aspect-video w-full overflow-hidden bg-gradient-to-br from-muted via-background to-muted">
+                {/* Image (if available) */}
+                {controller.image && (
+                  <img
+                    src={controller.image.src}
+                    alt={controller.image.alt}
+                    loading="lazy"
+                    className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                  />
+                )}
+                
                 {/* Title & Manufacturer Overlay (top-left) */}
                 <div className="absolute top-2 left-2 max-w-[60%]">
                   <h3 className="font-bold text-sm leading-tight line-clamp-2 text-foreground bg-background/90 backdrop-blur-sm px-2 py-1 rounded-sm shadow-sm group-hover:text-primary transition-colors">
@@ -433,6 +449,24 @@ export function ControllerSearch({ controllers, basePath = "" }: ControllerSearc
                       </span>
                     ))}
                   </div>
+                )}
+                {/* Image Credit Overlay (bottom-right) */}
+                {controller.image?.credit && (
+                  <span className="absolute bottom-2 right-2 rounded bg-background/80 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+                    {controller.image.sourceUrl ? (
+                      <a
+                        href={controller.image.sourceUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="hover:underline"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {controller.image.credit}
+                      </a>
+                    ) : (
+                      controller.image.credit
+                    )}
+                  </span>
                 )}
               </div>
               
