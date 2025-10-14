@@ -23,6 +23,7 @@ import {
   formatWeight,
   getPowerTypeLabel,
   formatPeripheralType,
+  normalizePeripheralInterfaces,
 } from '@/lib/data-utils';
 import { 
   Cpu, 
@@ -573,23 +574,34 @@ const editPath = `src/content/controllers/${controllerSlug}.yaml`;
                                     </span>
                                   )}
                                 </span>
-                                <Badge className="text-[10px] uppercase tracking-wide">
+                                <Badge className="text-[10px] tracking-wide font-medium">
                                   {formatPeripheralType(peripheral.type)}
                                 </Badge>
                               </div>
-                              {peripheral.interfaces && peripheral.interfaces.length > 0 && (
-                                <div class="mt-2 flex flex-wrap gap-1.5">
-                                  {peripheral.interfaces.map((iface) => (
-                                    <Badge
-                                      variant="secondary"
-                                      className="text-[10px] uppercase tracking-wide"
-                                      key={`${peripheral.name}-${iface}`}
-                                    >
-                                      {iface.replace(/_/g, ' ')}
-                                    </Badge>
-                                  ))}
-                                </div>
-                              )}
+                              {(() => {
+                                const interfaceBadges = normalizePeripheralInterfaces(
+                                  peripheral.interfaces,
+                                );
+                                if (interfaceBadges.length === 0) return null;
+                                return (
+                                  <div class="mt-2 flex flex-wrap gap-1.5">
+                                    {interfaceBadges.map(({ label, count }) => (
+                                      <Badge
+                                        variant="secondary"
+                                        className="text-[10px] tracking-wide font-medium"
+                                        key={`${peripheral.name}-${label}`}
+                                      >
+                                        <span>{label}</span>
+                                        {count > 1 && (
+                                          <span className="ml-1 text-[10px] text-muted-foreground font-semibold">
+                                            ×{count}
+                                          </span>
+                                        )}
+                                      </Badge>
+                                    ))}
+                                  </div>
+                                );
+                              })()}
                               {peripheral.connector && (
                                 <p class="mt-2 text-xs text-muted-foreground">
                                   <span class="font-medium text-foreground">Connector:</span>&nbsp;{peripheral.connector}
