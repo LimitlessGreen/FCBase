@@ -12,9 +12,30 @@ dimensions:
   length_mm: 38.25
   width_mm: 38.25
 power:
+  inputs:
+  - name: POWER1
+    type: power_module
+    connector: 6-pin power monitor
+    voltage:
+      min: 4.1
+      max: 5.7
+      unit: V
+  - name: POWER2
+    type: power_module
+    connector: 6-pin power monitor
+    voltage:
+      min: 4.1
+      max: 5.7
+      unit: V
+  - name: USB
+    type: usb
+    connector: Micro-USB
+    voltage:
+      min: 4.75
+      max: 5.25
+      unit: V
   notes: POWER inputs 4.1-5.7V with redundant supply and USB input 4.75-5.25V.
   redundant: true
-  voltage_in: 4.1-5.7V (power rails), USB 4.75-5.25V
 io:
   can: 2
   ethernet: false

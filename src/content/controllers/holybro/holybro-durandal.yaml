@@ -13,7 +13,35 @@ dimensions:
   width_mm: 45
   weight_g: 64
 power:
-  voltage_in: 4.9-5.5V regulated inputs, USB 4.75-5.25V, servo rail up to 36V
+  inputs:
+  - name: POWER1
+    type: power_module
+    connector: 6-pin power monitor
+    voltage:
+      min: 4.9
+      max: 5.5
+      unit: V
+  - name: POWER2
+    type: power_module
+    connector: 6-pin power monitor
+    voltage:
+      min: 4.9
+      max: 5.5
+      unit: V
+  - name: USB
+    type: usb
+    connector: USB Type-C
+    voltage:
+      min: 4.75
+      max: 5.25
+      unit: V
+  - name: SERVO_RAIL
+    type: servo_rail
+    voltage:
+      min: 0
+      max: 36
+      unit: V
+    notes: High-voltage tolerant servo rail passthrough
   redundant: true
   notes: Dual power module inputs with over-current protection on peripheral rails.
 io:

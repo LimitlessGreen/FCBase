@@ -8,7 +8,28 @@ images:
   credit: "ArduPilot Documentation"
   source_url: "https://ardupilot.org/copter/docs/common-thecube-overview.html"
 power:
-  voltage_in: 4.1-5.7V redundant power rails, USB 4.75-5.25V
+  inputs:
+  - name: POWER1
+    type: power_module
+    connector: 6-pin power monitor
+    voltage:
+      min: 4.1
+      max: 5.7
+      unit: V
+  - name: POWER2
+    type: power_module
+    connector: 6-pin power monitor
+    voltage:
+      min: 4.1
+      max: 5.7
+      unit: V
+  - name: USB
+    type: usb
+    connector: Micro-USB
+    voltage:
+      min: 4.75
+      max: 5.25
+      unit: V
   redundant: true
   notes: Redundant power module inputs with automatic failover and isolated servo rail supply.
 io:

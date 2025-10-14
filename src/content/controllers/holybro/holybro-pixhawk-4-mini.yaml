@@ -13,7 +13,28 @@ dimensions:
   height_mm: 15.5
   weight_g: 37.2
 power:
-  voltage_in: POWER 4.75-5.5V, USB 4.75-5.25V
+  inputs:
+  - name: POWER1
+    type: power_module
+    connector: 6-pin power monitor
+    voltage:
+      min: 4.75
+      max: 5.5
+      unit: V
+  - name: POWER2
+    type: power_module
+    connector: 6-pin power monitor
+    voltage:
+      min: 4.75
+      max: 5.5
+      unit: V
+  - name: USB
+    type: usb
+    connector: Micro-USB
+    voltage:
+      min: 4.75
+      max: 5.25
+      unit: V
   redundant: true
   notes: Dual power domains with servo rail tolerant to 24V and POWER input protected up to 6V.
 io:

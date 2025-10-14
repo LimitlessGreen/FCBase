@@ -8,7 +8,21 @@ images:
   credit: "ArduPilot Documentation"
   source_url: "https://ardupilot.org/copter/docs/common-pixracer-pro.html"
 power:
-  voltage_in: 5.0-5.5V via USB-C or PowerBrick connector
+  inputs:
+  - name: USB
+    type: usb
+    connector: USB Type-C
+    voltage:
+      min: 5.0
+      max: 5.5
+      unit: V
+  - name: POWER
+    type: power_module
+    connector: PowerBrick (JST-GH 6-pin)
+    voltage:
+      min: 5.0
+      max: 5.5
+      unit: V
   notes: Ultra-low-noise regulators recommended with optional ACSP4 power supply.
 io:
   uarts: 7

@@ -10,7 +10,35 @@ images:
 dimensions:
   weight_g: 101
 power:
-  voltage_in: 4.3-5.4V regulated inputs, USB 4.75-5.25V, servo rail 0-36V passthrough
+  inputs:
+  - name: POWER1
+    type: power_module
+    connector: 6-pin power monitor
+    voltage:
+      min: 4.3
+      max: 5.4
+      unit: V
+  - name: POWER2
+    type: power_module
+    connector: 6-pin power monitor
+    voltage:
+      min: 4.3
+      max: 5.4
+      unit: V
+  - name: USB
+    type: usb
+    connector: Micro-USB
+    voltage:
+      min: 4.75
+      max: 5.25
+      unit: V
+  - name: SERVO_RAIL
+    type: servo_rail
+    voltage:
+      min: 0
+      max: 36
+      unit: V
+    notes: Passthrough servo rail with high-voltage tolerance
   redundant: true
   notes: Dual power module inputs with DroneCAN battery interface allow triple-redundant supply paths.
 io:

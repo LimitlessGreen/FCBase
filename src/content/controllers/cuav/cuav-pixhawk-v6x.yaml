@@ -1,17 +1,27 @@
+# Migrated from voltage_in: "4.9-5.5V primary inputs via CAN/SMBus power modules"
+
 id: cuav-pixhawk-v6x
 title: CUAV Pixhawk v6X
 brand: cuav
 mcu: stmicro-stm32h753
 mounting: cube
 images:
-- alt: "CUAV Pixhawk V6X autopilot in its black aluminum enclosure with labeled power and data ports."
-  credit: "ArduPilot Documentation"
-  source_url: "https://raw.githubusercontent.com/ArduPilot/ardupilot_wiki/master/common/source/docs/common-cuav-pixhawkv6X.rst"
+  - alt: CUAV Pixhawk V6X autopilot in its black aluminum enclosure with labeled
+      power and data ports.
+    credit: ArduPilot Documentation
+    source_url: https://raw.githubusercontent.com/ArduPilot/ardupilot_wiki/master/common/source/docs/common-cuav-pixhawkv6X.rst
 power:
   notes: Dual SMBus/I2C power module inputs with CAN power module included; servo
     rail tolerant to 36V.
   redundant: true
-  voltage_in: 4.9-5.5V primary inputs via CAN/SMBus power modules
+  inputs:
+    - name: POWER1
+      type: power_module
+      connector: CAN/SMBus power modules
+      voltage:
+        min: 4.9
+        max: 5.5
+        unit: V
 io:
   can: 2
   ethernet: true
@@ -19,132 +29,137 @@ io:
   sd_card: true
   uarts: 8
   peripherals:
-  - name: TELEM ports
-    type: uart
-    count: 3
-    interfaces:
-    - uart
-    - mavlink
-    connector: JST-GH 6-pin
-    voltage: 5 V supply / 3.3 V logic
-    notes: Telem1, Telem2, and Telem3 expose RTS/CTS for high-bandwidth telemetry and companion links.
-  - name: GPS1
-    type: gps
-    interfaces:
-    - uart
-    - i2c
-    - safety
-    connector: JST-GH 10-pin
-    notes: Primary GPS/compass header with integrated safety switch, LED, and buzzer wiring.
-  - name: GPS2
-    type: gps
-    interfaces:
-    - uart
-    - i2c
-    connector: JST-GH 6-pin
-    notes: Secondary GPS or telemetry port sharing the external I2C bus.
-  - name: CAN bus
-    type: can
-    count: 2
-    interfaces:
-    - can
-    connector: JST-GH 4-pin
-    voltage: 5 V auxiliary / 12 V CAN lines
-    notes: Dual DroneCAN connectors for redundant peripherals and power modules.
-  - name: Power modules
-    type: power
-    count: 2
-    interfaces:
-    - power
-    - smbus
-    connector: 6-pin SMBus power module
-    notes: Redundant SMBus/I2C power module inputs supplying current and voltage telemetry.
-  - name: Ethernet
-    type: ethernet
-    interfaces:
-    - ethernet
-    connector: RJ45 breakout
-    notes: 100 Mbps Ethernet uplink for companion computers and payload networking.
-  - name: RC input
-    type: rc
-    interfaces:
-    - ppm
-    - sbus
-    - dsm
-    - fport
-    - crsf
-    - srxl2
-    connector: JST-GH 6-pin
-    notes: Supports serial RC receivers when mapped to dedicated UART channels.
-  - name: Servo outputs
-    type: pwm
-    count: 16
-    interfaces:
-    - pwm
-    - dshot
-    connector: Servo breakout
-    notes: Sixteen FMU outputs capable of PWM or DShot operation across grouped banks.
-  - name: USB service
-    type: usb
-    interfaces:
-    - usb
-    connector: USB Type-C (remote harness)
-    notes: Remote-mounted USB-C harness for firmware updates and console access.
-  - name: SPI6 expansion
-    type: spi
-    interfaces:
-    - spi
-    connector: JST-GH 6-pin
-    notes: Auxiliary SPI port for payload sensors or data loggers.
-  - name: Buzzer and safety switch
-    type: buzzer
-    interfaces:
-    - buzzer
-    - safety
-    connector: JST harness
-    notes: External safety button and high-power buzzer assembly supplied with the kit.
-  - name: MicroSD slot
-    type: storage
-    interfaces:
-    - microsd
-    connector: Internal microSD
-    notes: Accessible microSD card slot for high-rate data logging.
+    - name: TELEM ports
+      type: uart
+      count: 3
+      interfaces:
+        - uart
+        - mavlink
+      connector: JST-GH 6-pin
+      voltage: 5 V supply / 3.3 V logic
+      notes: Telem1, Telem2, and Telem3 expose RTS/CTS for high-bandwidth telemetry
+        and companion links.
+    - name: GPS1
+      type: gps
+      interfaces:
+        - uart
+        - i2c
+        - safety
+      connector: JST-GH 10-pin
+      notes: Primary GPS/compass header with integrated safety switch, LED, and buzzer
+        wiring.
+    - name: GPS2
+      type: gps
+      interfaces:
+        - uart
+        - i2c
+      connector: JST-GH 6-pin
+      notes: Secondary GPS or telemetry port sharing the external I2C bus.
+    - name: CAN bus
+      type: can
+      count: 2
+      interfaces:
+        - can
+      connector: JST-GH 4-pin
+      voltage: 5 V auxiliary / 12 V CAN lines
+      notes: Dual DroneCAN connectors for redundant peripherals and power modules.
+    - name: Power modules
+      type: power
+      count: 2
+      interfaces:
+        - power
+        - smbus
+      connector: 6-pin SMBus power module
+      notes: Redundant SMBus/I2C power module inputs supplying current and voltage
+        telemetry.
+    - name: Ethernet
+      type: ethernet
+      interfaces:
+        - ethernet
+      connector: RJ45 breakout
+      notes: 100 Mbps Ethernet uplink for companion computers and payload networking.
+    - name: RC input
+      type: rc
+      interfaces:
+        - ppm
+        - sbus
+        - dsm
+        - fport
+        - crsf
+        - srxl2
+      connector: JST-GH 6-pin
+      notes: Supports serial RC receivers when mapped to dedicated UART channels.
+    - name: Servo outputs
+      type: pwm
+      count: 16
+      interfaces:
+        - pwm
+        - dshot
+      connector: Servo breakout
+      notes: Sixteen FMU outputs capable of PWM or DShot operation across grouped
+        banks.
+    - name: USB service
+      type: usb
+      interfaces:
+        - usb
+      connector: USB Type-C (remote harness)
+      notes: Remote-mounted USB-C harness for firmware updates and console access.
+    - name: SPI6 expansion
+      type: spi
+      interfaces:
+        - spi
+      connector: JST-GH 6-pin
+      notes: Auxiliary SPI port for payload sensors or data loggers.
+    - name: Buzzer and safety switch
+      type: buzzer
+      interfaces:
+        - buzzer
+        - safety
+      connector: JST harness
+      notes: External safety button and high-power buzzer assembly supplied with the
+        kit.
+    - name: MicroSD slot
+      type: storage
+      interfaces:
+        - microsd
+      connector: Internal microSD
+      notes: Accessible microSD card slot for high-rate data logging.
 sensors:
   barometer:
-  - count: 2
-    id: tdk-icp20100
+    - count: 2
+      id: tdk-icp20100
   imu:
-  - count: 1
-    id: bosch-bmi088
-  - count: 1
-    id: invensense-icm20649
-  - count: 1
-    id: invensense-icm42688p
+    - count: 1
+      id: bosch-bmi088
+    - count: 1
+      id: invensense-icm20649
+    - count: 1
+      id: invensense-icm42688p
   magnetometer:
-  - count: 1
-    id: pni-rm3100
+    - count: 1
+      id: pni-rm3100
 features:
-- CAN power module support
-- Ethernet mission computer link
-- Triple-redundant IMU domains
+  - CAN power module support
+  - Ethernet mission computer link
+  - Triple-redundant IMU domains
 firmware_support:
-- id: ardupilot
-  status: stable
-- id: px4
-  status: stable
+  - id: ardupilot
+    status: stable
+  - id: px4
+    status: stable
 sources:
-- ardupilot-autopilots
-- ardupilot-cuav-pixhawkv6x
+  - ardupilot-autopilots
+  - ardupilot-cuav-pixhawkv6x
 verification:
-  last_updated: "2025-10-13"
+  last_updated: 2025-10-13
   level: community
 hardware:
   openness: open
 keywords:
-- ardupilot
-- cuav
-- pixhawk
-- px4
-- stm32h753
-notes: Ships with a heat-dissipating aluminum enclosure and CAN power module in the
-  box.
+  - ardupilot
+  - cuav
+  - pixhawk
+  - px4
+  - stm32h753
+notes: Ships with a heat-dissipating aluminum enclosure and CAN power module in
+  the box.

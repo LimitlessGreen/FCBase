@@ -8,8 +8,21 @@ images:
   credit: "ArduPilot Documentation"
   source_url: "https://ardupilot.org/copter/docs/common-aocoda-h743dual.html"
 power:
-  voltage_in: 3-6S LiPo input with onboard 5V/2.5A and 9V/3A BEC outputs
-  notes: Includes dual power monitor inputs and dedicated DJI VTX feed.
+  inputs:
+  - name: BATTERY
+    type: battery
+    voltage:
+      min: 11.1
+      max: 25.2
+      unit: V
+    notes: 3-6S LiPo input (3.7V nominal per cell)
+  - name: POWER_MON1
+    type: power_module
+    connector: 6-pin power monitor
+  - name: POWER_MON2
+    type: power_module
+    connector: 6-pin power monitor
+  notes: Includes dual power monitor inputs and dedicated DJI VTX feed. Onboard 5V/2.5A and 9V/3A BEC outputs for peripherals and video systems.
 io:
   uarts: 7
   can: 0

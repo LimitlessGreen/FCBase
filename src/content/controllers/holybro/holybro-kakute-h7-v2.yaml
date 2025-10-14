@@ -1,15 +1,26 @@
+# Migrated from voltage_in: "2S-8S LiPo main input, USB 5V"
+
 id: holybro-kakute-h7-v2
 title: Holybro Kakute H7 V2
 brand: holybro
 mcu: stmicro-stm32h743
 mounting: custom
 images:
-- alt: "Holybro Kakute H7 V2 flight controller board shown at an angle highlighting the stacked layout."
-  credit: "Holybro Store"
-  source_url: "https://holybro.com/products/kakute-h7-v2"
+  - alt: Holybro Kakute H7 V2 flight controller board shown at an angle highlighting
+      the stacked layout.
+    credit: Holybro Store
+    source_url: https://holybro.com/products/kakute-h7-v2
 power:
-  voltage_in: 2S-8S LiPo main input, USB 5V
-  notes: Includes 9V/1.5A BEC for HD video systems and supports external current monitoring.
+  notes: Includes 9V/1.5A BEC for HD video systems and supports external current
+    monitoring.
+  inputs:
+    - name: BATTERY
+      type: battery
+      voltage:
+        min: 6
+        max: 33.6
+        unit: V
+      notes: 2S-8S LiPo main input, USB 5V
 io:
   uarts: 6
   can: 0
@@ -17,86 +28,87 @@ io:
   ethernet: false
   sd_card: false
   peripherals:
-  - name: UART ports
-    type: uart
-    count: 6
-    interfaces:
-    - uart
-    - mavlink
-    connector: JST-GH and solder pads
-    notes: Six hardware-inverted UARTs for telemetry, GPS, VTX, and receiver links.
-  - name: PWM outputs
-    type: pwm
-    count: 9
-    interfaces:
-    - pwm
-    - dshot
-    connector: 9-pin motor header
-    notes: Nine DShot-capable motor outputs with soft-mounted gyro timing.
-  - name: Power rails
-    type: power
-    interfaces:
-    - power
-    connector: XT60 / solder pads
-    notes: Main LiPo input with onboard 9V/1.5A and 5V BEC rails for peripherals.
-  - name: USB-C
-    type: usb
-    interfaces:
-    - usb
-    connector: USB Type-C
-    notes: Firmware flashing, configuration, and VTX power switching.
-  - name: RC input
-    type: rc
-    interfaces:
-    - sbus
-    - crsf
-    - fport
-    - dsm
-    connector: JST-SH and solder pads
-    notes: Serial receiver pads supporting inverted and non-inverted signals.
-  - name: I2C expansion
-    type: i2c
-    interfaces:
-    - i2c
-    connector: JST-GH 4-pin
-    notes: External I2C bus for compass or digital sensors.
-  - name: VTX power
-    type: video
-    interfaces:
-    - vtx
-    connector: JST-GH 6-pin
-    notes: Switchable 9 V video transmitter output for HD systems.
-  - name: Onboard flash
-    type: storage
-    interfaces:
-    - flash
-    connector: Internal
-    notes: 128 MB flash logging for data capture when microSD is unavailable.
+    - name: UART ports
+      type: uart
+      count: 6
+      interfaces:
+        - uart
+        - mavlink
+      connector: JST-GH and solder pads
+      notes: Six hardware-inverted UARTs for telemetry, GPS, VTX, and receiver links.
+    - name: PWM outputs
+      type: pwm
+      count: 9
+      interfaces:
+        - pwm
+        - dshot
+      connector: 9-pin motor header
+      notes: Nine DShot-capable motor outputs with soft-mounted gyro timing.
+    - name: Power rails
+      type: power
+      interfaces:
+        - power
+      connector: XT60 / solder pads
+      notes: Main LiPo input with onboard 9V/1.5A and 5V BEC rails for peripherals.
+    - name: USB-C
+      type: usb
+      interfaces:
+        - usb
+      connector: USB Type-C
+      notes: Firmware flashing, configuration, and VTX power switching.
+    - name: RC input
+      type: rc
+      interfaces:
+        - sbus
+        - crsf
+        - fport
+        - dsm
+      connector: JST-SH and solder pads
+      notes: Serial receiver pads supporting inverted and non-inverted signals.
+    - name: I2C expansion
+      type: i2c
+      interfaces:
+        - i2c
+      connector: JST-GH 4-pin
+      notes: External I2C bus for compass or digital sensors.
+    - name: VTX power
+      type: video
+      interfaces:
+        - vtx
+      connector: JST-GH 6-pin
+      notes: Switchable 9 V video transmitter output for HD systems.
+    - name: Onboard flash
+      type: storage
+      interfaces:
+        - flash
+      connector: Internal
+      notes: 128 MB flash logging for data capture when microSD is unavailable.
 sensors:
   imu:
-  - count: 1
-    id: bosch-bmi270
+    - count: 1
+      id: bosch-bmi270
   barometer:
-  - count: 1
-    id: bosch-bmp280
+    - count: 1
+      id: bosch-bmp280
 features:
-- 128 MB onboard flash logging
-- Hardware-inverted UART support on every port
-- Switchable VTX power with USB-C connectivity
+  - 128 MB onboard flash logging
+  - Hardware-inverted UART support on every port
+  - Switchable VTX power with USB-C connectivity
 firmware_support:
-- id: ardupilot
-  status: stable
+  - id: ardupilot
+    status: stable
 sources:
-- ardupilot-autopilots
-- ardupilot-holybro-kakuteh7-v2
+  - ardupilot-autopilots
+  - ardupilot-holybro-kakuteh7-v2
 verification:
-  last_updated: "2025-10-13"
+  last_updated: 2025-10-13
   level: community
 hardware:
   openness: closed
 keywords:
-- ardupilot
-- holybro
-- kakute
-- stm32h743
-notes: Kakute H7 V2 relies on external compass modules because the onboard IMU lacks a magnetometer.
+  - ardupilot
+  - holybro
+  - kakute
+  - stm32h743
+notes: Kakute H7 V2 relies on external compass modules because the onboard IMU
+  lacks a magnetometer.

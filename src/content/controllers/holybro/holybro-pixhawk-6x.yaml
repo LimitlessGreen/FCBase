@@ -13,10 +13,31 @@ dimensions:
   weight_g: 23
   width_mm: 31.8
 power:
+  inputs:
+  - name: POWER1
+    type: power_module
+    connector: 6-pin power monitor
+    voltage:
+      min: 4.9
+      max: 5.5
+      unit: V
+  - name: POWER2
+    type: power_module
+    connector: 6-pin power monitor
+    voltage:
+      min: 4.9
+      max: 5.5
+      unit: V
+  - name: USB
+    type: usb
+    connector: USB Type-C
+    voltage:
+      min: 4.75
+      max: 5.25
+      unit: V
   notes: Max input 6V on power ports with servo rail tolerance to 36V; triple-redundant
     POWER1/POWER2/USB inputs.
   redundant: true
-  voltage_in: 4.9-5.5V primary inputs, USB 4.75-5.25V
 io:
   can: 2
   ethernet: true

@@ -1,12 +1,15 @@
+# Migrated from voltage_in: "9-36V DC"
+
 id: mateksys-h743-wing
 title: Mateksys H743-Wing
 brand: mateksys
 mcu: stmicro-stm32h743
 mounting: wing
 images:
-- alt: "Mateksys H743-Wing board showing dual IMU shielding and servo headers across the edges."
-  credit: "Mateksys"
-  source_url: "https://www.mateksys.com/?portfolio=h743-wing"
+  - alt: Mateksys H743-Wing board showing dual IMU shielding and servo headers
+      across the edges.
+    credit: Mateksys
+    source_url: https://www.mateksys.com/?portfolio=h743-wing
 dimensions:
   height_mm: 13
   length_mm: 54
@@ -15,7 +18,12 @@ dimensions:
 power:
   notes: 9-36V main input with multiple onboard BEC rails for peripherals and servos.
   redundant: false
-  voltage_in: 9-36V DC
+  inputs:
+    - name: POWER
+      voltage:
+        min: 9
+        max: 36
+        unit: V
 io:
   can: 1
   ethernet: false
@@ -23,104 +31,104 @@ io:
   sd_card: true
   uarts: 7
   peripherals:
-  - name: UART ports
-    type: uart
-    count: 7
-    interfaces:
-    - uart
-    - mavlink
-    connector: JST-GH and solder pads
-    notes: Seven UARTs for telemetry radios, GPS, receivers, and VTX control.
-  - name: PWM outputs
-    type: pwm
-    count: 13
-    interfaces:
-    - pwm
-    - dshot
-    connector: Servo headers and solder pads
-    notes: Thirteen motor/servo outputs supporting DShot on appropriate channels.
-  - name: CAN bus
-    type: can
-    count: 1
-    interfaces:
-    - can
-    connector: JST-GH 4-pin
-    notes: Single DroneCAN connector for smart peripherals.
-  - name: Power inputs
-    type: power
-    interfaces:
-    - power
-    connector: XT60 / solder pads
-    notes: 9-36 V LiPo main input with onboard 5 V and 9 V BEC rails.
-  - name: USB-C
-    type: usb
-    interfaces:
-    - usb
-    connector: USB Type-C
-    notes: Configuration, firmware flashing, and Betaflight passthrough.
-  - name: RC input
-    type: rc
-    interfaces:
-    - sbus
-    - crsf
-    - fport
-    - dsm
-    connector: JST-GH 6-pin
-    notes: Serial receiver header supporting inverted and non-inverted protocols.
-  - name: I2C expansion
-    type: i2c
-    count: 2
-    interfaces:
-    - i2c
-    connector: JST-GH 4-pin
-    notes: External I2C buses for compass, airspeed, and peripheral sensors.
-  - name: Dual camera switch
-    type: video
-    interfaces:
-    - video
-    connector: JST-GH 3-pin
-    notes: Integrated camera switch feeding the onboard OSD and video transmitter.
-  - name: OSD output
-    type: video
-    interfaces:
-    - osd
-    connector: JST-GH 3-pin
-    notes: Analog video OSD output for FPV transmitters.
-  - name: MicroSD slot
-    type: storage
-    interfaces:
-    - microsd
-    connector: Push-push microSD
-    notes: Onboard microSD logging for high-rate data capture.
+    - name: UART ports
+      type: uart
+      count: 7
+      interfaces:
+        - uart
+        - mavlink
+      connector: JST-GH and solder pads
+      notes: Seven UARTs for telemetry radios, GPS, receivers, and VTX control.
+    - name: PWM outputs
+      type: pwm
+      count: 13
+      interfaces:
+        - pwm
+        - dshot
+      connector: Servo headers and solder pads
+      notes: Thirteen motor/servo outputs supporting DShot on appropriate channels.
+    - name: CAN bus
+      type: can
+      count: 1
+      interfaces:
+        - can
+      connector: JST-GH 4-pin
+      notes: Single DroneCAN connector for smart peripherals.
+    - name: Power inputs
+      type: power
+      interfaces:
+        - power
+      connector: XT60 / solder pads
+      notes: 9-36 V LiPo main input with onboard 5 V and 9 V BEC rails.
+    - name: USB-C
+      type: usb
+      interfaces:
+        - usb
+      connector: USB Type-C
+      notes: Configuration, firmware flashing, and Betaflight passthrough.
+    - name: RC input
+      type: rc
+      interfaces:
+        - sbus
+        - crsf
+        - fport
+        - dsm
+      connector: JST-GH 6-pin
+      notes: Serial receiver header supporting inverted and non-inverted protocols.
+    - name: I2C expansion
+      type: i2c
+      count: 2
+      interfaces:
+        - i2c
+      connector: JST-GH 4-pin
+      notes: External I2C buses for compass, airspeed, and peripheral sensors.
+    - name: Dual camera switch
+      type: video
+      interfaces:
+        - video
+      connector: JST-GH 3-pin
+      notes: Integrated camera switch feeding the onboard OSD and video transmitter.
+    - name: OSD output
+      type: video
+      interfaces:
+        - osd
+      connector: JST-GH 3-pin
+      notes: Analog video OSD output for FPV transmitters.
+    - name: MicroSD slot
+      type: storage
+      interfaces:
+        - microsd
+      connector: Push-push microSD
+      notes: Onboard microSD logging for high-rate data capture.
 sensors:
   barometer:
-  - count: 1
-    id: infineon-dps310
+    - count: 1
+      id: infineon-dps310
   imu:
-  - count: 1
-    id: invensense-icm20602
-  - count: 1
-    id: invensense-mpu6000
+    - count: 1
+      id: invensense-icm20602
+    - count: 1
+      id: invensense-mpu6000
 features:
-- Built-in OSD
-- Dual camera switching
-- Integrated current sensing
+  - Built-in OSD
+  - Dual camera switching
+  - Integrated current sensing
 firmware_support:
-- id: ardupilot
-  status: stable
+  - id: ardupilot
+    status: stable
 sources:
-- ardupilot-autopilots
-- ardupilot-matek-h743-wing
-- mateksys-h743-wing-product
+  - ardupilot-autopilots
+  - ardupilot-matek-h743-wing
+  - mateksys-h743-wing-product
 verification:
-  last_updated: "2025-10-13"
+  last_updated: 2025-10-13
   level: community
 hardware:
   openness: closed
 keywords:
-- ardupilot
-- mateksys
-- stm32h743
-- wing
-notes: Shares firmware family with SLIM and MINI variants; ensure correct pin mapping
-  per airframe.
+  - ardupilot
+  - mateksys
+  - stm32h743
+  - wing
+notes: Shares firmware family with SLIM and MINI variants; ensure correct pin
+  mapping per airframe.

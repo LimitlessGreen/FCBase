@@ -1,20 +1,30 @@
+# Migrated from voltage_in: "9-36V DC input range"
+
 id: mateksys-f765-wing
 title: Mateksys F765-Wing
 brand: mateksys
 mcu: stmicro-stm32f765
 mounting: wing
 images:
-- alt: "Mateksys F765-Wing controller board with gold connectors and dual rows of servo pins."
-  credit: "Mateksys"
-  source_url: "https://www.mateksys.com/?portfolio=f765-wing"
+  - alt: Mateksys F765-Wing controller board with gold connectors and dual rows of
+      servo pins.
+    credit: Mateksys
+    source_url: https://www.mateksys.com/?portfolio=f765-wing
 dimensions:
   length_mm: 54
   width_mm: 36
   height_mm: 13
   weight_g: 26
 power:
-  voltage_in: 9-36V DC input range
-  notes: Triple BEC design provides dedicated 5V, 9/12V, and adjustable 5/6/7.2V rails for peripherals, video gear, and servos.
+  notes: Triple BEC design provides dedicated 5V, 9/12V, and adjustable 5/6/7.2V
+    rails for peripherals, video gear, and servos.
+  inputs:
+    - name: POWER
+      voltage:
+        min: 9
+        max: 36
+        unit: V
+      notes: input range
 io:
   uarts: 7
   can: 0
@@ -22,111 +32,122 @@ io:
   ethernet: false
   sd_card: false
   peripherals:
-  - name: UART ports
-    type: uart
-    count: 7
-    interfaces:
-    - uart
-    - mavlink
-    connector: JST-SH headers and solder pads
-    notes: Seven assignable serial ports with documented default mappings for telemetry, GPS, ESC telemetry, and user links.
-  - name: PWM outputs
-    type: pwm
-    count: 12
-    interfaces:
-    - pwm
-    - dshot
-    connector: Servo headers and solder pads
-    notes: Twelve PWM outputs grouped for mixed DShot/PWM support including LED-marked channel 13.
-  - name: RC input
-    type: rc
-    interfaces:
-    - ppm
-    - sbus
-    - crsf
-    - srxl2
-    - fport
-    connector: Receiver header with selectable inverter
-    notes: UART remapping allows bi-directional protocols when BRD_ALT_CONFIG enables the Rx6 port.
-  - name: I2C expansion
-    type: i2c
-    count: 2
-    interfaces:
-    - i2c
-    connector: 4-pin JST-SH
-    notes: Dual external I2C ports for compass, airspeed, and peripheral sensors.
-  - name: SPI4 expansion
-    type: spi
-    interfaces:
-    - spi
-    connector: JST-SH 6-pin
-    notes: Auxiliary SPI4 header for external sensors or logging accessories.
-  - name: Camera switch
-    type: video
-    interfaces:
-    - analog-osd
-    connector: Solder pads
-    notes: Dual camera inputs with relay-controlled video switching and power gating.
-  - name: Power monitor
-    type: power
-    interfaces:
-    - power
-    connector: XT60 harness and solder pads
-    notes: Integrated 132A current sensor with dedicated bypass capacitor requirements.
-  - name: USB console
-    type: usb
-    interfaces:
-    - usb
-    connector: Micro-USB
-    notes: Console access for firmware, parameter tuning, and relay configuration.
-  - name: ADC inputs
-    type: analog
-    count: 6
-    interfaces:
-    - analog
-    connector: Solder pads
-    notes: Six analog inputs for airspeed, RSSI, and additional voltage monitoring.
+    - name: UART ports
+      type: uart
+      count: 7
+      interfaces:
+        - uart
+        - mavlink
+      connector: JST-SH headers and solder pads
+      notes: Seven assignable serial ports with documented default mappings for
+        telemetry, GPS, ESC telemetry, and user links.
+    - name: PWM outputs
+      type: pwm
+      count: 12
+      interfaces:
+        - pwm
+        - dshot
+      connector: Servo headers and solder pads
+      notes: Twelve PWM outputs grouped for mixed DShot/PWM support including
+        LED-marked channel 13.
+    - name: RC input
+      type: rc
+      interfaces:
+        - ppm
+        - sbus
+        - crsf
+        - srxl2
+        - fport
+      connector: Receiver header with selectable inverter
+      notes: UART remapping allows bi-directional protocols when BRD_ALT_CONFIG
+        enables the Rx6 port.
+    - name: I2C expansion
+      type: i2c
+      count: 2
+      interfaces:
+        - i2c
+      connector: 4-pin JST-SH
+      notes: Dual external I2C ports for compass, airspeed, and peripheral sensors.
+    - name: SPI4 expansion
+      type: spi
+      interfaces:
+        - spi
+      connector: JST-SH 6-pin
+      notes: Auxiliary SPI4 header for external sensors or logging accessories.
+    - name: Camera switch
+      type: video
+      interfaces:
+        - analog-osd
+      connector: Solder pads
+      notes: Dual camera inputs with relay-controlled video switching and power
+        gating.
+    - name: Power monitor
+      type: power
+      interfaces:
+        - power
+      connector: XT60 harness and solder pads
+      notes: Integrated 132A current sensor with dedicated bypass capacitor
+        requirements.
+    - name: USB console
+      type: usb
+      interfaces:
+        - usb
+      connector: Micro-USB
+      notes: Console access for firmware, parameter tuning, and relay configuration.
+    - name: ADC inputs
+      type: analog
+      count: 6
+      interfaces:
+        - analog
+      connector: Solder pads
+      notes: Six analog inputs for airspeed, RSSI, and additional voltage monitoring.
 sensors:
   imu:
-  - count: 1
-    id: invensense-mpu6000
-  - count: 1
-    id: invensense-icm20602
+    - count: 1
+      id: invensense-mpu6000
+    - count: 1
+      id: invensense-icm20602
   barometer:
-  - count: 1
-    id: bosch-bmp280
+    - count: 1
+      id: bosch-bmp280
 features:
-- STM32F765 autopilot with dual IMUs and high-current sensing tailored for large fixed-wing builds.
-- Triple BEC outputs supply peripherals, servos, and video systems with independent voltage rails.
-- Dual camera switch with ArduPilot relay integration for FPV source and VTX power control.
+  - STM32F765 autopilot with dual IMUs and high-current sensing tailored for
+    large fixed-wing builds.
+  - Triple BEC outputs supply peripherals, servos, and video systems with
+    independent voltage rails.
+  - Dual camera switch with ArduPilot relay integration for FPV source and VTX
+    power control.
 firmware_support:
-- id: ardupilot
-  status: stable
+  - id: ardupilot
+    status: stable
 sources:
-- ardupilot-matek-f765-wing
-- mateksys-f765-wing-product
+  - ardupilot-matek-f765-wing
+  - mateksys-f765-wing-product
 verification:
-  last_updated: "2025-10-14"
+  last_updated: 2025-10-14
   level: community
 hardware:
   openness: closed
   revisions:
-  - id: dps310-barometer
-    name: "DPS310 Barometer"
-    notes: Documentation notes later F765-Wing revisions shipping with an Infineon DPS310 barometer in place of BMP280.
-    changes:
-    - Replaces the BMP280 barometer with an Infineon DPS310 for higher precision altitude sensing.
-    sources:
-    - ardupilot-matek-f765-wing
-    - mateksys-f765-wing-product
-    overrides:
-      sensors:
-        barometer:
-        - count: 1
-          id: infineon-dps310
+    - id: dps310-barometer
+      name: DPS310 Barometer
+      notes: Documentation notes later F765-Wing revisions shipping with an Infineon
+        DPS310 barometer in place of BMP280.
+      changes:
+        - Replaces the BMP280 barometer with an Infineon DPS310 for higher
+          precision altitude sensing.
+      sources:
+        - ardupilot-matek-f765-wing
+        - mateksys-f765-wing-product
+      overrides:
+        sensors:
+          barometer:
+            - count: 1
+              id: infineon-dps310
 keywords:
-- ardupilot
-- mateksys
-- stm32f765
-- wing-controller
-notes: External GPS/compass modules are required because the controller omits an onboard magnetometer.
+  - ardupilot
+  - mateksys
+  - stm32f765
+  - wing-controller
+notes: External GPS/compass modules are required because the controller omits an
+  onboard magnetometer.
