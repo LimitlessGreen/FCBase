@@ -1,10 +1,69 @@
 id: stmicro-stm32f765
-name: STMicroelectronics STM32F765
-architecture: Arm Cortex-M7
-clock_mhz: 216
+name: STM32F765
+manufacturer: STMicroelectronics
+family: STM32F7
+architecture: ARM Cortex-M7F
+core: Cortex-M7F
+process_nm: 40
+max_frequency_mhz: 216
 flash_kb: 2048
-sram_kb: 512
-notes: High-performance STM32F7 dual-precision floating point MCU with rich connectivity used in Pixhawk-class flight controllers.
+ram_kb: 512
+supply_voltage_v: [1.7, 3.6]
+operating_temperature_c: [-40, 105]
+package:
+  - LQFP100
+  - LQFP144
+  - LQFP176
+  - UFBGA176
+features:
+  - "Dual-precision floating point unit (FPU)"
+  - "DSP extensions with saturating arithmetic"
+  - "Art Accelerator with 16 KB instruction and 16 KB data cache"
+  - "Hardware crypto accelerator (AES, DES/TDES, SHA-1/SHA-256, MD5)"
+  - "USB 2.0 OTG FS/HS, Quad-SPI, and dual SDMMC interfaces"
+peripherals:
+  - type: uart
+    count: 10
+    notes: "4x USART, 4x UART, and 2x low-power LPUART"
+  - type: spi
+    count: 6
+    notes: "Full-duplex SPI/I2S blocks"
+  - type: i2c
+    count: 4
+    notes: "Fast-mode Plus compliant"
+  - type: can
+    count: 2
+    notes: "CAN 2.0B controllers with time-trigger support"
+  - type: usb
+    notes: "USB 2.0 OTG full-speed (integrated PHY) and high-speed (external PHY)"
+  - type: ethernet
+    notes: "10/100 Ethernet MAC with IEEE 1588v2"
+  - type: sdmmc
+    count: 2
+    notes: "SD/MMC/SDIO controllers"
+  - type: qspi
+    count: 1
+    notes: "Quad-SPI with memory-mapped mode"
+  - type: adc
+    notes: "Three 12-bit ADCs with up to 24 channels"
+  - type: dac
+    count: 2
+    notes: "12-bit buffered DAC outputs"
+  - type: timer
+    count: 20
+    notes: "Advanced motor-control, general-purpose, low-power, and basic timers"
+memory:
+  sram_kb: 320
+  itcm_kb: 16
+  dtcm_kb: 64
+  backup_sram_kb: 4
+  notes: "512 KB total SRAM including 16 KB ITCM, 64 KB DTCM, and 256 KB SRAM"
+datasheet:
+  title: "STM32F765xx/767xx/769xx data sheet"
+  publisher: STMicroelectronics
+  url: https://www.st.com/resource/en/datasheet/stm32f765zg.pdf
+  retrieved: 2025-02-14
+  language: en
 sources:
-  - ardupilot-holybro-ph5x
-  - ardupilot-matek-f765-wing
+  - stmicro-stm32f765-datasheet
+notes: "High-performance STM32F7 MCU with extensive connectivity for Pixhawk-class controllers."

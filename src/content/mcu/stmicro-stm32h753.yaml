@@ -1,12 +1,69 @@
 id: stmicro-stm32h753
 name: STM32H753
 manufacturer: STMicroelectronics
-architecture: ARM Cortex-M7
-clock_speed_mhz: 480
-flash_mb: 2
-ram_mb: 1
+family: STM32H7
+architecture: ARM Cortex-M7F
+core: Cortex-M7F
+process_nm: 40
+max_frequency_mhz: 480
+flash_kb: 2048
+ram_kb: 1024
+supply_voltage_v: [2.0, 3.6]
+operating_temperature_c: [-40, 125]
+package:
+  - LQFP100
+  - LQFP144
+  - LQFP176
+  - TFBGA240
 features:
-- Includes DSP and floating-point unit
-- Integrated Ethernet MAC
+  - "Dual-precision floating point unit (FPU) and DSP extensions"
+  - "Secure crypto accelerator with AES-256, RSA, and elliptic-curve engines"
+  - "TrustZone-M, secure boot, and hardware unique key storage"
+  - "Integrated Ethernet MAC with IEEE 1588v2 timestamping"
+  - "Multiple 16-bit ADCs with oversampling and digital filtering"
+peripherals:
+  - type: uart
+    count: 10
+    notes: "4x USART, 4x UART, and 2x low-power LPUART"
+  - type: spi
+    count: 6
+    notes: "Supports SPI, I2S, and half-duplex modes"
+  - type: i2c
+    count: 4
+    notes: "Fast-mode Plus and SMBus compliant"
+  - type: can
+    count: 2
+    notes: "Dual FDCAN controllers"
+  - type: usb
+    notes: "USB 2.0 OTG full-speed (integrated PHY) and high-speed (ULPI)"
+  - type: ethernet
+    notes: "10/100 Ethernet MAC with secure time stamping"
+  - type: sdmmc
+    count: 2
+    notes: "SDMMC controllers with 1.8 V support"
+  - type: qspi
+    count: 1
+    notes: "Octo-SPI/Quad-SPI interface"
+  - type: adc
+    notes: "Three 16-bit ADCs with up to 36 channels"
+  - type: dac
+    count: 2
+    notes: "12-bit buffered DAC outputs"
+  - type: timer
+    count: 22
+    notes: "Advanced motor-control, general-purpose, basic, and low-power timers"
+memory:
+  sram_kb: 864
+  itcm_kb: 64
+  dtcm_kb: 128
+  backup_sram_kb: 4
+  notes: "1 MB total SRAM including 64 KB ITCM, 128 KB DTCM, and 672 KB AXI SRAM"
+datasheet:
+  title: "STM32H753xI/G data sheet"
+  publisher: STMicroelectronics
+  url: https://www.st.com/resource/en/datasheet/stm32h753xi.pdf
+  retrieved: 2025-02-14
+  language: en
 sources:
-- px4-pixhawk6x
+  - stmicro-stm32h753-datasheet
+notes: "Security-enhanced STM32H7 MCU with hardware cryptography for mission-critical autopilots."

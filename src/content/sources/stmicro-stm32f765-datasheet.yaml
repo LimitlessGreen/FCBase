@@ -1,0 +1,7 @@
+id: stmicro-stm32f765-datasheet
+title: "STM32F765xx/767xx/769xx data sheet"
+publisher: STMicroelectronics
+url: https://www.st.com/resource/en/datasheet/stm32f765zg.pdf
+retrieved: 2025-02-14
+language: en
+notes: "Comprehensive data sheet for STM32F765/767/769 lines covering electrical specs, caches, and communication peripherals."

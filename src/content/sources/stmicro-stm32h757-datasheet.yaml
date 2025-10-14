@@ -1,0 +1,7 @@
+id: stmicro-stm32h757-datasheet
+title: "STM32H757xI/G data sheet"
+publisher: STMicroelectronics
+url: https://www.st.com/resource/en/datasheet/stm32h757xi.pdf
+retrieved: 2025-02-14
+language: en
+notes: "Dual-core STM32H757 reference data sheet outlining memory partitioning, communication blocks, and electrical limits."

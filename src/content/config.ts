@@ -431,22 +431,77 @@ const manufacturersCollection = defineCollection({
 });
 
 // MCU collection
+const numericRange = z.tuple([z.number(), z.number()]);
+
+const mcuPeripheralSchema = z.object({
+  type: z.enum([
+    'uart',
+    'spi',
+    'i2c',
+    'can',
+    'usb',
+    'ethernet',
+    'adc',
+    'dac',
+    'timer',
+    'sdmmc',
+    'qspi',
+    'other',
+  ]),
+  count: z.number().int().min(0).optional(),
+  notes: z.string().optional(),
+});
+
 const mcuCollection = defineCollection({
   type: 'data',
   schema: z.object({
     id: z.string(),
-    name: z.string().optional(),
-    title: z.string().optional(),
-    manufacturer: z.string().optional(),
-    core: z.string().optional(),
-    frequency_mhz: z.number().optional(),
-    flash_kb: z.number().optional(),
-    ram_kb: z.number().optional(),
-    sources: z.array(z.string()).optional(),
+    name: z.string(),
+    manufacturer: z.string(),
+    family: z.string().optional(),
+    architecture: z.string(),
+    core: z.string(),
+    process_nm: z.number().optional(),
+    max_frequency_mhz: z.number(),
+    flash_kb: z.number(),
+    ram_kb: z.number(),
+    supply_voltage_v: numericRange.optional(),
+    operating_temperature_c: numericRange.optional(),
+    package: z.array(z.string()).optional(),
+    features: z.array(z.string()).optional(),
+    peripherals: z.array(mcuPeripheralSchema).optional(),
+    memory: z
+      .object({
+        sram_kb: z.number().optional(),
+        itcm_kb: z.number().optional(),
+        dtcm_kb: z.number().optional(),
+        backup_sram_kb: z.number().optional(),
+        notes: z.string().optional(),
+      })
+      .optional(),
+    datasheet: z.object({
+      title: z.string(),
+      url: z.string().url(),
+      publisher: z.string().optional(),
+      revision: z.string().optional(),
+      year: z.number().optional(),
+      retrieved: z.string().optional(),
+      language: z.string().optional(),
+    }),
+    application_notes: z
+      .array(
+        z.object({
+          title: z.string(),
+          url: z.string().url(),
+          publisher: z.string().optional(),
+          notes: z.string().optional(),
+        })
+      )
+      .optional(),
+    sources: z.array(z.string()).min(1),
+    notes: z.string().optional(),
   }),
 });
-
-const numericRange = z.tuple([z.number(), z.number()]);
 
 // Sensors collection
 const sensorsCollection = defineCollection({

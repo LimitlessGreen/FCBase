@@ -1,12 +1,68 @@
 id: stmicro-stm32h757
 name: STM32H757
 manufacturer: STMicroelectronics
-architecture: ARM Cortex-M7 dual-core
-clock_speed_mhz: 400
-flash_mb: 2
-ram_mb: 1
+family: STM32H7
+architecture: ARM Cortex-M7F + Cortex-M4F
+core: Dual-core Cortex-M7F/Cortex-M4F
+process_nm: 40
+max_frequency_mhz: 480
+flash_kb: 2048
+ram_kb: 1024
+supply_voltage_v: [2.0, 3.6]
+operating_temperature_c: [-40, 125]
+package:
+  - LQFP144
+  - LQFP176
+  - TFBGA240
 features:
-- Dual-core Cortex-M7/M4 design
-- Hardware crypto acceleration
+  - "Heterogeneous dual-core architecture with Cortex-M7F (480 MHz) and Cortex-M4F (240 MHz)"
+  - "Shared 2 MB dual-bank flash with read-while-write capability"
+  - "Integrated security accelerator with AES-256, RSA, ECC, and secure boot"
+  - "TrustZone-M partitioning and memory protection units per core"
+  - "Rich graphical and signal processing acceleration including Chrom-ART and DFSDM"
+peripherals:
+  - type: uart
+    count: 10
+    notes: "4x USART, 4x UART, and 2x low-power LPUART"
+  - type: spi
+    count: 6
+    notes: "Supports dual/quad/octal SPI and I2S"
+  - type: i2c
+    count: 4
+    notes: "Fast-mode Plus and SMBus compliant"
+  - type: can
+    count: 2
+    notes: "Dual FDCAN controllers"
+  - type: usb
+    notes: "USB 2.0 OTG full-speed (integrated PHY) and high-speed (ULPI)"
+  - type: ethernet
+    notes: "10/100 Ethernet MAC with IEEE 1588v2 and MACsec-ready crypto"
+  - type: sdmmc
+    count: 2
+    notes: "SDMMC controllers with 1.8 V support"
+  - type: qspi
+    count: 2
+    notes: "Dual Octo-SPI interfaces for external flash"
+  - type: adc
+    notes: "Three 16-bit ADCs and dedicated temperature/voltage monitoring"
+  - type: dac
+    count: 2
+    notes: "12-bit buffered DAC outputs"
+  - type: timer
+    count: 24
+    notes: "Advanced motor-control, general-purpose, basic, and low-power timers"
+memory:
+  sram_kb: 864
+  itcm_kb: 64
+  dtcm_kb: 128
+  backup_sram_kb: 4
+  notes: "1 MB total SRAM shared between cores with 64 KB ITCM and 128 KB DTCM"
+datasheet:
+  title: "STM32H757xI/G data sheet"
+  publisher: STMicroelectronics
+  url: https://www.st.com/resource/en/datasheet/stm32h757xi.pdf
+  retrieved: 2025-02-14
+  language: en
 sources:
-- px4-cube-orange-plus
+  - stmicro-stm32h757-datasheet
+notes: "Dual-core STM32H7 MCU enabling hard real-time loops on the M4 core while the M7 handles high-level navigation."
