@@ -4,6 +4,9 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import MainLayout from '@/layouts/MainLayout.astro';
 import { Card, CardContent, CardHeader } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
+import ProfessionalTable from '@/components/table/ProfessionalTable.astro';
+import TableRow2Col from '@/components/table/TableRow2Col.astro';
+import TableRow from '@/components/table/TableRow.astro';
 import { ExternalLink } from 'lucide-react';
 
 export async function getStaticPaths() {
@@ -97,45 +100,38 @@ const editPath = `src/content/sensors/${sensor.id}.yaml`;
             <h2 class="text-base font-bold uppercase tracking-wide text-primary">Technical Specifications</h2>
           </CardHeader>
           <CardContent class="pt-0">
-            <table class="w-full text-sm border-collapse">
-              <tbody>
-                <tr class="border-b border-border hover:bg-muted/50 transition-colors">
-                  <td class="py-2 px-3 text-muted-foreground font-medium w-1/4 text-xs uppercase">Type</td>
-                  <td class="py-2 px-3 font-semibold w-1/4">{typeDisplay[data.type] || data.type}</td>
-                  <td class="py-2 px-3 text-muted-foreground font-medium w-1/4 text-xs uppercase">Interface</td>
-                  <td class="py-2 px-3 font-mono font-semibold w-1/4 uppercase">
-                    {Array.isArray(data.interface) ? data.interface.join(' / ') : data.interface}
-                  </td>
-                </tr>
-                <tr class="border-b border-border bg-muted/20 hover:bg-muted/40 transition-colors">
-                  {data.axes && (
-                    <>
-                      <td class="py-2 px-3 text-muted-foreground font-medium text-xs uppercase">Axes</td>
-                      <td class="py-2 px-3 font-mono font-semibold">{data.axes}-axis</td>
-                    </>
-                  )}
-                  <td class="py-2 px-3 text-muted-foreground font-medium text-xs uppercase">Used in Controllers</td>
-                  <td class="py-2 px-3 font-mono font-semibold">{controllersUsingSensor.length}</td>
-                </tr>
-                {data.datasheet?.url && (
-                  <tr class="border-b border-border hover:bg-muted/50 transition-colors">
-                    <td class="py-2 px-3 text-muted-foreground font-medium text-xs uppercase">Datasheet</td>
-                    <td colspan="3" class="py-2 px-3">
-                      <a
-                        href={data.datasheet.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="inline-flex items-center gap-1.5 text-primary hover:underline font-semibold text-sm"
-                      >
-                        <ExternalLink className="h-4 w-4" />
-                        <span>PDF</span>
-                        {data.datasheet.year && <span class="text-xs text-muted-foreground font-normal">({data.datasheet.year})</span>}
-                      </a>
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+            <ProfessionalTable>
+              <TableRow2Col
+                label1="Type"
+                value1={typeDisplay[data.type] || data.type}
+                label2="Interface"
+                value2={Array.isArray(data.interface) ? data.interface.join(' / ') : data.interface}
+                mono2
+              />
+              
+              <TableRow2Col
+                label1={data.axes ? "Axes" : " "}
+                value1={data.axes ? `${data.axes}-axis` : ""}
+                label2="Used in Controllers"
+                value2={controllersUsingSensor.length}
+                mono1={!!data.axes}
+              />
+              
+              {data.datasheet?.url && (
+                <TableRow label="Datasheet">
+                  <a
+                    href={data.datasheet.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="inline-flex items-center gap-1.5 text-primary hover:underline font-semibold text-sm"
+                  >
+                    <ExternalLink className="h-4 w-4" />
+                    <span>PDF</span>
+                    {data.datasheet.year && <span class="text-xs text-muted-foreground font-normal">({data.datasheet.year})</span>}
+                  </a>
+                </TableRow>
+              )}
+            </ProfessionalTable>
           </CardContent>
         </Card>
       </div>

@@ -1,0 +1,56 @@
+---
+import { Badge } from '@/components/ui/Badge';
+import {
+  getFirmwareBadgeClass,
+  getVerificationBadgeClass,
+  getHardwareBadgeClass,
+  getDefaultBadgeClass,
+  getBadgeSizeClass,
+  capitalizeStatus,
+  type FirmwareStatus,
+  type VerificationLevel,
+  type HardwareOpenness,
+  type DefaultVariant,
+  type BadgeSize,
+} from '@/lib/badge-styles';
+import { CheckCircle2, AlertCircle } from 'lucide-react';
+
+interface Props {
+  variant: 'firmware' | 'verification' | 'hardware' | 'default';
+  status: FirmwareStatus | VerificationLevel | HardwareOpenness | DefaultVariant;
+  size?: BadgeSize;
+  showIcon?: boolean;
+  class?: string;
+}
+
+const { variant, status, size = 'md', showIcon = false, class: className } = Astro.props;
+
+let badgeClass = '';
+if (variant === 'firmware') {
+  badgeClass = getFirmwareBadgeClass(status as FirmwareStatus);
+} else if (variant === 'verification') {
+  badgeClass = getVerificationBadgeClass(status as VerificationLevel);
+} else if (variant === 'hardware') {
+  badgeClass = getHardwareBadgeClass(status as HardwareOpenness);
+} else if (variant === 'default') {
+  badgeClass = getDefaultBadgeClass(status as DefaultVariant);
+}
+
+const sizeClass = getBadgeSizeClass(size);
+const finalClass = `${badgeClass} ${sizeClass} font-medium ${className || ''}`;
+
+// Show icon for verification badges
+const showVerificationIcon = showIcon && variant === 'verification';
+---
+
+<Badge className={finalClass}>
+  {showVerificationIcon && status === 'reviewed' && (
+    <CheckCircle2 className="w-3 h-3 mr-1 inline-block" />
+  )}
+  {showVerificationIcon && status === 'community' && (
+    <AlertCircle className="w-3 h-3 mr-1 inline-block" />
+  )}
+  <slot>
+    {capitalizeStatus(status as string)}
+  </slot>
+</Badge>

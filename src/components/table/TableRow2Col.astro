@@ -1,0 +1,46 @@
+---
+/**
+ * Two-column table row for ultra-compact layouts
+ * Displays two label-value pairs side by side (4 columns total)
+ * Used for maximizing information density
+ */
+interface Props {
+  label1: string;
+  value1?: string | number | boolean;
+  label2: string;
+  value2?: string | number | boolean;
+  mono1?: boolean;
+  mono2?: boolean;
+  class1?: string;
+  class2?: string;
+}
+
+const {
+  label1,
+  value1,
+  label2,
+  value2,
+  mono1 = false,
+  mono2 = false,
+  class1,
+  class2,
+} = Astro.props;
+
+const hasSlot1 = Astro.slots.has('value1');
+const hasSlot2 = Astro.slots.has('value2');
+---
+
+<tr class="even:bg-muted/30 hover:bg-muted/50 transition-colors">
+  <td class="px-3 py-1.5 font-medium text-muted-foreground whitespace-nowrap w-1/4">
+    {label1}
+  </td>
+  <td class={`px-3 py-1.5 w-1/4 ${mono1 ? 'font-mono' : ''} ${class1 || ''}`}>
+    {hasSlot1 ? <slot name="value1" /> : value1}
+  </td>
+  <td class="px-3 py-1.5 font-medium text-muted-foreground whitespace-nowrap w-1/4">
+    {label2}
+  </td>
+  <td class={`px-3 py-1.5 w-1/4 ${mono2 ? 'font-mono' : ''} ${class2 || ''}`}>
+    {hasSlot2 ? <slot name="value2" /> : value2}
+  </td>
+</tr>

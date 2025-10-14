@@ -5,19 +5,29 @@ import DetailHeader from '@/components/detail/DetailHeader.astro';
 import DetailPageLayout from '@/components/detail/DetailPageLayout.astro';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
+import StatusBadge from '@/components/ui/StatusBadge.astro';
+import ProfessionalTable from '@/components/table/ProfessionalTable.astro';
+import TableSection from '@/components/table/TableSection.astro';
+import TableRow from '@/components/table/TableRow.astro';
+import TableRow2Col from '@/components/table/TableRow2Col.astro';
+import SensorList from '@/components/SensorList.astro';
+import {
+  extractUniqueSensorIds,
+  fetchSensorNameMap,
+  mapSensorsWithNames,
+  getManufacturerName,
+  formatMounting,
+  formatVoltageRange,
+  formatDimensions,
+  formatWeight,
+  getPowerTypeLabel,
+  formatPeripheralType,
+} from '@/lib/data-utils';
 import { 
   Cpu, 
-  Gauge, 
   Package,
   Zap,
-  Database,
-  Wifi,
-  HardDrive,
   Cable,
-  CheckCircle2,
-  AlertCircle,
-  Scale,
-  Ruler,
   Box,
   Layers,
 } from 'lucide-react';
@@ -35,10 +45,7 @@ const { data } = controller;
 
 // Fetch related data
 const manufacturer = data.brand ? await getEntry('manufacturers', data.brand) : null;
-const manufacturerName =
-  manufacturer?.data.name ??
-  (manufacturer?.data as { title?: string } | undefined)?.title ??
-  data.brand;
+const manufacturerName = getManufacturerName(manufacturer, data.brand);
 const mcu = data.mcu ? await getEntry('mcu', data.mcu) : null;
 const firmware = await Promise.all(
   data.firmware_support.map(async (fw) => {
@@ -49,26 +56,9 @@ const firmware = await Promise.all(
 
 const revisionVariants = buildRevisionVariants(data);
 
-const uniqueSensorIds = new Set<string>();
-for (const variant of revisionVariants) {
-  const sensors = variant.spec.sensors;
-  if (!sensors) continue;
-  (['imu', 'barometer', 'magnetometer'] as const).forEach((category) => {
-    sensors[category]?.forEach((sensor) => uniqueSensorIds.add(sensor.id));
-  });
-}
-
-const sensorEntries = await Promise.all(
-  Array.from(uniqueSensorIds).map(async (sensorId) => {
-    const entry = await getEntry('sensors', sensorId);
-    return {
-      id: sensorId,
-      name: entry?.data.title || entry?.data.name || sensorId,
-    };
-  })
-);
-
-const sensorNameMap = new Map(sensorEntries.map((entry) => [entry.id, entry.name]));
+// Use data-utils for sensor deduplication
+const uniqueSensorIds = extractUniqueSensorIds(revisionVariants);
+const sensorNameMap = await fetchSensorNameMap(uniqueSensorIds);
 
 const revisionVariantsWithSensors = await Promise.all(
   revisionVariants.map(async (variant) => {
@@ -87,21 +77,9 @@ const revisionVariantsWithSensors = await Promise.all(
       : [];
 
     const sensorDetails = {
-      imu:
-        variant.spec.sensors?.imu?.map((sensor) => ({
-          ...sensor,
-          name: sensorNameMap.get(sensor.id) ?? sensor.id,
-        })) ?? [],
-      barometer:
-        variant.spec.sensors?.barometer?.map((sensor) => ({
-          ...sensor,
-          name: sensorNameMap.get(sensor.id) ?? sensor.id,
-        })) ?? [],
-      magnetometer:
-        variant.spec.sensors?.magnetometer?.map((sensor) => ({
-          ...sensor,
-          name: sensorNameMap.get(sensor.id) ?? sensor.id,
-        })) ?? [],
+      imu: mapSensorsWithNames(variant.spec.sensors?.imu, sensorNameMap),
+      barometer: mapSensorsWithNames(variant.spec.sensors?.barometer, sensorNameMap),
+      magnetometer: mapSensorsWithNames(variant.spec.sensors?.magnetometer, sensorNameMap),
     };
 
     return {
@@ -118,99 +96,9 @@ const hardwareRevisionSummaries = revisionVariantsWithSensors.filter(
   (variant) => variant.revision
 );
 
-// Format mounting type
-const mountingDisplay = {
-  '20x20': '20×20mm',
-  '25.5x25.5': '25.5×25.5mm',
-  '30.5x30.5': '30.5×30.5mm',
-  '35x35': '35×35mm',
-  'cube': 'Cube Carrier Board',
-  'wing': 'Wing Form Factor',
-  'custom': 'Custom',
-};
-
-// Verification badge color
-const verificationColor = {
-  unverified: 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20',
-  community: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
-  reviewed: 'bg-green-500/10 text-green-500 border-green-500/20',
-};
-
-// Firmware status color
-const firmwareStatusColor = {
-  beta: 'bg-orange-500/10 text-orange-500 border-orange-500/20',
-  stable: 'bg-green-500/10 text-green-500 border-green-500/20',
-  deprecated: 'bg-red-500/10 text-red-500 border-red-500/20',
-  community: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
-};
-
-const peripheralTypeLabel = (type: string) =>
-  type
-    .split('_')
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(' ');
-
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
 const controllerSlug = (controller as { slug?: string }).slug ?? controller.id;
 const editPath = `src/content/controllers/${controllerSlug}.yaml`;
-
-const powerTypeLabels = {
-  power_module: 'Power Module',
-  usb: 'USB',
-  battery: 'Battery',
-  regulator: 'Regulator',
-  servo_rail: 'Servo Rail',
-  other: 'Other',
-} as const;
-
-const getPowerTypeLabel = (type?: string) => {
-  if (!type) return null;
-  return powerTypeLabels[type as keyof typeof powerTypeLabels] ?? type;
-};
-
-const formatVoltageRange = (voltage?: {
-  min?: number;
-  max?: number;
-  nominal?: number;
-  unit?: string;
-  notes?: string;
-  cells?: { min?: number; max?: number };
-}) => {
-  if (!voltage) return null;
-  const unit = voltage.unit ?? 'V';
-  const parts: string[] = [];
-
-  if (typeof voltage.min === 'number' && typeof voltage.max === 'number') {
-    parts.push(`${voltage.min}–${voltage.max} ${unit}`);
-  } else if (typeof voltage.min === 'number') {
-    parts.push(`≥${voltage.min} ${unit}`);
-  } else if (typeof voltage.max === 'number') {
-    parts.push(`≤${voltage.max} ${unit}`);
-  } else if (typeof voltage.nominal === 'number') {
-    parts.push(`${voltage.nominal} ${unit}`);
-  }
-
-  if (voltage.cells && (voltage.cells.min || voltage.cells.max)) {
-    if (
-      typeof voltage.cells.min === 'number' &&
-      typeof voltage.cells.max === 'number' &&
-      voltage.cells.min !== voltage.cells.max
-    ) {
-      parts.push(`${voltage.cells.min}–${voltage.cells.max}S`);
-    } else if (typeof voltage.cells.min === 'number') {
-      parts.push(`${voltage.cells.min}S`);
-    } else if (typeof voltage.cells.max === 'number') {
-      parts.push(`${voltage.cells.max}S`);
-    }
-  }
-
-  const baseDescription = parts.join(' / ');
-  if (voltage.notes) {
-    return baseDescription ? `${baseDescription} (${voltage.notes})` : voltage.notes;
-  }
-
-  return baseDescription || null;
-};
 ---
 
 <DetailPageLayout
@@ -229,14 +117,21 @@ const formatVoltageRange = (voltage?: {
     subtitle={`by ${manufacturerName}`}
     description={data.notes}
   >
-    <Badge slot="badges" className={`${verificationColor[data.verification.level]} px-2 py-0.5 text-xs`}>
-      {data.verification.level === 'reviewed' && <CheckCircle2 className="w-3 h-3 mr-1" />}
-      {data.verification.level === 'community' && <AlertCircle className="w-3 h-3 mr-1" />}
-      {data.verification.level.charAt(0).toUpperCase() + data.verification.level.slice(1)}
-    </Badge>
-    <Badge slot="badges" className="bg-primary/10 text-primary border-primary/20 px-2 py-0.5 text-xs">
+    <StatusBadge 
+      slot="badges" 
+      variant="verification" 
+      status={data.verification.level}
+      showIcon
+      size="sm"
+    />
+    <StatusBadge 
+      slot="badges" 
+      variant="hardware" 
+      status={data.hardware.openness}
+      size="sm"
+    >
       {data.hardware.openness.charAt(0).toUpperCase() + data.hardware.openness.slice(1)} Hardware
-    </Badge>
+    </StatusBadge>
   </DetailHeader>
 
   <!-- Main Content - Ultra Compact Layout -->
@@ -392,329 +287,232 @@ const formatVoltageRange = (voltage?: {
                       )}
                     </div>
                   )}
-                  <div class="overflow-x-auto">
-                    <table class="w-full min-w-[640px] text-sm border-collapse">
-                      <tbody>
-                        <tr class="border-b-2 border-primary/20">
-                          <td colspan="4" class="py-2 px-3 font-bold text-xs uppercase tracking-wider bg-primary/5">
-                            <div class="flex items-center gap-2">
-                              <Cpu className="w-4 h-4 text-primary" />
-                              <span class="text-primary">Core Hardware</span>
-                            </div>
-                          </td>
-                        </tr>
-                        <tr class="border-b border-border hover:bg-muted/50 transition-colors">
-                          <td class="py-2 px-3 text-muted-foreground font-medium w-1/4 text-xs uppercase">MCU</td>
-                          <td class="py-2 px-3 font-mono font-semibold w-1/4 text-foreground">
-                            {mcu?.data.title || mcu?.data.name || variant.spec.mcu}
-                          </td>
-                          <td class="py-2 px-3 text-muted-foreground font-medium w-1/4 text-xs uppercase">Mounting</td>
-                          <td class="py-2 px-3 font-mono font-semibold w-1/4">
-                            {mountingDisplay[variant.spec.mounting] ?? variant.spec.mounting}
-                          </td>
-                        </tr>
-                        {variant.spec.dimensions && (
-                          <tr class="border-b border-border bg-muted/20 hover:bg-muted/40 transition-colors">
-                            <td class="py-2 px-3 text-muted-foreground font-medium text-xs uppercase">Dimensions</td>
-                            <td class="py-2 px-3 font-mono font-semibold">
-                              {variant.spec.dimensions.width_mm} × {variant.spec.dimensions.length_mm}
-                              {variant.spec.dimensions.height_mm && ` × ${variant.spec.dimensions.height_mm}`} mm
-                            </td>
-                            {variant.spec.dimensions.weight_g && (
-                              <>
-                                <td class="py-2 px-3 text-muted-foreground font-medium text-xs uppercase">Weight</td>
-                                <td class="py-2 px-3 font-mono font-semibold">
-                                  {variant.spec.dimensions.weight_g}g
-                                </td>
-                              </>
-                            )}
-                          </tr>
-                        )}
-                        <tr class="border-b-2 border-primary/20">
-                          <td colspan="4" class="py-2 px-3 font-bold text-xs uppercase tracking-wider bg-primary/5">
-                            <div class="flex items-center gap-2">
-                              <Zap className="w-4 h-4 text-amber-500" />
-                              <span class="text-amber-600 dark:text-amber-500">Power</span>
-                            </div>
-                          </td>
-                        </tr>
-                        {variant.spec.power.inputs && variant.spec.power.inputs.length > 0 ? (
-                          <>
-                            <tr class="border-b border-border hover:bg-muted/50 transition-colors">
-                              <td class="py-2 px-3 text-muted-foreground font-medium text-xs uppercase align-top">
-                                Power Inputs
-                              </td>
-                              <td colspan="3" class="py-2 px-3">
-                                <div class="space-y-2">
-                                  {variant.spec.power.inputs.map((input, idx) => {
-                                    const voltageLabel = formatVoltageRange(input.voltage);
-                                    const typeLabel = getPowerTypeLabel(input.type);
-                                    return (
-                                      <div
-                                        key={`${input.name}-${idx}`}
-                                        class="rounded-sm border border-border/40 bg-muted/20 p-3 space-y-1"
-                                      >
-                                        <div class="flex flex-wrap items-center justify-between gap-2">
-                                          <span class="font-mono font-semibold text-sm text-foreground">
-                                            {input.name}
-                                          </span>
-                                          {typeLabel && (
-                                            <span class="text-[10px] uppercase tracking-wide text-muted-foreground">
-                                              {typeLabel}
-                                            </span>
-                                          )}
-                                        </div>
-                                        {input.connector && (
-                                          <div class="text-xs text-muted-foreground">
-                                            Connector:&nbsp;
-                                            <span class="font-mono text-foreground">{input.connector}</span>
-                                          </div>
-                                        )}
-                                        {voltageLabel && (
-                                          <div class="text-xs text-muted-foreground">
-                                            Voltage:&nbsp;
-                                            <span class="font-semibold text-foreground">{voltageLabel}</span>
-                                          </div>
-                                        )}
-                                        {input.notes && (
-                                          <p class="text-xs text-muted-foreground leading-snug">{input.notes}</p>
-                                        )}
-                                      </div>
-                                    );
-                                  })}
-                                </div>
-                              </td>
-                            </tr>
-                            {variant.spec.power.redundant && (
-                              <tr class="border-b border-border bg-muted/20">
-                                <td class="py-2 px-3 text-muted-foreground font-medium text-xs uppercase">Redundancy</td>
-                                <td class="py-2 px-3 font-semibold text-green-600 dark:text-green-400">✓ Yes</td>
-                                <td colspan="2"></td>
-                              </tr>
-                            )}
-                          </>
-                        ) : (
-                          <tr class="border-b border-border hover:bg-muted/50 transition-colors">
-                            <td class="py-2 px-3 text-muted-foreground font-medium text-xs uppercase">Input Voltage</td>
-                            <td class="py-2 px-3 font-mono font-semibold">
-                              {variant.spec.power.voltage_in ?? '—'}
-                            </td>
-                            {variant.spec.power.redundant && (
-                              <>
-                                <td class="py-2 px-3 text-muted-foreground font-medium text-xs uppercase">Redundancy</td>
-                                <td class="py-2 px-3 font-semibold text-green-600 dark:text-green-400">✓ Yes</td>
-                              </>
-                            )}
-                          </tr>
-                        )}
-                        {variant.spec.power.notes && (
-                          <tr class="border-b border-border bg-muted/20">
-                            <td colspan="4" class="py-1.5 px-3 text-xs text-muted-foreground italic">
-                              {variant.spec.power.notes}
-                            </td>
-                          </tr>
-                        )}
-                        <tr class="border-b-2 border-primary/20">
-                          <td colspan="4" class="py-2 px-3 font-bold text-xs uppercase tracking-wider bg-primary/5">
-                            <div class="flex items-center gap-2">
-                              <Package className="w-4 h-4 text-blue-500" />
-                              <span class="text-blue-600 dark:text-blue-400">Connectivity & I/O</span>
-                            </div>
-                          </td>
-                        </tr>
-                        <tr class="border-b border-border hover:bg-muted/50 transition-colors">
-                          <td class="py-2 px-3 text-muted-foreground font-medium text-xs uppercase">UARTs</td>
-                          <td class="py-2 px-3 font-mono font-semibold">{variant.spec.io.uarts}</td>
-                          <td class="py-2 px-3 text-muted-foreground font-medium text-xs uppercase">CAN Bus</td>
-                          <td class="py-2 px-3 font-mono font-semibold">{variant.spec.io.can}</td>
-                        </tr>
-                        <tr class="border-b border-border bg-muted/20 hover:bg-muted/40 transition-colors">
-                          <td class="py-2 px-3 text-muted-foreground font-medium text-xs uppercase">PWM Outputs</td>
-                          <td class="py-2 px-3 font-mono font-semibold">{variant.spec.io.pwm}</td>
-                          <td class="py-2 px-3 text-muted-foreground font-medium text-xs uppercase">SD Card</td>
-                          <td class="py-2 px-3 font-semibold">
-                            {variant.spec.io.sd_card ? '✓ Yes' : '✗ No'}
-                          </td>
-                        </tr>
-                        {variant.spec.io.ethernet !== undefined && (
-                          <tr class="border-b border-border hover:bg-muted/50 transition-colors">
-                            <td class="py-2 px-3 text-muted-foreground font-medium text-xs uppercase">Ethernet</td>
-                            <td class="py-2 px-3 font-semibold">
-                              {variant.spec.io.ethernet ? '✓ Yes' : '✗ No'}
-                            </td>
-                            <td colspan="2"></td>
-                          </tr>
-                        )}
-                        {variant.spec.io.peripherals && variant.spec.io.peripherals.length > 0 && (
-                          <tr class="border-b border-border bg-muted/20">
-                            <td class="py-2 px-3 text-muted-foreground font-medium align-top text-xs uppercase">
-                              <div class="flex items-center gap-2 text-primary">
-                                <Cable className="w-4 h-4" />
-                                <span>Peripheral Ports</span>
-                              </div>
-                            </td>
-                            <td colspan="3" class="py-2 px-3">
-                              <div class="grid gap-3 sm:grid-cols-2">
-                                {variant.spec.io.peripherals.map((peripheral, idx) => (
-                                  <div
-                                    class="rounded-sm border border-border/40 bg-background/70 p-3 shadow-xs"
-                                    key={`${peripheral.name}-${idx}`}
-                                  >
-                                    <div class="flex items-center justify-between gap-2">
-                                      <span class="font-semibold text-sm text-foreground">
-                                        {peripheral.name}
-                                        {peripheral.count && (
-                                          <span class="ml-1 text-xs text-muted-foreground font-medium">
-                                            ×{peripheral.count}
-                                          </span>
-                                        )}
+                  <ProfessionalTable>
+                    <TableSection title="Core Hardware" color="blue" />
+                    
+                    <TableRow2Col
+                      label1="MCU"
+                      value1={mcu?.data.title || mcu?.data.name || variant.spec.mcu}
+                      label2="Mounting"
+                      value2={formatMounting(variant.spec.mounting)}
+                      mono1
+                      mono2
+                    />
+                    
+                    {variant.spec.dimensions && (
+                      <TableRow2Col
+                        label1="Dimensions"
+                        value1={formatDimensions(variant.spec.dimensions)}
+                        label2="Weight"
+                        value2={formatWeight(variant.spec.dimensions.weight_g) || '—'}
+                        mono1
+                        mono2
+                      />
+                    )}
+                    <TableSection title="Power" color="orange" />
+                    
+                    {variant.spec.power.inputs && variant.spec.power.inputs.length > 0 ? (
+                      <>
+                        <TableRow label="Power Inputs">
+                          <div class="space-y-2">
+                            {variant.spec.power.inputs.map((input, idx) => {
+                              const voltageLabel = formatVoltageRange(input.voltage);
+                              const typeLabel = getPowerTypeLabel(input.type);
+                              return (
+                                <div
+                                  key={`${input.name}-${idx}`}
+                                  class="rounded-sm border border-border/40 bg-muted/20 p-3 space-y-1"
+                                >
+                                  <div class="flex flex-wrap items-center justify-between gap-2">
+                                    <span class="font-mono font-semibold text-sm text-foreground">
+                                      {input.name}
+                                    </span>
+                                    {typeLabel && (
+                                      <span class="text-[10px] uppercase tracking-wide text-muted-foreground">
+                                        {typeLabel}
                                       </span>
-                                      <Badge className="text-[10px] uppercase tracking-wide">
-                                        {peripheralTypeLabel(peripheral.type)}
-                                      </Badge>
-                                    </div>
-                                    {peripheral.interfaces && peripheral.interfaces.length > 0 && (
-                                      <div class="mt-2 flex flex-wrap gap-1.5">
-                                        {peripheral.interfaces.map((iface) => (
-                                          <Badge
-                                            variant="secondary"
-                                            className="text-[10px] uppercase tracking-wide"
-                                            key={`${peripheral.name}-${iface}`}
-                                          >
-                                            {iface.replace(/_/g, ' ')}
-                                          </Badge>
-                                        ))}
-                                      </div>
-                                    )}
-                                    {peripheral.connector && (
-                                      <p class="mt-2 text-xs text-muted-foreground">
-                                        <span class="font-medium text-foreground">Connector:</span>&nbsp;{peripheral.connector}
-                                      </p>
-                                    )}
-                                    {peripheral.voltage && (
-                                      <p class="text-xs text-muted-foreground">
-                                        <span class="font-medium text-foreground">Voltage:</span> {peripheral.voltage}
-                                      </p>
-                                    )}
-                                    {peripheral.notes && (
-                                      <p class="text-xs text-muted-foreground leading-snug mt-1">
-                                        {peripheral.notes}
-                                      </p>
                                     )}
                                   </div>
-                                ))}
-                              </div>
-                            </td>
-                          </tr>
-                        )}
-                        <tr class="border-b-2 border-primary/20">
-                          <td colspan="4" class="py-2 px-3 font-bold text-xs uppercase tracking-wider bg-primary/5">
-                            <div class="flex items-center gap-2">
-                              <Box className="w-4 h-4 text-purple-500" />
-                              <span class="text-purple-600 dark:text-purple-400">Onboard Sensors</span>
-                            </div>
-                          </td>
-                        </tr>
-                        {variant.sensorDetails.imu.length > 0 && (
-                          <tr class="border-b border-border hover:bg-muted/50 transition-colors">
-                            <td class="py-2 px-3 text-muted-foreground font-medium align-top text-xs uppercase">IMU</td>
-                            <td colspan="3" class="py-2 px-3">
-                              {variant.sensorDetails.imu.map((sensor, idx) => (
-                                <a
-                                  key={`${sensor.id}-${idx}`}
-                                  href={`${basePath}/sensors/${sensor.id}`}
-                                  class="inline-flex items-center mr-4 mb-1 text-foreground hover:text-primary transition-colors"
-                                >
-                                  <span class="font-mono font-semibold text-sm">
-                                    {sensor.name ?? sensor.id}
-                                  </span>
-                                  {sensor.count && sensor.count > 1 && (
-                                    <span class="text-xs text-muted-foreground ml-1.5 font-medium">
-                                      ×{sensor.count}
-                                    </span>
+                                  {input.connector && (
+                                    <div class="text-xs text-muted-foreground">
+                                      Connector:&nbsp;
+                                      <span class="font-mono text-foreground">{input.connector}</span>
+                                    </div>
                                   )}
-                                </a>
-                              ))}
-                            </td>
-                          </tr>
-                        )}
-                        {variant.sensorDetails.barometer.length > 0 && (
-                          <tr class="border-b border-border bg-muted/20 hover:bg-muted/40 transition-colors">
-                            <td class="py-2 px-3 text-muted-foreground font-medium align-top text-xs uppercase">
-                              Barometer
-                            </td>
-                            <td colspan="3" class="py-2 px-3">
-                              {variant.sensorDetails.barometer.map((sensor, idx) => (
-                                <a
-                                  key={`${sensor.id}-${idx}`}
-                                  href={`${basePath}/sensors/${sensor.id}`}
-                                  class="inline-flex items-center mr-4 mb-1 text-foreground hover:text-primary transition-colors"
-                                >
-                                  <span class="font-mono font-semibold text-sm">
-                                    {sensor.name ?? sensor.id}
-                                  </span>
-                                  {sensor.count && sensor.count > 1 && (
-                                    <span class="text-xs text-muted-foreground ml-1.5 font-medium">
-                                      ×{sensor.count}
-                                    </span>
+                                  {voltageLabel && (
+                                    <div class="text-xs text-muted-foreground">
+                                      Voltage:&nbsp;
+                                      <span class="font-semibold text-foreground">{voltageLabel}</span>
+                                    </div>
                                   )}
-                                </a>
-                              ))}
-                            </td>
-                          </tr>
-                        )}
-                        {variant.sensorDetails.magnetometer.length > 0 && (
-                          <tr class="border-b border-border hover:bg-muted/50 transition-colors">
-                            <td class="py-2 px-3 text-muted-foreground font-medium align-top text-xs uppercase">
-                              Magnetometer
-                            </td>
-                            <td colspan="3" class="py-2 px-3">
-                              {variant.sensorDetails.magnetometer.map((sensor, idx) => (
-                                <a
-                                  key={`${sensor.id}-${idx}`}
-                                  href={`${basePath}/sensors/${sensor.id}`}
-                                  class="inline-flex items-center mr-4 mb-1 text-foreground hover:text-primary transition-colors"
-                                >
-                                  <span class="font-mono font-semibold text-sm">
-                                    {sensor.name ?? sensor.id}
-                                  </span>
-                                  {sensor.count && sensor.count > 1 && (
-                                    <span class="text-xs text-muted-foreground ml-1.5 font-medium">
-                                      ×{sensor.count}
-                                    </span>
+                                  {input.notes && (
+                                    <p class="text-xs text-muted-foreground leading-snug">{input.notes}</p>
                                   )}
-                                </a>
-                              ))}
-                            </td>
-                          </tr>
-                        )}
-                        {data.features && data.features.length > 0 && (
-                          <>
-                            <tr class="border-b-2 border-primary/20">
-                              <td colspan="4" class="py-2 px-3 font-bold text-xs uppercase tracking-wider bg-primary/5">
-                                <div class="flex items-center gap-2">
-                                  <Layers className="w-4 h-4 text-emerald-500" />
-                                  <span class="text-emerald-600 dark:text-emerald-400">Additional Features</span>
                                 </div>
-                              </td>
-                            </tr>
-                            <tr class="border-b border-border">
-                              <td colspan="4" class="py-3 px-3">
-                                <ul class="grid grid-cols-2 gap-x-4 gap-y-1.5 text-sm">
-                                  {data.features.map((feature) => (
-                                    <li class="flex items-start gap-2" key={feature}>
-                                      <span class="text-emerald-600 dark:text-emerald-400 font-bold text-sm mt-0.5">✓</span>
-                                      <span class="font-medium">{feature}</span>
-                                    </li>
-                                  ))}
-                                </ul>
-                              </td>
-                            </tr>
-                          </>
+                              );
+                            })}
+                          </div>
+                        </TableRow>
+                        {variant.spec.power.redundant && (
+                          <TableRow 
+                            label="Redundancy" 
+                            value="✓ Yes"
+                            class="font-semibold text-green-600 dark:text-green-400"
+                          />
                         )}
-                      </tbody>
-                    </table>
-                  </div>
+                      </>
+                    ) : (
+                      <>
+                        <TableRow2Col
+                          label1="Input Voltage"
+                          value1={variant.spec.power.voltage_in ?? '—'}
+                          label2="Redundancy"
+                          value2={variant.spec.power.redundant ? '✓ Yes' : '—'}
+                          mono1
+                        />
+                      </>
+                    )}
+                    {variant.spec.power.notes && (
+                      <TableRow label=" " class="text-xs text-muted-foreground italic">
+                        {variant.spec.power.notes}
+                      </TableRow>
+                    )}
+                    <TableSection title="Connectivity & I/O" color="green" />
+                    
+                    <TableRow2Col
+                      label1="UARTs"
+                      value1={variant.spec.io.uarts}
+                      label2="CAN Bus"
+                      value2={variant.spec.io.can}
+                    />
+                    
+                    <TableRow2Col
+                      label1="PWM Outputs"
+                      value1={variant.spec.io.pwm}
+                      label2="SD Card"
+                      value2={variant.spec.io.sd_card ? '✓ Yes' : '✗ No'}
+                    />
+                    
+                    {variant.spec.io.ethernet !== undefined && (
+                      <TableRow
+                        label="Ethernet"
+                        value={variant.spec.io.ethernet ? '✓ Yes' : '✗ No'}
+                      />
+                    )}
+                    
+                    {variant.spec.io.peripherals && variant.spec.io.peripherals.length > 0 && (
+                      <TableRow label="Peripheral Ports">
+                        <div class="grid gap-3 sm:grid-cols-2">
+                          {variant.spec.io.peripherals.map((peripheral, idx) => (
+                            <div
+                              class="rounded-sm border border-border/40 bg-background/70 p-3 shadow-xs"
+                              key={`${peripheral.name}-${idx}`}
+                            >
+                              <div class="flex items-center justify-between gap-2">
+                                <span class="font-semibold text-sm text-foreground">
+                                  {peripheral.name}
+                                  {peripheral.count && (
+                                    <span class="ml-1 text-xs text-muted-foreground font-medium">
+                                      ×{peripheral.count}
+                                    </span>
+                                  )}
+                                </span>
+                                <Badge className="text-[10px] uppercase tracking-wide">
+                                  {formatPeripheralType(peripheral.type)}
+                                </Badge>
+                              </div>
+                              {peripheral.interfaces && peripheral.interfaces.length > 0 && (
+                                <div class="mt-2 flex flex-wrap gap-1.5">
+                                  {peripheral.interfaces.map((iface) => (
+                                    <Badge
+                                      variant="secondary"
+                                      className="text-[10px] uppercase tracking-wide"
+                                      key={`${peripheral.name}-${iface}`}
+                                    >
+                                      {iface.replace(/_/g, ' ')}
+                                    </Badge>
+                                  ))}
+                                </div>
+                              )}
+                              {peripheral.connector && (
+                                <p class="mt-2 text-xs text-muted-foreground">
+                                  <span class="font-medium text-foreground">Connector:</span>&nbsp;{peripheral.connector}
+                                </p>
+                              )}
+                              {peripheral.voltage && (
+                                <p class="text-xs text-muted-foreground">
+                                  <span class="font-medium text-foreground">Voltage:</span> {peripheral.voltage}
+                                </p>
+                              )}
+                              {peripheral.notes && (
+                                <p class="text-xs text-muted-foreground leading-snug mt-1">
+                                  {peripheral.notes}
+                                </p>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </TableRow>
+                    )}
+                    <TableSection title="Onboard Sensors" color="purple" />
+                    
+                    {variant.sensorDetails.imu.length > 0 && (
+                      <TableRow label="IMU">
+                        <SensorList 
+                          sensors={variant.sensorDetails.imu.map(s => ({
+                            id: s.id,
+                            name: s.name ?? s.id,
+                            instances: s.count
+                          }))}
+                          linkable={true}
+                          size="sm"
+                        />
+                      </TableRow>
+                    )}
+                    
+                    {variant.sensorDetails.barometer.length > 0 && (
+                      <TableRow label="Barometer">
+                        <SensorList 
+                          sensors={variant.sensorDetails.barometer.map(s => ({
+                            id: s.id,
+                            name: s.name ?? s.id,
+                            instances: s.count
+                          }))}
+                          linkable={true}
+                          size="sm"
+                        />
+                      </TableRow>
+                    )}
+                    
+                    {variant.sensorDetails.magnetometer.length > 0 && (
+                      <TableRow label="Magnetometer">
+                        <SensorList 
+                          sensors={variant.sensorDetails.magnetometer.map(s => ({
+                            id: s.id,
+                            name: s.name ?? s.id,
+                            instances: s.count
+                          }))}
+                          linkable={true}
+                          size="sm"
+                        />
+                      </TableRow>
+                    )}
+                    {data.features && data.features.length > 0 && (
+                      <>
+                        <TableSection title="Additional Features" color="green" />
+                        <TableRow label=" ">
+                          <ul class="grid grid-cols-2 gap-x-4 gap-y-1.5 text-sm">
+                            {data.features.map((feature) => (
+                              <li class="flex items-start gap-2" key={feature}>
+                                <span class="text-emerald-600 dark:text-emerald-400 font-bold text-sm mt-0.5">✓</span>
+                                <span class="font-medium">{feature}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </TableRow>
+                      </>
+                    )}
+                  </ProfessionalTable>
                 </section>
               ))}
             </div>
@@ -768,69 +566,67 @@ const formatVoltageRange = (voltage?: {
             <CardTitle className="text-base font-bold uppercase tracking-wide text-primary">Quick Reference</CardTitle>
           </CardHeader>
           <CardContent>
-            <table class="w-full text-xs border-collapse">
-              <tbody>
-                <!-- Firmware Section -->
-                <tr class="border-b-2 border-primary/20">
-                  <td colspan="2" class="py-1.5 px-2 font-bold text-xs uppercase tracking-wider bg-primary/5 text-primary">Firmware Support</td>
-                </tr>
-                {firmware.map((fw, idx) => (
-                  <tr class={`border-b border-border ${idx % 2 === 0 ? 'bg-muted/10' : ''} hover:bg-muted/30 transition-colors`}>
-                    <td class="py-1.5 px-2 font-semibold">{fw.name}</td>
-                    <td class="py-1.5 px-2 text-right">
-                      <Badge className={firmwareStatusColor[fw.status] + " text-xs px-1.5 py-0.5 font-medium"}>
-                        {fw.status}
-                      </Badge>
-                    </td>
-                  </tr>
-                ))}
-                
-                <!-- Info Section -->
-                <tr class="border-b-2 border-primary/20">
-                  <td colspan="2" class="py-1.5 px-2 font-bold text-xs uppercase tracking-wider bg-primary/5 text-primary">Information</td>
-                </tr>
-                <tr class="border-b border-border hover:bg-muted/30 transition-colors">
-                  <td class="py-1.5 px-2 text-muted-foreground font-medium">Verification</td>
-                  <td class="py-1.5 px-2 text-right">
-                    <Badge className={verificationColor[data.verification.level] + " text-xs px-1.5 py-0.5 font-medium"}>
-                      {data.verification.level.charAt(0).toUpperCase() + data.verification.level.slice(1)}
-                    </Badge>
+            <ProfessionalTable class="text-xs">
+              <TableSection title="Firmware Support" color="blue" colspan={2} />
+              {firmware.map((fw) => (
+                <tr class="even:bg-muted/30 hover:bg-muted/50 transition-colors" key={fw.id}>
+                  <td class="px-2 py-1.5 font-semibold">{fw.name}</td>
+                  <td class="px-2 py-1.5 text-right">
+                    <StatusBadge 
+                      variant="firmware" 
+                      status={fw.status}
+                      size="xs"
+                    />
                   </td>
                 </tr>
-                <tr class="border-b border-border bg-muted/10 hover:bg-muted/30 transition-colors">
-                  <td class="py-1.5 px-2 text-muted-foreground font-medium">Hardware</td>
-                  <td class="py-1.5 px-2 text-right">
-                    <Badge className="bg-primary/10 text-primary border-primary/20 text-xs px-1.5 py-0.5 font-medium">
-                      {data.hardware.openness.charAt(0).toUpperCase() + data.hardware.openness.slice(1)}
-                    </Badge>
+              ))}
+              
+              <TableSection title="Information" color="gray" colspan={2} />
+              <tr class="even:bg-muted/30 hover:bg-muted/50 transition-colors">
+                <td class="px-2 py-1.5 text-muted-foreground font-medium">Verification</td>
+                <td class="px-2 py-1.5 text-right">
+                  <StatusBadge 
+                    variant="verification" 
+                    status={data.verification.level}
+                    size="xs"
+                  />
+                </td>
+              </tr>
+              <tr class="even:bg-muted/30 hover:bg-muted/50 transition-colors">
+                <td class="px-2 py-1.5 text-muted-foreground font-medium">Hardware</td>
+                <td class="px-2 py-1.5 text-right">
+                  <StatusBadge 
+                    variant="hardware" 
+                    status={data.hardware.openness}
+                    size="xs"
+                  />
+                </td>
+              </tr>
+              <tr class="even:bg-muted/30 hover:bg-muted/50 transition-colors">
+                <td class="px-2 py-1.5 text-muted-foreground font-medium">Updated</td>
+                <td class="px-2 py-1.5 font-mono font-semibold text-right">{data.verification.last_updated}</td>
+              </tr>
+              <tr class="even:bg-muted/30 hover:bg-muted/50 transition-colors">
+                <td class="px-2 py-1.5 text-muted-foreground font-medium">Sources</td>
+                <td class="px-2 py-1.5 font-mono font-semibold text-right">{data.sources.length}</td>
+              </tr>
+              {manufacturer?.data.website && (
+                <tr class="even:bg-muted/30 hover:bg-muted/50 transition-colors">
+                  <td class="px-2 py-1.5 text-muted-foreground font-medium">Manufacturer</td>
+                  <td class="px-2 py-1.5 text-right">
+                    <a 
+                      href={manufacturer.data.website} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      class="font-semibold hover:text-primary transition-colors text-xs inline-flex items-center gap-1"
+                    >
+                      {manufacturer.data.name}
+                      <span class="text-primary">→</span>
+                    </a>
                   </td>
                 </tr>
-                <tr class="border-b border-border hover:bg-muted/30 transition-colors">
-                  <td class="py-1.5 px-2 text-muted-foreground font-medium">Updated</td>
-                  <td class="py-1.5 px-2 font-mono font-semibold text-right text-xs">{data.verification.last_updated}</td>
-                </tr>
-                <tr class="border-b border-border bg-muted/10 hover:bg-muted/30 transition-colors">
-                  <td class="py-1.5 px-2 text-muted-foreground font-medium">Sources</td>
-                  <td class="py-1.5 px-2 font-mono font-semibold text-right">{data.sources.length}</td>
-                </tr>
-                {manufacturer?.data.website && (
-                  <tr class="hover:bg-muted/30 transition-colors">
-                    <td class="py-1.5 px-2 text-muted-foreground font-medium">Manufacturer</td>
-                    <td class="py-1.5 px-2 text-right">
-                      <a 
-                        href={manufacturer.data.website} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        class="font-semibold hover:text-primary transition-colors text-xs inline-flex items-center gap-1"
-                      >
-                        {manufacturer.data.name}
-                        <span class="text-primary">→</span>
-                      </a>
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+              )}
+            </ProfessionalTable>
           </CardContent>
         </Card>
         {hardwareRevisionSummaries.length > 0 && (

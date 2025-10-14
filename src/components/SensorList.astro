@@ -1,0 +1,56 @@
+---
+/**
+ * Sensor list component
+ * Displays sensors as badges with optional links and instance counts
+ * Provides consistent styling across all pages
+ */
+import StatusBadge from '@/components/ui/StatusBadge.astro';
+
+interface Sensor {
+  id: string;
+  name: string;
+  instances?: number;
+}
+
+interface Props {
+  sensors: Sensor[];
+  /** Whether to render as links to sensor detail pages */
+  linkable?: boolean;
+  /** Badge size */
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+  /** Additional class names */
+  class?: string;
+}
+
+const { sensors, linkable = true, size = 'sm', class: className } = Astro.props;
+const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+{sensors.length > 0 && (
+  <div class={`flex flex-wrap gap-2 ${className || ''}`}>
+    {sensors.map((sensor) => {
+      const displayText = sensor.instances && sensor.instances > 1 
+        ? `${sensor.name} ×${sensor.instances}` 
+        : sensor.name;
+      
+      return linkable ? (
+        <a 
+          href={`${basePath}/sensors/${sensor.id}`}
+          class="inline-block transition-transform hover:scale-105"
+        >
+          <StatusBadge variant="default" status="info" size={size}>
+            {displayText}
+          </StatusBadge>
+        </a>
+      ) : (
+        <StatusBadge variant="default" status="info" size={size}>
+          {displayText}
+        </StatusBadge>
+      );
+    })}
+  </div>
+)}
+
+{sensors.length === 0 && (
+  <span class="text-xs text-muted-foreground italic">None</span>
+)}

@@ -4,6 +4,9 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import MainLayout from '@/layouts/MainLayout.astro';
 import { Card, CardContent, CardHeader } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
+import ProfessionalTable from '@/components/table/ProfessionalTable.astro';
+import TableRow2Col from '@/components/table/TableRow2Col.astro';
+import TableRow from '@/components/table/TableRow.astro';
 
 export async function getStaticPaths() {
   const mcus = await getCollection('mcu');
@@ -92,62 +95,62 @@ const editPath = `src/content/mcu/${mcu.id}.yaml`;
             <h2 class="text-base font-bold uppercase tracking-wide text-primary">Technical Specifications</h2>
           </CardHeader>
           <CardContent class="pt-0">
-            <table class="w-full text-sm border-collapse">
-              <tbody>
-                {(data.manufacturer || data.architecture) && (
-                  <tr class="border-b border-border hover:bg-muted/40 transition-colors">
-                    <td class="py-2 px-3 text-muted-foreground font-medium text-xs uppercase w-1/4">Manufacturer</td>
-                    <td class="py-2 px-3 font-semibold">{data.manufacturer || '—'}</td>
-                    <td class="py-2 px-3 text-muted-foreground font-medium text-xs uppercase w-1/4">Architecture</td>
-                    <td class="py-2 px-3 font-semibold">{data.architecture || '—'}</td>
-                  </tr>
-                )}
-                {(clockMhz || flashKb) && (
-                  <tr class="border-b border-border hover:bg-muted/30 transition-colors">
-                    <td class="py-2 px-3 text-muted-foreground font-medium text-xs uppercase">Clock</td>
-                    <td class="py-2 px-3 font-mono font-semibold">{clockMhz ? `${clockMhz} MHz` : '—'}</td>
-                    <td class="py-2 px-3 text-muted-foreground font-medium text-xs uppercase">Flash</td>
-                    <td class="py-2 px-3 font-mono font-semibold">
-                      {flashKb
-                        ? flashKb >= 1024
-                          ? `${(flashKb / 1024).toFixed(0)} MB`
-                          : `${flashKb} KB`
-                        : '—'}
-                    </td>
-                  </tr>
-                )}
-                {(ramKb || Array.isArray(data.features)) && (
-                  <tr class="border-b border-border hover:bg-muted/20 transition-colors align-top">
-                    <td class="py-2 px-3 text-muted-foreground font-medium text-xs uppercase">RAM</td>
-                    <td class="py-2 px-3 font-mono font-semibold">{ramKb ? (ramKb >= 1024 ? `${(ramKb / 1024).toFixed(0)} MB` : `${ramKb} KB`) : '—'}</td>
-                    <td class="py-2 px-3 text-muted-foreground font-medium text-xs uppercase">Features</td>
-                    <td class="py-2 px-3">
-                      {Array.isArray(data.features) && data.features.length > 0 ? (
-                        <ul class="list-disc pl-4 space-y-1 text-sm text-muted-foreground">
-                          {data.features.map((feature) => (
-                            <li>{feature}</li>
-                          ))}
-                        </ul>
-                      ) : (
-                        <span class="text-muted-foreground">—</span>
-                      )}
-                    </td>
-                  </tr>
-                )}
-                {Array.isArray(data.sources) && data.sources.length > 0 && (
-                  <tr class="hover:bg-muted/10 transition-colors">
-                    <td class="py-2 px-3 text-muted-foreground font-medium text-xs uppercase">Sources</td>
-                    <td colspan="3" class="py-2 px-3">
-                      <div class="flex flex-wrap gap-2">
-                        {data.sources.map((sourceId) => (
-                          <Badge variant="outline" className="text-xs uppercase">{sourceId}</Badge>
+            <ProfessionalTable>
+              {(data.manufacturer || data.architecture) && (
+                <TableRow2Col
+                  label1="Manufacturer"
+                  value1={data.manufacturer || '—'}
+                  label2="Architecture"
+                  value2={data.architecture || '—'}
+                />
+              )}
+              
+              {(clockMhz || flashKb) && (
+                <TableRow2Col
+                  label1="Clock"
+                  value1={clockMhz ? `${clockMhz} MHz` : '—'}
+                  label2="Flash"
+                  value2={flashKb
+                    ? flashKb >= 1024
+                      ? `${(flashKb / 1024).toFixed(0)} MB`
+                      : `${flashKb} KB`
+                    : '—'}
+                  mono1
+                  mono2
+                />
+              )}
+              
+              {(ramKb || Array.isArray(data.features)) && (
+                <TableRow2Col
+                  label1="RAM"
+                  value1={ramKb ? (ramKb >= 1024 ? `${(ramKb / 1024).toFixed(0)} MB` : `${ramKb} KB`) : '—'}
+                  label2="Features"
+                  mono1
+                >
+                  <Fragment slot="value2">
+                    {Array.isArray(data.features) && data.features.length > 0 ? (
+                      <ul class="list-disc pl-4 space-y-1 text-sm text-muted-foreground">
+                        {data.features.map((feature) => (
+                          <li key={feature}>{feature}</li>
                         ))}
-                      </div>
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+                      </ul>
+                    ) : (
+                      <span class="text-muted-foreground">—</span>
+                    )}
+                  </Fragment>
+                </TableRow2Col>
+              )}
+              
+              {Array.isArray(data.sources) && data.sources.length > 0 && (
+                <TableRow label="Sources">
+                  <div class="flex flex-wrap gap-2">
+                    {data.sources.map((sourceId) => (
+                      <Badge variant="outline" className="text-xs uppercase" key={sourceId}>{sourceId}</Badge>
+                    ))}
+                  </div>
+                </TableRow>
+              )}
+            </ProfessionalTable>
           </CardContent>
         </Card>
 

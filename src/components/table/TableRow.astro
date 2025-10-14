@@ -1,0 +1,28 @@
+---
+/**
+ * Single table row with label and value
+ * Spans full width (2 columns: label + value)
+ * Used for simple key-value pairs
+ */
+interface Props {
+  label: string;
+  value?: string | number | boolean;
+  colspan?: number;
+  mono?: boolean;
+  class?: string;
+}
+
+const { label, value, colspan = 3, mono = false, class: className } = Astro.props;
+
+const hasSlot = Astro.slots.has('default');
+const displayValue = hasSlot ? null : value;
+---
+
+<tr class="even:bg-muted/30 hover:bg-muted/50 transition-colors">
+  <td class="px-3 py-1.5 font-medium text-muted-foreground whitespace-nowrap">
+    {label}
+  </td>
+  <td colspan={colspan} class={`px-3 py-1.5 ${mono ? 'font-mono' : ''} ${className || ''}`}>
+    {hasSlot ? <slot /> : displayValue}
+  </td>
+</tr>

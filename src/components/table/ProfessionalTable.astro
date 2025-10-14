@@ -1,0 +1,18 @@
+---
+/**
+ * Professional table wrapper component
+ * Provides the base structure for ultra-compact information sheets
+ * with alternating row backgrounds and professional styling
+ */
+interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+---
+
+<div class={`overflow-x-auto ${className || ''}`}>
+  <table class="w-full border-collapse bg-card text-xs">
+    <slot />
+  </table>
+</div>
