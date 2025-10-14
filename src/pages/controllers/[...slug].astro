@@ -7,12 +7,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/Badge';
 import StatusBadge from '@/components/ui/StatusBadge.astro';
 import SpecItem from '@/components/ui/SpecItem.astro';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs';
 import ProfessionalTable from '@/components/table/ProfessionalTable.astro';
 import TableSection from '@/components/table/TableSection.astro';
 import TableRow from '@/components/table/TableRow.astro';
 import TableRow2Col from '@/components/table/TableRow2Col.astro';
 import SensorList from '@/components/SensorList.astro';
 import { buildResponsivePicture } from '@/lib/responsive-image';
+import { GITHUB_EDIT_BASE_URL } from '@/lib/constants';
 import {
   extractUniqueSensorIds,
   fetchSensorNameMap,
@@ -28,15 +30,19 @@ import {
 } from '@/lib/data-utils';
 import { resolveControllerPreviewImage } from '@/lib/controller-images';
 import { getFirmwareMap, getManufacturersMap, getSourcesMap } from '@/lib/content-cache';
-import { 
-  Cpu, 
+import {
+  Cpu,
   Package,
   Zap,
   Cable,
-  Box,
   Layers,
-  Gauge,
-  Compass,
+  AlertTriangle,
+  BookOpen,
+  CircuitBoard,
+  Github,
+  Store,
+  ExternalLink,
+  Pencil,
 } from 'lucide-react';
 
 export async function getStaticPaths() {
@@ -182,6 +188,195 @@ if (additionalProperties.length > 0) {
   productLd.additionalProperty = additionalProperties;
 }
 const productLdJson = JSON.stringify(productLd, null, 2);
+
+const normalizedEditPath = editPath.replace(/^\/+/, '');
+const editUrl = normalizedEditPath ? `${GITHUB_EDIT_BASE_URL}/${normalizedEditPath}` : null;
+
+const countPeripheralsByType = (type: string) =>
+  data.io.peripherals?.reduce((total, peripheral) => {
+    if (peripheral.type !== type) return total;
+    return total + (typeof peripheral.count === 'number' ? peripheral.count : 1);
+  }, 0) ?? 0;
+
+const i2cCount = countPeripheralsByType('i2c');
+const spiCount = countPeripheralsByType('spi');
+
+const ioSummaryParts: string[] = [];
+if (typeof data.io.uarts === 'number') {
+  ioSummaryParts.push(`${data.io.uarts} UART${data.io.uarts === 1 ? '' : 's'}`);
+}
+if (i2cCount > 0) {
+  ioSummaryParts.push(`${i2cCount} I²C`);
+}
+if (spiCount > 0) {
+  ioSummaryParts.push(`${spiCount} SPI`);
+}
+if (typeof data.io.can === 'number' && data.io.can > 0) {
+  ioSummaryParts.push(`${data.io.can} CAN`);
+}
+const ioSummary = ioSummaryParts.length > 0 ? ioSummaryParts.join(' • ') : '—';
+
+const pwmSummaryParts: string[] = [];
+if (typeof data.io.pwm === 'number') {
+  pwmSummaryParts.push(`${data.io.pwm} PWM ${data.io.pwm === 1 ? 'output' : 'outputs'}`);
+}
+pwmSummaryParts.push(data.io.sd_card ? 'microSD logging' : 'no microSD slot');
+const pwmSummary = pwmSummaryParts.join(' • ');
+
+const sumSensorCount = (list?: Array<{ count?: number }>) =>
+  list?.reduce((total, entry) => total + (typeof entry.count === 'number' ? entry.count : 1), 0) ?? 0;
+
+const imuCount = sumSensorCount(data.sensors?.imu);
+const barometerCount = sumSensorCount(data.sensors?.barometer);
+const magnetometerCount = sumSensorCount(data.sensors?.magnetometer);
+
+const sensorSummaryParts: string[] = [];
+if (imuCount > 0) sensorSummaryParts.push(`${imuCount}× IMU`);
+if (barometerCount > 0) sensorSummaryParts.push(`${barometerCount}× Barometer`);
+if (magnetometerCount > 0) sensorSummaryParts.push(`${magnetometerCount}× Magnetometer`);
+const sensorSummary =
+  sensorSummaryParts.length > 0 ? sensorSummaryParts.join(' • ') : 'No onboard sensors catalogued';
+
+let powerSummary = data.power.voltage_in ?? '';
+const primaryPowerInput = data.power.inputs?.[0];
+if (!powerSummary && primaryPowerInput) {
+  const voltageDescription = formatVoltageRange(primaryPowerInput.voltage);
+  const typeLabel = getPowerTypeLabel(primaryPowerInput.type);
+  const combined = [voltageDescription, typeLabel].filter(Boolean).join(' • ');
+  powerSummary = combined || primaryPowerInput.notes || '';
+}
+if (!powerSummary && data.power.notes) {
+  powerSummary = data.power.notes;
+}
+powerSummary = powerSummary || 'See detailed power specifications';
+
+const severityStyles = {
+  info: { label: 'Info', className: 'bg-sky-500/10 text-sky-600 border-sky-500/20' },
+  low: { label: 'Low', className: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/30' },
+  medium: { label: 'Medium', className: 'bg-amber-500/10 text-amber-600 border-amber-500/30' },
+  high: { label: 'High', className: 'bg-rose-500/10 text-rose-500 border-rose-500/30' },
+  critical: { label: 'Critical', className: 'bg-red-600/10 text-red-600 border-red-600/30' },
+} as const;
+
+const knownIssues = (data.known_issues ?? []).map((issue) => {
+  const severityKey = issue.severity in severityStyles ? issue.severity : 'medium';
+  const severityMeta = severityStyles[severityKey as keyof typeof severityStyles];
+  const sourceEntry = sourcesMap.get(issue.source) ?? null;
+  const sourceTitle = sourceEntry?.data.title ?? issue.source;
+  const sourceUrl = issue.url ?? sourceEntry?.data.url ?? null;
+  let displayDate: string | null = null;
+  if (issue.date) {
+    const parsed = new Date(issue.date);
+    displayDate = Number.isNaN(parsed.valueOf())
+      ? issue.date
+      : parsed.toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+        });
+  }
+
+  return {
+    ...issue,
+    severityKey,
+    severityMeta,
+    sourceTitle,
+    sourceUrl,
+    displayDate,
+  };
+}).sort((a, b) => (a.date > b.date ? -1 : a.date < b.date ? 1 : 0));
+const hasKnownIssues = knownIssues.length > 0;
+
+type ResolvedLink = { url: string; label: string | null; description: string | null } | null;
+const resolveLinkEntry = (entry: unknown): ResolvedLink => {
+  if (!entry) return null;
+  if (typeof entry === 'string') {
+    return { url: entry, label: null, description: null };
+  }
+  if (typeof entry === 'object' && entry !== null && 'url' in entry) {
+    const { url, label, description } = entry as {
+      url: string;
+      label?: string | null;
+      description?: string | null;
+    };
+    return { url, label: label ?? null, description: description ?? null };
+  }
+
+  return null;
+};
+
+const controllerLinks = {
+  docs: resolveLinkEntry(data.links?.docs),
+  pinout: resolveLinkEntry(data.links?.pinout),
+  vendor: resolveLinkEntry(data.links?.vendor),
+  github: resolveLinkEntry(data.links?.github),
+};
+
+type LinkItem = {
+  key: string;
+  label: string;
+  description: string;
+  href: string;
+  icon: typeof BookOpen;
+};
+
+const linkItems: LinkItem[] = [];
+
+if (controllerLinks.docs?.url) {
+  linkItems.push({
+    key: 'docs',
+    label: controllerLinks.docs.label ?? 'Documentation',
+    description:
+      controllerLinks.docs.description ?? 'Official setup guides and reference manuals.',
+    href: controllerLinks.docs.url,
+    icon: BookOpen,
+  });
+}
+
+if (controllerLinks.pinout?.url) {
+  linkItems.push({
+    key: 'pinout',
+    label: controllerLinks.pinout.label ?? 'Pinout Diagram',
+    description:
+      controllerLinks.pinout.description ?? 'Connector maps and wiring references.',
+    href: controllerLinks.pinout.url,
+    icon: CircuitBoard,
+  });
+}
+
+if (controllerLinks.vendor?.url) {
+  linkItems.push({
+    key: 'vendor',
+    label: controllerLinks.vendor.label ?? 'Vendor Page',
+    description:
+      controllerLinks.vendor.description ?? 'Official product listings and purchasing options.',
+    href: controllerLinks.vendor.url,
+    icon: Store,
+  });
+}
+
+if (controllerLinks.github?.url) {
+  linkItems.push({
+    key: 'github',
+    label: controllerLinks.github.label ?? 'GitHub Repository',
+    description:
+      controllerLinks.github.description ?? 'Hardware design files or firmware resources.',
+    href: controllerLinks.github.url,
+    icon: Github,
+  });
+}
+
+if (editUrl) {
+  linkItems.push({
+    key: 'edit',
+    label: 'Edit on GitHub',
+    description: 'Propose improvements to this controller entry.',
+    href: editUrl,
+    icon: Pencil,
+  });
+}
+
+const hasLinkItems = linkItems.length > 0;
 ---
 
 <DetailPageLayout
@@ -217,6 +412,7 @@ const productLdJson = JSON.stringify(productLd, null, 2);
     title={data.title}
     subtitle={`by ${manufacturerName}`}
     description={data.notes}
+    compareId={controller.id}
   >
     <StatusBadge 
       slot="badges" 
@@ -300,51 +496,30 @@ const productLdJson = JSON.stringify(productLd, null, 2);
                 />
                 
                 {/* I/O Summary */}
-                {(() => {
-                  const ioSummary = [];
-                  if (typeof data.io?.uarts === 'number') ioSummary.push(`${data.io.uarts} UARTs`);
-                  if (typeof data.io?.can === 'number' && data.io.can > 0) ioSummary.push(`${data.io.can} CAN`);
-                  if (typeof data.io?.pwm === 'number') ioSummary.push(`${data.io.pwm} PWM`);
-                  return ioSummary.length > 0 ? (
-                    <SpecItem 
-                      icon={Cable} 
-                      label="Connectivity" 
-                      value={ioSummary.join(' • ')}
-                      iconClass="text-muted-foreground"
-                    />
-                  ) : null;
-                })()}
-                
-                {/* Power */}
-                {data.power?.voltage_in && (
-                  <SpecItem 
-                    icon={Zap} 
-                    label="Input Voltage" 
-                    value={data.power.voltage_in}
+                {ioSummary !== '—' && (
+                  <SpecItem
+                    icon={Cable}
+                    label="Connectivity"
+                    value={ioSummary}
                     iconClass="text-muted-foreground"
                   />
                 )}
-                
+
+                {/* Power */}
+                <SpecItem
+                  icon={Zap}
+                  label="Power"
+                  value={powerSummary}
+                  iconClass="text-muted-foreground"
+                />
+
                 {/* Sensors Summary */}
-                {(() => {
-                  const sensorSummary = [];
-                  const imuCount = data.sensors?.imu?.length ?? 0;
-                  const baroCount = data.sensors?.barometer?.length ?? 0;
-                  const magCount = data.sensors?.magnetometer?.length ?? 0;
-                  
-                  if (imuCount > 0) sensorSummary.push(`${imuCount}× IMU`);
-                  if (baroCount > 0) sensorSummary.push(`${baroCount}× Baro`);
-                  if (magCount > 0) sensorSummary.push(`${magCount}× Mag`);
-                  
-                  return sensorSummary.length > 0 ? (
-                    <SpecItem 
-                      icon={Layers} 
-                      label="Onboard Sensors" 
-                      value={sensorSummary.join(' • ')}
-                      iconClass="text-muted-foreground"
-                    />
-                  ) : null;
-                })()}
+                <SpecItem
+                  icon={Layers}
+                  label="Onboard Sensors"
+                  value={sensorSummary}
+                  iconClass="text-muted-foreground"
+                />
               </div>
             </div>
 
@@ -395,8 +570,56 @@ const productLdJson = JSON.stringify(productLd, null, 2);
     </div>
   )}
 
-  <!-- Main Content - Ultra Compact Layout -->
-  <div class="grid grid-cols-1 gap-4 mb-8 lg:grid-cols-4">
+  <Tabs defaultValue="specs" className="mt-10">
+    <TabsList className="grid w-full max-w-xl grid-cols-3 gap-2 rounded-lg border border-border/60 bg-muted/40 p-1">
+      <TabsTrigger value="specs" className="text-xs font-semibold uppercase tracking-wide">
+        Specs
+      </TabsTrigger>
+      <TabsTrigger value="issues" className="text-xs font-semibold uppercase tracking-wide">
+        Issues
+      </TabsTrigger>
+      <TabsTrigger value="links" className="text-xs font-semibold uppercase tracking-wide">
+        Links
+      </TabsTrigger>
+    </TabsList>
+
+    <TabsContent value="specs" className="space-y-6">
+      <Card className="border border-border/60 bg-background/80 shadow-xs">
+        <CardHeader className="pb-4">
+          <CardTitle className="text-base font-semibold">Core Specifications</CardTitle>
+          <CardDescription>
+            Quick reference for the primary hardware capabilities.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="pt-0">
+          <ProfessionalTable class="text-sm">
+            <tbody>
+              <TableRow2Col
+                label1="MCU"
+                value1={mcuName}
+                label2="Mounting"
+                value2={formattedMounting}
+                mono1
+                mono2
+              />
+              <TableRow2Col
+                label1="Power"
+                value1={powerSummary}
+                label2="I/O Overview"
+                value2={ioSummary}
+              />
+              <TableRow2Col
+                label1="PWM & Storage"
+                value1={pwmSummary}
+                label2="Sensors"
+                value2={sensorSummary}
+              />
+            </tbody>
+          </ProfessionalTable>
+        </CardContent>
+      </Card>
+
+      <div class="grid grid-cols-1 gap-4 mb-8 lg:grid-cols-4">
     <!-- Left Column - Complete Specs Table -->
     <div class="lg:col-span-3">
       <Card>
@@ -999,5 +1222,120 @@ const productLdJson = JSON.stringify(productLd, null, 2);
         )}
       </div>
     </div>
-  </div>
+    </TabsContent>
+
+    <TabsContent value="issues" className="space-y-4">
+      {hasKnownIssues ? (
+        <div class="space-y-4">
+          {knownIssues.map((issue, index) => (
+            <Card
+              key={issue.id ?? `${issue.date}-${issue.title}-${index}`}
+              className="border border-border/60 bg-background/80 shadow-xs"
+            >
+              <CardHeader className="flex flex-col gap-3 border-b border-border/40 pb-4 sm:flex-row sm:items-start sm:justify-between">
+                <div class="flex items-start gap-3">
+                  <span class="mt-1 inline-flex h-8 w-8 items-center justify-center rounded-full bg-amber-500/10 text-amber-500">
+                    <AlertTriangle className="h-4 w-4" />
+                  </span>
+                  <div class="space-y-1">
+                    <CardTitle className="text-base leading-tight">{issue.title}</CardTitle>
+                    {issue.description && (
+                      <CardDescription className="text-sm leading-snug text-muted-foreground">
+                        {issue.description}
+                      </CardDescription>
+                    )}
+                  </div>
+                </div>
+                <Badge
+                  variant="outline"
+                  className={`text-[10px] uppercase tracking-wide ${issue.severityMeta.className}`}
+                >
+                  {issue.severityMeta.label}
+                </Badge>
+              </CardHeader>
+              <CardContent className="flex flex-col gap-3 pt-4 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+                <div class="flex items-center gap-2 text-xs uppercase tracking-wide text-muted-foreground">
+                  <span class="font-semibold text-foreground">Reported</span>
+                  {issue.displayDate ? (
+                    <time dateTime={issue.date} class="font-mono text-foreground">
+                      {issue.displayDate}
+                    </time>
+                  ) : (
+                    <span class="font-mono text-foreground">{issue.date}</span>
+                  )}
+                </div>
+                <div class="flex items-center gap-2 text-xs uppercase tracking-wide text-muted-foreground">
+                  <span class="font-semibold text-foreground">Source</span>
+                  {issue.sourceUrl ? (
+                    <a
+                      href={issue.sourceUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="inline-flex items-center gap-1 font-semibold text-primary transition hover:text-primary/80"
+                    >
+                      {issue.sourceTitle}
+                      <ExternalLink className="h-3.5 w-3.5" />
+                    </a>
+                  ) : (
+                    <span class="font-semibold text-foreground">{issue.sourceTitle}</span>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      ) : (
+        <Card className="border border-dashed border-border/60 bg-muted/20">
+          <CardHeader>
+            <CardTitle className="text-base font-semibold">No documented issues</CardTitle>
+            <CardDescription>
+              We have not catalogued any known hardware advisories for this controller yet.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="text-sm text-muted-foreground">
+            Spot a reproducible hardware problem? Share it with the community via GitHub issues or the FCBase discussion board.
+          </CardContent>
+        </Card>
+      )}
+    </TabsContent>
+
+    <TabsContent value="links" className="space-y-4">
+      {hasLinkItems ? (
+        <div class="grid gap-3 md:grid-cols-2">
+          {linkItems.map((link) => {
+            const Icon = link.icon;
+            return (
+              <a
+                key={link.key}
+                href={link.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="group flex items-center justify-between gap-4 rounded-lg border border-border/60 bg-background/80 p-4 transition hover:border-primary/50 hover:shadow-sm"
+              >
+                <div class="flex items-start gap-3">
+                  <span class="flex h-10 w-10 items-center justify-center rounded-md bg-muted/60 text-muted-foreground transition group-hover:text-primary">
+                    <Icon className="h-5 w-5" />
+                  </span>
+                  <div class="space-y-1">
+                    <p class="text-sm font-semibold text-foreground">{link.label}</p>
+                    <p class="text-xs text-muted-foreground">{link.description}</p>
+                  </div>
+                </div>
+                <span class="text-sm text-primary">↗</span>
+              </a>
+            );
+          })}
+        </div>
+      ) : (
+        <Card className="border border-dashed border-border/60 bg-muted/20">
+          <CardHeader>
+            <CardTitle className="text-base font-semibold">No external links available</CardTitle>
+            <CardDescription>
+              Documentation, pinout diagrams, and vendor resources will appear here once they are added to the dataset.
+            </CardDescription>
+          </CardHeader>
+        </Card>
+      )}
+    </TabsContent>
+  </Tabs>
 </DetailPageLayout>

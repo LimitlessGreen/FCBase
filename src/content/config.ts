@@ -19,6 +19,36 @@ const firmwareSchema = z.object({
   status: z.enum(['beta', 'stable', 'deprecated', 'community']),
 });
 
+const linkFieldSchema = z.union([
+  z.string().url(),
+  z.object({
+    url: z.string().url(),
+    label: z.string().optional(),
+    description: z.string().optional(),
+  }),
+]);
+
+const linksSchema = z
+  .object({
+    docs: linkFieldSchema.optional(),
+    pinout: linkFieldSchema.optional(),
+    vendor: linkFieldSchema.optional(),
+    github: linkFieldSchema.optional(),
+  })
+  .strict();
+
+const knownIssueSchema = z.object({
+  id: z.string().optional(),
+  title: z.string(),
+  severity: z.enum(['info', 'low', 'medium', 'high', 'critical']),
+  date: z
+    .string()
+    .regex(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/),
+  source: z.string(),
+  url: z.string().url().optional(),
+  description: z.string().optional(),
+});
+
 const controllerImageSchema = z.object({
   id: z.string().optional(),
   type: z.enum(['hero', 'gallery', 'detail']).optional(),
@@ -228,6 +258,8 @@ const controllerSchema = z.object({
   sensors: sensorsSpecSchema,
   features: z.array(z.string()).optional(),
   firmware_support: z.array(firmwareSchema).min(1),
+  known_issues: z.array(knownIssueSchema).optional(),
+  links: linksSchema.optional(),
   sources: z.array(z.string()).min(1),
   verification: z.object({
     level: z.enum(['unverified', 'community', 'reviewed']),
