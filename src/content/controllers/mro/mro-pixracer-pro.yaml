@@ -3,6 +3,10 @@ title: mRo Pixracer Pro
 brand: mro
 mcu: stmicro-stm32h743
 mounting: custom
+images:
+- alt: "mRo Pixracer Pro flight controller board with JST-GH connectors across the top edge."
+  credit: "ArduPilot Documentation"
+  source_url: "https://ardupilot.org/copter/docs/common-pixracer-pro.html"
 power:
   voltage_in: 5.0-5.5V via USB-C or PowerBrick connector
   notes: Ultra-low-noise regulators recommended with optional ACSP4 power supply.

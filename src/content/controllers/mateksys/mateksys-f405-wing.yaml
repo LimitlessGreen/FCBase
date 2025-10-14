@@ -3,6 +3,10 @@ title: Mateksys F405-Wing
 brand: mateksys
 mcu: stmicro-stm32f405
 mounting: wing
+images:
+- alt: "Mateksys F405-Wing flight controller board viewed from above showing labeled pads and connectors."
+  credit: "Mateksys"
+  source_url: "https://www.mateksys.com/?portfolio=f405-wing"
 dimensions:
   length_mm: 56
   width_mm: 36

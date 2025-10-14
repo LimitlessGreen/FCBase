@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/Button";
 import { GITHUB_REPO_URL } from "@/lib/constants";
 import ControllerCard from "@/components/cards/ControllerCard.astro";
+import { resolveControllerPreviewImage } from "@/lib/controller-images";
 
 const title = "FCBase – Open Flight Controller Database";
 const description = "Search and compare ArduPilot, PX4, and iNAV flight controllers plus EdgeTX transmitters – open, community-driven.";
@@ -12,66 +13,10 @@ const description = "Search and compare ArduPilot, PX4, and iNAV flight controll
 // Load actual controllers from content collection
 const allControllers = await getCollection('controllers');
 
-// Auto-import any local images placed in src/assets/images/controllers
-const localControllerImages = import.meta.glob('/src/assets/images/controllers/*.{jpg,jpeg,png,webp,avif}', { eager: true, query: '?url', import: 'default' });
-const localImageMap = Object.fromEntries(
-  Object.entries(localControllerImages).map(([p, url]) => {
-    const file = p.split('/').pop();
-    const id = file.replace(/\.(jpg|jpeg|png|webp|avif)$/i, '');
-    return [id, url];
-  })
-);
-const resolveLocalPreview = (id) => {
-  const plain = id.includes('/') ? id.split('/').pop() : id;
-  const url = localImageMap[plain];
-  if (!url) return undefined;
-  const base = (import.meta.env.BASE_URL || '').replace(/\/$/, '');
-  return base ? `${base}${url}` : url;
-};
-
-// Remote preview images for highlighted controllers
-const controllerPreviewImages: Record<string, { src: string; credit: string; sourceUrl?: string }> = {
-  'aocoda-h743dual': {
-    src: 'https://ardupilot.org/copter/_images/aocoda_h743dual.jpg',
-    credit: 'ArduPilot Documentation',
-    sourceUrl: 'https://ardupilot.org/copter/docs/common-aocoda-h743dual.html',
-  },
-  'cuav-7-nano': {
-    src: 'https://ardupilot.org/copter/_images/7-nano.jpg',
-    credit: 'ArduPilot Documentation',
-    sourceUrl: 'https://ardupilot.org/copter/docs/common-CUAV-7-Nano.html',
-  },
-  'cuav-nora': {
-    src: 'https://ardupilot.org/copter/_images/nora.png',
-    credit: 'ArduPilot Documentation',
-    sourceUrl: 'https://ardupilot.org/copter/docs/common-cuav-nora-overview.html',
-  },
-  'cuav-pixhawk-v6x': {
-    src: 'https://ardupilot.org/copter/_images/cuav-pixhawk-v6x.jpg',
-    credit: 'ArduPilot Documentation',
-    sourceUrl: 'https://raw.githubusercontent.com/ArduPilot/ardupilot_wiki/master/common/source/docs/common-cuav-pixhawkv6X.rst',
-  },
-  'cubepilot-cube-black': {
-    src: 'https://ardupilot.org/copter/_images/pixhawk2-overhead.jpg',
-    credit: 'ArduPilot Documentation',
-    sourceUrl: 'https://ardupilot.org/copter/docs/common-thecube-overview.html',
-  },
-  'cubepilot-cube-orange-plus': {
-    src: 'https://ardupilot.org/copter/_images/Cube_orange_module.jpg',
-    credit: 'ArduPilot Documentation',
-    sourceUrl: 'https://ardupilot.org/copter/docs/common-thecubeorange-overview.html',
-  },
-  'holybro-pixhawk-6x': {
-    src: resolveLocalPreview('holybro-pixhawk-6x') ?? 'https://holybro.com/cdn/shop/files/110321_4.jpg?v=1750816088',
-    credit: 'Holybro Store',
-    sourceUrl: 'https://holybro.com/products/pixhawk-6x',
-  },
-};
-
 // First 6 controllers for grid preview
 const controllers = await Promise.all(
   allControllers.slice(0, 6).map(async (controller) => {
-    const preview = controllerPreviewImages[controller.id];
+    const preview = resolveControllerPreviewImage(controller);
     const manufacturer = controller.data.brand
       ? await getEntry('manufacturers', controller.data.brand)
       : null;
@@ -88,11 +33,7 @@ const controllers = await Promise.all(
       sdCard: controller.data.io.sd_card,
       barometer: (controller.data.sensors?.barometer?.length ?? 0) > 0,
       firmwares: controller.data.firmware_support.map((fw) => fw.id),
-      image: preview ? {
-        src: preview.src,
-        credit: preview.credit,
-        sourceUrl: preview.sourceUrl,
-      } : undefined,
+      image: preview,
     };
   })
 );

@@ -4,113 +4,7 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import MainLayout from '@/layouts/MainLayout.astro';
 import { ControllerSearch } from '@/components/ui/ControllerSearch';
 import ControllerCard from '@/components/cards/ControllerCard.astro';
-
-// Auto-import any local images placed in src/assets/images/controllers
-// If a file exists it will be used (as a URL). This avoids hardcoding imports per-controller.
-const localControllerImages = import.meta.glob('/src/assets/images/controllers/*.{jpg,jpeg,png,webp,avif}', { eager: true, query: '?url', import: 'default' });
-const localImageMap = Object.fromEntries(
-  Object.entries(localControllerImages).map(([p, url]) => {
-    const file = p.split('/').pop();
-    const id = file.replace(/\.(jpg|jpeg|png|webp|avif)$/i, '');
-    return [id, url];
-  })
-);
-const resolveLocalPreview = (id) => {
-  const plain = id.includes('/') ? id.split('/').pop() : id;
-  const url = localImageMap[plain];
-  if (!url) return undefined;
-  const base = (import.meta.env.BASE_URL || '').replace(/\/$/, '');
-  return base ? `${base}${url}` : url;
-};
-
-const controllerPreviewImages: Record<string, { src: any; credit: string; sourceUrl?: string }> = {
-  'aocoda-h743dual': {
-    src: 'https://ardupilot.org/copter/_images/aocoda_h743dual.jpg',
-    credit: 'ArduPilot Documentation',
-    sourceUrl: 'https://ardupilot.org/copter/docs/common-aocoda-h743dual.html',
-  },
-  'cuav-7-nano': {
-    src: 'https://ardupilot.org/copter/_images/7-nano.jpg',
-    credit: 'ArduPilot Documentation',
-    sourceUrl: 'https://ardupilot.org/copter/docs/common-CUAV-7-Nano.html',
-  },
-  'cuav-nora': {
-    src: 'https://ardupilot.org/copter/_images/nora.png',
-    credit: 'ArduPilot Documentation',
-    sourceUrl: 'https://ardupilot.org/copter/docs/common-cuav-nora-overview.html',
-  },
-  'cuav-pixhawk-v6x': {
-    src: 'https://ardupilot.org/copter/_images/cuav-pixhawk-v6x.jpg',
-    credit: 'ArduPilot Documentation',
-    sourceUrl:
-      'https://raw.githubusercontent.com/ArduPilot/ardupilot_wiki/master/common/source/docs/common-cuav-pixhawkv6X.rst',
-  },
-  'cubepilot-cube-black': {
-    src: 'https://ardupilot.org/copter/_images/pixhawk2-overhead.jpg',
-    credit: 'ArduPilot Documentation',
-    sourceUrl: 'https://ardupilot.org/copter/docs/common-thecube-overview.html',
-  },
-  'cubepilot-cube-orange-plus': {
-    src: 'https://ardupilot.org/copter/_images/Cube_orange_module.jpg',
-    credit: 'ArduPilot Documentation',
-    sourceUrl: 'https://ardupilot.org/copter/docs/common-thecubeorange-overview.html',
-  },
-  'holybro-durandal': {
-    src: 'https://holybro.com/cdn/shop/products/Durandal-1.jpg?v=1751249914',
-    credit: 'Holybro Store',
-    sourceUrl: 'https://holybro.com/products/durandal',
-  },
-  'holybro-kakute-h7-v2': {
-    src: 'https://holybro.com/cdn/shop/products/11058V2_1.jpg?v=1679456428',
-    credit: 'Holybro Store',
-    sourceUrl: 'https://holybro.com/products/kakute-h7-v2',
-  },
-  'holybro-pixhawk-4': {
-    src: 'https://holybro.com/cdn/shop/files/110321_4.jpg?v=1750816088',
-    credit: 'Holybro Store',
-    sourceUrl: 'https://holybro.com/products/pixhawk-4',
-  },
-  'holybro-pixhawk-4-mini': {
-    src: 'https://docs.px4.io/main/assets/pixhawk4mini_iso_1.ROPjkdrL.png',
-    credit: 'PX4 Documentation',
-    sourceUrl: 'https://docs.px4.io/main/en/flight_controller/pixhawk4_mini.html',
-  },
-  'holybro-pixhawk-5x': {
-    src: 'https://holybro.com/cdn/shop/files/sku11045_4_grande.jpg?v=1723722819',
-    credit: 'Holybro Store',
-    sourceUrl: 'https://holybro.com/products/pixhawk-5x',
-  },
-  'holybro-pixhawk-6c': {
-    src: 'https://holybro.com/cdn/shop/products/11054Pixhawk6C-Plasticcase_1_grande.jpg?v=1749537511',
-    credit: 'Holybro Store',
-    sourceUrl: 'https://holybro.com/products/pixhawk-6c',
-  },
-  'holybro/holybro-pixhawk-6x': {
-    src: resolveLocalPreview('holybro/holybro-pixhawk-6x') ?? null, // will use local image if present
-    credit: 'Holybro Store',
-    sourceUrl: 'https://holybro.com/products/pixhawk-6x',
-  },
-  'mateksys-f405-wing': {
-    src: 'https://www.mateksys.com/wp-content/uploads/2018/04/F405-WING_1-1500x600.jpg',
-    credit: 'Mateksys',
-    sourceUrl: 'https://www.mateksys.com/?portfolio=f405-wing',
-  },
-  'mateksys-f765-wing': {
-    src: 'https://www.mateksys.com/wp-content/uploads/2019/08/F765-WING_1-1500x600.jpg',
-    credit: 'Mateksys',
-    sourceUrl: 'https://www.mateksys.com/?portfolio=f765-wing',
-  },
-  'mateksys-h743-wing': {
-    src: 'https://www.mateksys.com/wp-content/uploads/2020/07/H743-WING_1.jpg',
-    credit: 'Mateksys',
-    sourceUrl: 'https://www.mateksys.com/?portfolio=h743-wing',
-  },
-  'mro-pixracer-pro': {
-    src: 'https://ardupilot.org/copter/_images/pixracer-pro-top.png',
-    credit: 'ArduPilot Documentation',
-    sourceUrl: 'https://ardupilot.org/copter/docs/common-pixracer-pro.html',
-  },
-};
+import { resolveControllerPreviewImage } from '@/lib/controller-images';
 
 // Load all controllers
 const allControllers = await getCollection('controllers');
@@ -125,11 +19,7 @@ const controllersWithMeta = await Promise.all(
     return {
       ...controller,
       manufacturerName: manufacturer?.data.name || manufacturer?.data.title || controller.data.brand,
-      // Support lookup by both plain id and brand-prefixed id (some preview keys use 'brand/id')
-      preview:
-        controllerPreviewImages[controller.id] ??
-        controllerPreviewImages[`${controller.data.brand}/${controller.id}`] ??
-        null,
+      preview: resolveControllerPreviewImage(controller) ?? null,
     };
   })
 );
@@ -149,12 +39,7 @@ const searchControllers = controllersWithMeta.map((controller) => ({
   ethernet: controller.data.io.ethernet,
   barometer: (controller.data.sensors?.barometer?.length ?? 0) > 0,
   redundant: controller.data.power?.redundant,
-  image: controller.preview ? {
-    src: typeof controller.preview.src === 'string' ? controller.preview.src : controller.preview.src.src,
-    alt: controller.data.title,
-    credit: controller.preview.credit,
-    sourceUrl: controller.preview.sourceUrl,
-  } : undefined,
+  image: controller.preview ?? undefined,
 }));
 
 // Sort by title

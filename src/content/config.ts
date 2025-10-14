@@ -19,6 +19,17 @@ const firmwareSchema = z.object({
   status: z.enum(['beta', 'stable', 'deprecated', 'community']),
 });
 
+const controllerImageSchema = z.object({
+  id: z.string().optional(),
+  type: z.enum(['hero', 'gallery', 'detail']).optional(),
+  alt: z.string(),
+  credit: z.string().optional(),
+  source_url: z.string().url().optional(),
+  url: z.string().url().optional(),
+  width: z.number().int().positive().optional(),
+  height: z.number().int().positive().optional(),
+});
+
 // Shared power schemas
 const voltageRangeSchema = z
   .object({
@@ -206,6 +217,7 @@ const controllerSchema = z.object({
       weight_g: z.number().optional(),
     })
     .optional(),
+  images: z.array(controllerImageSchema).optional(),
   power: powerSchema,
   io: ioSchema,
   hardware: z.object({

@@ -3,6 +3,10 @@ title: Holybro Pixhawk 4 Mini
 brand: holybro
 mcu: stmicro-stm32f765
 mounting: custom
+images:
+- alt: "Holybro Pixhawk 4 Mini controller with bundled wiring harnesses and compact enclosure."
+  credit: "PX4 Documentation"
+  source_url: "https://docs.px4.io/main/en/flight_controller/pixhawk4_mini.html"
 dimensions:
   length_mm: 55
   width_mm: 38
