@@ -1,8 +1,8 @@
 ---
 import { getCollection, getEntry } from 'astro:content';
 import { buildRevisionVariants } from '@/content/config';
-import BaseLayout from '@/layouts/BaseLayout.astro';
-import MainLayout from '@/layouts/MainLayout.astro';
+import DetailHeader from '@/components/detail/DetailHeader.astro';
+import DetailPageLayout from '@/components/detail/DetailPageLayout.astro';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { 
@@ -35,6 +35,10 @@ const { data } = controller;
 
 // Fetch related data
 const manufacturer = data.brand ? await getEntry('manufacturers', data.brand) : null;
+const manufacturerName =
+  manufacturer?.data.name ??
+  (manufacturer?.data as { title?: string } | undefined)?.title ??
+  data.brand;
 const mcu = data.mcu ? await getEntry('mcu', data.mcu) : null;
 const firmware = await Promise.all(
   data.firmware_support.map(async (fw) => {
@@ -147,7 +151,8 @@ const peripheralTypeLabel = (type: string) =>
     .join(' ');
 
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
-const editPath = `src/content/controllers/${controller.id}.yaml`;
+const controllerSlug = (controller as { slug?: string }).slug ?? controller.id;
+const editPath = `src/content/controllers/${controllerSlug}.yaml`;
 
 const powerTypeLabels = {
   power_module: 'Power Module',
@@ -208,98 +213,83 @@ const formatVoltageRange = (voltage?: {
 };
 ---
 
-<BaseLayout
+<DetailPageLayout
   title={`${data.title} - Flight Controller Database`}
-  description={`${data.title} by ${manufacturer?.data.name || data.brand} - ${data.mounting} mounting, ${data.mcu} MCU. Supports ${firmware.map(f => f.name).join(', ')}.`}
+  description={`${data.title} by ${manufacturerName} - ${data.mounting} mounting, ${data.mcu} MCU. Supports ${firmware.map(f => f.name).join(', ')}.`}
+  editPath={editPath}
+  breadcrumbs={[
+    { href: `${basePath}/`, label: 'Home' },
+    { href: `${basePath}/controllers`, label: 'Controllers' },
+    { label: data.title },
+  ]}
 >
-  <MainLayout editPath={editPath}>
-    <div class="container py-8">
-      <!-- Breadcrumb -->
-      <nav class="mb-6 flex items-center gap-2 text-sm text-muted-foreground">
-        <a href={`${basePath}/`} class="hover:text-foreground transition-colors">Home</a>
-        <span>/</span>
-        <a href={`${basePath}/controllers`} class="hover:text-foreground transition-colors">Controllers</a>
-        <span>/</span>
-        <span class="text-foreground">{data.title}</span>
-      </nav>
+  <DetailHeader
+    slot="header"
+    title={data.title}
+    subtitle={`by ${manufacturerName}`}
+    description={data.notes}
+  >
+    <Badge slot="badges" className={`${verificationColor[data.verification.level]} px-2 py-0.5 text-xs`}>
+      {data.verification.level === 'reviewed' && <CheckCircle2 className="w-3 h-3 mr-1" />}
+      {data.verification.level === 'community' && <AlertCircle className="w-3 h-3 mr-1" />}
+      {data.verification.level.charAt(0).toUpperCase() + data.verification.level.slice(1)}
+    </Badge>
+    <Badge slot="badges" className="bg-primary/10 text-primary border-primary/20 px-2 py-0.5 text-xs">
+      {data.hardware.openness.charAt(0).toUpperCase() + data.hardware.openness.slice(1)} Hardware
+    </Badge>
+  </DetailHeader>
 
-      <!-- Header -->
-    <div class="mb-6">
-      <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-3">
-        <div>
-          <h1 class="text-3xl font-bold tracking-tight mb-1">{data.title}</h1>
-          <p class="text-base text-muted-foreground">
-            by {manufacturer?.data.name || data.brand}
-          </p>
-        </div>
-        <div class="flex flex-wrap gap-1.5">
-          <Badge className={`${verificationColor[data.verification.level]} px-2 py-0.5 text-xs`}>
-            {data.verification.level === 'reviewed' && <CheckCircle2 className="w-3 h-3 mr-1" />}
-            {data.verification.level === 'community' && <AlertCircle className="w-3 h-3 mr-1" />}
-            {data.verification.level.charAt(0).toUpperCase() + data.verification.level.slice(1)}
-          </Badge>
-          <Badge className="bg-primary/10 text-primary border-primary/20 px-2 py-0.5 text-xs">
-            {data.hardware.openness.charAt(0).toUpperCase() + data.hardware.openness.slice(1)} Hardware
-          </Badge>
-        </div>
-      </div>
-      
-      {data.notes && (
-        <p class="text-sm text-muted-foreground leading-relaxed">{data.notes}</p>
-      )}
-    </div>
-
-    <!-- Main Content - Ultra Compact Layout -->
-    <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-8">
-      <!-- Left Column - Complete Specs Table -->
-      <div class="lg:col-span-3">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Technical Specifications</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div
-              class="space-y-4"
-              data-revision-root
-              data-default-variant={defaultVariantId}
-            >
-              {hasMultipleVariants && (
-                <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                  <div class="sm:hidden w-full space-y-1">
-                    <label
-                      for="hardware-revision-select"
-                      class="text-[10px] uppercase tracking-wide font-semibold text-muted-foreground"
-                    >
-                      Hardware revision
-                    </label>
-                    <select
-                      id="hardware-revision-select"
-                      data-revision-select
-                      class="w-full rounded-sm border border-border/60 bg-background px-3 py-2 text-sm text-foreground focus:outline-hidden focus:ring-2 focus:ring-primary/40"
-                    >
-                      {revisionVariantsWithSensors.map((variant) => (
-                        <option value={variant.id}>{variant.label}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <div
-                    class="hidden sm:flex flex-wrap gap-2"
-                    role="tablist"
-                    aria-label="Hardware revisions"
+  <!-- Main Content - Ultra Compact Layout -->
+  <div class="grid grid-cols-1 gap-4 mb-8 lg:grid-cols-4">
+    <!-- Left Column - Complete Specs Table -->
+    <div class="lg:col-span-3">
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Technical Specifications</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div
+            class="space-y-4"
+            data-revision-root
+            data-default-variant={defaultVariantId}
+          >
+            {hasMultipleVariants && (
+              <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div class="sm:hidden w-full space-y-1">
+                  <label
+                    for="hardware-revision-select"
+                    class="text-[10px] uppercase tracking-wide font-semibold text-muted-foreground"
                   >
-                    {revisionVariantsWithSensors.map((variant, idx) => (
-                      <button
-                        type="button"
-                        data-revision-tab={variant.id}
-                        class={`border rounded-sm px-3 py-1.5 text-sm font-medium transition-colors ${idx === 0 ? 'bg-primary/10 border-primary/40 text-primary' : 'bg-muted/30 border-border/60 text-muted-foreground'}`}
-                        aria-selected={idx === 0 ? 'true' : 'false'}
-                      >
-                        {variant.label}
-                      </button>
+                    Hardware revision
+                  </label>
+                  <select
+                    id="hardware-revision-select"
+                    data-revision-select
+                    class="w-full rounded-sm border border-border/60 bg-background px-3 py-2 text-sm text-foreground focus:outline-hidden focus:ring-2 focus:ring-primary/40"
+                  >
+                    {revisionVariantsWithSensors.map((variant) => (
+                      <option value={variant.id}>{variant.label}</option>
                     ))}
-                  </div>
+                  </select>
                 </div>
-              )}
+                <div
+                  class="hidden sm:flex flex-wrap gap-2"
+                  role="tablist"
+                  aria-label="Hardware revisions"
+                >
+                  {revisionVariantsWithSensors.map((variant, idx) => (
+                    <button
+                      type="button"
+                      data-revision-tab={variant.id}
+                      class={`border rounded-sm px-3 py-1.5 text-sm font-medium transition-colors ${idx === 0 ? 'bg-primary/10 border-primary/40 text-primary' : 'bg-muted/30 border-border/60 text-muted-foreground'}`}
+                      aria-selected={idx === 0 ? 'true' : 'false'}
+                    >
+                      {variant.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
               {revisionVariantsWithSensors.map((variant, idx) => (
                 <section
                   key={variant.id}
@@ -941,6 +931,5 @@ const formatVoltageRange = (voltage?: {
         )}
       </div>
     </div>
-    </div>
-  </MainLayout>
-</BaseLayout>
+  </div>
+</DetailPageLayout>

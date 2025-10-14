@@ -1,0 +1,342 @@
+---
+import { getCollection, getEntry } from 'astro:content';
+import DetailHeader from '@/components/detail/DetailHeader.astro';
+import DetailPageLayout from '@/components/detail/DetailPageLayout.astro';
+import DetailSection from '@/components/detail/DetailSection.astro';
+import { Badge } from '@/components/ui/Badge';
+
+interface SourceMeta {
+  id: string;
+  title: string;
+  url: string | null;
+}
+
+export async function getStaticPaths() {
+  const transmitters = await getCollection('transmitters');
+  return transmitters.map((transmitter) => ({
+    params: { slug: transmitter.id },
+    props: { transmitter },
+  }));
+}
+
+const { transmitter } = Astro.props;
+const { data } = transmitter;
+
+const manufacturer = data.brand ? await getEntry('manufacturers', data.brand) : null;
+const manufacturerName =
+  manufacturer?.data.name ??
+  (manufacturer?.data as { title?: string } | undefined)?.title ??
+  data.brand;
+
+const hardware = data.hardware ?? null;
+const hardwareRevisions = hardware?.revisions ?? [];
+const complianceEntries = data.compliance ?? [];
+const features = data.features ?? [];
+
+const supportLevelLabels: Record<'official' | 'manufacturer' | 'community', string> = {
+  official: 'Official EdgeTX Support',
+  manufacturer: 'Manufacturer Maintained',
+  community: 'Community Maintained',
+};
+
+const supportStatusLabels: Record<'supported' | 'limited' | 'sunset' | 'planned', string> = {
+  supported: 'Active support',
+  limited: 'Limited support',
+  sunset: 'Support ending',
+  planned: 'Planned support',
+};
+
+const supportLevelStyles: Record<'official' | 'manufacturer' | 'community', string> = {
+  official: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20',
+  manufacturer: 'bg-sky-500/10 text-sky-500 border-sky-500/20',
+  community: 'bg-purple-500/10 text-purple-500 border-purple-500/20',
+};
+
+const supportStatusStyles: Record<'supported' | 'limited' | 'sunset' | 'planned', string> = {
+  supported: 'bg-green-500/10 text-green-500 border-green-500/20',
+  limited: 'bg-amber-500/10 text-amber-500 border-amber-500/20',
+  sunset: 'bg-rose-500/10 text-rose-500 border-rose-500/20',
+  planned: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
+};
+
+const verificationColor = {
+  unverified: 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20',
+  community: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
+  reviewed: 'bg-green-500/10 text-green-500 border-green-500/20',
+};
+
+const allSourceIds = new Set<string>(data.sources);
+for (const revision of hardwareRevisions) {
+  revision.sources?.forEach((sourceId) => allSourceIds.add(sourceId));
+}
+
+const sourceEntries: SourceMeta[] = await Promise.all(
+  Array.from(allSourceIds).map(async (sourceId) => {
+    const entry = await getEntry('sources', sourceId);
+    return {
+      id: sourceId,
+      title: entry?.data.title ?? sourceId,
+      url: entry?.data.url ?? null,
+    } satisfies SourceMeta;
+  })
+);
+
+const sourceMap = new Map(sourceEntries.map((source) => [source.id, source]));
+const topLevelSources = data.sources
+  .map((sourceId) => sourceMap.get(sourceId))
+  .filter((source): source is SourceMeta => Boolean(source));
+
+const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
+const transmitterSlug = (transmitter as { slug?: string }).slug ?? transmitter.id;
+const editPath = `src/content/transmitters/${transmitterSlug}.yaml`;
+
+const supportLevelLabel = supportLevelLabels[data.support.level];
+const supportStatusLabel = supportStatusLabels[data.support.status];
+
+const pageDescription = `${data.title} by ${manufacturerName} - ${supportLevelLabel}. EdgeTX support since ${data.support.since_version}${data.support.last_version ? `, last supported version ${data.support.last_version}` : ''}.`;
+---
+
+<DetailPageLayout
+  title={`${data.title} - EdgeTX Transmitter`}
+  description={pageDescription}
+  editPath={editPath}
+  breadcrumbs={[
+    { href: `${basePath}/`, label: 'Home' },
+    { href: `${basePath}/transmitters`, label: 'Transmitters' },
+    { label: data.title },
+  ]}
+>
+  <DetailHeader
+    slot="header"
+    title={data.title}
+    subtitle={`by ${manufacturerName}`}
+    description={data.notes}
+  >
+    <Badge slot="badges" className={`${verificationColor[data.verification.level]} px-2 py-0.5 text-xs`}>
+      {data.verification.level.charAt(0).toUpperCase() + data.verification.level.slice(1)}
+    </Badge>
+    <Badge slot="badges" className={`${supportLevelStyles[data.support.level]} px-2 py-0.5 text-xs`}>
+      {supportLevelLabel}
+    </Badge>
+    <Badge slot="badges" className={`${supportStatusStyles[data.support.status]} px-2 py-0.5 text-xs`}>
+      {supportStatusLabel}
+    </Badge>
+  </DetailHeader>
+
+  <div class="grid grid-cols-1 gap-4 lg:grid-cols-3">
+    <div class="space-y-4 lg:col-span-2">
+      <DetailSection title="Support status">
+        <div class="space-y-4">
+          <dl class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <div class="flex flex-col gap-1">
+              <dt class="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Maintainer</dt>
+              <dd class="text-sm font-medium text-foreground">{supportLevelLabel}</dd>
+            </div>
+            <div class="flex flex-col gap-1">
+              <dt class="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Support since</dt>
+              <dd class="text-sm font-medium text-foreground">{data.support.since_version}</dd>
+            </div>
+            <div class="flex flex-col gap-1">
+              <dt class="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Status</dt>
+              <dd class="text-sm font-medium text-foreground">{supportStatusLabel}</dd>
+            </div>
+            {data.support.last_version && (
+              <div class="flex flex-col gap-1">
+                <dt class="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Last supported</dt>
+                <dd class="text-sm font-medium text-foreground">{data.support.last_version}</dd>
+              </div>
+            )}
+          </dl>
+          {data.support.notes && (
+            <p class="text-sm leading-relaxed text-muted-foreground">{data.support.notes}</p>
+          )}
+        </div>
+      </DetailSection>
+
+      {hardware && (
+        <DetailSection title="Hardware" description="Physical characteristics and revision history.">
+          <div class="space-y-4">
+            {(hardware.form_factor || hardware.display) && (
+              <dl class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                {hardware.form_factor && (
+                  <div class="flex flex-col gap-1">
+                    <dt class="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Form factor</dt>
+                    <dd class="text-sm font-medium text-foreground">{hardware.form_factor.charAt(0).toUpperCase() + hardware.form_factor.slice(1)}</dd>
+                  </div>
+                )}
+                {hardware.display && (
+                  <div class="flex flex-col gap-1">
+                    <dt class="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Display</dt>
+                    <dd class="text-sm font-medium text-foreground">{hardware.display.charAt(0).toUpperCase() + hardware.display.slice(1)}</dd>
+                  </div>
+                )}
+              </dl>
+            )}
+            {hardware.notes && (
+              <p class="text-sm leading-relaxed text-muted-foreground">{hardware.notes}</p>
+            )}
+            {hardwareRevisions.length > 0 && (
+              <div class="space-y-3">
+                {hardwareRevisions.map((revision) => (
+                  <div
+                    key={revision.id}
+                    class="rounded-sm border border-border/40 bg-background/70 p-3 shadow-xs"
+                  >
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                      <span class="text-sm font-semibold text-foreground">{revision.name}</span>
+                      {revision.released && (
+                        <Badge className="text-[10px] uppercase tracking-wide bg-primary/10 text-primary border-primary/20">
+                          {revision.released}
+                        </Badge>
+                      )}
+                    </div>
+                    {revision.notes && (
+                      <p class="mt-1 text-xs leading-snug text-muted-foreground">{revision.notes}</p>
+                    )}
+                    {revision.changes && revision.changes.length > 0 && (
+                      <ul class="mt-2 space-y-1">
+                        {revision.changes.map((change, idx) => (
+                          <li key={`${revision.id}-change-${idx}`} class="flex items-start gap-2 text-xs text-muted-foreground">
+                            <span class="mt-0.5 font-bold text-primary">•</span>
+                            <span class="leading-snug text-foreground">{change}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                    {revision.sources && revision.sources.length > 0 && (
+                      <div class="mt-2 flex flex-wrap gap-1.5">
+                        {revision.sources.map((sourceId) => {
+                          const source = sourceMap.get(sourceId);
+                          if (!source) {
+                            return (
+                              <span
+                                key={`${revision.id}-${sourceId}`}
+                                class="text-[10px] uppercase tracking-wide font-semibold inline-flex items-center gap-1 rounded-sm border border-border/40 bg-muted/30 px-2 py-1 text-muted-foreground"
+                              >
+                                {sourceId}
+                              </span>
+                            );
+                          }
+
+                          return source.url ? (
+                            <a
+                              key={`${revision.id}-${sourceId}`}
+                              href={source.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              class="text-[10px] uppercase tracking-wide font-semibold inline-flex items-center gap-1 rounded-sm border border-primary/30 bg-primary/5 px-2 py-1 text-primary transition-colors hover:bg-primary/10"
+                            >
+                              {source.title}
+                              <span>↗</span>
+                            </a>
+                          ) : (
+                            <span
+                              key={`${revision.id}-${sourceId}`}
+                              class="text-[10px] uppercase tracking-wide font-semibold inline-flex items-center gap-1 rounded-sm border border-border/40 bg-muted/30 px-2 py-1 text-muted-foreground"
+                            >
+                              {source.title}
+                            </span>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </DetailSection>
+      )}
+
+      {features.length > 0 && (
+        <DetailSection title="Features">
+          <ul class="grid grid-cols-1 gap-2 sm:grid-cols-2">
+            {features.map((feature, idx) => (
+              <li key={`${transmitter.id}-feature-${idx}`} class="flex items-start gap-2 text-sm text-foreground">
+                <span class="mt-1 h-1.5 w-1.5 rounded-full bg-primary" />
+                <span class="leading-snug text-muted-foreground">{feature}</span>
+              </li>
+            ))}
+          </ul>
+        </DetailSection>
+      )}
+    </div>
+
+    <div class="space-y-4">
+      <DetailSection title="Quick facts">
+        <dl class="space-y-3">
+          <div class="flex flex-col gap-1">
+            <dt class="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Manufacturer</dt>
+            <dd class="text-sm font-medium text-foreground">{manufacturerName}</dd>
+          </div>
+          <div class="flex flex-col gap-1">
+            <dt class="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Support since</dt>
+            <dd class="text-sm font-medium text-foreground">{data.support.since_version}</dd>
+          </div>
+          <div class="flex flex-col gap-1">
+            <dt class="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Verification updated</dt>
+            <dd class="text-sm font-medium text-foreground">{data.verification.last_updated}</dd>
+          </div>
+          {hardware?.form_factor && (
+            <div class="flex flex-col gap-1">
+              <dt class="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Form factor</dt>
+              <dd class="text-sm font-medium text-foreground">{hardware.form_factor.charAt(0).toUpperCase() + hardware.form_factor.slice(1)}</dd>
+            </div>
+          )}
+          {hardware?.display && (
+            <div class="flex flex-col gap-1">
+              <dt class="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Display</dt>
+              <dd class="text-sm font-medium text-foreground">{hardware.display.charAt(0).toUpperCase() + hardware.display.slice(1)}</dd>
+            </div>
+          )}
+        </dl>
+      </DetailSection>
+
+      {complianceEntries.length > 0 && (
+        <DetailSection title="Compliance" description="Regulatory filings and certifications.">
+          <div class="flex flex-wrap gap-1.5">
+            {complianceEntries.map((entry) => (
+              <a
+                key={`${entry.type}-${entry.id}`}
+                href={entry.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center rounded-full border border-primary/30 bg-primary/5 px-2.5 py-0.5 text-xs font-semibold text-primary transition-colors hover:bg-primary/10"
+              >
+                <span class="uppercase">{entry.type}</span>
+                <span>·</span>
+                <span>{entry.id}</span>
+                <span>↗</span>
+              </a>
+            ))}
+          </div>
+        </DetailSection>
+      )}
+
+      {topLevelSources.length > 0 && (
+        <DetailSection title="Sources" description="Evidence and references for this transmitter entry.">
+          <ul class="space-y-2 text-sm leading-relaxed text-muted-foreground">
+            {topLevelSources.map((source) => (
+              <li key={source.id} class="flex items-start gap-2">
+                <span class="mt-1 h-1.5 w-1.5 rounded-full bg-primary/60" />
+                {source.url ? (
+                  <a
+                    href={source.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-foreground transition-colors hover:text-primary"
+                  >
+                    {source.title}
+                    <span class="ml-1 text-xs text-primary">↗</span>
+                  </a>
+                ) : (
+                  <span class="text-foreground">{source.title}</span>
+                )}
+              </li>
+            ))}
+          </ul>
+        </DetailSection>
+      )}
+    </div>
+  </div>
+</DetailPageLayout>
