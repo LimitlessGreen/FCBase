@@ -4,7 +4,13 @@ brand: cuav
 mcu: stmicro-stm32h753
 mounting: custom
 power:
-  voltage_in: External power via 6-pin Power A module; voltage range depends on connected power brick
+  inputs:
+  - type: power_module
+    name: "Power A module"
+    connector: "6-pin"
+    voltage:
+      notes: "Voltage range depends on connected power brick"
+    notes: "External module providing regulated flight controller power."
   notes: Configurable 3.3V/5V servo rail with dedicated power monitor connector.
 io:
   uarts: 5

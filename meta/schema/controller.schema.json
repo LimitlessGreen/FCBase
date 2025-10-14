@@ -4,6 +4,75 @@
   "title": "FCBase Controller Schema",
   "type": "object",
   "additionalProperties": false,
+  "definitions": {
+    "voltageRange": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "min": { "type": "number" },
+        "max": { "type": "number" },
+        "nominal": { "type": "number" },
+        "cells": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "min": { "type": "integer", "minimum": 1 },
+            "max": { "type": "integer", "minimum": 1 }
+          },
+          "anyOf": [
+            { "required": ["min"] },
+            { "required": ["max"] }
+          ]
+        },
+        "unit": { "type": "string", "enum": ["V"] },
+        "notes": { "type": "string" }
+      },
+      "anyOf": [
+        { "required": ["min"] },
+        { "required": ["max"] },
+        { "required": ["nominal"] },
+        { "required": ["cells"] },
+        { "required": ["notes"] }
+      ]
+    },
+    "currentSpec": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "continuous": { "type": "number" },
+        "peak": { "type": "number" },
+        "max": { "type": "number" },
+        "unit": { "type": "string", "enum": ["A"] },
+        "notes": { "type": "string" }
+      },
+      "anyOf": [
+        { "required": ["continuous"] },
+        { "required": ["peak"] },
+        { "required": ["max"] },
+        { "required": ["notes"] }
+      ]
+    },
+    "powerInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name"],
+      "properties": {
+        "name": { "type": "string" },
+        "type": {
+          "type": "string",
+          "enum": ["power_module", "usb", "battery", "regulator", "servo_rail", "other"]
+        },
+        "connector": { "type": "string" },
+        "voltage": { "$ref": "#/definitions/voltageRange" },
+        "current": { "$ref": "#/definitions/currentSpec" },
+        "notes": { "type": "string" }
+      },
+      "anyOf": [
+        { "required": ["voltage"] },
+        { "required": ["notes"] }
+      ]
+    }
+  },
   "required": [
     "id",
     "title",
@@ -45,12 +114,20 @@
     "power": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["voltage_in"],
       "properties": {
         "voltage_in": { "type": "string" },
+        "inputs": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/powerInput" },
+          "minItems": 1
+        },
         "redundant": { "type": "boolean" },
         "notes": { "type": "string" }
-      }
+      },
+      "anyOf": [
+        { "required": ["voltage_in"] },
+        { "required": ["inputs"] }
+      ]
     },
     "io": {
       "type": "object",
@@ -134,7 +211,7 @@
         "required": ["id", "status"],
         "properties": {
           "id": { "type": "string" },
-          "status": { "type": "string", "enum": ["beta", "stable", "deprecated"] }
+          "status": { "type": "string", "enum": ["beta", "stable", "deprecated", "community"] }
         }
       }
     },
