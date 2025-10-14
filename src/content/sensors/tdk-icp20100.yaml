@@ -9,7 +9,7 @@ datasheet:
   publisher: TDK InvenSense
   year: 2025
   url: https://www.mouser.com/datasheet/2/400/DS-000228-ICP-20100-v1.3-1987548.pdf
-  retrieved: 2025-10-13
+  retrieved: "2025-10-13"
   language: en
 sources:
   - ardupilot-cuav-pixhawkv6x

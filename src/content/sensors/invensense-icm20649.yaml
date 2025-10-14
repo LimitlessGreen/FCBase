@@ -10,7 +10,7 @@ datasheet:
   publisher: TDK InvenSense
   year: 2025
   url: https://www.mouser.com/datasheet/2/400/DS-000166-ICM-20649-v1.2-1506982.pdf
-  retrieved: 2025-10-13
+  retrieved: "2025-10-13"
   language: en
 sources:
   - px4-cube-orange-plus

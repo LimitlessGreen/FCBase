@@ -10,7 +10,7 @@ datasheet:
   publisher: TDK InvenSense
   year: 2025
   url: https://invensense.tdk.com/wp-content/uploads/2015/02/MPU-6000-Datasheet1.pdf
-  retrieved: 2025-10-13
+  retrieved: "2025-10-13"
   language: en
 sources:
   - ardupilot-matek-h743-wing

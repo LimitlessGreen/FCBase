@@ -10,7 +10,7 @@ datasheet:
   publisher: TDK InvenSense
   year: 2025
   url: https://www.mouser.com/datasheet/2/400/DS-000162-ICM-20602-v1.0-1506983.pdf
-  retrieved: 2025-10-13
+  retrieved: "2025-10-13"
   language: en
 sources:
   - ardupilot-matek-h743-wing

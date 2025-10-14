@@ -10,7 +10,7 @@ datasheet:
   publisher: TDK InvenSense
   year: 2016
   url: https://invensense.tdk.com/wp-content/uploads/2015/02/PS-MPU-9250A-01-v1.1.pdf
-  retrieved: 2025-10-13
+  retrieved: "2025-10-13"
   language: en
 sources:
   - ardupilot-thecube-overview

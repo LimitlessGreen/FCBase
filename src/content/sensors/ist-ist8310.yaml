@@ -10,7 +10,7 @@ datasheet:
   publisher: iSentek
   year: 2025
   url: https://www.mouser.com/datasheet/2/724/IST8310_Datasheet-1514315.pdf
-  retrieved: 2025-10-13
+  retrieved: "2025-10-13"
   language: en
 sources:
   - holybro-pixhawk6c-product
