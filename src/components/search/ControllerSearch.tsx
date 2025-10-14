@@ -20,6 +20,7 @@ type PagefindModule = {
     query: string,
     options?: {
       filters?: Record<string, string | string[]>;
+      limit?: number;
     }
   ) => Promise<{
     results: Array<{
@@ -76,6 +77,31 @@ const BASE_PATH = (import.meta.env.BASE_URL ?? "/").replace(/\/$/, "");
 const PAGEFIND_BUNDLE_URL = `${BASE_PATH}/pagefind/`;
 const PAGEFIND_SCRIPT_URL = `${PAGEFIND_BUNDLE_URL}pagefind.js`;
 
+type ControllerCatalogRecord = {
+  id: string;
+  slug: string;
+  title: string;
+  brand?: string | null;
+  brand_name?: string | null;
+  mcu?: string | null;
+  mcu_family?: string | null;
+  mounting?: string | null;
+  uarts?: number | null;
+  can?: number | null;
+  sd?: boolean | null;
+  lifecycle?: string | null;
+  firmware_statuses?: Array<string> | null;
+  summary?: string | null;
+  notes?: string | null;
+  image?: string | null;
+  url: string;
+  filters?: Record<string, string[]>;
+};
+
+let controllerCatalogueCache: ControllerResult[] | null = null;
+let controllerCataloguePromise: Promise<ControllerResult[]> | null = null;
+let controllerCatalogueBaseUrl: string | null = null;
+
 const DEFAULT_FILTERS: FilterState = {
   mcu: null,
   mounting: null,
@@ -110,6 +136,142 @@ const parseBoolean = (value: unknown): boolean => {
     return value === "1" || value.toLowerCase() === "true" || value.toLowerCase() === "yes";
   }
   return false;
+};
+
+const mapCatalogRecordToResult = (record: ControllerCatalogRecord): ControllerResult => {
+  const firmwareStatuses = Array.isArray(record.firmware_statuses)
+    ? record.firmware_statuses.map(String)
+    : [];
+
+  const filters = record.filters ?? {};
+  const hasCanFromFilters = parseBoolean(filters.can?.[0]);
+  const hasSdFromFilters = parseBoolean(filters.sd?.[0]);
+
+  const canCount = typeof record.can === "number" ? record.can : null;
+  const hasCan = canCount !== null ? canCount > 0 : hasCanFromFilters;
+  const hasSd = typeof record.sd === "boolean" ? record.sd : hasSdFromFilters;
+
+  const summary = record.summary ?? record.notes ?? undefined;
+
+  return {
+    cacheKey: `${record.id}:${record.url}`,
+    id: record.id,
+    title: record.title,
+    manufacturer: record.brand_name ?? record.brand ?? undefined,
+    mcu: record.mcu ?? undefined,
+    mcuFamily: record.mcu_family ?? undefined,
+    mounting: record.mounting ?? undefined,
+    uarts: typeof record.uarts === "number" ? record.uarts : null,
+    canCount,
+    hasCan,
+    hasSd,
+    lifecycle: record.lifecycle ?? null,
+    firmwareStatuses,
+    summary,
+    image: record.image ?? null,
+    url: record.url,
+  };
+};
+
+const fetchControllerCatalogueJson = async (
+  baseUrl: string
+): Promise<ControllerCatalogRecord[]> => {
+  const response = await fetch(`${baseUrl}controllers.json`);
+  if (!response.ok) {
+    throw new Error(`Failed to fetch controllers.json (${response.status})`);
+  }
+  return (await response.json()) as ControllerCatalogRecord[];
+};
+
+const loadCatalogueFromPagefind = async (
+  module: PagefindModule,
+  limit = 2048
+): Promise<ControllerResult[]> => {
+  const response = await module.search("", {
+    filters: { type: "controller" },
+    limit,
+  });
+
+  const records = await Promise.all(
+    response.results.map(async (result) => {
+      try {
+        const data = await result.data();
+        return parseControllerMeta(data);
+      } catch (error) {
+        console.error("Failed to load controller from Pagefind", error);
+        return null;
+      }
+    })
+  );
+
+  const seen = new Set<string>();
+  const validRecords: ControllerResult[] = [];
+  for (const record of records) {
+    if (!record) continue;
+    if (seen.has(record.cacheKey)) continue;
+    seen.add(record.cacheKey);
+    validRecords.push(record);
+  }
+
+  if (validRecords.length === 0) {
+    throw new Error("Pagefind returned no controller records");
+  }
+
+  return validRecords.sort((a, b) => a.title.localeCompare(b.title));
+};
+
+const loadControllerCatalogue = async (
+  baseUrl: string,
+  module?: PagefindModule | null
+): Promise<ControllerResult[]> => {
+  if (controllerCatalogueCache && controllerCatalogueBaseUrl === baseUrl) {
+    return controllerCatalogueCache;
+  }
+
+  const run = async () => {
+    try {
+      const records = await fetchControllerCatalogueJson(baseUrl);
+      const mapped = records.map(mapCatalogRecordToResult);
+      controllerCatalogueCache = mapped;
+      controllerCatalogueBaseUrl = baseUrl;
+      return mapped;
+    } catch (jsonError) {
+      if (!module) {
+        throw jsonError;
+      }
+
+      console.warn("Falling back to Pagefind catalogue", jsonError);
+      const fallback = await loadCatalogueFromPagefind(module);
+      controllerCatalogueCache = fallback;
+      controllerCatalogueBaseUrl = baseUrl;
+      return fallback;
+    }
+  };
+
+  if (!controllerCataloguePromise || controllerCatalogueBaseUrl !== baseUrl) {
+    controllerCataloguePromise = run().catch((error) => {
+      controllerCataloguePromise = null;
+      if (controllerCatalogueBaseUrl === baseUrl && controllerCatalogueCache) {
+        return controllerCatalogueCache;
+      }
+      throw error;
+    });
+  }
+
+  return controllerCataloguePromise;
+};
+
+const applyLocalFilters = (records: ControllerResult[], state: FilterState): ControllerResult[] => {
+  const filtered = records.filter((record) => {
+    if (state.mcu && record.mcuFamily !== state.mcu) return false;
+    if (state.mounting && record.mounting !== state.mounting) return false;
+    if (state.lifecycle && record.lifecycle !== state.lifecycle) return false;
+    if (state.can && !record.hasCan) return false;
+    if (state.sd && !record.hasSd) return false;
+    return true;
+  });
+
+  return filtered.sort((a, b) => a.title.localeCompare(b.title));
 };
 
 const buildPortSummary = (result: ControllerResult) => {
@@ -231,6 +393,37 @@ export function ControllerSearch({ totalControllers }: ControllerSearchProps) {
 
   const normalizedSearchTerm = searchTerm.trim();
   const filtersKey = React.useMemo(() => JSON.stringify(filters), [filters]);
+  const hasFacetFilters =
+    Boolean(filters.mcu) || Boolean(filters.mounting) || Boolean(filters.lifecycle) || filters.can || filters.sd;
+
+  const applyResults = React.useCallback(
+    (records: ControllerResult[], emptyMessage: string) => {
+      const cache = new Map<string, ControllerResult>();
+      const order: string[] = [];
+      for (const record of records) {
+        cache.set(record.cacheKey, record);
+        order.push(record.cacheKey);
+      }
+
+      resultCacheRef.current = cache;
+      setResultOrder(order);
+      setTotalMatches(records.length);
+      setError(records.length === 0 ? emptyMessage : null);
+
+      if (initialSearchRef.current) {
+        initialSearchRef.current = false;
+        if (page > 1) {
+          const maxPage = Math.max(1, Math.ceil(records.length / PAGE_SIZE));
+          if (page > maxPage) {
+            setPage(maxPage);
+          }
+        }
+      } else {
+        setPage(1);
+      }
+    },
+    [page]
+  );
 
   React.useEffect(() => {
     if (typeof window === "undefined") return;
@@ -282,6 +475,57 @@ export function ControllerSearch({ totalControllers }: ControllerSearchProps) {
 
   React.useEffect(() => {
     if (typeof window === "undefined") return;
+    if (!paramsReadyRef.current) return;
+    if (normalizedSearchTerm.length > 0) return;
+
+    let cancelled = false;
+    setIsPending(true);
+
+    const run = async () => {
+      const module = pagefindRef.current;
+
+      try {
+        const catalogue = await loadControllerCatalogue(PAGEFIND_BUNDLE_URL, module);
+        if (cancelled) return;
+
+        const filtered = applyLocalFilters(catalogue, filters);
+        applyResults(
+          filtered,
+          hasFacetFilters ? "No controllers match your filters." : "No controllers available."
+        );
+      } catch (err) {
+        if (!cancelled) {
+          if (!module && pagefindStatus === "loading") {
+            // Wait for Pagefind to finish initialising so we can retry with the module fallback.
+            return;
+          }
+
+          console.error("Failed to load controller catalogue", err);
+          setError("Search is temporarily unavailable.");
+          resultCacheRef.current = new Map();
+          setResultOrder([]);
+          setTotalMatches(0);
+          if (initialSearchRef.current) {
+            initialSearchRef.current = false;
+          }
+        }
+      } finally {
+        if (!cancelled) {
+          setIsSearching(false);
+          setIsPending(false);
+        }
+      }
+    };
+
+    run();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [applyResults, filters, hasFacetFilters, normalizedSearchTerm, pagefindStatus]);
+
+  React.useEffect(() => {
+    if (typeof window === "undefined") return;
     let cancelled = false;
 
     const loadPagefind = async () => {
@@ -328,6 +572,7 @@ export function ControllerSearch({ totalControllers }: ControllerSearchProps) {
   }, []);
 
   React.useEffect(() => {
+    if (normalizedSearchTerm.length === 0) return;
     if (pagefindStatus !== "ready") return;
     const module = pagefindRef.current;
     if (!module) return;
@@ -366,29 +611,10 @@ export function ControllerSearch({ totalControllers }: ControllerSearchProps) {
           if (cancelled) return;
 
           const validRecords = records.filter((record): record is ControllerResult => Boolean(record));
-          const cache = new Map<string, ControllerResult>();
-          const order: string[] = [];
-          for (const record of validRecords) {
-            cache.set(record.cacheKey, record);
-            order.push(record.cacheKey);
-          }
-
-          resultCacheRef.current = cache;
-          setResultOrder(order);
-          setTotalMatches(validRecords.length);
-          setError(validRecords.length === 0 ? "No controllers match your query." : null);
-
-          if (initialSearchRef.current) {
-            initialSearchRef.current = false;
-            if (page > 1) {
-              const maxPage = Math.max(1, Math.ceil(validRecords.length / PAGE_SIZE));
-              if (page > maxPage) {
-                setPage(maxPage);
-              }
-            }
-          } else {
-            setPage(1);
-          }
+          const emptyMessage = hasFacetFilters
+            ? "No controllers match your filters or query."
+            : "No controllers match your query.";
+          applyResults(validRecords, emptyMessage);
         } catch (err) {
           console.error("Search error", err);
           if (!cancelled) {
@@ -413,7 +639,7 @@ export function ControllerSearch({ totalControllers }: ControllerSearchProps) {
       cancelled = true;
       window.clearTimeout(timeout);
     };
-  }, [normalizedSearchTerm, filtersKey, pagefindStatus]);
+  }, [applyResults, filters, filtersKey, hasFacetFilters, normalizedSearchTerm, pagefindStatus]);
 
   React.useEffect(() => {
     const maxPage = Math.max(1, Math.ceil(resultOrder.length / PAGE_SIZE));
@@ -439,13 +665,7 @@ export function ControllerSearch({ totalControllers }: ControllerSearchProps) {
   const totalPages = Math.max(1, Math.ceil(resultOrder.length / PAGE_SIZE));
   const showFallback = pagefindStatus === "error";
 
-  const hasActiveFilters =
-    Boolean(filters.mcu) ||
-    Boolean(filters.mounting) ||
-    Boolean(filters.lifecycle) ||
-    filters.can ||
-    filters.sd ||
-    Boolean(normalizedSearchTerm);
+  const hasActiveFilters = hasFacetFilters || Boolean(normalizedSearchTerm);
 
   const resetFilters = () => {
     setFilters(DEFAULT_FILTERS);
@@ -469,14 +689,14 @@ export function ControllerSearch({ totalControllers }: ControllerSearchProps) {
         <CardContent className="space-y-4">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <input
-              type="search"
-              inputMode="search"
-              autoComplete="off"
-              placeholder="Search by name, MCU, firmware…"
-              value={searchTerm}
-              onChange={(event) => setSearchTerm(event.target.value)}
-              disabled={isPending || pagefindStatus !== "ready"}
+              <input
+                type="search"
+                inputMode="search"
+                autoComplete="off"
+                placeholder="Search by name, MCU, firmware…"
+                value={searchTerm}
+                onChange={(event) => setSearchTerm(event.target.value)}
+                disabled={pagefindStatus !== "ready"}
               className={cn(
                 "w-full rounded-lg border bg-background py-2.5 pl-10 pr-12 text-sm transition focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring",
                 {
