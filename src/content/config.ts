@@ -255,6 +255,11 @@ const controllerSchema = z.object({
     notes: z.string().optional(),
     revisions: z.array(hardwareRevisionSchema).min(1).optional(),
   }),
+  seo: z
+    .object({
+      summary: z.string().optional(),
+    })
+    .optional(),
   sensors: sensorsSpecSchema,
   features: z.array(z.string()).optional(),
   firmware_support: z.array(firmwareSchema).min(1),
