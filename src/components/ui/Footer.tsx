@@ -190,8 +190,8 @@ export function Footer({ className, basePath = "" }: FooterProps) {
                   <span className="font-medium text-foreground">{commitHash}</span>
                 )}{" "}
                 by <span className="font-medium text-foreground">{commitAuthor}</span>{" "}
-                on {formattedDate}
-                {relativeTime ? ` (${relativeTime})` : ""}.
+                on <span suppressHydrationWarning>{formattedDate}</span>
+                {relativeTime ? <span suppressHydrationWarning> ({relativeTime})</span> : ""}.
               </p>
             ) : null}
           </div>

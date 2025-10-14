@@ -1,0 +1,148 @@
+---
+/**
+ * BaseCard - Foundation component for all entity cards
+ * 
+ * Provides consistent structure for cards across the site:
+ * - Optional image banner with credit overlay
+ * - Title/subtitle header
+ * - Content area with specs
+ * - Badge area for tags/categories
+ * - Hover effects and animations
+ * 
+ * Can be extended/composed for specific entities:
+ * - ControllerCard
+ * - TransmitterCard
+ * - SensorCard
+ * - etc.
+ * 
+ * @usage
+ * <BaseCard
+ *   href="/path/to/entity"
+ *   title="Entity Name"
+ *   subtitle="Manufacturer"
+ *   image={{ src: '...', credit: '...', sourceUrl: '...' }}
+ *   showImage={true}
+ * >
+ *   <Fragment slot="specs">
+ *     <!-- Custom specs content -->
+ *   </Fragment>
+ *   <Fragment slot="badges">
+ *     <!-- Custom badges -->
+ *   </Fragment>
+ * </BaseCard>
+ */
+
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
+
+interface Props {
+  // Navigation
+  href: string;
+  
+  // Header
+  title: string;
+  subtitle?: string;
+  
+  // Image
+  image?: {
+    src: string;
+    alt?: string;
+    credit?: string;
+    sourceUrl?: string;
+  };
+  
+  // Layout options
+  showImage?: boolean;
+  imageAspect?: 'video' | 'square' | 'wide';
+  
+  // Styling
+  class?: string;
+  cardClass?: string;
+  
+  // Hover behavior
+  hoverBorder?: boolean;
+}
+
+const {
+  href,
+  title,
+  subtitle,
+  image,
+  showImage = true,
+  imageAspect = 'video',
+  class: className,
+  cardClass,
+  hoverBorder = false,
+} = Astro.props;
+
+const aspectClasses = {
+  video: 'aspect-video',
+  square: 'aspect-square',
+  wide: 'aspect-[21/9]',
+};
+
+const imageAlt = image?.alt || title;
+---
+
+<a href={href} class={`group block ${className || ''}`}>
+  <Card 
+    class={`h-full transition-all hover:shadow-lg hover:-translate-y-1 border-2 hover:border-primary/30 ${cardClass || ''}`}
+  >
+    {/* Image Banner (optional) */}
+    {showImage && (
+      <div class={`relative ${aspectClasses[imageAspect]} w-full overflow-hidden rounded-t-xl bg-gradient-to-br from-muted via-background to-muted`}>
+        {image?.src ? (
+          <>
+            <img
+              src={image.src}
+              alt={imageAlt}
+              loading="lazy"
+              class="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+            />
+            {image.credit && (
+              <span class="absolute bottom-2 right-2 rounded bg-background/80 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+                {image.sourceUrl ? (
+                  <a
+                    href={image.sourceUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="hover:underline"
+                    onclick="event.stopPropagation()"
+                  >
+                    {image.credit}
+                  </a>
+                ) : (
+                  image.credit
+                )}
+              </span>
+            )}
+          </>
+        ) : (
+          <span class="absolute inset-0 flex items-center justify-center px-6 text-center text-sm font-medium text-muted-foreground">
+            {imageAlt}
+          </span>
+        )}
+      </div>
+    )}
+
+    {/* Header: Title + Subtitle */}
+    <CardHeader>
+      <CardTitle class="group-hover:text-primary transition-colors">
+        {title}
+      </CardTitle>
+      {subtitle && <CardDescription>{subtitle}</CardDescription>}
+    </CardHeader>
+
+    {/* Content: Specs + Badges */}
+    <CardContent>
+      <div class="space-y-3">
+        {/* Specs Slot */}
+        <slot name="specs" />
+        
+        {/* Badges Slot */}
+        <div class="flex flex-wrap gap-1.5 pt-2">
+          <slot name="badges" />
+        </div>
+      </div>
+    </CardContent>
+  </Card>
+</a>

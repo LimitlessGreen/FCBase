@@ -2,6 +2,7 @@
 import { getCollection, getEntry } from 'astro:content';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import MainLayout from '@/layouts/MainLayout.astro';
+import ControllerCard from '@/components/cards/ControllerCard.astro';
 import { Badge } from '@/components/ui/Badge';
 import { ExternalLink } from 'lucide-react';
 
@@ -86,41 +87,22 @@ const editPath = `src/content/manufacturers/${manufacturer.id}.yaml`;
           <h2 class="text-2xl font-bold tracking-tight mb-6">Controllers</h2>
           <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {manufacturerControllers.map((controller) => (
-              <a
-                href={`${basePath}/controllers/${controller.id}`}
-                class="group block"
-              >
-                <div class="h-full rounded-xl border bg-card text-card-foreground shadow-sm transition-all hover:shadow-lg hover:-translate-y-1">
-                  <div class="relative aspect-video w-full overflow-hidden rounded-t-xl bg-gradient-to-br from-muted via-background to-muted">
-                    <div class="absolute inset-0 flex items-center justify-center px-6 text-center">
-                      <div class="space-y-2">
-                        <h3 class="line-clamp-2 text-lg font-bold">{controller.data.title}</h3>
-                        <p class="text-sm text-muted-foreground">{controller.data.mounting}</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="space-y-3 p-6 pt-4">
-                    <div class="flex flex-wrap gap-1.5">
-                      <Badge variant="outline" class="text-xs">
-                        {controller.data.mcu.replace('stmicro-', '').toUpperCase()}
-                      </Badge>
-                      <Badge variant="outline" class="text-xs">
-                        {controller.data.mounting}
-                      </Badge>
-                    </div>
-                    <p class="text-xs text-muted-foreground">
-                      {controller.data.io.uarts} UART • {controller.data.io.can || 0} CAN • {controller.data.io.pwm || 0} PWM
-                    </p>
-                    <div class="flex flex-wrap gap-1.5">
-                      {controller.data.firmware_support.map((fw) => (
-                        <Badge key={fw.id} class="border-primary/20 bg-primary/10 text-xs text-primary">
-                          {fw.id.toUpperCase()}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </a>
+              <ControllerCard
+                key={controller.id}
+                id={controller.id}
+                title={controller.data.title}
+                manufacturer={data.name || data.title}
+                mcu={controller.data.mcu}
+                mounting={controller.data.mounting}
+                uarts={controller.data.io.uarts}
+                can={controller.data.io.can}
+                pwm={controller.data.io.pwm}
+                sdCard={controller.data.io.sd_card}
+                barometer={(controller.data.sensors?.barometer?.length ?? 0) > 0}
+                firmwares={controller.data.firmware_support.map(fw => fw.id)}
+                showImage={false}
+                basePath={basePath}
+              />
             ))}
           </div>
         </>

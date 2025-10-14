@@ -1,0 +1,199 @@
+---
+/**
+ * ControllerCard - Reusable card component for displaying flight controllers
+ * 
+ * Features:
+ * - Banner with title + subtitle (manufacturer)
+ * - Compact badge layout (MCU + Mounting)
+ * - Port summary (10U • 2C • 16PWM)
+ * - Feature checkmarks (✓ SD, ✓ Baro)
+ * - Firmware badges
+ * 
+ * @usage
+ * <ControllerCard
+ *   id="holybro-pixhawk-6x"
+ *   title="Pixhawk 6X"
+ *   manufacturer="Holybro"
+ *   mcu="STM32H753"
+ *   mounting="30.5x30.5"
+ *   uarts={10}
+ *   can={2}
+ *   pwm={16}
+ *   sdCard={true}
+ *   barometer={true}
+ *   firmwares={['ardupilot', 'px4']}
+ *   image={{ src: '...', credit: 'Holybro', sourceUrl: '...' }}
+ *   basePath="/fcbase"
+ * />
+ */
+
+import { Card, CardContent } from '@/components/ui/Card';
+import { Badge } from '@/components/ui/Badge';
+
+interface Props {
+  // Required
+  id: string;
+  title: string;
+  manufacturer?: string;
+  mcu: string;
+  
+  // Hardware specs
+  mounting?: string;
+  uarts?: number;
+  can?: number;
+  pwm?: number;
+  sdCard?: boolean;
+  barometer?: boolean;
+  
+  // Firmware support
+  firmwares?: string[];
+  
+  // Image
+  image?: {
+    src: string;
+    credit?: string;
+    sourceUrl?: string;
+  };
+  
+  // Navigation
+  basePath?: string;
+  
+  // Styling
+  showImage?: boolean;
+  class?: string;
+}
+
+const {
+  id,
+  title,
+  manufacturer,
+  mcu,
+  mounting,
+  uarts,
+  can,
+  pwm,
+  sdCard,
+  barometer,
+  firmwares = [],
+  image,
+  basePath = '',
+  showImage = true,
+  class: className,
+} = Astro.props;
+
+// Format MCU name (remove vendor prefix, uppercase)
+const mcuDisplay = mcu.toUpperCase().replace(/^(STMICRO-|ATMEGA-)/, '');
+
+// Format mounting (20x20 → 20×20mm, 30.5x30.5 → 30×30mm, cube → Cube, wing → Wing, custom → Custom)
+const mountingDisplay = mounting
+  ? mounting === 'cube' || mounting === 'wing' || mounting === 'custom'
+    ? mounting.charAt(0).toUpperCase() + mounting.slice(1)
+    : mounting.replace('x', '×') + 'mm'
+  : undefined;
+
+// Build port summary (like "10 UARTs • 2 CAN • 16 PWM")
+const portSummary = [
+  uarts ? `${uarts} UART${uarts > 1 ? 's' : ''}` : null,
+  can ? `${can} CAN` : null,
+  pwm ? `${pwm} PWM` : null,
+]
+  .filter(Boolean)
+  .join(' • ');
+
+const imageAlt = title;
+---
+
+<a href={`${basePath}/controllers/${id}`} class={`group block ${className || ''}`}>
+  <Card class="h-full transition-all hover:shadow-lg hover:-translate-y-1 border-2 hover:border-primary/30">
+    {/* Image Banner with Title + Subtitle */}
+    {showImage && (
+      <div class="relative aspect-video w-full overflow-hidden rounded-t-xl bg-gradient-to-br from-muted via-background to-muted">
+        {image?.src ? (
+          <>
+            <img
+              src={image.src}
+              alt={imageAlt}
+              loading="lazy"
+              class="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+            />
+            {image.credit && (
+              <span class="absolute bottom-2 right-2 rounded bg-background/80 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+                {image.sourceUrl ? (
+                  <a
+                    href={image.sourceUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="hover:underline"
+                    onclick="event.stopPropagation()"
+                  >
+                    {image.credit}
+                  </a>
+                ) : (
+                  image.credit
+                )}
+              </span>
+            )}
+          </>
+        ) : (
+          <div class="absolute inset-0 flex items-center justify-center px-6 text-center">
+            <div class="space-y-2">
+              <h3 class="font-bold text-lg line-clamp-2 group-hover:text-primary transition-colors">
+                {title}
+              </h3>
+              {manufacturer && (
+                <p class="text-sm text-muted-foreground">{manufacturer}</p>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    )}
+
+    {/* Compact Content */}
+    <CardContent class="pt-4 pb-3 px-3">
+      <div class="space-y-3">
+        {/* MCU + Mounting Badges */}
+        <div class="flex flex-wrap gap-1.5">
+          <span class="inline-flex items-center rounded-sm border px-1.5 py-0.5 text-xs font-mono font-semibold">
+            {mcuDisplay}
+          </span>
+          {mounting && (
+            <span class="inline-flex items-center rounded-sm border px-1.5 py-0.5 text-xs font-medium">
+              {mountingDisplay}
+            </span>
+          )}
+        </div>
+
+        {/* Firmware Badges */}
+        {firmwares.length > 0 && (
+          <div class="flex flex-wrap gap-1.5">
+            {firmwares.map((firmware) => (
+              <span
+                key={firmware}
+                class="inline-flex items-center rounded-sm border bg-secondary px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wide"
+              >
+                {firmware.toUpperCase()}
+              </span>
+            ))}
+          </div>
+        )}
+
+        {/* Port Summary + Feature Checkmarks */}
+        <div class="text-xs text-muted-foreground space-y-1">
+          {/* Port Summary Line */}
+          {portSummary && (
+            <div class="font-mono font-semibold">{portSummary}</div>
+          )}
+          
+          {/* Feature Checkmarks */}
+          {(sdCard !== undefined || barometer !== undefined) && (
+            <div class="flex flex-wrap gap-1">
+              {sdCard && <span>✓ SD</span>}
+              {barometer && <span>✓ Baro</span>}
+            </div>
+          )}
+        </div>
+      </div>
+    </CardContent>
+  </Card>
+</a>

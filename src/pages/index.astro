@@ -1,9 +1,10 @@
 ---
-import { getCollection } from 'astro:content';
+import { getCollection, getEntry } from 'astro:content';
 import MainLayout from "@/layouts/MainLayout.astro";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { GITHUB_REPO_URL } from "@/lib/constants";
+import ControllerCard from "@/components/cards/ControllerCard.astro";
 
 const title = "FCBase – Open Flight Controller Database";
 const description = "Search and compare ArduPilot, PX4, and iNAV flight controllers plus EdgeTX transmitters – open, community-driven.";
@@ -46,21 +47,33 @@ const controllerPreviewImages: Record<string, { src: string; credit: string; sou
 };
 
 // First 6 controllers for grid preview
-const controllers = allControllers.slice(0, 6).map((controller) => {
-  const preview = controllerPreviewImages[controller.id];
+const controllers = await Promise.all(
+  allControllers.slice(0, 6).map(async (controller) => {
+    const preview = controllerPreviewImages[controller.id];
+    const manufacturer = controller.data.brand
+      ? await getEntry('manufacturers', controller.data.brand)
+      : null;
 
-  return {
-    slug: controller.id,
-    name: controller.data.title,
-    mcu: controller.data.mcu.toUpperCase().replace('STMICRO-', ''),
-    ports: `${controller.data.io.uarts} UART • ${controller.data.io.can} CAN • ${controller.data.io.pwm} PWM`,
-    imageAlt: controller.data.title,
-    imageUrl: preview?.src ?? null,
-    imageCredit: preview?.credit ?? null,
-    imageSource: preview?.sourceUrl ?? null,
-    badges: controller.data.firmware_support.map((fw) => fw.id.toUpperCase()),
-  };
-});
+    return {
+      id: controller.id,
+      title: controller.data.title,
+      manufacturer: manufacturer?.data.name || manufacturer?.data.title || controller.data.brand,
+      mcu: controller.data.mcu,
+      mounting: controller.data.mounting,
+      uarts: controller.data.io.uarts,
+      can: controller.data.io.can,
+      pwm: controller.data.io.pwm,
+      sdCard: controller.data.io.sd_card,
+      barometer: (controller.data.sensors?.barometer?.length ?? 0) > 0,
+      firmwares: controller.data.firmware_support.map((fw) => fw.id),
+      image: preview ? {
+        src: preview.src,
+        credit: preview.credit,
+        sourceUrl: preview.sourceUrl,
+      } : undefined,
+    };
+  })
+);
 
 const features = [
   {
@@ -182,62 +195,22 @@ const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
     <div class="container">
       <div class="grid gap-6 md:gap-8 sm:grid-cols-2 lg:grid-cols-3">
         {controllers.map((controller) => (
-          <a
-            href={`${basePath}/controllers/${controller.slug}`}
-            class="group"
-            key={controller.slug}
-          >
-            <Card client:load class="h-full transition-all hover:shadow-lg hover:-translate-y-1">
-              <div class="relative aspect-video w-full overflow-hidden rounded-t-xl bg-gradient-to-br from-muted via-background to-muted">
-                {controller.imageUrl ? (
-                  <>
-                    <img
-                      src={controller.imageUrl}
-                      alt={controller.imageAlt}
-                      loading="lazy"
-                      class="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
-                    />
-                    {controller.imageCredit && (
-                      <span class="absolute bottom-2 right-2 rounded bg-background/80 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
-                        {controller.imageSource ? (
-                          <a
-                            href={controller.imageSource}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            class="hover:underline"
-                          >
-                            {controller.imageCredit}
-                          </a>
-                        ) : (
-                          controller.imageCredit
-                        )}
-                      </span>
-                    )}
-                  </>
-                ) : (
-                  <span class="absolute inset-0 flex items-center justify-center px-6 text-center text-sm font-medium text-muted-foreground">
-                    {controller.imageAlt}
-                  </span>
-                )}
-              </div>
-              <CardHeader>
-                <CardTitle class="group-hover:text-primary transition-colors">
-                  {controller.name}
-                </CardTitle>
-                <CardDescription>{controller.mcu}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p class="text-sm text-muted-foreground mb-4">{controller.ports}</p>
-                <div class="flex flex-wrap gap-2">
-                  {controller.badges.map((badge) => (
-                    <span class="inline-flex items-center rounded-sm border bg-secondary px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wide" key={badge}>
-                      {badge}
-                    </span>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </a>
+          <ControllerCard
+            key={controller.id}
+            id={controller.id}
+            title={controller.title}
+            manufacturer={controller.manufacturer}
+            mcu={controller.mcu}
+            mounting={controller.mounting}
+            uarts={controller.uarts}
+            can={controller.can}
+            pwm={controller.pwm}
+            sdCard={controller.sdCard}
+            barometer={controller.barometer}
+            firmwares={controller.firmwares}
+            image={controller.image}
+            basePath={basePath}
+          />
         ))}
       </div>
     </div>

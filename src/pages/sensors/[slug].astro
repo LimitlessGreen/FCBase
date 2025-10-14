@@ -3,10 +3,10 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import MainLayout from '@/layouts/MainLayout.astro';
 import { Card, CardContent, CardHeader } from '@/components/ui/Card';
-import { Badge } from '@/components/ui/Badge';
 import ProfessionalTable from '@/components/table/ProfessionalTable.astro';
 import TableRow2Col from '@/components/table/TableRow2Col.astro';
 import TableRow from '@/components/table/TableRow.astro';
+import ControllerCard from '@/components/cards/ControllerCard.astro';
 import { ExternalLink } from 'lucide-react';
 
 export async function getStaticPaths() {
@@ -148,27 +148,22 @@ const editPath = `src/content/sensors/${sensor.id}.yaml`;
                 </h3>
                 <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                   {controllers.map((controller) => (
-                    <a href={`${basePath}/controllers/${controller.id}`} class="group block">
-                      <Card client:load class="h-full transition-all hover:shadow-lg hover:-translate-y-1 border-2 hover:border-primary/30">
-                        <CardContent class="pt-4 pb-3 px-3">
-                          <h3 class="font-bold text-sm mb-1.5 line-clamp-2 group-hover:text-primary transition-colors">
-                            {controller.data.title}
-                          </h3>
-                          <p class="text-xs text-muted-foreground mb-2.5 font-medium">{brandName}</p>
-                          <div class="flex flex-wrap gap-1 mb-2.5">
-                            <Badge variant="outline" class="text-xs px-1.5 py-0.5 font-mono font-semibold">
-                              {controller.data.mcu.replace('stmicro-', '').toUpperCase()}
-                            </Badge>
-                            <Badge variant="outline" class="text-xs px-1.5 py-0.5 font-medium">
-                              {controller.data.mounting}
-                            </Badge>
-                          </div>
-                          <p class="text-xs text-muted-foreground font-mono font-semibold">
-                            {controller.data.io.uarts}U • {controller.data.io.can || 0}C • {controller.data.io.pwm || 0}PWM
-                          </p>
-                        </CardContent>
-                      </Card>
-                    </a>
+                    <ControllerCard
+                      key={controller.id}
+                      id={controller.id}
+                      title={controller.data.title}
+                      manufacturer={brandName}
+                      mcu={controller.data.mcu}
+                      mounting={controller.data.mounting}
+                      uarts={controller.data.io.uarts}
+                      can={controller.data.io.can}
+                      pwm={controller.data.io.pwm}
+                      sdCard={controller.data.io.sd_card}
+                      barometer={(controller.data.sensors?.barometer?.length ?? 0) > 0}
+                      firmwares={controller.data.firmware_support.map(fw => fw.id)}
+                      showImage={false}
+                      basePath={basePath}
+                    />
                   ))}
                 </div>
               </section>

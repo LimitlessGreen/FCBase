@@ -2,9 +2,8 @@
 import { getCollection, getEntry } from 'astro:content';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import MainLayout from '@/layouts/MainLayout.astro';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
-import { Badge } from '@/components/ui/Badge';
 import { ControllerSearch } from '@/components/ui/ControllerSearch';
+import ControllerCard from '@/components/cards/ControllerCard.astro';
 
 const controllerPreviewImages: Record<string, { src: string; credit: string; sourceUrl?: string }> = {
   'aocoda-h743dual': {
@@ -133,17 +132,6 @@ const searchControllers = controllersWithMeta.map((controller) => ({
 // Sort by title
 controllersWithMeta.sort((a, b) => a.data.title.localeCompare(b.data.title));
 
-// Format mounting type
-const mountingDisplay: Record<string, string> = {
-  '20x20': '20×20mm',
-  '25.5x25.5': '25.5×25.5mm',
-  '30.5x30.5': '30.5×30.5mm',
-  '35x35': '35×35mm',
-  'cube': 'Cube',
-  'wing': 'Wing',
-  'custom': 'Custom',
-};
-
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 
@@ -181,78 +169,22 @@ const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
       <!-- Controllers Grid -->
       <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 mb-12">
       {controllersWithMeta.map((controller) => (
-        <a
-          href={`${basePath}/controllers/${controller.id}`}
-          class="group block"
-        >
-          <Card client:load class="h-full transition-all hover:shadow-lg hover:-translate-y-1">
-            <div class="relative aspect-video w-full overflow-hidden rounded-t-xl bg-gradient-to-br from-muted via-background to-muted">
-              {controller.preview?.src ? (
-                <>
-                  <img
-                    src={controller.preview.src}
-                    alt={controller.data.title}
-                    loading="lazy"
-                    class="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
-                  />
-                  {controller.preview.credit && (
-                    <span class="absolute bottom-2 right-2 rounded bg-background/80 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
-                      {controller.preview.sourceUrl ? (
-                        <a
-                          href={controller.preview.sourceUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          class="hover:underline"
-                        >
-                          {controller.preview.credit}
-                        </a>
-                      ) : (
-                        controller.preview.credit
-                      )}
-                    </span>
-                  )}
-                </>
-              ) : (
-                <span class="absolute inset-0 flex items-center justify-center px-6 text-center text-sm font-medium text-muted-foreground">
-                  {controller.data.title}
-                </span>
-              )}
-            </div>
-            <CardHeader>
-              <CardTitle class="group-hover:text-primary transition-colors">
-                {controller.data.title}
-              </CardTitle>
-              <CardDescription>{controller.manufacturerName}</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div class="space-y-3">
-                <div class="flex items-center justify-between text-sm">
-                  <span class="text-muted-foreground">MCU</span>
-                  <span class="font-medium">
-                    {controller.data.mcu.toUpperCase().replace('STMICRO-', '')}
-                  </span>
-                </div>
-                <div class="flex items-center justify-between text-sm">
-                  <span class="text-muted-foreground">Mounting</span>
-                  <span class="font-medium">{mountingDisplay[controller.data.mounting]}</span>
-                </div>
-                <div class="flex items-center justify-between text-sm">
-                  <span class="text-muted-foreground">I/O</span>
-                  <span class="font-medium">
-                    {controller.data.io.uarts}U • {controller.data.io.can}C • {controller.data.io.pwm}P
-                  </span>
-                </div>
-                <div class="flex flex-wrap gap-1.5 pt-2">
-                  {controller.data.firmware_support.map((fw) => (
-                    <Badge variant="secondary" className="text-xs uppercase">
-                      {fw.id}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </a>
+        <ControllerCard
+          key={controller.id}
+          id={controller.id}
+          title={controller.data.title}
+          manufacturer={controller.manufacturerName}
+          mcu={controller.data.mcu}
+          mounting={controller.data.mounting}
+          uarts={controller.data.io.uarts}
+          can={controller.data.io.can}
+          pwm={controller.data.io.pwm}
+          sdCard={controller.data.io.sd_card}
+          barometer={(controller.data.sensors?.barometer?.length ?? 0) > 0}
+          firmwares={controller.data.firmware_support.map((fw) => fw.id)}
+          image={controller.preview}
+          basePath={basePath}
+        />
       ))}
     </div>
     </div>
