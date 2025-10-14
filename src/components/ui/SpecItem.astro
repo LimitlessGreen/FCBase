@@ -1,0 +1,29 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+
+interface Props extends HTMLAttributes<'div'> {
+  icon?: any;
+  label: string;
+  value: string | number | null | undefined;
+  iconClass?: string;
+}
+
+const { icon: Icon, label, value, iconClass = 'text-primary', class: className, ...rest } = Astro.props;
+const displayValue = value ?? '—';
+---
+
+<div class:list={['flex items-start gap-3', className]} {...rest}>
+  {Icon && (
+    <div class:list={['mt-0.5 flex-shrink-0', iconClass]}>
+      <Icon className="h-5 w-5" />
+    </div>
+  )}
+  <div class="flex-1 min-w-0">
+    <div class="text-xs uppercase tracking-wide font-semibold text-muted-foreground">
+      {label}
+    </div>
+    <div class="text-sm font-semibold text-foreground mt-0.5 break-words">
+      {displayValue}
+    </div>
+  </div>
+</div>

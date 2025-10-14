@@ -6,6 +6,7 @@ import DetailPageLayout from '@/components/detail/DetailPageLayout.astro';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import StatusBadge from '@/components/ui/StatusBadge.astro';
+import SpecItem from '@/components/ui/SpecItem.astro';
 import ProfessionalTable from '@/components/table/ProfessionalTable.astro';
 import TableSection from '@/components/table/TableSection.astro';
 import TableRow from '@/components/table/TableRow.astro';
@@ -35,6 +36,8 @@ import {
   Cable,
   Box,
   Layers,
+  Gauge,
+  Compass,
 } from 'lucide-react';
 
 export async function getStaticPaths() {
@@ -260,63 +263,162 @@ const productLdJson = JSON.stringify(productLd, null, 2);
     </StatusBadge>
   </DetailHeader>
 
-  <!-- Hero Image Banner -->
+  <!-- Hero Split-Screen Banner -->
   {previewImage && (
-    <div class="relative w-full mb-8 overflow-hidden rounded-xl border border-border shadow-lg bg-gradient-to-br from-muted via-background to-muted">
-      <div class="relative aspect-[21/9]">
-        {heroPicture ? (
-          <picture class="h-full w-full">
-            {heroPicture.sources.map((source) => (
-              <source srcset={source.srcset} type={source.type} sizes="(max-width: 1024px) 100vw, 960px" />
-            ))}
-            <img
-              src={heroPicture.img.src}
-              alt={heroAlt}
-              loading="lazy"
-              decoding="async"
-              width={heroPicture.img.width}
-              height={heroPicture.img.height}
-              srcset={heroPicture.img.srcset}
-              sizes="(max-width: 1024px) 100vw, 960px"
-              class="h-full w-full object-contain"
-            />
-          </picture>
-        ) : remotePreview ? (
-          <img
-            src={remotePreview.src}
-            alt={heroAlt}
-            loading="lazy"
-            decoding="async"
-            width={remotePreview.width}
-            height={remotePreview.height}
-            class="h-full w-full object-contain"
-          />
-        ) : (
-          <div class="flex h-full w-full items-center justify-center text-sm font-medium text-muted-foreground">
-            {heroAlt}
-          </div>
-        )}
-
-        <!-- Image Credit Overlay -->
-        {previewImage.credit && (
-          <div class="absolute bottom-4 right-4 rounded-sm bg-background/90 backdrop-blur-sm px-3 py-2 shadow-sm border border-border/40">
-            {previewImage.sourceUrl ? (
-              <a
-                href={previewImage.sourceUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                class="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-1.5"
-              >
-                <span>Image: {previewImage.credit}</span>
-                <span class="text-primary">↗</span>
-              </a>
+    <div class="relative w-full mb-8 overflow-hidden rounded-xl border border-border shadow-lg bg-background">
+      <div class="grid grid-cols-1 lg:grid-cols-5 gap-0">
+        <!-- Image Section - 60% width on desktop -->
+        <div class="lg:col-span-3 bg-gradient-to-br from-muted/50 via-background to-muted/30 p-8 lg:p-12 flex items-center justify-center">
+          <div class="relative w-full max-h-[400px] flex items-center justify-center">
+            {heroPicture ? (
+              <picture class="w-full h-full">
+                {heroPicture.sources.map((source) => (
+                  <source srcset={source.srcset} type={source.type} sizes="(max-width: 1024px) 100vw, 600px" />
+                ))}
+                <img
+                  src={heroPicture.img.src}
+                  alt={heroAlt}
+                  loading="lazy"
+                  decoding="async"
+                  width={heroPicture.img.width}
+                  height={heroPicture.img.height}
+                  srcset={heroPicture.img.srcset}
+                  sizes="(max-width: 1024px) 100vw, 600px"
+                  class="w-full h-full object-contain max-h-[400px]"
+                />
+              </picture>
+            ) : remotePreview ? (
+              <img
+                src={remotePreview.src}
+                alt={heroAlt}
+                loading="lazy"
+                decoding="async"
+                width={remotePreview.width}
+                height={remotePreview.height}
+                class="w-full h-full object-contain max-h-[400px]"
+              />
             ) : (
-              <span class="text-xs font-medium text-muted-foreground">
-                Image: {previewImage.credit}
-              </span>
+              <div class="flex h-full w-full items-center justify-center text-sm font-medium text-muted-foreground min-h-[300px]">
+                {heroAlt}
+              </div>
             )}
           </div>
-        )}
+        </div>
+
+        <!-- Quick Specs Section - 40% width on desktop -->
+        <div class="lg:col-span-2 bg-muted/20 p-6 lg:p-8 border-t lg:border-t-0 lg:border-l border-border/40">
+          <div class="space-y-6">
+            <div>
+              <h3 class="text-sm uppercase tracking-wide font-bold text-primary mb-4">Key Specifications</h3>
+              <div class="space-y-4">
+                {/* MCU */}
+                <SpecItem 
+                  icon={Cpu} 
+                  label="MCU" 
+                  value={mcuName}
+                  iconClass="text-blue-500"
+                />
+                
+                {/* Mounting */}
+                <SpecItem 
+                  icon={Package} 
+                  label="Mounting Pattern" 
+                  value={formattedMounting}
+                  iconClass="text-purple-500"
+                />
+                
+                {/* I/O Summary */}
+                {(() => {
+                  const ioSummary = [];
+                  if (typeof data.io?.uarts === 'number') ioSummary.push(`${data.io.uarts} UARTs`);
+                  if (typeof data.io?.can === 'number' && data.io.can > 0) ioSummary.push(`${data.io.can} CAN`);
+                  if (typeof data.io?.pwm === 'number') ioSummary.push(`${data.io.pwm} PWM`);
+                  return ioSummary.length > 0 ? (
+                    <SpecItem 
+                      icon={Cable} 
+                      label="Connectivity" 
+                      value={ioSummary.join(' • ')}
+                      iconClass="text-green-500"
+                    />
+                  ) : null;
+                })()}
+                
+                {/* Power */}
+                {data.power?.voltage_in && (
+                  <SpecItem 
+                    icon={Zap} 
+                    label="Input Voltage" 
+                    value={data.power.voltage_in}
+                    iconClass="text-orange-500"
+                  />
+                )}
+                
+                {/* Sensors Summary */}
+                {(() => {
+                  const sensorSummary = [];
+                  const imuCount = data.sensors?.imu?.length ?? 0;
+                  const baroCount = data.sensors?.barometer?.length ?? 0;
+                  const magCount = data.sensors?.magnetometer?.length ?? 0;
+                  
+                  if (imuCount > 0) sensorSummary.push(`${imuCount}× IMU`);
+                  if (baroCount > 0) sensorSummary.push(`${baroCount}× Baro`);
+                  if (magCount > 0) sensorSummary.push(`${magCount}× Mag`);
+                  
+                  return sensorSummary.length > 0 ? (
+                    <SpecItem 
+                      icon={Layers} 
+                      label="Onboard Sensors" 
+                      value={sensorSummary.join(' • ')}
+                      iconClass="text-purple-500"
+                    />
+                  ) : null;
+                })()}
+              </div>
+            </div>
+
+            {/* Firmware Support Badges */}
+            {firmware.length > 0 && (
+              <div class="pt-4 border-t border-border/40">
+                <div class="text-xs uppercase tracking-wide font-semibold text-muted-foreground mb-3">
+                  Firmware Support
+                </div>
+                <div class="flex flex-wrap gap-2">
+                  {firmware.map((fw) => (
+                    <StatusBadge 
+                      key={fw.id}
+                      variant="firmware" 
+                      status={fw.status}
+                      size="sm"
+                    >
+                      {fw.name}
+                    </StatusBadge>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Image Credit */}
+            {previewImage.credit && (
+              <div class="pt-4 border-t border-border/40">
+                {previewImage.sourceUrl ? (
+                  <a
+                    href={previewImage.sourceUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-xs text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-1.5"
+                  >
+                    <span>Image: {previewImage.credit}</span>
+                    <span class="text-primary">↗</span>
+                  </a>
+                ) : (
+                  <span class="text-xs text-muted-foreground">
+                    Image: {previewImage.credit}
+                  </span>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   )}
