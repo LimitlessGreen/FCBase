@@ -8,6 +8,8 @@ import TableRow2Col from '@/components/table/TableRow2Col.astro';
 import TableRow from '@/components/table/TableRow.astro';
 import ControllerCard from '@/components/cards/ControllerCard.astro';
 import { ExternalLink } from 'lucide-react';
+import { createControllerCardModel } from '@/lib/controller-card-model';
+import { getManufacturersMap } from '@/lib/content-cache';
 
 export async function getStaticPaths() {
   const sensors = await getCollection('sensors');
@@ -22,8 +24,7 @@ const { data } = sensor;
 
 // Load all controllers using this sensor
 const allControllers = await getCollection('controllers');
-const manufacturers = await getCollection('manufacturers');
-const manufacturerMap = new Map(manufacturers.map((manufacturer) => [manufacturer.id, manufacturer]));
+const manufacturersMap = await getManufacturersMap();
 
 const controllersUsingSensor = allControllers.filter((controller) => {
   const sensors = controller.data.sensors;
@@ -34,7 +35,7 @@ const controllersUsingSensor = allControllers.filter((controller) => {
   );
 });
 
-const controllersGroupedByBrand = Array.from(
+const controllersGroupedByBrandEntries = Array.from(
   controllersUsingSensor.reduce((accumulator, controller) => {
     const brandId = controller.data.brand || 'unknown';
     const existingGroup = accumulator.get(brandId) ?? [];
@@ -44,15 +45,28 @@ const controllersGroupedByBrand = Array.from(
 
     return accumulator;
   }, new Map<string, typeof controllersUsingSensor>())
-)
-  .map(([brandId, controllers]) => ({
-    brandName:
-      manufacturerMap.get(brandId)?.data?.name ||
-      manufacturerMap.get(brandId)?.data?.title ||
-      brandId,
-    controllers: controllers.sort((a, b) => a.data.title.localeCompare(b.data.title)),
-  }))
-  .sort((a, b) => a.brandName.localeCompare(b.brandName));
+);
+
+const controllersGroupedByBrand = await Promise.all(
+  controllersGroupedByBrandEntries.map(async ([brandId, controllers]) => {
+    const brandEntry = manufacturersMap.get(brandId);
+    const brandName = brandEntry?.data?.name || brandEntry?.data?.title || brandId;
+
+    const sortedControllers = [...controllers].sort((a, b) =>
+      a.data.title.localeCompare(b.data.title)
+    );
+
+    const controllerCards = await Promise.all(
+      sortedControllers.map((controller) =>
+        createControllerCardModel(controller, { manufacturersMap })
+      )
+    );
+
+    return { brandName, controllers: controllerCards };
+  })
+);
+
+controllersGroupedByBrand.sort((a, b) => a.brandName.localeCompare(b.brandName));
 
 const typeDisplay: Record<string, string> = {
   imu: 'IMU (Gyro/Accel)',
@@ -146,22 +160,23 @@ const editPath = `src/content/sensors/${sensor.id}.yaml`;
                 <h3 class="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
                   {brandName}
                 </h3>
-                <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
                   {controllers.map((controller) => (
                     <ControllerCard
                       key={controller.id}
                       id={controller.id}
-                      title={controller.data.title}
-                      manufacturer={brandName}
-                      mcu={controller.data.mcu}
-                      mounting={controller.data.mounting}
-                      uarts={controller.data.io.uarts}
-                      can={controller.data.io.can}
-                      pwm={controller.data.io.pwm}
-                      sdCard={controller.data.io.sd_card}
-                      barometer={(controller.data.sensors?.barometer?.length ?? 0) > 0}
-                      firmwares={controller.data.firmware_support.map(fw => fw.id)}
-                      showImage={false}
+                      title={controller.title}
+                      manufacturer={controller.manufacturer || brandName}
+                      mcu={controller.mcu}
+                      mounting={controller.mounting}
+                      uarts={controller.uarts}
+                      can={controller.can}
+                      pwm={controller.pwm}
+                      sdCard={controller.sdCard}
+                      barometer={controller.barometer}
+                      firmwares={controller.firmwares}
+                      image={controller.image}
+                      showImage={true}
                       basePath={basePath}
                     />
                   ))}
