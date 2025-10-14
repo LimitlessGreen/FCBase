@@ -27,7 +27,7 @@ const compatibleControllers = allControllers.filter((controller) =>
 compatibleControllers.sort((a, b) => a.data.title.localeCompare(b.data.title));
 
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
-const editPath = `content/firmware/${firmware.id}.yaml`;
+const editPath = `src/content/firmware/${firmware.id}.yaml`;
 ---
 
 <BaseLayout
