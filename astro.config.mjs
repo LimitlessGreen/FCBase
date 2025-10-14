@@ -11,10 +11,43 @@ function getGitValue(command) {
   }
 }
 
+function deriveGithubRepoUrl(remoteUrl) {
+  if (!remoteUrl) {
+    return "";
+  }
+
+  const sanitized = remoteUrl.replace(/\.git$/i, "").trim();
+
+  if (!sanitized) {
+    return "";
+  }
+
+  const sshMatch = sanitized.match(/^git@github\.com:(.+)$/i);
+  if (sshMatch) {
+    return `https://github.com/${sshMatch[1]}`;
+  }
+
+  const sshUrlMatch = sanitized.match(/^ssh:\/\/git@github\.com\/(.+)$/i);
+  if (sshUrlMatch) {
+    return `https://github.com/${sshUrlMatch[1]}`;
+  }
+
+  const httpsMatch = sanitized.match(/^https?:\/\/github\.com\/(.+)$/i);
+  if (httpsMatch) {
+    return `https://github.com/${httpsMatch[1]}`;
+  }
+
+  return "";
+}
+
 const commitHashShort = getGitValue("git rev-parse --short HEAD");
 const commitHashFull = getGitValue("git rev-parse HEAD");
 const commitAuthor = getGitValue("git log -1 --pretty=format:%an");
 const commitDateIso = getGitValue("git log -1 --pretty=format:%cI");
+const remoteOriginUrl = getGitValue("git config --get remote.origin.url");
+const githubRepoUrl =
+  deriveGithubRepoUrl(remoteOriginUrl) || "https://github.com/LimitlessGreen/FCBase";
+const githubEditBaseUrl = githubRepoUrl ? `${githubRepoUrl}/edit/HEAD` : "";
 
 export default defineConfig({
   site: "https://limitlessgreen.github.io",
@@ -30,6 +63,8 @@ export default defineConfig({
       "import.meta.env.PUBLIC_GIT_COMMIT_HASH_FULL": JSON.stringify(commitHashFull),
       "import.meta.env.PUBLIC_GIT_COMMIT_AUTHOR": JSON.stringify(commitAuthor),
       "import.meta.env.PUBLIC_GIT_COMMIT_DATE": JSON.stringify(commitDateIso),
+      "import.meta.env.PUBLIC_GITHUB_REPO_URL": JSON.stringify(githubRepoUrl),
+      "import.meta.env.PUBLIC_GITHUB_EDIT_BASE_URL": JSON.stringify(githubEditBaseUrl),
     },
   },
 });
