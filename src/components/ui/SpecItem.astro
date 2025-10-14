@@ -8,21 +8,21 @@ interface Props extends HTMLAttributes<'div'> {
   iconClass?: string;
 }
 
-const { icon: Icon, label, value, iconClass = 'text-primary', class: className, ...rest } = Astro.props;
+const { icon: Icon, label, value, iconClass = 'text-muted-foreground', class: className, ...rest } = Astro.props;
 const displayValue = value ?? '—';
 ---
 
-<div class:list={['flex items-start gap-3', className]} {...rest}>
+<div class:list={['flex items-start gap-3 group', className]} {...rest}>
   {Icon && (
-    <div class:list={['mt-0.5 flex-shrink-0', iconClass]}>
-      <Icon className="h-5 w-5" />
+    <div class:list={['mt-1 flex-shrink-0 opacity-60 group-hover:opacity-100 transition-opacity', iconClass]}>
+      <Icon className="h-4 w-4" />
     </div>
   )}
   <div class="flex-1 min-w-0">
-    <div class="text-xs uppercase tracking-wide font-semibold text-muted-foreground">
+    <div class="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground mb-1">
       {label}
     </div>
-    <div class="text-sm font-semibold text-foreground mt-0.5 break-words">
+    <div class="text-sm font-semibold text-foreground break-words leading-tight">
       {displayValue}
     </div>
   </div>

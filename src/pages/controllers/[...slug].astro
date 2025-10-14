@@ -309,14 +309,14 @@ const productLdJson = JSON.stringify(productLd, null, 2);
         <div class="lg:col-span-2 bg-muted/20 p-6 lg:p-8 border-t lg:border-t-0 lg:border-l border-border/40">
           <div class="space-y-6">
             <div>
-              <h3 class="text-sm uppercase tracking-wide font-bold text-primary mb-4">Key Specifications</h3>
+              <h3 class="text-sm uppercase tracking-wide font-bold text-foreground mb-4 pb-2 border-b border-border/40">Key Specifications</h3>
               <div class="space-y-4">
                 {/* MCU */}
                 <SpecItem 
                   icon={Cpu} 
                   label="MCU" 
                   value={mcuName}
-                  iconClass="text-blue-500"
+                  iconClass="text-muted-foreground"
                 />
                 
                 {/* Mounting */}
@@ -324,7 +324,7 @@ const productLdJson = JSON.stringify(productLd, null, 2);
                   icon={Package} 
                   label="Mounting Pattern" 
                   value={formattedMounting}
-                  iconClass="text-purple-500"
+                  iconClass="text-muted-foreground"
                 />
                 
                 {/* I/O Summary */}
@@ -338,7 +338,7 @@ const productLdJson = JSON.stringify(productLd, null, 2);
                       icon={Cable} 
                       label="Connectivity" 
                       value={ioSummary.join(' • ')}
-                      iconClass="text-green-500"
+                      iconClass="text-muted-foreground"
                     />
                   ) : null;
                 })()}
@@ -349,7 +349,7 @@ const productLdJson = JSON.stringify(productLd, null, 2);
                     icon={Zap} 
                     label="Input Voltage" 
                     value={data.power.voltage_in}
-                    iconClass="text-orange-500"
+                    iconClass="text-muted-foreground"
                   />
                 )}
                 
@@ -369,7 +369,7 @@ const productLdJson = JSON.stringify(productLd, null, 2);
                       icon={Layers} 
                       label="Onboard Sensors" 
                       value={sensorSummary.join(' • ')}
-                      iconClass="text-purple-500"
+                      iconClass="text-muted-foreground"
                     />
                   ) : null;
                 })()}
