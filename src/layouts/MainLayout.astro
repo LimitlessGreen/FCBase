@@ -2,8 +2,8 @@
 import BaseLayout from "./BaseLayout.astro";
 import { Header } from "@/components/ui/Header";
 import { Footer } from "@/components/ui/Footer";
-import { GITHUB_EDIT_BASE_URL } from "@/lib/constants";
-import { getFileContributors } from "@/lib/git";
+import { GITHUB_EDIT_BASE_URL, GITHUB_REPO_URL } from "@/lib/constants";
+import { getFileContributors, getFileLastModified } from "@/lib/git";
 
 export interface Props {
   title?: string;
@@ -17,40 +17,82 @@ const normalizedEditPath = editPath?.replace(/^\/+/, "");
 const editUrl = normalizedEditPath
   ? `${GITHUB_EDIT_BASE_URL}/${normalizedEditPath}`
   : undefined;
+const historyUrl = normalizedEditPath
+  ? `${GITHUB_REPO_URL}/commits/main/${normalizedEditPath}`
+  : undefined;
 const contributors = normalizedEditPath ? getFileContributors(normalizedEditPath) : [];
-const showMetaBar = Boolean(editUrl || contributors.length > 0);
+const lastModified = normalizedEditPath ? getFileLastModified(normalizedEditPath) : null;
+const lastModifiedDate = lastModified ? new Date(lastModified) : null;
+const showTopBar = Boolean(editUrl);
+const showBottomBar = Boolean(contributors.length > 0 || historyUrl || lastModifiedDate);
 ---
 
 <BaseLayout title={title} description={description}>
   <Header client:load basePath={basePath} />
   <main class="flex-1">
-    {showMetaBar && (
-      <div class="border-b bg-muted/20 text-sm text-muted-foreground">
-        <div class="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-3 sm:px-6 lg:px-8">
-          {editUrl && (
-            <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-              <span class="font-medium text-foreground">Found an issue with this page?</span>
-              <a
-                class="inline-flex items-center gap-2 text-primary transition-colors hover:text-primary/80"
-                href={editUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Edit on GitHub
-                <span aria-hidden="true">→</span>
-              </a>
-            </div>
-          )}
-          {contributors.length > 0 && (
-            <div class="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground sm:text-sm">
-              <span class="font-medium text-foreground">Contributors:</span>
-              <span>{contributors.join(", ")}</span>
-            </div>
-          )}
+    {/* Top Bar: Edit Button */}
+    {showTopBar && (
+      <div class="border-b bg-muted/20 text-sm">
+        <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
+          <span class="font-medium text-foreground">Found an issue with this page?</span>
+          <a
+            class="inline-flex items-center gap-2 text-primary transition-colors hover:text-primary/80"
+            href={editUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Edit on GitHub
+            <span aria-hidden="true">→</span>
+          </a>
         </div>
       </div>
     )}
+    
     <slot />
+    
+    {/* Bottom Bar: Contributors, History, Last Updated */}
+    {showBottomBar && (
+      <div class="border-t bg-muted/20 text-sm text-muted-foreground">
+        <div class="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
+          <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            {/* Left: Contributors */}
+            {contributors.length > 0 && (
+              <div class="flex flex-wrap items-center gap-x-2 gap-y-1">
+                <span class="font-medium text-foreground">Contributors:</span>
+                <span class="text-xs sm:text-sm">{contributors.join(", ")}</span>
+              </div>
+            )}
+            
+            {/* Right: History & Last Updated */}
+            <div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs sm:text-sm">
+              {lastModifiedDate && (
+                <div class="flex items-center gap-1.5">
+                  <span class="font-medium text-foreground">Last updated:</span>
+                  <time datetime={lastModified!}>
+                    {lastModifiedDate.toLocaleDateString('en-US', { 
+                      year: 'numeric', 
+                      month: 'short', 
+                      day: 'numeric' 
+                    })}
+                  </time>
+                </div>
+              )}
+              {historyUrl && (
+                <a
+                  class="inline-flex items-center gap-1.5 text-primary transition-colors hover:text-primary/80"
+                  href={historyUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  View History
+                  <span aria-hidden="true">↗</span>
+                </a>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    )}
   </main>
   <Footer client:load basePath={basePath} />
 </BaseLayout>

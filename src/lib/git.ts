@@ -28,3 +28,24 @@ export function getFileContributors(filePath?: string | null): string[] {
     return [];
   }
 }
+
+/**
+ * Returns the last modified date (ISO string) for the provided file.
+ */
+export function getFileLastModified(filePath?: string | null): string | null {
+  if (!filePath) {
+    return null;
+  }
+
+  try {
+    const output = execSync(`git log -1 --format=%cI -- "${filePath}"`, {
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "ignore"],
+    });
+
+    return output.trim() || null;
+  } catch (error) {
+    console.warn(`[git] Unable to resolve last modified date for ${filePath}:`, error);
+    return null;
+  }
+}
