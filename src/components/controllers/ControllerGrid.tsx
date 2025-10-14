@@ -101,8 +101,26 @@ export function ControllerGrid({ totalControllers }: ControllerGridProps) {
   const [isLoading, setIsLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
   const [pagefind, setPagefind] = React.useState<PagefindModule | null>(null);
-  const [visibleIds, setVisibleIds] = React.useState<Set<string>>(new Set());
+  const [visibleIds, setVisibleIds] = React.useState<Set<string> | null>(null);
   const [filtersStatus, setFiltersStatus] = React.useState<"ready" | "dev" | "unavailable">("ready");
+  const allControllerIdsRef = React.useRef<Set<string>>(new Set<string>());
+
+  const hasActiveFilters = React.useMemo(() => {
+    return (
+      Boolean(filters.mcu) ||
+      Boolean(filters.mounting) ||
+      Boolean(filters.uarts) ||
+      Boolean(filters.lifecycle) ||
+      filters.can ||
+      filters.sd ||
+      filters.firmware.length > 0
+    );
+  }, [filters]);
+
+  const normalizedSearchTerm = debouncedSearchTerm.trim();
+  const hasActiveSearch = normalizedSearchTerm.length > 0;
+  const shouldShowAll =
+    filtersStatus !== "ready" || (!hasActiveFilters && !hasActiveSearch);
 
   // Debounce search term
   React.useEffect(() => {
@@ -181,7 +199,21 @@ export function ControllerGrid({ totalControllers }: ControllerGridProps) {
   React.useEffect(() => {
     async function performSearch() {
       if (!pagefind) {
-        setIsLoading(filtersStatus === "ready");
+        if (shouldShowAll) {
+          setIsLoading(false);
+        } else {
+          setIsLoading(filtersStatus === "ready");
+        }
+        return;
+      }
+
+      if (shouldShowAll) {
+        setResults([]);
+        setError(null);
+        if (visibleIds !== allControllerIdsRef.current) {
+          setVisibleIds(allControllerIdsRef.current);
+        }
+        setIsLoading(false);
         return;
       }
 
@@ -201,7 +233,7 @@ export function ControllerGrid({ totalControllers }: ControllerGridProps) {
         }
 
         // Perform search
-        const searchResults = await pagefind.search(debouncedSearchTerm, {
+        const searchResults = await pagefind.search(normalizedSearchTerm, {
           filters: filterObj,
         });
 
@@ -213,21 +245,39 @@ export function ControllerGrid({ totalControllers }: ControllerGridProps) {
           })
         );
 
+        const loadedIds = new Set(loadedResults.map((record) => record.id));
         setResults(loadedResults);
-        setVisibleIds(new Set(loadedResults.map((record) => record.id)));
+        setVisibleIds(loadedIds);
         setError(null);
       } catch (err) {
         console.error("Search error:", err);
         setError("Search failed");
         setResults([]);
-        setVisibleIds(new Set());
+        setVisibleIds(new Set<string>());
       } finally {
         setIsLoading(false);
       }
     }
 
     performSearch();
-  }, [pagefind, debouncedSearchTerm, filters, filtersStatus]);
+  }, [pagefind, debouncedSearchTerm, filters, filtersStatus, shouldShowAll, visibleIds]);
+
+  React.useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const cards = document.querySelectorAll<HTMLElement>("[data-controller-id]");
+    const allIds = new Set<string>();
+    cards.forEach((card) => {
+      const id = card.getAttribute("data-controller-id");
+      if (id) {
+        allIds.add(id);
+      }
+      card.classList.remove("hidden");
+    });
+
+    allControllerIdsRef.current = allIds;
+    setVisibleIds((current) => current ?? allIds);
+  }, []);
 
   // Get filter options from Pagefind
   const [filterOptions, setFilterOptions] = React.useState<{
@@ -302,18 +352,22 @@ export function ControllerGrid({ totalControllers }: ControllerGridProps) {
   React.useEffect(() => {
     if (typeof window === "undefined") return;
 
-    const cards = document.querySelectorAll("[data-controller-id]");
+    const cards = document.querySelectorAll<HTMLElement>("[data-controller-id]");
+    const idsToShow = shouldShowAll
+      ? allControllerIdsRef.current
+      : visibleIds ?? new Set<string>();
+
     cards.forEach((card) => {
       const id = card.getAttribute("data-controller-id");
-      if (id && visibleIds.has(id)) {
+      if (id && idsToShow.has(id)) {
         card.classList.remove("hidden");
       } else {
         card.classList.add("hidden");
       }
     });
-  }, [visibleIds]);
+  }, [visibleIds, shouldShowAll]);
 
-  const displayedResultsCount = filtersStatus === "ready" ? results.length : totalControllers;
+  const displayedResultsCount = shouldShowAll ? totalControllers : results.length;
 
   return (
     <section className="space-y-6">
@@ -592,7 +646,7 @@ export function ControllerGrid({ totalControllers }: ControllerGridProps) {
         </div>
       )}
 
-      {results.length === 0 && !isLoading && !error && (
+      {results.length === 0 && !isLoading && !error && !shouldShowAll && (
         <div className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground">
           No controllers match your search criteria. Try adjusting your filters or search term.
         </div>
