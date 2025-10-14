@@ -1,9 +1,58 @@
 id: stmicro-stm32f405
-name: STMicroelectronics STM32F405
-architecture: Arm Cortex-M4
-clock_mhz: 168
+name: STM32F405
+manufacturer: STMicroelectronics
+family: STM32F4
+architecture: ARM Cortex-M4F
+core: Cortex-M4F
+max_frequency_mhz: 168
 flash_kb: 1024
-sram_kb: 192
-notes: 32-bit STM32F4 MCU with single-precision floating point used on legacy Pixhawk-class wing controllers.
+ram_kb: 192
+supply_voltage_v: [1.8, 3.6]
+operating_temperature_c: [-40, 105]
+package:
+  - LQFP64
+  - LQFP100
+  - LQFP144
+  - UFBGA100
+features:
+  - "Single-precision floating point unit (FPU)"
+  - "DSP extensions with SIMD instructions"
+  - "Hardware CRC engine and true random number generator"
+  - "USB 2.0 OTG full-speed with on-chip PHY"
+  - "17 timers including advanced motor-control PWM"
+peripherals:
+  - type: uart
+    count: 6
+    notes: "4x USART and 2x UART supporting up to 12.5 Mbit/s"
+  - type: spi
+    count: 3
+    notes: "Master/slave SPI up to 42 Mbit/s"
+  - type: i2c
+    count: 3
+    notes: "Fast-mode Plus compliant"
+  - type: can
+    count: 2
+    notes: "CAN 2.0B controllers"
+  - type: usb
+    notes: "USB 2.0 OTG full-speed with dedicated PHY"
+  - type: adc
+    notes: "Three 12-bit ADCs with up to 16 multiplexed channels"
+  - type: dac
+    count: 2
+    notes: "Buffered 12-bit DAC outputs"
+  - type: timer
+    count: 17
+    notes: "Advanced-control, general-purpose, and basic timers"
+memory:
+  sram_kb: 128
+  dtcm_kb: 64
+  notes: "192 KB total SRAM including 64 KB core-coupled memory"
+datasheet:
+  title: "STM32F405xx/407xx data sheet"
+  publisher: STMicroelectronics
+  url: https://www.st.com/resource/en/datasheet/stm32f405rg.pdf
+  retrieved: 2025-02-14
+  language: en
 sources:
-  - ardupilot-matek-f405-wing
+  - stmicro-stm32f405-datasheet
+notes: "High-performance STM32F4 MCU widely used in legacy Pixhawk-class controllers."

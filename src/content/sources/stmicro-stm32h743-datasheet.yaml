@@ -1,0 +1,7 @@
+id: stmicro-stm32h743-datasheet
+title: "STM32H742xI/G and STM32H743xI/G data sheet"
+publisher: STMicroelectronics
+url: https://www.st.com/resource/en/datasheet/stm32h743zi.pdf
+retrieved: 2025-02-14
+language: en
+notes: "Primary data sheet for STM32H742/H743 devices describing the 480 MHz core, memory architecture, and peripherals."

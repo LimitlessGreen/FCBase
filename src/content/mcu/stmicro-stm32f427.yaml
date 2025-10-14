@@ -1,9 +1,60 @@
 id: stmicro-stm32f427
-name: STMicroelectronics STM32F427
-architecture: Arm Cortex-M4
-clock_mhz: 168
+name: STM32F427
+manufacturer: STMicroelectronics
+family: STM32F4
+architecture: ARM Cortex-M4F
+core: Cortex-M4F
+max_frequency_mhz: 180
 flash_kb: 2048
-sram_kb: 256
-notes: High-reliability STM32F4 MCU with floating point unit powering earlier Pixhawk and Cube-class flight controllers.
+ram_kb: 256
+supply_voltage_v: [1.7, 3.6]
+operating_temperature_c: [-40, 105]
+package:
+  - LQFP100
+  - LQFP144
+  - LQFP176
+  - UFBGA176
+features:
+  - "Single-precision floating point unit (FPU)"
+  - "DSP extensions with SIMD instructions"
+  - "Hardware crypto accelerator supporting AES, DES, and hash functions"
+  - "True random number generator and CRC engine"
+  - "USB 2.0 OTG FS/HS and 10/100 Ethernet MAC"
+peripherals:
+  - type: uart
+    count: 6
+    notes: "4x USART and 2x UART up to 12.5 Mbit/s"
+  - type: spi
+    count: 3
+    notes: "SPI/I2S blocks supporting audio and high-speed peripherals"
+  - type: i2c
+    count: 3
+    notes: "Fast-mode Plus compliant"
+  - type: can
+    count: 2
+    notes: "CAN 2.0B controllers with time-trigger support"
+  - type: usb
+    notes: "USB 2.0 OTG full-speed and high-speed (external PHY)"
+  - type: ethernet
+    notes: "IEEE 802.3 10/100 Ethernet MAC with IEEE 1588 v2"
+  - type: adc
+    notes: "Three 12-bit ADCs with up to 24 channels"
+  - type: dac
+    count: 2
+    notes: "12-bit buffered DAC outputs"
+  - type: timer
+    count: 17
+    notes: "Advanced motor-control, general-purpose, and basic timers"
+memory:
+  sram_kb: 192
+  dtcm_kb: 64
+  notes: "256 KB total SRAM including 64 KB core-coupled memory"
+datasheet:
+  title: "STM32F427xx/437xx data sheet"
+  publisher: STMicroelectronics
+  url: https://www.st.com/resource/en/datasheet/stm32f427vg.pdf
+  retrieved: 2025-02-14
+  language: en
 sources:
-  - ardupilot-thecube-overview
+  - stmicro-stm32f427-datasheet
+notes: "High-reliability STM32F4 MCU used in Pixhawk-class and Cube flight controllers."
