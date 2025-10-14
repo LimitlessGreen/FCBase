@@ -7,6 +7,22 @@ import { Badge } from '@/components/ui/Badge';
 
 // Load all sensors
 const allSensors = await getCollection('sensors');
+const controllers = await getCollection('controllers');
+
+const sensorUsageCounts = controllers.reduce((acc, controller) => {
+  const { sensors } = controller.data;
+  if (!sensors) return acc;
+
+  Object.values(sensors).forEach((group) => {
+    group?.forEach((entry) => {
+      const sensorId = typeof entry === 'string' ? entry : entry?.id;
+      if (!sensorId) return;
+      acc[sensorId] = (acc[sensorId] ?? 0) + 1;
+    });
+  });
+
+  return acc;
+}, {} as Record<string, number>);
 
 // Group by type
 const sensorsByType = allSensors.reduce((acc, sensor) => {
@@ -94,6 +110,12 @@ const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
                         </Badge>
                       )}
                     </div>
+                    <p class="mt-3 text-xs text-muted-foreground">
+                      {(() => {
+                        const usageCount = sensorUsageCounts[sensor.data.id || sensor.id] ?? 0;
+                        return `Used in ${usageCount} flight controller${usageCount === 1 ? '' : 's'}`;
+                      })()}
+                    </p>
                   </CardContent>
                 </Card>
               </a>
