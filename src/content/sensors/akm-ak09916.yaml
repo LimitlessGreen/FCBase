@@ -1,16 +1,38 @@
 id: akm-ak09916
-name: "AKM AK09916"
+name: AKM AK09916
 manufacturer: Asahi Kasei Microdevices
 type: magnetometer
 axes: 3
-interface: spi
-notes: "3-axis magnetometer integrated with the ICM-20948 for Cube Orange+ redundancy."
+interface: i2c
+package: "2.0 x 2.0 x 0.65 mm ultra-small package"
+description: 3-axis digital magnetometer (eCompass) designed for precise heading and tilt-compensated navigation in compact embedded systems.
+features:
+  - ±4912 µT measurement range with 0.15 µT/LSB sensitivity
+  - 16-bit data output with self-test and built-in offset cancellation
+  - Low-power power-down mode and programmable measurement triggers
 datasheet:
-  title: "AKM AK09916C Datasheet"
+  title: "AKM AK09916 Datasheet"
   publisher: Asahi Kasei Microdevices
-  year: 2025
-  url: https://www.akm.com/akm/en/file/datasheet/AK09916C.pdf
-  retrieved: 2025-10-13
+  year: 2017
+  url: https://www.digikey.com/htmldatasheets/production/2044105/0/0/1/ak09916.html
+  retrieved: 2025-01-16
   language: en
+specs:
+  supply_voltage_v:
+    - 1.65
+    - 1.95
+  temperature_range_c:
+    - -30
+    - 85
+  current_consumption_ma:
+    normal: 1.5
+    standby: 0.001
+  magnetometer:
+    range_uT:
+      - -4912
+      - 4912
+    sensitivity_uT_lsb: 0.15
+notes: |
+  Provides stable heading data when combined with accelerometer and gyroscope sensors, drawing 1.5 mA typical during active measurement and about 1 µA in power-down mode.
 sources:
-  - ardupilot-cube-orange-overview
+  - ardupilot-pixhawk6x-release
