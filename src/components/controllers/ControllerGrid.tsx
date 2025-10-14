@@ -19,6 +19,41 @@ import { cn } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 
+type PagefindModule = {
+  init: (options?: { baseUrl?: string }) => Promise<void>;
+  options?: (options: { baseUrl?: string }) => Promise<void> | void;
+  search: (
+    query: string,
+    options?: {
+      filters?: Record<string, string | string[]>;
+    }
+  ) => Promise<{
+    results: Array<{
+      data: () => Promise<{ meta: ControllerRecord }>;
+    }>;
+  }>;
+  filters: () => Promise<Record<string, Record<string, number>>>;
+};
+
+const normalizeBasePath = (basePath?: string) => {
+  if (!basePath || basePath === "/") {
+    return "";
+  }
+  return basePath.endsWith("/") ? basePath.slice(0, -1) : basePath;
+};
+
+const resolveWithBase = (path: string) => {
+  const normalizedBase = normalizeBasePath(import.meta.env.BASE_URL ?? "/");
+  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+  if (!normalizedBase) {
+    return normalizedPath;
+  }
+  return `${normalizedBase}${normalizedPath}`;
+};
+
+const PAGEFIND_SCRIPT_URL = resolveWithBase("pagefind/pagefind.js");
+const PAGEFIND_BASE_URL = `${resolveWithBase("pagefind/")}`;
+
 interface ControllerGridProps {
   totalControllers: number;
 }
@@ -65,9 +100,9 @@ export function ControllerGrid({ totalControllers }: ControllerGridProps) {
   const [results, setResults] = React.useState<ControllerRecord[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
-  const [pagefind, setPagefind] = React.useState<any>(null);
+  const [pagefind, setPagefind] = React.useState<PagefindModule | null>(null);
   const [visibleIds, setVisibleIds] = React.useState<Set<string>>(new Set());
-  const [devMode, setDevMode] = React.useState(false);
+  const [filtersStatus, setFiltersStatus] = React.useState<"ready" | "dev" | "unavailable">("ready");
 
   // Debounce search term
   React.useEffect(() => {
@@ -79,45 +114,74 @@ export function ControllerGrid({ totalControllers }: ControllerGridProps) {
 
   // Initialize Pagefind
   React.useEffect(() => {
-    async function loadPagefind() {
-      try {
-        if (typeof window === "undefined") return;
-        
-        // Check if pagefind exists (only available after build)
-        const response = await fetch("/pagefind/pagefind.js", { method: "HEAD" }).catch(() => null);
-        if (!response || !response.ok) {
-          console.warn("Pagefind not available - showing all controllers (dev mode)");
-          setError("🔧 Dev Mode: Search & filters available after build. Showing all controllers.");
-          setDevMode(true);
-          setIsLoading(false);
-          // Show all cards in dev mode
-          const allCards = document.querySelectorAll("[data-controller-id]");
-          allCards.forEach(card => card.classList.remove("hidden"));
-          return;
+    if (typeof window === "undefined") return;
+
+    let cancelled = false;
+
+    const revealAllCards = () => {
+      if (cancelled) return;
+      const allCards = document.querySelectorAll<HTMLElement>("[data-controller-id]");
+      const allIds = new Set<string>();
+      allCards.forEach((card) => {
+        card.classList.remove("hidden");
+        const id = card.getAttribute("data-controller-id");
+        if (id) {
+          allIds.add(id);
         }
-        
-        const pf = await import(/* @vite-ignore */ "/pagefind/pagefind.js");
-        await pf.init();
-        setPagefind(pf);
+      });
+      setVisibleIds(allIds);
+    };
+
+    const handleUnavailable = (status: "dev" | "unavailable", message: string) => {
+      if (cancelled) return;
+      revealAllCards();
+      setError(message);
+      setFiltersStatus(status);
+      setIsLoading(false);
+    };
+
+    const loadPagefind = async () => {
+      try {
+        const response = await fetch(PAGEFIND_SCRIPT_URL, { method: "HEAD" });
+        if (!response.ok) {
+          throw new Error(`Pagefind script not found (status ${response.status})`);
+        }
+
+        const pfModule = (await import(/* @vite-ignore */ PAGEFIND_SCRIPT_URL)) as PagefindModule;
+        if (cancelled) return;
+
+        if (typeof pfModule.options === "function") {
+          await pfModule.options({ baseUrl: PAGEFIND_BASE_URL });
+        }
+
+        await pfModule.init({ baseUrl: PAGEFIND_BASE_URL });
+        if (cancelled) return;
+
+        setPagefind(pfModule);
+        setFiltersStatus("ready");
         setError(null);
       } catch (err) {
-        console.error("Failed to load Pagefind:", err);
-        setError("🔧 Dev Mode: Search & filters available after build. Showing all controllers.");
-        setDevMode(true);
-        setIsLoading(false);
-        // Show all cards on error
-        const allCards = document.querySelectorAll("[data-controller-id]");
-        allCards.forEach(card => card.classList.remove("hidden"));
+        console.error("Failed to load Pagefind", err);
+        const isDev = import.meta.env.DEV;
+        const message = isDev
+          ? "🔧 Dev Mode: Search & filters available after build. Showing all controllers."
+          : "Search is temporarily unavailable. Showing all controllers.";
+        handleUnavailable(isDev ? "dev" : "unavailable", message);
       }
-    }
+    };
+
     loadPagefind();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   // Load initial results and perform search
   React.useEffect(() => {
     async function performSearch() {
       if (!pagefind) {
-        setIsLoading(true);
+        setIsLoading(filtersStatus === "ready");
         return;
       }
 
@@ -143,14 +207,14 @@ export function ControllerGrid({ totalControllers }: ControllerGridProps) {
 
         // Load full data for results
         const loadedResults = await Promise.all(
-          searchResults.results.map(async (result: any) => {
+          searchResults.results.map(async (result) => {
             const data = await result.data();
             return data.meta as ControllerRecord;
           })
         );
 
         setResults(loadedResults);
-        setVisibleIds(new Set(loadedResults.map(r => r.id)));
+        setVisibleIds(new Set(loadedResults.map((record) => record.id)));
         setError(null);
       } catch (err) {
         console.error("Search error:", err);
@@ -163,7 +227,7 @@ export function ControllerGrid({ totalControllers }: ControllerGridProps) {
     }
 
     performSearch();
-  }, [pagefind, debouncedSearchTerm, filters]);
+  }, [pagefind, debouncedSearchTerm, filters, filtersStatus]);
 
   // Get filter options from Pagefind
   const [filterOptions, setFilterOptions] = React.useState<{
@@ -249,6 +313,8 @@ export function ControllerGrid({ totalControllers }: ControllerGridProps) {
     });
   }, [visibleIds]);
 
+  const displayedResultsCount = filtersStatus === "ready" ? results.length : totalControllers;
+
   return (
     <section className="space-y-6">
       {/* Search Bar */}
@@ -274,12 +340,24 @@ export function ControllerGrid({ totalControllers }: ControllerGridProps) {
       {/* Filters */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Filters {devMode && "(Disabled in dev mode)"}</CardTitle>
+          <CardTitle className="text-base">
+            Filters
+            {filtersStatus === "dev" && " (Disabled in dev mode)"}
+            {filtersStatus === "unavailable" && " (Temporarily unavailable)"}
+          </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          {devMode ? (
+          {filtersStatus !== "ready" ? (
             <div className="text-sm text-muted-foreground">
-              Filters are disabled in development mode. Run <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-xs">pnpm run build && pnpm run preview</code> to test search functionality.
+              {filtersStatus === "dev"
+                ? (
+                    <>
+                      Filters are disabled in development mode. Run <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-xs">pnpm run build && pnpm run preview</code> to test search functionality.
+                    </>
+                  )
+                : (
+                    <>Search and filters are temporarily unavailable. We are showing every controller while the index is restored.</>
+                  )}
             </div>
           ) : (
             <>
@@ -481,7 +559,11 @@ export function ControllerGrid({ totalControllers }: ControllerGridProps) {
             <button
               type="button"
               onClick={clearFilters}
-              className="inline-flex items-center gap-2 rounded-lg border px-3 py-1.5 text-sm transition-colors hover:bg-muted"
+              disabled={filtersStatus !== "ready"}
+              className={cn(
+                "inline-flex items-center gap-2 rounded-lg border px-3 py-1.5 text-sm transition-colors",
+                filtersStatus !== "ready" ? "cursor-not-allowed opacity-60" : "hover:bg-muted"
+              )}
             >
               <RotateCcw className="h-4 w-4" />
               Reset filters
@@ -494,7 +576,7 @@ export function ControllerGrid({ totalControllers }: ControllerGridProps) {
                   Searching...
                 </span>
               ) : (
-                `${results.length} / ${totalControllers} controllers`
+                `${displayedResultsCount} / ${totalControllers} controllers`
               )}
             </span>
           </div>
