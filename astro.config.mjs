@@ -56,9 +56,10 @@ const [
   commitDateIso = "",
 ] = gitLogFields;
 const remoteOriginUrl = getGitValue("git config --get remote.origin.url");
+const currentBranch = getGitValue("git rev-parse --abbrev-ref HEAD") || "main";
 const githubRepoUrl =
   deriveGithubRepoUrl(remoteOriginUrl) || "https://github.com/LimitlessGreen/FCBase";
-const githubEditBaseUrl = githubRepoUrl ? `${githubRepoUrl}/edit/HEAD` : "";
+const githubEditBaseUrl = githubRepoUrl ? `${githubRepoUrl}/edit/${currentBranch}` : "";
 
 const pagefindIntegration = () => ({
   name: "fcbase-pagefind",
