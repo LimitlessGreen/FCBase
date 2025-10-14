@@ -17,9 +17,30 @@ const { mcu } = Astro.props;
 const { data } = mcu;
 
 const allControllers = await getCollection('controllers');
-const controllersUsingMcu = allControllers
-  .filter((controller) => controller.data.mcu === mcu.id)
-  .sort((a, b) => a.data.title.localeCompare(b.data.title));
+const manufacturers = await getCollection('manufacturers');
+const manufacturerMap = new Map(manufacturers.map((manufacturer) => [manufacturer.id, manufacturer]));
+
+const controllersUsingMcu = allControllers.filter((controller) => controller.data.mcu === mcu.id);
+
+const controllersGroupedByBrand = Array.from(
+  controllersUsingMcu.reduce((accumulator, controller) => {
+    const brandId = controller.data.brand || 'unknown';
+    const existingGroup = accumulator.get(brandId) ?? [];
+
+    existingGroup.push(controller);
+    accumulator.set(brandId, existingGroup);
+
+    return accumulator;
+  }, new Map<string, typeof controllersUsingMcu>())
+)
+  .map(([brandId, controllers]) => ({
+    brandName:
+      manufacturerMap.get(brandId)?.data?.name ||
+      manufacturerMap.get(brandId)?.data?.title ||
+      brandId,
+    controllers: controllers.sort((a, b) => a.data.title.localeCompare(b.data.title)),
+  }))
+  .sort((a, b) => a.brandName.localeCompare(b.brandName));
 
 const clockMhz =
   data.clock_mhz ??
@@ -172,29 +193,36 @@ const editPath = `src/content/mcu/${mcu.id}.yaml`;
       <div class="mt-10">
         <h2 class="text-xl font-bold tracking-tight mb-4 uppercase text-primary">Controllers Using This MCU</h2>
         {controllersUsingMcu.length > 0 ? (
-          <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {controllersUsingMcu.map((controller) => (
-              <a href={`${basePath}/controllers/${controller.id}`} class="group block">
-                <Card client:load class="h-full transition-all hover:shadow-lg hover:-translate-y-1 border-2 hover:border-primary/30">
-                  <CardContent class="pt-4 pb-3 px-3">
-                    <h3 class="font-bold text-sm mb-1.5 line-clamp-2 group-hover:text-primary transition-colors">
-                      {controller.data.title}
-                    </h3>
-                    <p class="text-xs text-muted-foreground mb-2.5 font-medium">{controller.data.brand}</p>
-                    <div class="flex flex-wrap gap-1 mb-2.5">
-                      <Badge variant="outline" className="text-xs px-1.5 py-0.5 font-mono font-semibold">
-                        {controller.data.mcu.replace('stmicro-', '').toUpperCase()}
-                      </Badge>
-                      <Badge variant="outline" className="text-xs px-1.5 py-0.5 font-medium">
-                        {controller.data.mounting}
-                      </Badge>
-                    </div>
-                    <p class="text-xs text-muted-foreground font-mono font-semibold">
-                      {controller.data.io.uarts}U • {controller.data.io.can || 0}C • {controller.data.io.pwm || 0}PWM
-                    </p>
-                  </CardContent>
-                </Card>
-              </a>
+          <div class="space-y-6">
+            {controllersGroupedByBrand.map(({ brandName, controllers }) => (
+              <section class="space-y-3">
+                <h3 class="text-sm font-semibold uppercase tracking-wide text-muted-foreground">{brandName}</h3>
+                <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                  {controllers.map((controller) => (
+                    <a href={`${basePath}/controllers/${controller.id}`} class="group block">
+                      <Card client:load class="h-full transition-all hover:shadow-lg hover:-translate-y-1 border-2 hover:border-primary/30">
+                        <CardContent class="pt-4 pb-3 px-3">
+                          <h3 class="font-bold text-sm mb-1.5 line-clamp-2 group-hover:text-primary transition-colors">
+                            {controller.data.title}
+                          </h3>
+                          <p class="text-xs text-muted-foreground mb-2.5 font-medium">{brandName}</p>
+                          <div class="flex flex-wrap gap-1 mb-2.5">
+                            <Badge variant="outline" className="text-xs px-1.5 py-0.5 font-mono font-semibold">
+                              {controller.data.mcu.replace('stmicro-', '').toUpperCase()}
+                            </Badge>
+                            <Badge variant="outline" className="text-xs px-1.5 py-0.5 font-medium">
+                              {controller.data.mounting}
+                            </Badge>
+                          </div>
+                          <p class="text-xs text-muted-foreground font-mono font-semibold">
+                            {controller.data.io.uarts}U • {controller.data.io.can || 0}C • {controller.data.io.pwm || 0}PWM
+                          </p>
+                        </CardContent>
+                      </Card>
+                    </a>
+                  ))}
+                </div>
+              </section>
             ))}
           </div>
         ) : (
