@@ -1,0 +1,395 @@
+[
+  {
+    "file": "src/content/controllers/mro/mro-pixracer-pro.yaml",
+    "currentVoltageIn": "5.0-5.5V via USB-C or PowerBrick connector",
+    "suggestedInputs": [
+      {
+        "name": "USB",
+        "type": "usb",
+        "connector": "USB-C",
+        "voltage": {
+          "min": 5,
+          "max": 5.5,
+          "unit": "V"
+        }
+      },
+      {
+        "name": "PowerBrick",
+        "connector": "PowerBrick",
+        "notes": "PowerBrick connector"
+      }
+    ],
+    "confidence": "low",
+    "notes": [
+      "Could not parse voltage from: \"PowerBrick connector\""
+    ]
+  },
+  {
+    "file": "src/content/controllers/holybro/holybro-pixhawk-6x.yaml",
+    "currentVoltageIn": "4.9-5.5V primary inputs, USB 4.75-5.25V",
+    "suggestedInputs": [
+      {
+        "name": "POWER",
+        "voltage": {
+          "min": 4.9,
+          "max": 5.5,
+          "unit": "V"
+        }
+      },
+      {
+        "name": "USB",
+        "type": "usb",
+        "voltage": {
+          "min": 4.75,
+          "max": 5.25,
+          "unit": "V"
+        }
+      }
+    ],
+    "confidence": "medium",
+    "notes": []
+  },
+  {
+    "file": "src/content/controllers/holybro/holybro-pixhawk-6c.yaml",
+    "currentVoltageIn": "4.9-5.5V primary inputs, USB 4.75-5.25V",
+    "suggestedInputs": [
+      {
+        "name": "POWER",
+        "voltage": {
+          "min": 4.9,
+          "max": 5.5,
+          "unit": "V"
+        }
+      },
+      {
+        "name": "USB",
+        "type": "usb",
+        "voltage": {
+          "min": 4.75,
+          "max": 5.25,
+          "unit": "V"
+        }
+      }
+    ],
+    "confidence": "medium",
+    "notes": []
+  },
+  {
+    "file": "src/content/controllers/holybro/holybro-pixhawk-5x.yaml",
+    "currentVoltageIn": "Max 6V power inputs, USB 4.75-5.25V, servo rail 0-36V",
+    "suggestedInputs": [
+      {
+        "name": "POWER",
+        "voltage": {
+          "min": 0,
+          "max": 6,
+          "unit": "V"
+        }
+      },
+      {
+        "name": "USB",
+        "type": "usb",
+        "voltage": {
+          "min": 4.75,
+          "max": 5.25,
+          "unit": "V"
+        }
+      },
+      {
+        "name": "SERVO",
+        "type": "servo_rail",
+        "voltage": {
+          "min": 0,
+          "max": 36,
+          "unit": "V"
+        }
+      }
+    ],
+    "confidence": "medium",
+    "notes": []
+  },
+  {
+    "file": "src/content/controllers/holybro/holybro-pixhawk-4.yaml",
+    "currentVoltageIn": "POWER1/POWER2 4.9-5.5V, USB 4.75-5.25V",
+    "suggestedInputs": [
+      {
+        "name": "POWER",
+        "voltage": {
+          "min": 4.9,
+          "max": 5.5,
+          "unit": "V"
+        }
+      },
+      {
+        "name": "USB",
+        "type": "usb",
+        "voltage": {
+          "min": 4.75,
+          "max": 5.25,
+          "unit": "V"
+        }
+      }
+    ],
+    "confidence": "medium",
+    "notes": []
+  },
+  {
+    "file": "src/content/controllers/holybro/holybro-pixhawk-4-mini.yaml",
+    "currentVoltageIn": "POWER 4.75-5.5V, USB 4.75-5.25V",
+    "suggestedInputs": [
+      {
+        "name": "POWER",
+        "voltage": {
+          "min": 4.75,
+          "max": 5.5,
+          "unit": "V"
+        }
+      },
+      {
+        "name": "USB",
+        "type": "usb",
+        "voltage": {
+          "min": 4.75,
+          "max": 5.25,
+          "unit": "V"
+        }
+      }
+    ],
+    "confidence": "medium",
+    "notes": []
+  },
+  {
+    "file": "src/content/controllers/holybro/holybro-kakute-h7-v2.yaml",
+    "currentVoltageIn": "2S-8S LiPo main input, USB 5V",
+    "suggestedInputs": [
+      {
+        "name": "BATTERY",
+        "type": "battery",
+        "voltage": {
+          "min": 7.4,
+          "max": 33.6,
+          "unit": "V"
+        }
+      },
+      {
+        "name": "USB",
+        "type": "usb",
+        "voltage": {
+          "min": 4.75,
+          "max": 5.25,
+          "unit": "V"
+        }
+      }
+    ],
+    "confidence": "high",
+    "notes": []
+  },
+  {
+    "file": "src/content/controllers/holybro/holybro-durandal.yaml",
+    "currentVoltageIn": "4.9-5.5V regulated inputs, USB 4.75-5.25V, servo rail up to 36V",
+    "suggestedInputs": [
+      {
+        "name": "POWER",
+        "voltage": {
+          "min": 4.9,
+          "max": 5.5,
+          "unit": "V"
+        }
+      },
+      {
+        "name": "USB",
+        "type": "usb",
+        "voltage": {
+          "min": 4.75,
+          "max": 5.25,
+          "unit": "V"
+        }
+      },
+      {
+        "name": "SERVO",
+        "type": "servo_rail",
+        "voltage": {
+          "min": 0,
+          "max": 36,
+          "unit": "V"
+        }
+      }
+    ],
+    "confidence": "medium",
+    "notes": []
+  },
+  {
+    "file": "src/content/controllers/mateksys/mateksys-h743-wing.yaml",
+    "currentVoltageIn": "9-36V DC",
+    "suggestedInputs": [
+      {
+        "name": "POWER",
+        "voltage": {
+          "min": 9,
+          "max": 36,
+          "unit": "V"
+        }
+      }
+    ],
+    "confidence": "medium",
+    "notes": []
+  },
+  {
+    "file": "src/content/controllers/mateksys/mateksys-f765-wing.yaml",
+    "currentVoltageIn": "9-36V DC input range",
+    "suggestedInputs": [
+      {
+        "name": "POWER",
+        "voltage": {
+          "min": 9,
+          "max": 36,
+          "unit": "V"
+        }
+      }
+    ],
+    "confidence": "medium",
+    "notes": []
+  },
+  {
+    "file": "src/content/controllers/mateksys/mateksys-f405-wing.yaml",
+    "currentVoltageIn": "9-30V DC main input",
+    "suggestedInputs": [
+      {
+        "name": "POWER",
+        "voltage": {
+          "min": 9,
+          "max": 30,
+          "unit": "V"
+        }
+      }
+    ],
+    "confidence": "medium",
+    "notes": []
+  },
+  {
+    "file": "src/content/controllers/cubepilot/cubepilot-cube-orange-plus.yaml",
+    "currentVoltageIn": "4.1-5.7V (power rails), USB 4.75-5.25V",
+    "suggestedInputs": [
+      {
+        "name": "POWER",
+        "voltage": {
+          "min": 4.1,
+          "max": 5.7,
+          "unit": "V"
+        }
+      },
+      {
+        "name": "USB",
+        "type": "usb",
+        "voltage": {
+          "min": 4.75,
+          "max": 5.25,
+          "unit": "V"
+        }
+      }
+    ],
+    "confidence": "medium",
+    "notes": []
+  },
+  {
+    "file": "src/content/controllers/cubepilot/cubepilot-cube-black.yaml",
+    "currentVoltageIn": "4.1-5.7V redundant power rails, USB 4.75-5.25V",
+    "suggestedInputs": [
+      {
+        "name": "POWER",
+        "voltage": {
+          "min": 4.1,
+          "max": 5.7,
+          "unit": "V"
+        }
+      },
+      {
+        "name": "USB",
+        "type": "usb",
+        "voltage": {
+          "min": 4.75,
+          "max": 5.25,
+          "unit": "V"
+        }
+      }
+    ],
+    "confidence": "medium",
+    "notes": [
+      "Detected redundant power - set redundant: true"
+    ]
+  },
+  {
+    "file": "src/content/controllers/cuav/cuav-pixhawk-v6x.yaml",
+    "currentVoltageIn": "4.9-5.5V primary inputs via CAN/SMBus power modules",
+    "suggestedInputs": [
+      {
+        "name": "PM",
+        "type": "power_module",
+        "voltage": {
+          "min": 4.9,
+          "max": 5.5,
+          "unit": "V"
+        }
+      }
+    ],
+    "confidence": "high",
+    "notes": []
+  },
+  {
+    "file": "src/content/controllers/cuav/cuav-nora.yaml",
+    "currentVoltageIn": "4.3-5.4V regulated inputs, USB 4.75-5.25V, servo rail 0-36V passthrough",
+    "suggestedInputs": [
+      {
+        "name": "POWER",
+        "voltage": {
+          "min": 4.3,
+          "max": 5.4,
+          "unit": "V"
+        }
+      },
+      {
+        "name": "USB",
+        "type": "usb",
+        "voltage": {
+          "min": 4.75,
+          "max": 5.25,
+          "unit": "V"
+        }
+      },
+      {
+        "name": "SERVO",
+        "type": "servo_rail",
+        "voltage": {
+          "min": 0,
+          "max": 36,
+          "unit": "V"
+        }
+      }
+    ],
+    "confidence": "medium",
+    "notes": []
+  },
+  {
+    "file": "src/content/controllers/aocoda/aocoda-h743dual.yaml",
+    "currentVoltageIn": "3-6S LiPo input with onboard 5V/2.5A and 9V/3A BEC outputs",
+    "suggestedInputs": [
+      {
+        "name": "BATTERY",
+        "type": "battery",
+        "voltage": {
+          "min": 9,
+          "max": 25.200000000000003,
+          "unit": "V"
+        }
+      },
+      {
+        "name": "POWER",
+        "notes": "9V/3A BEC outputs"
+      }
+    ],
+    "confidence": "low",
+    "notes": [
+      "Could not parse voltage from: \"9V/3A BEC outputs\""
+    ]
+  }
+]
