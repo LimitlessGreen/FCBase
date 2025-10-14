@@ -5,8 +5,23 @@ import MainLayout from '@/layouts/MainLayout.astro';
 import { ControllerSearch } from '@/components/ui/ControllerSearch';
 import ControllerCard from '@/components/cards/ControllerCard.astro';
 
-// Import local images (these will be optimized automatically)
-import holybroPixhawk6xImage from '@/assets/images/controllers/holybro-pixhawk-6x.jpg';
+// Auto-import any local images placed in src/assets/images/controllers
+// If a file exists it will be used (as a URL). This avoids hardcoding imports per-controller.
+const localControllerImages = import.meta.glob('/src/assets/images/controllers/*.{jpg,jpeg,png,webp,avif}', { eager: true, as: 'url' });
+const localImageMap = Object.fromEntries(
+  Object.entries(localControllerImages).map(([p, url]) => {
+    const file = p.split('/').pop();
+    const id = file.replace(/\.(jpg|jpeg|png|webp|avif)$/i, '');
+    return [id, url];
+  })
+);
+const resolveLocalPreview = (id) => {
+  const plain = id.includes('/') ? id.split('/').pop() : id;
+  const url = localImageMap[plain];
+  if (!url) return undefined;
+  const base = (import.meta.env.BASE_URL || '').replace(/\/$/, '');
+  return base ? `${base}${url}` : url;
+};
 
 const controllerPreviewImages: Record<string, { src: any; credit: string; sourceUrl?: string }> = {
   'aocoda-h743dual': {
@@ -71,7 +86,7 @@ const controllerPreviewImages: Record<string, { src: any; credit: string; source
     sourceUrl: 'https://holybro.com/products/pixhawk-6c',
   },
   'holybro/holybro-pixhawk-6x': {
-    src: holybroPixhawk6xImage, // Local image - will be optimized to AVIF/WebP
+    src: resolveLocalPreview('holybro/holybro-pixhawk-6x') ?? null, // will use local image if present
     credit: 'Holybro Store',
     sourceUrl: 'https://holybro.com/products/pixhawk-6x',
   },

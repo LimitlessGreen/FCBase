@@ -12,6 +12,23 @@ const description = "Search and compare ArduPilot, PX4, and iNAV flight controll
 // Load actual controllers from content collection
 const allControllers = await getCollection('controllers');
 
+// Auto-import any local images placed in src/assets/images/controllers
+const localControllerImages = import.meta.glob('/src/assets/images/controllers/*.{jpg,jpeg,png,webp,avif}', { eager: true, as: 'url' });
+const localImageMap = Object.fromEntries(
+  Object.entries(localControllerImages).map(([p, url]) => {
+    const file = p.split('/').pop();
+    const id = file.replace(/\.(jpg|jpeg|png|webp|avif)$/i, '');
+    return [id, url];
+  })
+);
+const resolveLocalPreview = (id) => {
+  const plain = id.includes('/') ? id.split('/').pop() : id;
+  const url = localImageMap[plain];
+  if (!url) return undefined;
+  const base = (import.meta.env.BASE_URL || '').replace(/\/$/, '');
+  return base ? `${base}${url}` : url;
+};
+
 // Remote preview images for highlighted controllers
 const controllerPreviewImages: Record<string, { src: string; credit: string; sourceUrl?: string }> = {
   'aocoda-h743dual': {
@@ -43,6 +60,11 @@ const controllerPreviewImages: Record<string, { src: string; credit: string; sou
     src: 'https://ardupilot.org/copter/_images/Cube_orange_module.jpg',
     credit: 'ArduPilot Documentation',
     sourceUrl: 'https://ardupilot.org/copter/docs/common-thecubeorange-overview.html',
+  },
+  'holybro-pixhawk-6x': {
+    src: resolveLocalPreview('holybro-pixhawk-6x') ?? 'https://holybro.com/cdn/shop/files/110321_4.jpg?v=1750816088',
+    credit: 'Holybro Store',
+    sourceUrl: 'https://holybro.com/products/pixhawk-6x',
   },
 };
 

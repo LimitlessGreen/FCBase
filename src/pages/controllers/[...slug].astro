@@ -33,8 +33,22 @@ import {
   Layers,
 } from 'lucide-react';
 
-// Import local images
-import holybroPixhawk6xImage from '@/assets/images/controllers/holybro-pixhawk-6x.jpg';
+// Auto-import any local images placed in src/assets/images/controllers
+const localControllerImages = import.meta.glob('/src/assets/images/controllers/*.{jpg,jpeg,png,webp,avif}', { eager: true, as: 'url' });
+const localImageMap = Object.fromEntries(
+  Object.entries(localControllerImages).map(([p, url]) => {
+    const file = p.split('/').pop();
+    const id = file.replace(/\.(jpg|jpeg|png|webp|avif)$/i, '');
+    return [id, url];
+  })
+);
+const resolveLocalPreview = (id) => {
+  const plain = id.includes('/') ? id.split('/').pop() : id;
+  const url = localImageMap[plain];
+  if (!url) return undefined;
+  const base = (import.meta.env.BASE_URL || '').replace(/\/$/, '');
+  return base ? `${base}${url}` : url;
+};
 
 export async function getStaticPaths() {
   const controllers = await getCollection('controllers');
@@ -110,7 +124,7 @@ const controllerPreviewImages: Record<string, { src: any; credit: string; source
     sourceUrl: 'https://holybro.com/products/pixhawk-6c',
   },
   'holybro/holybro-pixhawk-6x': {
-    src: holybroPixhawk6xImage, // Local image - will be optimized to AVIF/WebP
+    src: resolveLocalPreview('holybro/holybro-pixhawk-6x') ?? null,
     credit: 'Holybro Store',
     sourceUrl: 'https://holybro.com/products/pixhawk-6x',
   },

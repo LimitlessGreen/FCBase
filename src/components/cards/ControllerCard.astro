@@ -113,7 +113,7 @@ const imageAlt = title;
         {image?.src ? (
           <>
             {/* Use Picture component for local images (ImageMetadata has width/height), regular img for remote URLs */}
-            {'width' in image.src && 'height' in image.src ? (
+            {typeof image.src === 'object' && image.src !== null && 'width' in image.src && 'height' in image.src ? (
               <Picture
                 src={image.src}
                 formats={['avif', 'webp']}
