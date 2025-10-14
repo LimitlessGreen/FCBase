@@ -241,7 +241,7 @@ export function SiteSearch() {
     return counts;
   }, [resultsByType]);
 
-  const isDisabled = pagefindStatus !== "ready" || isPending;
+  const isDisabled = pagefindStatus !== "ready";
 
   return (
     <section className="space-y-6">
