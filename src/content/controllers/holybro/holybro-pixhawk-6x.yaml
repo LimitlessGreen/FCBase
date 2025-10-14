@@ -113,11 +113,7 @@ sensors:
   - count: 1
     id: invensense-icm20649
   - count: 1
-    id: invensense-icm42670p
-  - count: 1
     id: invensense-icm42688p
-  - count: 3
-    id: invensense-icm45686
   magnetometer:
   - count: 1
     id: bosch-bmm150
@@ -144,12 +140,26 @@ hardware:
   - id: icm-45686
     name: "ICM-45686 Edition"
     notes: Holybro's product page highlights the Pixhawk 6X variant with the InvenSense ICM-45686 IMU set.
+    changes:
+    - Replaces the BMI088/ICM20649/ICM42688P stack with triple ICM-45686 IMUs and tuned vibration filtering.
     sources:
     - holybro-pixhawk6x-product
     - px4-pixhawk6x
+    overrides:
+      sensors:
+        imu:
+        - count: 3
+          id: invensense-icm45686
+        barometer:
+        - count: 1
+          id: bosch-bmp388
+        - count: 1
+          id: tdk-icp20100
   - id: rev-a
     name: "Rev A"
     notes: ArduPilot's Pixhawk 6X guide documents the initial production hardware configuration.
+    changes:
+    - Initial production release with BMI088, ICM20649, and ICM42688P inertial sensors.
     sources:
     - ardupilot-holybro-pixhawk6x
 keywords:
