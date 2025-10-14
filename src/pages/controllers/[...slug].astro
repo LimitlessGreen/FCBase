@@ -577,7 +577,7 @@ const productLdJson = JSON.stringify(productLd, null, 2);
                     </div>
                   )}
                   <ProfessionalTable>
-                    <TableSection title="Core Hardware" color="blue" />
+                    <TableSection title="Core Hardware" />
                     
                     <TableRow2Col
                       label1="MCU"
@@ -598,7 +598,7 @@ const productLdJson = JSON.stringify(productLd, null, 2);
                         mono2
                       />
                     )}
-                    <TableSection title="Power" color="orange" />
+                    <TableSection title="Power" />
                     
                     {variant.spec.power.inputs && variant.spec.power.inputs.length > 0 ? (
                       <>
@@ -666,7 +666,7 @@ const productLdJson = JSON.stringify(productLd, null, 2);
                         {variant.spec.power.notes}
                       </TableRow>
                     )}
-                    <TableSection title="Connectivity & I/O" color="green" />
+                    <TableSection title="Connectivity & I/O" />
                     
                     <TableRow2Col
                       label1="UARTs"
@@ -754,7 +754,7 @@ const productLdJson = JSON.stringify(productLd, null, 2);
                         </div>
                       </TableRow>
                     )}
-                    <TableSection title="Onboard Sensors" color="purple" />
+                    <TableSection title="Onboard Sensors" />
                     
                     {variant.sensorDetails.imu.length > 0 && (
                       <TableRow label="IMU">
@@ -799,7 +799,7 @@ const productLdJson = JSON.stringify(productLd, null, 2);
                     )}
                     {data.features && data.features.length > 0 && (
                       <>
-                        <TableSection title="Additional Features" color="green" />
+                        <TableSection title="Additional Features" />
                         <TableRow label=" ">
                           <ul class="grid grid-cols-2 gap-x-4 gap-y-1.5 text-sm">
                             {data.features.map((feature) => (
@@ -867,7 +867,7 @@ const productLdJson = JSON.stringify(productLd, null, 2);
           </CardHeader>
           <CardContent>
             <ProfessionalTable class="text-xs">
-              <TableSection title="Firmware Support" color="blue" colspan={2} />
+              <TableSection title="Firmware Support" colspan={2} />
               {firmware.map((fw) => (
                 <tr class="even:bg-muted/30 hover:bg-muted/50 transition-colors" key={fw.id}>
                   <td class="px-2 py-1.5 font-semibold">{fw.name}</td>
@@ -881,7 +881,7 @@ const productLdJson = JSON.stringify(productLd, null, 2);
                 </tr>
               ))}
               
-              <TableSection title="Information" color="gray" colspan={2} />
+              <TableSection title="Information" colspan={2} />
               <tr class="even:bg-muted/30 hover:bg-muted/50 transition-colors">
                 <td class="px-2 py-1.5 text-muted-foreground font-medium">Verification</td>
                 <td class="px-2 py-1.5 text-right">
