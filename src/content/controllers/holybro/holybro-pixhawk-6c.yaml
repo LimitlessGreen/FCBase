@@ -19,6 +19,81 @@ io:
   pwm: 16
   sd_card: true
   uarts: 7
+  peripherals:
+  - name: UART ports
+    type: uart
+    count: 7
+    interfaces:
+    - uart
+    - mavlink
+    connector: JST-GH mixed pitch
+    notes: Seven UARTs including telemetry, GPS, and user serial channels.
+  - name: GPS connectors
+    type: gps
+    count: 2
+    interfaces:
+    - uart
+    - i2c
+    connector: JST-GH 10-pin and 6-pin
+    notes: Dual GPS/compass headers sharing the external I2C bus.
+  - name: CAN buses
+    type: can
+    count: 2
+    interfaces:
+    - can
+    connector: JST-GH 4-pin
+    notes: DroneCAN connectors with auxiliary power for smart peripherals.
+  - name: Power modules
+    type: power
+    count: 2
+    interfaces:
+    - power
+    - smbus
+    connector: 6-pin power monitor
+    notes: Redundant power module inputs with SMBus telemetry and over-current protection.
+  - name: Servo outputs
+    type: pwm
+    count: 16
+    interfaces:
+    - pwm
+    - dshot
+    connector: Servo rail and auxiliary headers
+    notes: Sixteen PWM outputs with selectable signal voltage.
+  - name: RC input
+    type: rc
+    interfaces:
+    - ppm
+    - sbus
+    - spektrum
+    - fport
+    connector: JST-GH 6-pin
+    notes: Serial RC input with dedicated RSSI pin.
+  - name: USB-C
+    type: usb
+    interfaces:
+    - usb
+    connector: USB Type-C
+    notes: Firmware flashing and console interface.
+  - name: I2C expansion
+    type: i2c
+    count: 2
+    interfaces:
+    - i2c
+    connector: JST-GH 4-pin
+    notes: External I2C ports for compasses or airspeed sensors.
+  - name: Buzzer and safety switch
+    type: buzzer
+    interfaces:
+    - buzzer
+    - safety
+    connector: JST harness
+    notes: External safety button with high-power buzzer.
+  - name: MicroSD slot
+    type: storage
+    interfaces:
+    - microsd
+    connector: Internal microSD
+    notes: Built-in logging slot for high-rate recording.
 sensors:
   barometer:
   - count: 1

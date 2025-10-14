@@ -17,6 +17,78 @@ io:
   pwm: 14
   sd_card: true
   uarts: 5
+  peripherals:
+  - name: TELEM ports
+    type: uart
+    count: 2
+    interfaces:
+    - uart
+    - mavlink
+    connector: JST-GH 6-pin
+    voltage: 5 V supply / 3.3 V logic
+    notes: Dual telemetry ports with hardware flow control; Serial5 on the ADS-B carrier is dedicated to the integrated receiver.
+  - name: GPS1
+    type: gps
+    interfaces:
+    - uart
+    - i2c
+    - safety
+    connector: JST-GH 10-pin
+    notes: Primary GPS and safety switch header with shared LED and buzzer lines.
+  - name: GPS2
+    type: gps
+    interfaces:
+    - uart
+    - i2c
+    connector: JST-GH 6-pin
+    notes: Secondary GPS or telemetry device connector with isolated power.
+  - name: I2C expansion
+    type: i2c
+    interfaces:
+    - i2c
+    connector: JST-GH 4-pin
+    notes: External I2C bus for compass, airspeed, or peripheral hubs.
+  - name: ADC port
+    type: analog
+    interfaces:
+    - analog
+    connector: JST-GH 3-pin
+    notes: Analog input for differential pressure or auxiliary sensing.
+  - name: CAN bus
+    type: can
+    count: 2
+    interfaces:
+    - can
+    connector: JST-GH 4-pin
+    voltage: 5 V auxiliary supply / 12 V CAN lines
+    notes: Dual DroneCAN connectors fed from the carrier board regulators.
+  - name: Power inputs
+    type: power
+    count: 2
+    interfaces:
+    - power
+    connector: 6-pin power monitor
+    notes: Redundant power module connectors with current and voltage feedback.
+  - name: USB service
+    type: usb
+    interfaces:
+    - usb
+    connector: Micro-USB
+    notes: Configuration port including buzzer and status LED leads.
+  - name: RC input
+    type: rc
+    interfaces:
+    - cppm
+    - sbus
+    - dsm
+    connector: JST-GH 6-pin
+    notes: Carrier board input supporting CPPM, Spektrum/DSM, and S.Bus receivers.
+  - name: ADS-B antenna
+    type: other
+    interfaces:
+    - adsb
+    connector: Integrated patch
+    notes: Built-in uAvionix ADS-B In antenna and receiver on the carrier board wired to Serial5.
 sensors:
   barometer:
   - count: 2

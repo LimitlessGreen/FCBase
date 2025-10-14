@@ -86,6 +86,37 @@ const powerInputSchema = z
     }
   });
 
+const peripheralSchema = z.object({
+  name: z.string(),
+  type: z.enum([
+    'uart',
+    'gps',
+    'i2c',
+    'spi',
+    'can',
+    'usb',
+    'power',
+    'pwm',
+    'rc',
+    'analog',
+    'debug',
+    'video',
+    'led',
+    'buzzer',
+    'ethernet',
+    'storage',
+    'other',
+  ]),
+  count: z.number().int().min(1).optional(),
+  interfaces: z
+    .array(z.string().regex(/^[a-z0-9_\-]+$/))
+    .min(1)
+    .optional(),
+  connector: z.string().optional(),
+  voltage: z.string().optional(),
+  notes: z.string().optional(),
+});
+
 // Controllers collection schema
 const controllersCollection = defineCollection({
   type: 'data',
@@ -123,6 +154,7 @@ const controllersCollection = defineCollection({
       pwm: z.number().int().min(0),
       ethernet: z.boolean().optional(),
       sd_card: z.boolean(),
+      peripherals: z.array(peripheralSchema).optional(),
     }),
     hardware: z.object({
       openness: z.enum(['open', 'closed', 'mixed']),

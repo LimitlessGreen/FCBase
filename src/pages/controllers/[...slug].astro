@@ -7,11 +7,12 @@ import { Badge } from '@/components/ui/Badge';
 import { 
   Cpu, 
   Gauge, 
-  Package, 
-  Zap, 
-  Database, 
-  Wifi, 
+  Package,
+  Zap,
+  Database,
+  Wifi,
   HardDrive,
+  Cable,
   CheckCircle2,
   AlertCircle,
   Scale,
@@ -94,6 +95,12 @@ const firmwareStatusColor = {
   deprecated: 'bg-red-500/10 text-red-500 border-red-500/20',
   community: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
 };
+
+const peripheralTypeLabel = (type: string) =>
+  type
+    .split('_')
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ');
 
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
 
@@ -347,6 +354,66 @@ const formatVoltageRange = (voltage?: {
                     <td class="py-2 px-3 text-muted-foreground font-medium text-xs uppercase">Ethernet</td>
                     <td class="py-2 px-3 font-semibold">{data.io.ethernet ? '✓ Yes' : '✗ No'}</td>
                     <td colspan="2"></td>
+                  </tr>
+                )}
+                {data.io.peripherals && data.io.peripherals.length > 0 && (
+                  <tr class="border-b border-border bg-muted/20">
+                    <td class="py-2 px-3 text-muted-foreground font-medium align-top text-xs uppercase">
+                      <div class="flex items-center gap-2 text-primary">
+                        <Cable className="w-4 h-4" />
+                        <span>Peripheral Ports</span>
+                      </div>
+                    </td>
+                    <td colspan="3" class="py-2 px-3">
+                      <div class="grid gap-3 sm:grid-cols-2">
+                        {data.io.peripherals.map((peripheral, idx) => (
+                          <div
+                            class="rounded-sm border border-border/40 bg-background/70 p-3 shadow-xs"
+                            key={`${peripheral.name}-${idx}`}
+                          >
+                            <div class="flex items-center justify-between gap-2">
+                              <span class="font-semibold text-sm text-foreground">
+                                {peripheral.name}
+                                {peripheral.count && (
+                                  <span class="ml-1 text-xs text-muted-foreground font-medium">
+                                    ×{peripheral.count}
+                                  </span>
+                                )}
+                              </span>
+                              <Badge className="text-[10px] uppercase tracking-wide">
+                                {peripheralTypeLabel(peripheral.type)}
+                              </Badge>
+                            </div>
+                            {peripheral.interfaces && peripheral.interfaces.length > 0 && (
+                              <div class="mt-2 flex flex-wrap gap-1.5">
+                                {peripheral.interfaces.map((iface) => (
+                                  <Badge
+                                    variant="secondary"
+                                    className="text-[10px] uppercase tracking-wide"
+                                    key={`${peripheral.name}-${iface}`}
+                                  >
+                                    {iface.replace(/_/g, ' ')}
+                                  </Badge>
+                                ))}
+                              </div>
+                            )}
+                            {peripheral.connector && (
+                              <p class="mt-2 text-xs text-muted-foreground">
+                                <span class="font-medium text-foreground">Connector:</span> {peripheral.connector}
+                              </p>
+                            )}
+                            {peripheral.voltage && (
+                              <p class="text-xs text-muted-foreground">
+                                <span class="font-medium text-foreground">Voltage:</span> {peripheral.voltage}
+                              </p>
+                            )}
+                            {peripheral.notes && (
+                              <p class="text-xs text-muted-foreground leading-snug mt-1">{peripheral.notes}</p>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </td>
                   </tr>
                 )}
 

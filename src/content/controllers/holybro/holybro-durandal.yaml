@@ -18,6 +18,87 @@ io:
   pwm: 16
   ethernet: false
   sd_card: true
+  peripherals:
+  - name: TELEM ports
+    type: uart
+    count: 2
+    interfaces:
+    - uart
+    - mavlink
+    connector: JST-GH 6-pin
+    notes: Dual telemetry ports with hardware flow control.
+  - name: GPS connectors
+    type: gps
+    count: 2
+    interfaces:
+    - uart
+    - i2c
+    connector: JST-GH 10-pin and 6-pin
+    notes: Primary and secondary GPS/compass headers with safety wiring.
+  - name: I2C expansion
+    type: i2c
+    count: 2
+    interfaces:
+    - i2c
+    connector: JST-GH 4-pin
+    notes: External I2C ports for compasses, rangefinders, or payload sensors.
+  - name: CAN buses
+    type: can
+    count: 2
+    interfaces:
+    - can
+    connector: JST-GH 4-pin
+    notes: Dual DroneCAN connectors for smart peripherals and power modules.
+  - name: Power modules
+    type: power
+    count: 2
+    interfaces:
+    - power
+    connector: 6-pin power monitor
+    notes: Redundant power module inputs with current and voltage feedback.
+  - name: Servo outputs
+    type: pwm
+    count: 16
+    interfaces:
+    - pwm
+    - dshot
+    connector: Servo breakout
+    notes: Sixteen PWM outputs with FMU and IO banks supporting DShot or PWM.
+  - name: RC input
+    type: rc
+    interfaces:
+    - ppm
+    - sbus
+    - spektrum
+    - fport
+    connector: JST-GH 6-pin
+    notes: Serial RC input with dedicated 5 V rail and RSSI pin.
+  - name: USB-C
+    type: usb
+    interfaces:
+    - usb
+    connector: USB Type-C
+    notes: Primary configuration and log access port.
+  - name: Debug port
+    type: debug
+    interfaces:
+    - swd
+    - uart
+    connector: JST-GH 6-pin
+    notes: External debug and console header for development.
+  - name: Buzzer and safety switch
+    type: buzzer
+    interfaces:
+    - buzzer
+    - safety
+    connector: JST harness
+    notes: External safety switch with integrated buzzer indicator.
+  - name: MicroSD slot
+    type: storage
+    interfaces:
+    - microsd
+    connector: Internal microSD
+    notes: Built-in logging slot supporting high-rate recording.
 sensors:
   barometer:
   - count: 1

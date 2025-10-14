@@ -71,6 +71,45 @@
         { "required": ["voltage"] },
         { "required": ["notes"] }
       ]
+    },
+    "peripheral": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "type"],
+      "properties": {
+        "name": { "type": "string" },
+        "type": {
+          "type": "string",
+          "enum": [
+            "uart",
+            "gps",
+            "i2c",
+            "spi",
+            "can",
+            "usb",
+            "power",
+            "pwm",
+            "rc",
+            "analog",
+            "debug",
+            "video",
+            "led",
+            "buzzer",
+            "ethernet",
+            "storage",
+            "other"
+          ]
+        },
+        "count": { "type": "integer", "minimum": 1 },
+        "interfaces": {
+          "type": "array",
+          "items": { "type": "string", "pattern": "^[a-z0-9_\-]+$" },
+          "minItems": 1
+        },
+        "connector": { "type": "string" },
+        "voltage": { "type": "string" },
+        "notes": { "type": "string" }
+      }
     }
   },
   "required": [
@@ -138,7 +177,11 @@
         "can": { "type": "integer", "minimum": 0 },
         "pwm": { "type": "integer", "minimum": 0 },
         "ethernet": { "type": "boolean" },
-        "sd_card": { "type": "boolean" }
+        "sd_card": { "type": "boolean" },
+        "peripherals": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/peripheral" }
+        }
       }
     },
     "hardware": {

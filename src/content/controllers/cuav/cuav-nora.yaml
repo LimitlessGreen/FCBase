@@ -15,6 +15,81 @@ io:
   pwm: 14
   ethernet: false
   sd_card: true
+  peripherals:
+  - name: UART ports
+    type: uart
+    count: 7
+    interfaces:
+    - uart
+    connector: JST-GH mixed pitch
+    notes: Seven assignable UARTs including dedicated telemetry, GPS, and user serial headers.
+  - name: GPS connectors
+    type: gps
+    count: 2
+    interfaces:
+    - uart
+    - i2c
+    connector: JST-GH 10-pin and 6-pin
+    notes: Dual GPS/compass headers with shared I2C buses and safety wiring.
+  - name: CAN buses
+    type: can
+    count: 2
+    interfaces:
+    - can
+    connector: JST-GH 4-pin
+    notes: Redundant DroneCAN ports for smart peripherals and power modules.
+  - name: Power modules
+    type: power
+    count: 2
+    interfaces:
+    - power
+    - smbus
+    connector: 6-pin power monitor
+    notes: Dual power module inputs supporting DroneCAN battery telemetry.
+  - name: Servo outputs
+    type: pwm
+    count: 14
+    interfaces:
+    - pwm
+    - dshot
+    connector: Servo breakout
+    notes: Fourteen PWM outputs with GPIO reassignment options.
+  - name: RC input
+    type: rc
+    interfaces:
+    - ppm
+    - sbus
+    - dsm
+    - fport
+    - crsf
+    connector: JST-GH 6-pin
+    notes: Supports serial RC protocols via UART mapping and dedicated RSSI pin.
+  - name: USB service
+    type: usb
+    interfaces:
+    - usb
+    connector: Micro-USB
+    notes: Console access and firmware updates.
+  - name: I2C expansion
+    type: i2c
+    count: 2
+    interfaces:
+    - i2c
+    connector: JST-GH 4-pin
+    notes: External I2C buses on the GPS and expansion headers for compasses or airspeed sensors.
+  - name: Buzzer and safety switch
+    type: buzzer
+    interfaces:
+    - buzzer
+    - safety
+    connector: JST harness
+    notes: External safety button with integrated buzzer indicator.
+  - name: MicroSD slot
+    type: storage
+    interfaces:
+    - microsd
+    connector: Internal microSD
+    notes: Onboard removable card for high-rate logging.
 sensors:
   barometer:
   - count: 2

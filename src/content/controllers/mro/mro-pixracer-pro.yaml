@@ -12,6 +12,99 @@ io:
   pwm: 8
   ethernet: false
   sd_card: true
+  peripherals:
+  - name: TELEM1/2
+    type: uart
+    count: 2
+    interfaces:
+    - uart
+    - mavlink
+    connector: JST-GH 6-pin
+    voltage: Selectable 5 V supply with 3.3/5 V logic
+    notes: Primary telemetry ports with CTS/RTS hardware flow control.
+  - name: UART1/7 breakout
+    type: uart
+    interfaces:
+    - uart
+    connector: JST-GH 8-pin
+    notes: Combined harness exposing USART1 and UART7 for auxiliary peripherals or companion links.
+  - name: GPS/I2C
+    type: gps
+    interfaces:
+    - uart
+    - i2c
+    connector: JST-GH 6-pin
+    notes: Provides 5 V power and shared I2C bus for GPS plus external compass modules.
+  - name: FrSky telemetry
+    type: uart
+    interfaces:
+    - frsky
+    - smartport
+    connector: JST-GH 4-pin
+    notes: Dedicated USART8 header for FrSky SmartPort telemetry in/out.
+  - name: RC/RSSI input
+    type: rc
+    interfaces:
+    - ppm
+    - sbus
+    - spektrum
+    - sumd
+    - st24
+    - rssi
+    connector: JST-GH 5-pin
+    voltage: 4.5 V and 3.3 V receiver rails
+    notes: Supports serial RC protocols with separate RSSI voltage input.
+  - name: CAN bus
+    type: can
+    count: 2
+    interfaces:
+    - can
+    connector: JST-GH 4-pin
+    notes: Dual DroneCAN headers powered from the peripheral rail.
+  - name: Power brick
+    type: power
+    interfaces:
+    - power
+    connector: JST-GH 6-pin
+    notes: Regulated 5 V input with current and voltage sense feedback.
+  - name: Servo outputs
+    type: pwm
+    count: 8
+    interfaces:
+    - pwm
+    - dshot
+    connector: 8-channel servo header
+    notes: Outputs support PWM or DShot with selectable 3.3 V/5 V signal level.
+  - name: SPI6 expansion
+    type: spi
+    interfaces:
+    - spi
+    connector: JST-GH 6-pin
+    notes: Auxiliary SPI port for external sensors or logging devices.
+  - name: USB-C
+    type: usb
+    interfaces:
+    - usb
+    connector: USB Type-C
+    notes: Console, firmware flashing, and composite USB interface with secondary SLCAN channel.
+  - name: Buzzer
+    type: buzzer
+    interfaces:
+    - buzzer
+    connector: Onboard driver
+    notes: Integrated piezo buzzer for audible status alerts.
+  - name: RGB status LED
+    type: led
+    interfaces:
+    - led
+    connector: Onboard LED
+    notes: High-visibility RGB status indicator with dedicated driver.
+  - name: MicroSD slot
+    type: storage
+    interfaces:
+    - microsd
+    connector: Push-push microSD
+    notes: Internal microSD card slot for high-rate data logging.
 sensors:
   imu:
   - count: 1

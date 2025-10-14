@@ -12,6 +12,69 @@ io:
   pwm: 12
   ethernet: false
   sd_card: false
+  peripherals:
+  - name: USB
+    type: usb
+    interfaces:
+    - usb
+    connector: USB Type-C
+    notes: Direct flight controller access for configuration, flashing, and log download.
+  - name: UART breakout
+    type: uart
+    count: 7
+    interfaces:
+    - uart
+    - mavlink
+    connector: JST-GH harnesses and solder pads
+    notes: SERIAL1 is reserved for RC input while remaining ports can be assigned to GPS, telemetry, ESC telemetry, or payload links.
+  - name: ESC outputs
+    type: pwm
+    count: 12
+    interfaces:
+    - pwm
+    connector: Dual 8-pin connectors or solder pads
+    notes: Supports DShot-capable motor outputs via two 8-pin ESC headers and mirrored solder pads.
+  - name: RC input
+    type: rc
+    interfaces:
+    - sbus
+    - dsm
+    - crsf
+    - srxl2
+    - fport
+    connector: JST-GH 4-pin
+    notes: Dedicated 4V5 rail powers serial receivers; PPM is not supported on this board.
+  - name: I2C expansion
+    type: i2c
+    interfaces:
+    - i2c
+    connector: JST-GH 4-pin
+    notes: External bus for compass, airspeed, or other DroneCAN accessories that require I2C.
+  - name: DJI video
+    type: video
+    interfaces:
+    - dji
+    connector: DJI HD FPV plug
+    notes: Provides direct connection for DJI Air Unit or Goggles video systems.
+  - name: Power monitor
+    type: power
+    count: 2
+    interfaces:
+    - power
+    connector: 6-pin power monitor inputs
+    notes: Dual current and voltage monitor connectors support redundant power bricks.
+  - name: Buzzer driver
+    type: buzzer
+    interfaces:
+    - buzzer
+    connector: 2-pin JST
+    notes: High-power buzzer output for audible alerts.
+  - name: LED strip
+    type: led
+    interfaces:
+    - led
+    connector: 3-pin JST
+    notes: Addressable LED strip output sharing the 5 V peripheral rail.
 sensors:
   imu:
   - count: 1

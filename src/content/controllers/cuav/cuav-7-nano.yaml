@@ -18,6 +18,87 @@ io:
   pwm: 14
   ethernet: true
   sd_card: true
+  peripherals:
+  - name: TELEM ports
+    type: uart
+    count: 2
+    interfaces:
+    - uart
+    - mavlink
+    connector: JST-GH 6-pin
+    notes: Dual telemetry headers with RTS/CTS flow control for companion links or radios.
+  - name: GPS & safety
+    type: gps
+    interfaces:
+    - uart
+    - i2c
+    - safety
+    connector: JST-GH 10-pin
+    notes: Primary GPS/compass connector carrying safety switch, LED, and buzzer wiring.
+  - name: GPS2
+    type: gps
+    interfaces:
+    - uart
+    - i2c
+    connector: JST-GH 6-pin
+    notes: Secondary GPS or telemetry header sharing the external I2C bus.
+  - name: CAN bus
+    type: can
+    count: 3
+    interfaces:
+    - can
+    connector: JST-GH 4-pin
+    notes: Triple DroneCAN connectors including dedicated power module CAN interface.
+  - name: Power module
+    type: power
+    interfaces:
+    - power
+    - smbus
+    connector: 6-pin power monitor
+    notes: Includes CAN power module with current and voltage telemetry.
+  - name: Ethernet
+    type: ethernet
+    interfaces:
+    - ethernet
+    connector: RJ45 breakout
+    notes: 100 Mbps Ethernet uplink for companion computer networking.
+  - name: RC input
+    type: rc
+    interfaces:
+    - ppm
+    - sbus
+    - dsm
+    - fport
+    - crsf
+    connector: JST-GH 6-pin
+    notes: Supports serial RC receivers when mapped to available UART channels.
+  - name: Servo outputs
+    type: pwm
+    count: 14
+    interfaces:
+    - pwm
+    - dshot
+    connector: Servo breakout
+    notes: Fourteen outputs with selectable 3.3 V or 5 V signal voltage.
+  - name: USB-C
+    type: usb
+    interfaces:
+    - usb
+    connector: USB Type-C
+    notes: Primary configuration and firmware interface.
+  - name: Buzzer and safety switch
+    type: buzzer
+    interfaces:
+    - buzzer
+    - safety
+    connector: JST harness
+    notes: External safety button and audible alert assembly included with the flight controller.
+  - name: MicroSD slot
+    type: storage
+    interfaces:
+    - microsd
+    connector: Internal microSD
+    notes: Onboard microSD card slot for data logging.
 sensors:
   imu:
   - count: 1
