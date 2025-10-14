@@ -25,6 +25,7 @@ const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(
       value: valueProp,
       onValueChange,
       orientation = "horizontal",
+      children,
       ...props
     },
     ref
@@ -64,7 +65,9 @@ const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(
           className={cn("w-full", className)}
           data-orientation={orientation}
           {...props}
-        />
+        >
+          {children}
+        </div>
       </TabsContext.Provider>
     );
   }
