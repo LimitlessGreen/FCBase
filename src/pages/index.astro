@@ -28,15 +28,56 @@ const searchControllers = allControllers.map((controller) => ({
   redundant: controller.data.power?.redundant,
 }));
 
+// Remote preview images for highlighted controllers
+const controllerPreviewImages: Record<string, { src: string; credit: string; sourceUrl?: string }> = {
+  'aocoda-h743dual': {
+    src: 'https://ardupilot.org/copter/_images/aocoda_h743dual.jpg',
+    credit: 'ArduPilot Documentation',
+    sourceUrl: 'https://ardupilot.org/copter/docs/common-aocoda-h743dual.html',
+  },
+  'cuav-7-nano': {
+    src: 'https://ardupilot.org/copter/_images/7-nano.jpg',
+    credit: 'ArduPilot Documentation',
+    sourceUrl: 'https://ardupilot.org/copter/docs/common-CUAV-7-Nano.html',
+  },
+  'cuav-nora': {
+    src: 'https://ardupilot.org/copter/_images/nora.png',
+    credit: 'ArduPilot Documentation',
+    sourceUrl: 'https://ardupilot.org/copter/docs/common-cuav-nora-overview.html',
+  },
+  'cuav-pixhawk-v6x': {
+    src: 'https://ardupilot.org/copter/_images/cuav-pixhawk-v6x.jpg',
+    credit: 'ArduPilot Documentation',
+    sourceUrl: 'https://raw.githubusercontent.com/ArduPilot/ardupilot_wiki/master/common/source/docs/common-cuav-pixhawkv6X.rst',
+  },
+  'cubepilot-cube-black': {
+    src: 'https://ardupilot.org/copter/_images/pixhawk2-overhead.jpg',
+    credit: 'ArduPilot Documentation',
+    sourceUrl: 'https://ardupilot.org/copter/docs/common-thecube-overview.html',
+  },
+  'cubepilot-cube-orange-plus': {
+    src: 'https://ardupilot.org/copter/_images/Cube_orange_module.jpg',
+    credit: 'ArduPilot Documentation',
+    sourceUrl: 'https://ardupilot.org/copter/docs/common-thecubeorange-overview.html',
+  },
+};
+
 // First 6 controllers for grid preview
-const controllers = allControllers.slice(0, 6).map((controller) => ({
-  slug: controller.id,
-  name: controller.data.title,
-  mcu: controller.data.mcu.toUpperCase().replace('STMICRO-', ''),
-  ports: `${controller.data.io.uarts} UART • ${controller.data.io.can} CAN • ${controller.data.io.pwm} PWM`,
-  imageAlt: controller.data.title,
-  badges: controller.data.firmware_support.map(fw => fw.id.toUpperCase()),
-}));
+const controllers = allControllers.slice(0, 6).map((controller) => {
+  const preview = controllerPreviewImages[controller.id];
+
+  return {
+    slug: controller.id,
+    name: controller.data.title,
+    mcu: controller.data.mcu.toUpperCase().replace('STMICRO-', ''),
+    ports: `${controller.data.io.uarts} UART • ${controller.data.io.can} CAN • ${controller.data.io.pwm} PWM`,
+    imageAlt: controller.data.title,
+    imageUrl: preview?.src ?? null,
+    imageCredit: preview?.credit ?? null,
+    imageSource: preview?.sourceUrl ?? null,
+    badges: controller.data.firmware_support.map((fw) => fw.id.toUpperCase()),
+  };
+});
 
 const features = [
   {
@@ -130,10 +171,37 @@ const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
             key={controller.slug}
           >
             <Card client:load class="h-full transition-all hover:shadow-lg hover:-translate-y-1">
-              <div class="relative aspect-video w-full bg-gradient-to-br from-muted via-background to-muted overflow-hidden rounded-t-xl">
-                <span class="absolute inset-0 flex items-center justify-center px-6 text-center text-sm font-medium text-muted-foreground">
-                  {controller.imageAlt}
-                </span>
+              <div class="relative aspect-video w-full overflow-hidden rounded-t-xl bg-gradient-to-br from-muted via-background to-muted">
+                {controller.imageUrl ? (
+                  <>
+                    <img
+                      src={controller.imageUrl}
+                      alt={controller.imageAlt}
+                      loading="lazy"
+                      class="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                    />
+                    {controller.imageCredit && (
+                      <span class="absolute bottom-2 right-2 rounded bg-background/80 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+                        {controller.imageSource ? (
+                          <a
+                            href={controller.imageSource}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="hover:underline"
+                          >
+                            {controller.imageCredit}
+                          </a>
+                        ) : (
+                          controller.imageCredit
+                        )}
+                      </span>
+                    )}
+                  </>
+                ) : (
+                  <span class="absolute inset-0 flex items-center justify-center px-6 text-center text-sm font-medium text-muted-foreground">
+                    {controller.imageAlt}
+                  </span>
+                )}
               </div>
               <CardHeader>
                 <CardTitle class="group-hover:text-primary transition-colors">
