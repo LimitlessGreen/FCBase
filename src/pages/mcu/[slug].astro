@@ -63,12 +63,32 @@ const ramKb =
 
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
 const editPath = `src/content/mcu/${mcu.id}.yaml`;
+const mcuTitle = data.name || data.title || mcu.id;
+const manufacturerName = data.manufacturer || 'Unknown manufacturer';
+const canonicalUrl = Astro.site
+  ? new URL(`mcu/${mcu.id}`, Astro.site).toString()
+  : `${basePath}/mcu/${mcu.id}`;
+const mcuSummary = data.notes
+  ? data.notes
+  : `${mcuTitle} microcontroller from ${manufacturerName}${data.architecture ? ` using the ${data.architecture}` : ''}.`;
 ---
 
 <BaseLayout
   title={`${data.name || data.title || mcu.id} - MCUs - FCBase`}
   description={`Technical profile for ${data.name || data.title || mcu.id}. ${data.manufacturer ? `Manufactured by ${data.manufacturer}. ` : ''}${data.architecture ? `Architecture: ${data.architecture}. ` : ''}${data.notes || ''}`}
 >
+  <Fragment slot="head">
+    <link rel="canonical" href={canonicalUrl} />
+    <meta name="pagefind:meta:id" content={mcu.id} />
+    <meta name="pagefind:meta:type" content="mcu" />
+    <meta name="pagefind:filter:type" content="mcu" />
+    <meta name="pagefind:meta:title" content={mcuTitle} />
+    <meta name="pagefind:meta:manufacturer" content={manufacturerName} />
+    {data.family && <meta name="pagefind:meta:family" content={data.family} />}
+    {data.architecture && <meta name="pagefind:meta:architecture" content={data.architecture} />}
+    <meta name="pagefind:meta:summary" content={mcuSummary} />
+    <meta name="pagefind:meta:url" content={canonicalUrl} />
+  </Fragment>
   <MainLayout editPath={editPath} showEditBar>
     <div class="container py-8">
       <nav class="mb-6 flex items-center gap-2 text-sm text-muted-foreground">

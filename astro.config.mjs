@@ -1,10 +1,8 @@
 import { defineConfig } from "astro/config";
 import { execSync } from "node:child_process";
-import { fileURLToPath } from "node:url";
-import path from "node:path";
 import react from "@astrojs/react";
 import tailwindcss from "@tailwindcss/vite";
-import { buildControllerPagefindIndex } from "./scripts/build-pagefind-index.mjs";
+import pagefind from "astro-pagefind";
 
 function getGitValue(command) {
   try {
@@ -61,58 +59,21 @@ const githubRepoUrl =
   deriveGithubRepoUrl(remoteOriginUrl) || "https://github.com/LimitlessGreen/FCBase";
 const githubEditBaseUrl = githubRepoUrl ? `${githubRepoUrl}/edit/${currentBranch}` : "";
 
-const pagefindIntegration = () => ({
-  name: "fcbase-pagefind",
-  hooks: {
-    "astro:build:done": async ({ dir }) => {
-      const outputDir = path.join(fileURLToPath(dir), "pagefind");
-      console.info(`[pagefind] Building controller search index at ${outputDir}`);
-      await buildControllerPagefindIndex({ outputDir });
-    },
-  },
-});
-
-// Vite plugin to handle pagefind imports in dev mode
-const pagefindDevPlugin = () => ({
-  name: "pagefind-dev-handler",
-  resolveId(id) {
-    if (id === "/pagefind/pagefind.js") {
-      return id;
-    }
-  },
-  load(id) {
-    if (id === "/pagefind/pagefind.js") {
-      // Return a mock module for dev mode
-      return `
-        export async function init() {
-          throw new Error("Pagefind not available in dev mode");
-        }
-        export async function search() {
-          return { results: [] };
-        }
-        export async function filters() {
-          return {};
-        }
-      `;
-    }
-  },
-});
-
 export default defineConfig({
   site: "https://limitlessgreen.github.io",
   base: "/FCBase",
   output: "static",
   integrations: [
     react(),
-    pagefindIntegration(),
+    pagefind({
+      indexConfig: {
+        forceLanguage: "en",
+        keepIndexUrl: true,
+      },
+    }),
   ],
   vite: {
-    plugins: [tailwindcss(), pagefindDevPlugin()],
-    build: {
-      rollupOptions: {
-        external: ["/pagefind/pagefind.js"],
-      },
-    },
+    plugins: [tailwindcss()],
     define: {
       "import.meta.env.PUBLIC_GIT_COMMIT_HASH": JSON.stringify(commitHashShort),
       "import.meta.env.PUBLIC_GIT_COMMIT_HASH_FULL": JSON.stringify(commitHashFull),

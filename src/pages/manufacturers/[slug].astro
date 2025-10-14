@@ -31,12 +31,27 @@ const controllerCards = await createControllerCardModels(manufacturerControllers
 
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
 const editPath = `src/content/manufacturers/${manufacturer.id}.yaml`;
+const manufacturerName = data.name || manufacturer.id;
+const canonicalUrl = Astro.site
+  ? new URL(`manufacturers/${manufacturer.id}`, Astro.site).toString()
+  : `${basePath}/manufacturers/${manufacturer.id}`;
+const manufacturerSummary = data.description || `Manufacturer profile for ${manufacturerName} with ${manufacturerControllers.length} documented controllers.`;
 ---
 
 <BaseLayout
   title={`${data.name} - Manufacturers - FCBase`}
   description={`${data.name} flight controllers. ${data.description || ''} Browse all ${manufacturerControllers.length} controllers.`}
 >
+  <Fragment slot="head">
+    <link rel="canonical" href={canonicalUrl} />
+    <meta name="pagefind:meta:id" content={manufacturer.id} />
+    <meta name="pagefind:meta:type" content="manufacturer" />
+    <meta name="pagefind:filter:type" content="manufacturer" />
+    <meta name="pagefind:meta:title" content={manufacturerName} />
+    <meta name="pagefind:meta:summary" content={manufacturerSummary} />
+    <meta name="pagefind:meta:url" content={canonicalUrl} />
+    {data.website && <meta name="pagefind:meta:website" content={data.website} />}
+  </Fragment>
   <MainLayout editPath={editPath} showEditBar>
     <div class="container py-8">
       <!-- Breadcrumb -->
