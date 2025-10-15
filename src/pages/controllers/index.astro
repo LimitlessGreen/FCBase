@@ -5,6 +5,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/Tabs';
 import { createControllerCardModel } from '@/lib/controller-card-model';
 import MainLayout from '@/layouts/MainLayout.astro';
 import { getBasePath } from '@/lib/paths';
+import { LayoutGrid, Rows3 } from 'lucide-react';
 
 const controllers = await getCollection('controllers');
 const manufacturers = await getCollection('manufacturers');
@@ -68,11 +69,33 @@ const basePath = getBasePath();
               Explore {totalControllers} flight controllers organised by manufacturer.
             </p>
           </div>
-          <div class="flex flex-col items-start gap-2 sm:items-end">
-            <span id="view-mode-label" class="sr-only">Select controller view</span>
-            <TabsList aria-labelledby="view-mode-label">
-              <TabsTrigger value="grid">Grid view</TabsTrigger>
-              <TabsTrigger value="compact">Compact view</TabsTrigger>
+          <div class="flex flex-col gap-2 sm:items-end">
+            <span
+              id="view-mode-label"
+              class="text-xs font-semibold uppercase tracking-wide text-muted-foreground"
+            >
+              View mode
+            </span>
+            <TabsList
+              aria-labelledby="view-mode-label"
+              className="grid w-full max-w-[320px] grid-cols-2 gap-1 rounded-full bg-muted/70 p-1 sm:w-auto"
+            >
+              <TabsTrigger
+                value="grid"
+                className="flex h-10 items-center justify-center gap-2 px-3 text-sm font-medium"
+              >
+                <LayoutGrid className="h-4 w-4" aria-hidden="true" />
+                <span class="hidden sm:inline">Grid view</span>
+                <span class="sm:hidden">Grid</span>
+              </TabsTrigger>
+              <TabsTrigger
+                value="compact"
+                className="flex h-10 items-center justify-center gap-2 px-3 text-sm font-medium"
+              >
+                <Rows3 className="h-4 w-4" aria-hidden="true" />
+                <span class="hidden sm:inline">Compact view</span>
+                <span class="sm:hidden">Compact</span>
+              </TabsTrigger>
             </TabsList>
           </div>
         </div>
