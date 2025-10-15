@@ -87,7 +87,9 @@ const aspectClasses = {
 const imageAlt = image?.alt || title;
 
 const localPicture = image?.src && typeof image.src !== 'string'
-  ? await buildResponsivePicture(image.src, '(max-width: 1024px) 100vw, 360px')
+  ? await buildResponsivePicture(image.src, '(max-width: 1024px) 100vw, 360px', {
+      widths: [320, 640, 960, 1280],
+    })
   : null;
 
 const remoteImage = image?.src && typeof image.src === 'string'
