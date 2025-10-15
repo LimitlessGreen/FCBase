@@ -134,14 +134,6 @@ const hasKnownIssues = knownIssues.length > 0;
 >
   <Fragment slot="head">
     <link rel="canonical" href={canonicalUrl} />
-    <meta name="pagefind:meta:id" content={sensor.id} />
-    <meta name="pagefind:meta:type" content="sensor" />
-    <meta name="pagefind:filter:type" content="sensor" />
-    <meta name="pagefind:meta:title" content={sensorTitle} />
-    {data.manufacturer && <meta name="pagefind:meta:manufacturer" content={data.manufacturer} />}
-    {data.type && <meta name="pagefind:meta:sensor_type" content={data.type} />}
-    <meta name="pagefind:meta:summary" content={sensorSummary} />
-    <meta name="pagefind:meta:url" content={canonicalUrl} />
   </Fragment>
     <div class="container py-8">
       <!-- Breadcrumb -->

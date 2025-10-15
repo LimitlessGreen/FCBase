@@ -81,15 +81,6 @@ const mcuSummary = data.notes
 >
   <Fragment slot="head">
     <link rel="canonical" href={canonicalUrl} />
-    <meta name="pagefind:meta:id" content={mcu.id} />
-    <meta name="pagefind:meta:type" content="mcu" />
-    <meta name="pagefind:filter:type" content="mcu" />
-    <meta name="pagefind:meta:title" content={mcuTitle} />
-    <meta name="pagefind:meta:manufacturer" content={manufacturerName} />
-    {data.family && <meta name="pagefind:meta:family" content={data.family} />}
-    {data.architecture && <meta name="pagefind:meta:architecture" content={data.architecture} />}
-    <meta name="pagefind:meta:summary" content={mcuSummary} />
-    <meta name="pagefind:meta:url" content={canonicalUrl} />
   </Fragment>
     <div class="container py-8">
       <nav class="mb-6 flex items-center gap-2 text-sm text-muted-foreground">
