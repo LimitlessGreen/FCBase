@@ -1,0 +1,184 @@
+id: holybro-pixhawk-6x-pro
+title: Holybro Pixhawk 6X Pro
+brand: holybro
+mcu: stmicro-stm32h753
+mounting: cube
+power:
+  inputs:
+  - name: POWER1
+    type: power_module
+    connector: Molex CLIK-Mate 2.0mm 6-pin
+    voltage:
+      min: 4.9
+      max: 5.5
+      unit: V
+    notes: Primary redundant power module input with SMBus battery telemetry.
+  - name: POWER2
+    type: power_module
+    connector: Molex CLIK-Mate 2.0mm 6-pin
+    voltage:
+      min: 4.9
+      max: 5.5
+      unit: V
+    notes: Secondary redundant power module input sharing SMBus battery monitoring.
+  - name: USB
+    type: usb
+    connector: USB Type-C
+    voltage:
+      min: 4.75
+      max: 5.25
+      unit: V
+  - name: SERVO_RAIL
+    type: servo_rail
+    voltage:
+      min: 0
+      max: 36
+      unit: V
+    notes: High-voltage tolerant PWM rail isolated from FMU power domains.
+  redundant: true
+  notes: Triple-redundant supply automatically prioritises POWER1/POWER2 before USB; servo rail remains isolated to avoid backfeeding.
+io:
+  uarts: 8
+  can: 2
+  pwm: 16
+  ethernet: true
+  sd_card: true
+  peripherals:
+  - name: PWM outputs
+    type: pwm
+    count: 16
+    interfaces:
+    - pwm
+    - dshot
+    connector: Baseboard servo banks
+    notes: Eight FMU PWM outputs and eight I/O PWM outputs support traditional PWM with DShot on the FMU groups.
+  - name: RC inputs
+    type: rc
+    interfaces:
+    - dsm
+    - ppm
+    - sbus
+    connector: JST GH RC ports
+    notes: Dedicated Spektrum/DSM and PPM/S.Bus headers with isolated RSSI output and S.Bus pass-through.
+  - name: RSSI and S.Bus out
+    type: rssi
+    interfaces:
+    - pwm
+    - analog
+    connector: JST GH 3-pin
+    notes: Provides analog or PWM RSSI monitoring alongside S.Bus output for secondary receivers.
+  - name: Telemetry ports
+    type: uart
+    count: 4
+    interfaces:
+    - uart
+    - mavlink
+    connector: JST GH 6-pin
+    notes: Three ports expose RTS/CTS flow control while TELEM1 supplies a dedicated 1.5 A peripheral rail and UART4 shares I2C/GPIO lines.
+  - name: GPS ports
+    type: gps
+    count: 2
+    interfaces:
+    - uart
+    - i2c
+    connector: JST GH 10-pin and 6-pin
+    notes: Primary GPS includes safety switch, buzzer, and I2C compass while secondary GPS provides a minimalist UART/I2C header.
+  - name: CAN buses
+    type: can
+    count: 2
+    interfaces:
+    - can
+    connector: JST GH 4-pin
+    notes: Dual CAN-FD ports feature per-channel silent controls and ESC RX-MUX support for DroneCAN peripherals.
+  - name: Ethernet
+    type: ethernet
+    interfaces:
+    - ethernet
+    connector: Pixhawk Autopilot Bus Ethernet header
+    notes: 100 Mbps transformerless interface for companion computer links on compliant baseboards.
+  - name: I2C expansion
+    type: i2c
+    interfaces:
+    - i2c
+    connector: JST GH 4-pin
+    notes: Dedicated auxiliary I2C port plus shared lines on UART4 for external peripherals.
+  - name: SPI expansion
+    type: spi
+    interfaces:
+    - spi
+    connector: Pixhawk Autopilot Bus SPI header
+    notes: External SPI bus offers two chip selects, data-ready lines, SYNC, and reset for payload integration.
+  - name: Power module inputs
+    type: power
+    count: 2
+    interfaces:
+    - power
+    - smbus
+    connector: Molex CLIK-Mate 2.0mm 6-pin
+    notes: Dual SMBus-enabled power module connectors support smart batteries and redundant monitoring.
+  - name: Analog inputs
+    type: analog
+    count: 2
+    interfaces:
+    - analog
+    connector: JST GH 4-pin
+    notes: 3.3 V and 6.6 V tolerant ADC channels for payload monitoring and voltage sensing.
+  - name: PWM capture
+    type: pwm
+    interfaces:
+    - pwm
+    connector: JST GH 3-pin
+    notes: Dedicated capture input for camera trigger or event timing on the AD&IO port.
+  - name: Debug and GPIO
+    type: debug
+    interfaces:
+    - swd
+    - uart
+    connector: JST GH 6-pin
+    notes: FMU debug header exposes console serial and SWD for firmware development.
+  - name: MicroSD slot
+    type: storage
+    interfaces:
+    - microsd
+    connector: Internal microSD
+    notes: Vibration-isolated core module includes removable microSD storage for high-rate logging.
+sensors:
+  imu:
+  - count: 1
+    id: analogdevices-adis16470
+  - count: 1
+    id: invensense-iim42652
+  - count: 1
+    id: invensense-icm45686
+  barometer:
+  - count: 1
+    id: tdk-icp20100
+  - count: 1
+    id: bosch-bmp388
+  magnetometer:
+  - count: 1
+    id: bosch-bmm150
+features:
+- Triple-redundant IMU architecture with independent power domains and temperature control.
+- Integrated Ethernet interface for companion computers via Pixhawk Autopilot Bus baseboards.
+- Modular core/baseboard split compatible with Pixhawk Autopilot Bus standard accessories.
+firmware_support:
+- id: ardupilot
+  status: stable
+- id: px4
+  status: stable
+sources:
+- ardupilot-pixhawk6x
+- px4-pixhawk6x-pro
+verification:
+  last_updated: "2025-10-15"
+  level: community
+hardware:
+  openness: closed
+keywords:
+- ardupilot
+- holybro
+- pixhawk
+- px4
+- stm32h753
+notes: Four general-purpose serial ports provide three hardware flow-control interfaces plus a combined UART/I2C expansion bus for NFC readers or payloads.
