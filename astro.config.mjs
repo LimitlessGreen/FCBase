@@ -2,7 +2,6 @@ import { defineConfig } from "astro/config";
 import { execSync } from "node:child_process";
 import react from "@astrojs/react";
 import tailwindcss from "@tailwindcss/vite";
-import pagefind from "astro-pagefind";
 
 function getGitValue(command) {
   try {
@@ -63,15 +62,7 @@ export default defineConfig({
   site: "https://limitlessgreen.github.io",
   base: "/FCBase",
   output: "static",
-  integrations: [
-    react(),
-    pagefind({
-      indexConfig: {
-        forceLanguage: "en",
-        keepIndexUrl: true,
-      },
-    }),
-  ],
+  integrations: [react()],
   vite: {
     plugins: [tailwindcss()],
     define: {

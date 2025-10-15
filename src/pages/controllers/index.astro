@@ -1,10 +1,31 @@
 ---
 import { getCollection } from 'astro:content';
 import MainLayout from '@/layouts/MainLayout.astro';
-import ControllerSearch from '@/components/search/ControllerSearch';
 import { getBasePath } from '@/lib/paths';
 
 const controllers = await getCollection('controllers');
+const manufacturers = await getCollection('manufacturers');
+
+const manufacturerMap = new Map(manufacturers.map((entry) => [entry.id, entry]));
+
+const controllerGroups = manufacturers
+  .map((manufacturer) => {
+    const manufacturerControllers = controllers
+      .filter((controller) => controller.data.brand === manufacturer.id)
+      .sort((a, b) => a.data.title.localeCompare(b.data.title));
+
+    return {
+      manufacturer,
+      controllers: manufacturerControllers,
+    };
+  })
+  .filter((group) => group.controllers.length > 0)
+  .sort((a, b) => a.manufacturer.data.name.localeCompare(b.manufacturer.data.name));
+
+const unassignedControllers = controllers
+  .filter((controller) => !manufacturerMap.has(controller.data.brand))
+  .sort((a, b) => a.data.title.localeCompare(b.data.title));
+
 const totalControllers = controllers.length;
 const basePath = getBasePath();
 ---
@@ -16,37 +37,129 @@ const basePath = getBasePath();
 >
     <div class="container py-8">
       <!-- Header -->
-      <div class="mb-8">
+      <div class="mb-10">
         <nav class="mb-4 flex items-center gap-2 text-sm text-muted-foreground">
           <a href={`${basePath}/`} class="hover:text-foreground transition-colors">Home</a>
           <span>/</span>
           <span class="text-foreground">Controllers</span>
         </nav>
-        
+
         <h1 class="text-4xl font-bold tracking-tight mb-3">Flight Controllers</h1>
         <p class="text-lg text-muted-foreground">
-          Browse {totalControllers} flight controllers from various manufacturers
+          Explore {totalControllers} flight controllers organised by manufacturer.
         </p>
       </div>
 
-      <!-- Search & Filters -->
-      <div class="mb-10 space-y-6">
-        <div class="flex flex-col gap-2 text-center">
-          <h2 class="text-2xl font-semibold tracking-tight md:text-3xl">Find your flight controller</h2>
-          <p class="text-base text-muted-foreground md:text-lg">
-            Pagefind provides instant search with MCU, mounting, CAN, MicroSD, and lifecycle facets generated at build-time.
-          </p>
-        </div>
-        <ControllerSearch client:load totalControllers={totalControllers} />
-      </div>
+      <div class="space-y-12">
+        {controllerGroups.map((group) => (
+          <section id={`manufacturer-${group.manufacturer.id}`} class="space-y-4" aria-labelledby={`manufacturer-${group.manufacturer.id}-heading`}>
+            <div class="flex flex-wrap items-baseline justify-between gap-2">
+              <h2 id={`manufacturer-${group.manufacturer.id}-heading`} class="text-2xl font-semibold tracking-tight">
+                {group.manufacturer.data.name}
+              </h2>
+              <span class="text-sm text-muted-foreground">
+                {group.controllers.length} {group.controllers.length === 1 ? 'controller' : 'controllers'}
+              </span>
+            </div>
+            {group.manufacturer.data.description && (
+              <p class="text-sm text-muted-foreground max-w-3xl">
+                {group.manufacturer.data.description}
+              </p>
+            )}
+            <ul class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+              {group.controllers.map((controller) => (
+                <li key={controller.id}>
+                  <a
+                    href={`${basePath}/controllers/${controller.id}/`}
+                    class="group block h-full rounded-xl border bg-card text-card-foreground shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg"
+                  >
+                    <div class="flex h-full flex-col gap-4 p-5">
+                      <div class="space-y-1">
+                        <h3 class="text-lg font-semibold leading-tight transition-colors group-hover:text-primary">
+                          {controller.data.title}
+                        </h3>
+                        {controller.data.model && (
+                          <p class="text-sm text-muted-foreground">
+                            {controller.data.model}
+                          </p>
+                        )}
+                      </div>
+                      <div class="space-y-1 text-sm text-muted-foreground">
+                        {controller.data.mcu && (
+                          <p><span class="font-medium text-foreground">MCU:</span> {controller.data.mcu}</p>
+                        )}
+                        {controller.data.mounting && (
+                          <p><span class="font-medium text-foreground">Mounting:</span> {controller.data.mounting}</p>
+                        )}
+                        {typeof controller.data.io?.uarts === 'number' && (
+                          <p><span class="font-medium text-foreground">UARTs:</span> {controller.data.io.uarts}</p>
+                        )}
+                      </div>
+                      {controller.data.firmware_support?.length > 0 && (
+                        <div class="mt-auto text-xs text-muted-foreground">
+                          Firmware: {controller.data.firmware_support.map((fw) => fw.id).join(', ')}
+                        </div>
+                      )}
+                    </div>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))}
 
-      <noscript>
-        <div class="rounded-lg border border-dashed bg-muted/20 p-6 text-sm text-muted-foreground">
-          <p class="font-medium text-foreground">Interactive search requires JavaScript.</p>
-          <p>
-            Enable JavaScript or browse individual controller pages from the sitemap to explore the full FCBase catalogue.
-          </p>
-        </div>
-      </noscript>
+        {unassignedControllers.length > 0 && (
+          <section class="space-y-4" aria-labelledby="unassigned-heading">
+            <div class="flex flex-wrap items-baseline justify-between gap-2">
+              <h2 id="unassigned-heading" class="text-2xl font-semibold tracking-tight">Other controllers</h2>
+              <span class="text-sm text-muted-foreground">
+                {unassignedControllers.length} {unassignedControllers.length === 1 ? 'controller' : 'controllers'}
+              </span>
+            </div>
+            <p class="text-sm text-muted-foreground max-w-3xl">
+              These controllers are not currently linked to a registered manufacturer.
+            </p>
+            <ul class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+              {unassignedControllers.map((controller) => (
+                <li key={controller.id}>
+                  <a
+                    href={`${basePath}/controllers/${controller.id}/`}
+                    class="group block h-full rounded-xl border bg-card text-card-foreground shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg"
+                  >
+                    <div class="flex h-full flex-col gap-4 p-5">
+                      <div class="space-y-1">
+                        <h3 class="text-lg font-semibold leading-tight transition-colors group-hover:text-primary">
+                          {controller.data.title}
+                        </h3>
+                        {controller.data.model && (
+                          <p class="text-sm text-muted-foreground">
+                            {controller.data.model}
+                          </p>
+                        )}
+                      </div>
+                      <div class="space-y-1 text-sm text-muted-foreground">
+                        {controller.data.mcu && (
+                          <p><span class="font-medium text-foreground">MCU:</span> {controller.data.mcu}</p>
+                        )}
+                        {controller.data.mounting && (
+                          <p><span class="font-medium text-foreground">Mounting:</span> {controller.data.mounting}</p>
+                        )}
+                        {typeof controller.data.io?.uarts === 'number' && (
+                          <p><span class="font-medium text-foreground">UARTs:</span> {controller.data.io.uarts}</p>
+                        )}
+                      </div>
+                      {controller.data.firmware_support?.length > 0 && (
+                        <div class="mt-auto text-xs text-muted-foreground">
+                          Firmware: {controller.data.firmware_support.map((fw) => fw.id).join(', ')}
+                        </div>
+                      )}
+                    </div>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+      </div>
     </div>
 </MainLayout>

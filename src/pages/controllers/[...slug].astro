@@ -179,38 +179,10 @@ const ogImageUrl = Astro.site
 const ogImageAlt = `${data.title} flight controller technical summary`;
 
 const mcuFamilyName = mcu?.data.family ?? data.mcu_family ?? null;
-const lifecycleRaw =
-  data.lifecycle ??
-  data.hardware?.lifecycle ??
-  data.product?.lifecycle ??
-  data.status?.lifecycle ??
-  null;
-const lifecycleFilter = lifecycleRaw ? String(lifecycleRaw).toLowerCase() : null;
 const hasSdCard = data.io?.sd_card === true;
 const canCount = typeof data.io?.can === 'number' ? data.io.can : null;
 const hasCanBus = typeof canCount === 'number' ? canCount > 0 : Boolean(data.io?.can === true);
 const uartsCount = typeof data.io?.uarts === 'number' ? data.io.uarts : null;
-const firmwareStatusFilters = Array.isArray(data.firmware_support)
-  ? Array.from(
-      new Set(
-        data.firmware_support
-          .map((fw) => (fw?.status ? String(fw.status).toLowerCase() : null))
-          .filter(Boolean)
-      )
-    )
-  : [];
-const firmwareStatusLabels = Array.isArray(data.firmware_support)
-  ? Array.from(
-      new Set(
-        data.firmware_support
-          .map((fw) => (fw?.status ? String(fw.status) : null))
-          .filter(Boolean)
-      )
-    )
-  : [];
-const pagefindSummary = summaryResult.summary ?? pageDescription;
-const pagefindImage =
-  previewImage && typeof previewImage.src === 'string' ? previewImage.src : ogImageUrl;
 const additionalProperties = [
   data.mcu
     ? { '@type': 'PropertyValue', name: 'MCU', value: mcuName ?? data.mcu }
@@ -517,46 +489,6 @@ const hasLinkItems = linkItems.length > 0;
 >
   <Fragment slot="head">
     <link rel="canonical" href={canonicalUrl} />
-    <meta name="pagefind:meta:id" content={controller.id} />
-    <meta name="pagefind:meta:type" content="controller" />
-    <meta name="pagefind:meta:title" content={data.title} />
-    {manufacturerName && <meta name="pagefind:meta:brand_name" content={manufacturerName} />}
-    {mcuName && <meta name="pagefind:meta:mcu" content={mcuName} />}
-    {mcuFamilyName && <meta name="pagefind:meta:mcu_family" content={mcuFamilyName} />}
-    {data.mounting && <meta name="pagefind:meta:mounting" content={data.mounting} />}
-    {formattedMounting && (
-      <meta name="pagefind:meta:mounting_display" content={formattedMounting} />
-    )}
-    {typeof uartsCount === 'number' && (
-      <meta name="pagefind:meta:io_uarts" content={String(uartsCount)} />
-    )}
-    {typeof canCount === 'number' && (
-      <meta name="pagefind:meta:io_can" content={String(canCount)} />
-    )}
-    <meta name="pagefind:meta:has_can" content={hasCanBus ? 'true' : 'false'} />
-    <meta name="pagefind:meta:has_sd" content={hasSdCard ? 'true' : 'false'} />
-    {lifecycleFilter && <meta name="pagefind:meta:lifecycle" content={lifecycleFilter} />}
-    <meta name="pagefind:meta:image" content={pagefindImage} />
-    <meta name="pagefind:meta:summary" content={pagefindSummary} />
-    <meta name="pagefind:meta:url" content={canonicalUrl} />
-    <meta name="pagefind:filter:type" content="controller" />
-    {mcuFamilyName && <meta name="pagefind:filter:mcu_family" content={mcuFamilyName} />}
-    {data.mounting && <meta name="pagefind:filter:mounting" content={data.mounting} />}
-    {typeof uartsCount === 'number' && (
-      <meta name="pagefind:filter:io_uarts" content={String(uartsCount)} />
-    )}
-    {typeof canCount === 'number' && (
-      <meta name="pagefind:filter:io_can" content={String(canCount)} />
-    )}
-    <meta name="pagefind:filter:has_can" content={hasCanBus ? 'true' : 'false'} />
-    <meta name="pagefind:filter:has_sd" content={hasSdCard ? 'true' : 'false'} />
-    {lifecycleFilter && <meta name="pagefind:filter:lifecycle" content={lifecycleFilter} />}
-    {firmwareStatusFilters.map((status) => (
-      <meta name="pagefind:filter:firmware_status" content={status} />
-    ))}
-    {firmwareStatusLabels.map((status) => (
-      <meta name="pagefind:meta:firmware_status" content={status} />
-    ))}
     <meta property="og:title" content={ogTitle} />
     <meta property="og:description" content={pageDescription} />
     <meta property="og:type" content="product" />

@@ -46,13 +46,6 @@ const manufacturerSummary = data.description || `Manufacturer profile for ${manu
 >
   <Fragment slot="head">
     <link rel="canonical" href={canonicalUrl} />
-    <meta name="pagefind:meta:id" content={manufacturer.id} />
-    <meta name="pagefind:meta:type" content="manufacturer" />
-    <meta name="pagefind:filter:type" content="manufacturer" />
-    <meta name="pagefind:meta:title" content={manufacturerName} />
-    <meta name="pagefind:meta:summary" content={manufacturerSummary} />
-    <meta name="pagefind:meta:url" content={canonicalUrl} />
-    {data.website && <meta name="pagefind:meta:website" content={data.website} />}
   </Fragment>
     <div class="container py-8">
       <!-- Breadcrumb -->
