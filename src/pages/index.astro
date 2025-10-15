@@ -57,13 +57,13 @@ const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
           The open hardware knowledge base for the ArduPilot, PX4, and iNAV ecosystems. Discover flight controllers, EdgeTX transmitters, compare specifications, and plan your next build.
         </p>
         <div class="flex flex-col sm:flex-row flex-wrap gap-3 md:gap-4 justify-center mt-2 md:mt-4 w-full sm:w-auto">
-          <Button size="lg" asChild client:load class="w-full sm:w-auto">
+          <Button size="lg" asChild class="w-full sm:w-auto">
             <a href={`${basePath}/controllers`}>Browse Controllers</a>
           </Button>
-          <Button variant="outline" size="lg" asChild client:load class="w-full sm:w-auto">
+          <Button variant="outline" size="lg" asChild class="w-full sm:w-auto">
             <a href={`${basePath}/transmitters`}>Browse Transmitters</a>
           </Button>
-          <Button variant="outline" size="lg" asChild client:load class="w-full sm:w-auto">
+          <Button variant="outline" size="lg" asChild class="w-full sm:w-auto">
             <a href={`${basePath}/contribute`}>Contribute</a>
           </Button>
         </div>
@@ -76,7 +76,7 @@ const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
     <div class="container">
       <div class="grid gap-6 md:gap-8 sm:grid-cols-2 lg:grid-cols-3">
         {features.map((feature) => (
-          <Card key={feature.title} client:load>
+          <Card key={feature.title}>
             <CardHeader>
               <CardTitle>{feature.title}</CardTitle>
               <CardDescription>{feature.description}</CardDescription>
@@ -102,7 +102,7 @@ const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
 
         <div class="grid gap-4 sm:grid-cols-2">
           <a href={`${basePath}/controllers`} class="group">
-            <Card client:load class="h-full transition-colors group-hover:border-primary">
+            <Card class="h-full transition-colors group-hover:border-primary">
               <CardHeader>
                 <CardTitle class="text-xl">Flight Controllers</CardTitle>
                 <CardDescription>
@@ -110,14 +110,14 @@ const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <Button variant="outline" class="w-full" client:load>
+                <Button variant="outline" class="w-full">
                   Browse flight controllers
                 </Button>
               </CardContent>
             </Card>
           </a>
           <a href={`${basePath}/transmitters`} class="group">
-            <Card client:load class="h-full transition-colors group-hover:border-primary">
+            <Card class="h-full transition-colors group-hover:border-primary">
               <CardHeader>
                 <CardTitle class="text-xl">Transmitters</CardTitle>
                 <CardDescription>
@@ -125,7 +125,7 @@ const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <Button variant="outline" class="w-full" client:load>
+                <Button variant="outline" class="w-full">
                   Browse transmitters
                 </Button>
               </CardContent>
@@ -173,10 +173,10 @@ const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
           Help us build the most comprehensive flight controller database. Add new boards, update specifications, or improve documentation.
         </p>
         <div class="flex flex-col sm:flex-row flex-wrap gap-3 md:gap-4 justify-center mt-2 md:mt-4 w-full sm:w-auto px-4">
-          <Button variant="secondary" size="lg" asChild client:load class="w-full sm:w-auto">
+          <Button variant="secondary" size="lg" asChild class="w-full sm:w-auto">
             <a href={GITHUB_REPO_URL}>View on GitHub</a>
           </Button>
-          <Button variant="outline" size="lg" asChild client:load class="w-full sm:w-auto bg-primary-foreground/10 hover:bg-primary-foreground/20 text-primary-foreground border-primary-foreground/20">
+          <Button variant="outline" size="lg" asChild class="w-full sm:w-auto bg-primary-foreground/10 hover:bg-primary-foreground/20 text-primary-foreground border-primary-foreground/20">
             <a href={`${basePath}/docs`}>Read Documentation</a>
           </Button>
         </div>

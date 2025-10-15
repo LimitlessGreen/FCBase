@@ -83,7 +83,7 @@ const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
                 href={`${basePath}/sensors/${sensor.id}`}
                 class="group block"
               >
-                <Card client:load class="h-full transition-all hover:shadow-lg hover:-translate-y-1">
+                <Card class="h-full transition-all hover:shadow-lg hover:-translate-y-1">
                   <CardHeader>
                     <CardTitle className="text-base group-hover:text-primary transition-colors line-clamp-2">
                       {sensor.data.name || sensor.data.title || sensor.id}
