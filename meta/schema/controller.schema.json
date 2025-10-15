@@ -103,7 +103,7 @@
         "count": { "type": "integer", "minimum": 1 },
         "interfaces": {
           "type": "array",
-          "items": { "type": "string", "pattern": "^[a-z0-9_\-]+$" },
+          "items": { "type": "string", "pattern": "^[a-z0-9_-]+$" },
           "minItems": 1
         },
         "connector": { "type": "string" },
@@ -228,6 +228,25 @@
         "description": { "type": "string" }
       }
     },
+    "controllerImage": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "type": {
+          "type": "string",
+          "enum": ["hero", "gallery", "detail"]
+        },
+        "alt": { "type": "string" },
+        "credit": { "type": "string" },
+        "source_url": { "type": "string", "format": "uri" },
+        "src": { "type": "string", "minLength": 1 },
+        "url": { "type": "string", "format": "uri" },
+        "width": { "type": "integer", "minimum": 1 },
+        "height": { "type": "integer", "minimum": 1 }
+      },
+      "required": ["alt"]
+    },
     "links": {
       "type": "object",
       "additionalProperties": false,
@@ -316,7 +335,6 @@
     "dimensions": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["width_mm", "length_mm"],
       "properties": {
         "width_mm": { "type": "number" },
         "length_mm": { "type": "number" },
@@ -325,6 +343,10 @@
       }
     },
     "power": { "$ref": "#/definitions/powerSpec" },
+    "images": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/controllerImage" }
+    },
     "io": { "$ref": "#/definitions/ioSpec" },
     "peripheral_ports": {
       "type": "array",
