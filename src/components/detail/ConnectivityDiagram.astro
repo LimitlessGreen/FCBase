@@ -1,0 +1,246 @@
+---
+import type { ControllerData } from '@/content/config';
+import { formatPeripheralType } from '@/lib/data-utils';
+import { getPortTypeMeta } from '@/lib/port-metadata';
+import { cn } from '@/lib/utils';
+
+type PeripheralPort = NonNullable<ControllerData['peripheral_ports']>[number];
+
+interface Props {
+  ports: PeripheralPort[];
+  controllerTitle?: string;
+  summary?: string | null;
+}
+
+const {
+  ports = [],
+  controllerTitle = 'Controller I/O',
+  summary = null,
+} = Astro.props as Props;
+
+const filteredPorts = ports.filter((port) => Boolean(port && port.port));
+const totalPorts = filteredPorts.length;
+
+const groupMap = new Map<
+  string,
+  {
+    typeKey: string;
+    ports: PeripheralPort[];
+  }
+>();
+
+for (const port of filteredPorts) {
+  const rawType = typeof port.type === 'string' ? port.type : 'other';
+  const normalized = rawType.toLowerCase();
+  const existing = groupMap.get(normalized);
+  if (existing) {
+    existing.ports.push(port);
+  } else {
+    groupMap.set(normalized, { typeKey: normalized, ports: [port] });
+  }
+}
+
+const groups = Array.from(groupMap.values())
+  .map((entry) => {
+    const meta = getPortTypeMeta(entry.typeKey);
+    const label = formatPeripheralType(entry.typeKey ?? 'other');
+    const ports = [...entry.ports].sort((a, b) => a.port.localeCompare(b.port));
+    const defaultUse = ports.find((port) => Boolean(port.default_use))?.default_use ?? null;
+
+    return {
+      typeKey: entry.typeKey,
+      label,
+      meta,
+      ports,
+      count: ports.length,
+      defaultUse,
+    };
+  })
+  .sort((a, b) => {
+    if (b.count !== a.count) {
+      return b.count - a.count;
+    }
+    return a.label.localeCompare(b.label);
+  });
+
+const typeCount = groups.length;
+
+const radiusRem =
+  typeCount <= 4
+    ? 7.5
+    : typeCount <= 6
+    ? 8.75
+    : typeCount <= 8
+    ? 9.75
+    : typeCount <= 12
+    ? 10.5
+    : 11.25;
+
+const angleStep = typeCount > 0 ? 360 / typeCount : 0;
+---
+{typeCount > 0 ? (
+  <div class="space-y-4">
+    <div
+      class="io-diagram relative mx-auto aspect-square w-full max-w-xl"
+      style={`--diagram-radius: ${radiusRem}rem;`}
+    >
+      <div class="diagram-core">
+        <span class="text-[11px] uppercase tracking-[0.3em] text-muted-foreground/80">
+          I/O Topology
+        </span>
+        <h5 class="mt-2 text-sm font-semibold leading-tight text-foreground">
+          {controllerTitle}
+        </h5>
+        <p class="mt-1 text-xs text-muted-foreground">
+          {totalPorts} port{totalPorts === 1 ? '' : 's'} across {typeCount}{' '}
+          connector type{typeCount === 1 ? '' : 's'}
+        </p>
+        {summary && (
+          <p class="mt-3 text-[11px] leading-relaxed text-muted-foreground/80">
+            {summary}
+          </p>
+        )}
+      </div>
+
+      {groups.map((group, index) => {
+        const angle = Math.round(angleStep * index * 100) / 100;
+        const portNames = group.ports.slice(0, 3).map((port) => port.port).join(', ');
+        const remaining = group.ports.length - 3;
+
+        return (
+          <div
+            class="diagram-group"
+            style={`--angle: ${angle}deg; --connector-color: ${group.meta.connectorColor};`}
+            data-port-type={group.typeKey}
+          >
+            <span class="diagram-connector" aria-hidden="true" />
+            <div
+              class="diagram-node"
+              role="group"
+              aria-label={`${group.label}: ${group.count} port${group.count === 1 ? '' : 's'}`}
+            >
+              <div
+                class={cn(
+                  'diagram-card w-40 max-w-[10.5rem] rounded-lg border border-border/50 bg-background/95 p-3 text-left shadow-xs ring-1 ring-inset backdrop-blur-sm transition hover:shadow-sm',
+                  group.meta.ringClassName
+                )}
+              >
+                <div class="flex items-center gap-2">
+                  <span
+                    class={cn(
+                      'flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full text-lg font-semibold shadow-xs',
+                      group.meta.badgeClassName
+                    )}
+                    aria-hidden="true"
+                  >
+                    {group.meta.icon}
+                  </span>
+                  <div class="min-w-0">
+                    <p class="text-sm font-semibold leading-tight text-foreground">{group.label}</p>
+                    <p class="text-[11px] font-mono text-muted-foreground">×{group.count}</p>
+                  </div>
+                </div>
+                <p class="mt-2 text-[11px] leading-snug text-muted-foreground">
+                  {portNames}
+                  {remaining > 0 && (
+                    <span class="font-medium text-muted-foreground/70"> +{remaining} more</span>
+                  )}
+                </p>
+                {group.defaultUse && (
+                  <p class="mt-2 text-[11px] text-muted-foreground/80">
+                    Default: {group.defaultUse}
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+        );
+      })}
+
+      <dl class="sr-only" aria-live="polite">
+        {groups.map((group) => (
+          <div key={group.typeKey}>
+            <dt>{group.label}</dt>
+            <dd>
+              {group.count} port{group.count === 1 ? '' : 's'}:{' '}
+              {group.ports.map((port) => port.port).join(', ')}
+            </dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  </div>
+) : null}
+
+<style>
+.io-diagram {
+  --diagram-radius: 9.5rem;
+}
+
+.diagram-core {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: flex;
+  width: clamp(9rem, 45%, 12rem);
+  aspect-ratio: 1 / 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 1.5rem;
+  text-align: center;
+  border-radius: 1.5rem;
+  border: 1px dashed hsl(var(--border));
+  background: linear-gradient(135deg, rgba(148, 163, 184, 0.14), rgba(148, 163, 184, 0.04));
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.18);
+  transform: translate(-50%, -50%);
+}
+
+.diagram-group {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.diagram-connector {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: calc(var(--diagram-radius) - 4rem);
+  height: 2px;
+  background: linear-gradient(
+    to right,
+    var(--connector-color, rgba(148, 163, 184, 0.5)),
+    rgba(148, 163, 184, 0)
+  );
+  transform-origin: left center;
+  transform: rotate(var(--angle));
+  opacity: 0.75;
+}
+
+.diagram-node {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform-origin: center;
+  transform: rotate(var(--angle)) translateX(var(--diagram-radius)) rotate(calc(-1 * var(--angle)))
+    translate(-50%, -50%);
+  pointer-events: auto;
+}
+
+.diagram-card {
+  backdrop-filter: blur(4px);
+}
+
+@media (max-width: 640px) {
+  .diagram-card {
+    width: 9.5rem;
+  }
+
+  .diagram-core {
+    width: clamp(8rem, 52%, 10rem);
+    padding: 1.25rem;
+  }
+}
+</style>
