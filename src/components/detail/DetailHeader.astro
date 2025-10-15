@@ -9,7 +9,6 @@ interface Props {
 const { title, subtitle, description, compareId }: Props = Astro.props;
 const hasBadges = Astro.slots.has('badges');
 const hasDescription = Boolean(description) || Astro.slots.has('description');
-const compareIdJson = compareId ? JSON.stringify(compareId) : null;
 ---
 
 <div class="mb-6">
@@ -51,16 +50,21 @@ const compareIdJson = compareId ? JSON.stringify(compareId) : null;
   )}
 </div>
 
-{compareIdJson && (
-  <script is:inline>
+{compareId && (
+  <script is:inline data-compare-id={compareId}>
     {`(() => {
       const STORAGE_KEY = 'fcbase:compare';
-      const COMPARE_ID = ${compareIdJson};
-      const selector = 'input[data-compare-toggle="' + COMPARE_ID + '"]';
-      if (typeof window === 'undefined') {
+      const scriptEl = document.currentScript;
+      if (!(scriptEl instanceof HTMLScriptElement)) {
         return;
       }
 
+      const compareId = scriptEl.dataset.compareId;
+      if (!compareId || typeof window === 'undefined') {
+        return;
+      }
+
+      const selector = 'input[data-compare-toggle="' + compareId + '"]';
       const toggle = document.querySelector(selector);
       if (!(toggle instanceof HTMLInputElement)) {
         return;
@@ -82,14 +86,14 @@ const compareIdJson = compareId ? JSON.stringify(compareId) : null;
 
       const syncFromStorage = () => {
         const list = readList();
-        toggle.checked = list.includes(COMPARE_ID);
+        toggle.checked = list.includes(compareId);
       };
 
       toggle.addEventListener('change', () => {
         const list = readList();
-        const index = list.indexOf(COMPARE_ID);
+        const index = list.indexOf(compareId);
         if (toggle.checked && index === -1) {
-          list.push(COMPARE_ID);
+          list.push(compareId);
         } else if (!toggle.checked && index !== -1) {
           list.splice(index, 1);
         }
