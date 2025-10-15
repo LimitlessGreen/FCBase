@@ -242,7 +242,14 @@ const pwmSummaryParts: string[] = [];
 if (typeof data.io.pwm === 'number') {
   pwmSummaryParts.push(`${data.io.pwm} PWM ${data.io.pwm === 1 ? 'output' : 'outputs'}`);
 }
-pwmSummaryParts.push(data.io.sd_card ? 'microSD logging' : 'no microSD slot');
+const sdCardStatus = data.io?.sd_card;
+if (sdCardStatus === true) {
+  pwmSummaryParts.push('microSD logging');
+} else if (sdCardStatus === false) {
+  pwmSummaryParts.push('no microSD slot');
+} else if (data.io && Object.prototype.hasOwnProperty.call(data.io, 'sd_card')) {
+  pwmSummaryParts.push('microSD slot unspecified');
+}
 const pwmSummary = pwmSummaryParts.join(' • ');
 
 const sumSensorCount = (list?: Array<{ count?: number }>) =>
