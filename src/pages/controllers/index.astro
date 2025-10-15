@@ -1,5 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
+import ControllerCard from '@/components/cards/ControllerCard.astro';
+import { createControllerCardModel } from '@/lib/controller-card-model';
 import MainLayout from '@/layouts/MainLayout.astro';
 import { getBasePath } from '@/lib/paths';
 
@@ -8,23 +10,37 @@ const manufacturers = await getCollection('manufacturers');
 
 const manufacturerMap = new Map(manufacturers.map((entry) => [entry.id, entry]));
 
-const controllerGroups = manufacturers
-  .map((manufacturer) => {
-    const manufacturerControllers = controllers
-      .filter((controller) => controller.data.brand === manufacturer.id)
-      .sort((a, b) => a.data.title.localeCompare(b.data.title));
+const controllerGroups = (
+  await Promise.all(
+    manufacturers.map(async (manufacturer) => {
+      const manufacturerControllers = controllers
+        .filter((controller) => controller.data.brand === manufacturer.id)
+        .sort((a, b) => a.data.title.localeCompare(b.data.title));
 
-    return {
-      manufacturer,
-      controllers: manufacturerControllers,
-    };
-  })
+      const controllerModels = await Promise.all(
+        manufacturerControllers.map((controller) =>
+          createControllerCardModel(controller, { manufacturersMap: manufacturerMap })
+        )
+      );
+
+      return {
+        manufacturer,
+        controllers: controllerModels,
+      };
+    })
+  )
+)
   .filter((group) => group.controllers.length > 0)
   .sort((a, b) => a.manufacturer.data.name.localeCompare(b.manufacturer.data.name));
 
-const unassignedControllers = controllers
-  .filter((controller) => !manufacturerMap.has(controller.data.brand))
-  .sort((a, b) => a.data.title.localeCompare(b.data.title));
+const unassignedControllers = await Promise.all(
+  controllers
+    .filter((controller) => !manufacturerMap.has(controller.data.brand))
+    .sort((a, b) => a.data.title.localeCompare(b.data.title))
+    .map((controller) =>
+      createControllerCardModel(controller, { manufacturersMap: manufacturerMap })
+    )
+);
 
 const totalControllers = controllers.length;
 const basePath = getBasePath();
@@ -69,39 +85,7 @@ const basePath = getBasePath();
             <ul class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
               {group.controllers.map((controller) => (
                 <li key={controller.id}>
-                  <a
-                    href={`${basePath}/controllers/${controller.id}/`}
-                    class="group block h-full rounded-xl border bg-card text-card-foreground shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg"
-                  >
-                    <div class="flex h-full flex-col gap-4 p-5">
-                      <div class="space-y-1">
-                        <h3 class="text-lg font-semibold leading-tight transition-colors group-hover:text-primary">
-                          {controller.data.title}
-                        </h3>
-                        {controller.data.model && (
-                          <p class="text-sm text-muted-foreground">
-                            {controller.data.model}
-                          </p>
-                        )}
-                      </div>
-                      <div class="space-y-1 text-sm text-muted-foreground">
-                        {controller.data.mcu && (
-                          <p><span class="font-medium text-foreground">MCU:</span> {controller.data.mcu}</p>
-                        )}
-                        {controller.data.mounting && (
-                          <p><span class="font-medium text-foreground">Mounting:</span> {controller.data.mounting}</p>
-                        )}
-                        {typeof controller.data.io?.uarts === 'number' && (
-                          <p><span class="font-medium text-foreground">UARTs:</span> {controller.data.io.uarts}</p>
-                        )}
-                      </div>
-                      {controller.data.firmware_support?.length > 0 && (
-                        <div class="mt-auto text-xs text-muted-foreground">
-                          Firmware: {controller.data.firmware_support.map((fw) => fw.id).join(', ')}
-                        </div>
-                      )}
-                    </div>
-                  </a>
+                  <ControllerCard {...controller} basePath={basePath} />
                 </li>
               ))}
             </ul>
@@ -122,39 +106,7 @@ const basePath = getBasePath();
             <ul class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
               {unassignedControllers.map((controller) => (
                 <li key={controller.id}>
-                  <a
-                    href={`${basePath}/controllers/${controller.id}/`}
-                    class="group block h-full rounded-xl border bg-card text-card-foreground shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg"
-                  >
-                    <div class="flex h-full flex-col gap-4 p-5">
-                      <div class="space-y-1">
-                        <h3 class="text-lg font-semibold leading-tight transition-colors group-hover:text-primary">
-                          {controller.data.title}
-                        </h3>
-                        {controller.data.model && (
-                          <p class="text-sm text-muted-foreground">
-                            {controller.data.model}
-                          </p>
-                        )}
-                      </div>
-                      <div class="space-y-1 text-sm text-muted-foreground">
-                        {controller.data.mcu && (
-                          <p><span class="font-medium text-foreground">MCU:</span> {controller.data.mcu}</p>
-                        )}
-                        {controller.data.mounting && (
-                          <p><span class="font-medium text-foreground">Mounting:</span> {controller.data.mounting}</p>
-                        )}
-                        {typeof controller.data.io?.uarts === 'number' && (
-                          <p><span class="font-medium text-foreground">UARTs:</span> {controller.data.io.uarts}</p>
-                        )}
-                      </div>
-                      {controller.data.firmware_support?.length > 0 && (
-                        <div class="mt-auto text-xs text-muted-foreground">
-                          Firmware: {controller.data.firmware_support.map((fw) => fw.id).join(', ')}
-                        </div>
-                      )}
-                    </div>
-                  </a>
+                  <ControllerCard {...controller} basePath={basePath} />
                 </li>
               ))}
             </ul>
