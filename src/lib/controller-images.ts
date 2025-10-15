@@ -6,10 +6,12 @@ const localControllerImages = import.meta.glob<{ default: ImageMetadata }>(
   { eager: true }
 );
 
+const IMAGE_EXTENSION_PATTERN = /\.(jpg|jpeg|png|webp|avif)$/i;
+
 const controllerImageMap = new Map<string, ImageMetadata>(
   Object.entries(localControllerImages).map(([path, module]) => {
     const file = path.split('/').pop();
-    const id = file?.replace(/\.(jpg|jpeg|png|webp|avif)$/i, '');
+    const id = file?.replace(IMAGE_EXTENSION_PATTERN, '');
     if (!id) {
       throw new Error(`Unable to derive image id from path: ${path}`);
     }
@@ -18,19 +20,49 @@ const controllerImageMap = new Map<string, ImageMetadata>(
   })
 );
 
+const toKeyVariants = (value: string): string[] => {
+  const key = value.split('/').pop()?.trim();
+  if (!key) {
+    return [];
+  }
+
+  const variants = new Set<string>();
+  const withoutExtension = key.replace(IMAGE_EXTENSION_PATTERN, '');
+  variants.add(key);
+  variants.add(withoutExtension);
+
+  const retinaVariant = withoutExtension.replace(/@\d+x$/i, '');
+  variants.add(retinaVariant);
+
+  return Array.from(variants).filter((entry) => entry.length > 0);
+};
+
 const findLocalImage = (candidates: Iterable<string | undefined>) => {
   for (const candidate of candidates) {
     if (!candidate) continue;
-    const key = candidate.split('/').pop();
-    if (!key) continue;
 
-    const match = controllerImageMap.get(key);
-    if (match) {
-      return match;
+    for (const variant of toKeyVariants(candidate)) {
+      const match = controllerImageMap.get(variant);
+      if (match) {
+        return match;
+      }
     }
   }
 
   return undefined;
+};
+
+const isAbsoluteUrl = (value: string): boolean => {
+  if (value.startsWith('//')) {
+    return true;
+  }
+
+  try {
+    const url = new URL(value);
+    return Boolean(url.protocol && url.host);
+  } catch {
+    return false;
+  }
 };
 
 export type ControllerPreviewImage = {
@@ -55,6 +87,34 @@ export const resolveControllerPreviewImage = (
   const sourceUrl = heroImage?.source_url;
   const width = heroImage?.width;
   const height = heroImage?.height;
+
+  const heroSrc = heroImage?.src?.trim();
+  if (heroSrc) {
+    if (isAbsoluteUrl(heroSrc)) {
+      return {
+        src: heroSrc,
+        alt,
+        credit,
+        sourceUrl,
+        width,
+        height,
+        isLocal: false,
+      };
+    }
+
+    const heroLocal = findLocalImage([heroSrc]);
+    if (heroLocal) {
+      return {
+        src: heroLocal,
+        alt,
+        credit,
+        sourceUrl,
+        width: heroLocal.width,
+        height: heroLocal.height,
+        isLocal: true,
+      };
+    }
+  }
 
   const slug = (controller as { slug?: string }).slug;
 

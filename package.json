@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "preview": "astro preview"
+    "preview": "astro preview",
+    "test": "vitest run"
   },
   "devDependencies": {
     "@astrojs/react": "^4.4.0",
@@ -28,6 +29,7 @@
     "tailwind-merge": "^3.3.1",
     "tailwindcss": "^4.1.14",
     "tsx": "^4.20.6",
+    "vitest": "^1.6.0",
     "yaml": "^2.8.1"
   },
   "dependencies": {
