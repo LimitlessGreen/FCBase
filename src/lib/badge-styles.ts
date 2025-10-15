@@ -30,7 +30,7 @@ export const BadgeVariants = {
   hardware: {
     open: 'bg-green-500/10 text-green-500 border-green-500/20',
     closed: 'bg-red-500/10 text-red-500 border-red-500/20',
-    partial: 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20',
+    mixed: 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20',
   } as const,
 
   // Default badge for generic use
@@ -66,7 +66,7 @@ export function getVerificationBadgeClass(level: VerificationLevel): string {
 
 /**
  * Get badge classes for hardware openness
- * @param openness - The hardware openness level (open, closed, partial)
+ * @param openness - The hardware openness level (open, closed, mixed)
  * @returns Tailwind CSS classes for the badge
  */
 export function getHardwareBadgeClass(openness: HardwareOpenness): string {

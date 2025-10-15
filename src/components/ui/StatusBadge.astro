@@ -37,7 +37,9 @@ if (variant === 'firmware') {
 }
 
 const sizeClass = getBadgeSizeClass(size);
-const finalClass = `${badgeClass} ${sizeClass} font-medium ${className || ''}`;
+const finalClass = [badgeClass, sizeClass, 'font-medium', className]
+  .filter(Boolean)
+  .join(' ');
 
 // Show icon for verification badges
 const showVerificationIcon = showIcon && variant === 'verification';
