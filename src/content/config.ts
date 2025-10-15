@@ -183,6 +183,29 @@ const peripheralSchema = z.object({
   notes: z.string().optional(),
 });
 
+const peripheralPortSchema = z.object({
+  port: z.string(),
+  type: z.enum([
+    'uart',
+    'i2c',
+    'can',
+    'power',
+    'usb',
+    'ethernet',
+    'pwm',
+    'spi',
+    'rc',
+    'gps',
+    'analog',
+    'debug',
+    'other',
+  ]),
+  default_use: z.string().optional(),
+  voltage: z.string().optional(),
+  connector: z.string().optional(),
+  notes: z.string().optional(),
+});
+
 const ioSchemaBase = z.object({
   uarts: z.number().int().min(0),
   can: z.number().int().min(0),
@@ -201,9 +224,14 @@ const hardwareRevisionOverridesSchema = z
     sensors: sensorsSpecSchema.optional(),
     io: ioOverrideSchema.optional(),
     power: powerOverrideSchema.optional(),
+    peripheral_ports: z.array(peripheralPortSchema).optional(),
   })
   .refine(
-    (value) => value.sensors !== undefined || value.io !== undefined || value.power !== undefined,
+    (value) =>
+      value.sensors !== undefined ||
+      value.io !== undefined ||
+      value.power !== undefined ||
+      value.peripheral_ports !== undefined,
     {
       message: 'hardware revision overrides must include at least one section',
     }
@@ -250,6 +278,7 @@ const controllerSchema = z.object({
   images: z.array(controllerImageSchema).optional(),
   power: powerSchema,
   io: ioSchema,
+  peripheral_ports: z.array(peripheralPortSchema).optional(),
   hardware: z.object({
     openness: z.enum(['open', 'closed', 'mixed']),
     notes: z.string().optional(),
@@ -286,6 +315,7 @@ type RevisionOverrides = z.infer<typeof hardwareRevisionOverridesSchema>;
 type ControllerSensors = ControllerData['sensors'];
 type ControllerIo = ControllerData['io'];
 type ControllerPower = ControllerData['power'];
+type ControllerPeripheralPorts = ControllerData['peripheral_ports'];
 
 const cloneSensorList = (
   list?: NonNullable<ControllerSensors[keyof ControllerSensors]>
@@ -317,6 +347,9 @@ const clonePeripherals = (peripherals?: ControllerIo['peripherals']) =>
     ...peripheral,
     interfaces: peripheral.interfaces ? [...peripheral.interfaces] : undefined,
   }));
+
+const clonePeripheralPorts = (ports?: ControllerPeripheralPorts) =>
+  ports?.map((port) => ({ ...port }));
 
 const mergeIo = (
   base: ControllerIo,
@@ -404,6 +437,9 @@ const cloneRevision = (revision: HardwareRevision): HardwareRevision => ({
               inputs: clonePowerInputs(revision.overrides.power.inputs),
             }
           : undefined,
+        peripheral_ports: revision.overrides.peripheral_ports
+          ? clonePeripheralPorts(revision.overrides.peripheral_ports)
+          : undefined,
       }
     : undefined,
 });
@@ -426,11 +462,16 @@ export const mergeControllerRevision = (
     power: mergePower(controller.power, overrides?.power),
     io: mergeIo(controller.io, overrides?.io),
     sensors: mergeSensors(controller.sensors, overrides?.sensors),
+    peripheral_ports: clonePeripheralPorts(controller.peripheral_ports),
     hardware: {
       ...controller.hardware,
       revisions: controller.hardware.revisions?.map(cloneRevision),
     },
   };
+
+  if (overrides?.peripheral_ports !== undefined) {
+    merged.peripheral_ports = clonePeripheralPorts(overrides.peripheral_ports) ?? [];
+  }
 
   return merged;
 };
@@ -446,6 +487,7 @@ export const buildRevisionVariants = (
       power: mergePower(controller.power),
       io: mergeIo(controller.io),
       sensors: mergeSensors(controller.sensors),
+      peripheral_ports: clonePeripheralPorts(controller.peripheral_ports),
       hardware: {
         ...controller.hardware,
         revisions: controller.hardware.revisions?.map(cloneRevision),

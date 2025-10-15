@@ -5,6 +5,7 @@ import DetailHeader from '@/components/detail/DetailHeader.astro';
 import DetailPageLayout from '@/components/detail/DetailPageLayout.astro';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
+import { buttonVariants } from '@/components/ui/Button';
 import StatusBadge from '@/components/ui/StatusBadge.astro';
 import SpecItem from '@/components/ui/SpecItem.astro';
 import ProfessionalTable from '@/components/table/ProfessionalTable.astro';
@@ -25,6 +26,7 @@ import {
   formatPeripheralType,
   normalizePeripheralInterfaces,
 } from '@/lib/data-utils';
+import { cn } from '@/lib/utils';
 import { resolveControllerPreviewImage } from '@/lib/controller-images';
 import {
   getFirmwareMap,
@@ -410,6 +412,79 @@ const controllerLinks = {
   pinout: resolveLinkEntry(data.links?.pinout),
   vendor: resolveLinkEntry(data.links?.vendor),
   github: resolveLinkEntry(data.links?.github),
+};
+
+const portTypeMetaMap: Record<string, { icon: string; className: string }> = {
+  uart: {
+    icon: '🔵',
+    className:
+      'border border-sky-500/30 bg-sky-500/10 text-sky-700 dark:border-sky-400/30 dark:text-sky-300',
+  },
+  i2c: {
+    icon: '🟢',
+    className:
+      'border border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:border-emerald-400/30 dark:text-emerald-300',
+  },
+  can: {
+    icon: '🟣',
+    className:
+      'border border-purple-500/30 bg-purple-500/10 text-purple-700 dark:border-purple-400/30 dark:text-purple-300',
+  },
+  power: {
+    icon: '🟠',
+    className:
+      'border border-orange-500/30 bg-orange-500/10 text-orange-700 dark:border-orange-400/30 dark:text-orange-300',
+  },
+  usb: {
+    icon: '⚪',
+    className:
+      'border border-zinc-500/30 bg-zinc-500/10 text-zinc-700 dark:border-zinc-400/30 dark:text-zinc-300',
+  },
+  ethernet: {
+    icon: '🌐',
+    className:
+      'border border-blue-500/30 bg-blue-500/10 text-blue-700 dark:border-blue-400/30 dark:text-blue-300',
+  },
+  pwm: {
+    icon: '🎛️',
+    className:
+      'border border-amber-500/30 bg-amber-500/10 text-amber-700 dark:border-amber-400/30 dark:text-amber-300',
+  },
+  spi: {
+    icon: '🧿',
+    className:
+      'border border-pink-500/30 bg-pink-500/10 text-pink-700 dark:border-pink-400/30 dark:text-pink-300',
+  },
+  rc: {
+    icon: '🎮',
+    className:
+      'border border-indigo-500/30 bg-indigo-500/10 text-indigo-700 dark:border-indigo-400/30 dark:text-indigo-300',
+  },
+  gps: {
+    icon: '🧭',
+    className:
+      'border border-sky-500/30 bg-sky-500/10 text-sky-700 dark:border-sky-400/30 dark:text-sky-300',
+  },
+  analog: {
+    icon: '📈',
+    className:
+      'border border-lime-500/30 bg-lime-500/10 text-lime-700 dark:border-lime-400/30 dark:text-lime-300',
+  },
+  debug: {
+    icon: '🛠️',
+    className:
+      'border border-slate-500/30 bg-slate-500/10 text-slate-700 dark:border-slate-400/30 dark:text-slate-300',
+  },
+  other: {
+    icon: '⚙️',
+    className: 'border border-black/10 bg-muted/50 text-muted-foreground dark:border-white/10',
+  },
+};
+
+const getPortTypeMeta = (type?: string) => {
+  if (!type) return portTypeMetaMap.other;
+  const normalized = type.toLowerCase();
+  return portTypeMetaMap[normalized] ?? portTypeMetaMap.other;
 };
 
 type LinkItem = {
@@ -1018,70 +1093,159 @@ const hasLinkItems = linkItems.length > 0;
                       />
                     )}
                     
-                    {variant.spec.io.peripherals && variant.spec.io.peripherals.length > 0 && (
-                      <TableRow label="Peripheral Ports">
-                        <div class="grid gap-3 sm:grid-cols-2">
-                          {variant.spec.io.peripherals.map((peripheral, idx) => (
-                            <div
-                              class="rounded-sm border border-border/40 bg-background/70 p-3 shadow-xs"
-                              key={`${peripheral.name}-${idx}`}
-                            >
-                              <div class="flex items-center justify-between gap-2">
-                                <span class="font-semibold text-sm text-foreground">
-                                  {peripheral.name}
-                                  {peripheral.count && (
-                                    <span class="ml-1 text-xs text-muted-foreground font-medium">
-                                      ×{peripheral.count}
-                                    </span>
-                                  )}
-                                </span>
-                                <Badge className="text-[10px] tracking-wide font-medium">
-                                  {formatPeripheralType(peripheral.type)}
-                                </Badge>
-                              </div>
-                              {(() => {
-                                const interfaceBadges = normalizePeripheralInterfaces(
-                                  peripheral.interfaces,
-                                );
-                                if (interfaceBadges.length === 0) return null;
-                                return (
-                                  <div class="mt-2 flex flex-wrap gap-1.5">
-                                    {interfaceBadges.map(({ label, count }) => (
-                                      <Badge
-                                        variant="secondary"
-                                        className="text-[10px] tracking-wide font-medium"
-                                        key={`${peripheral.name}-${label}`}
-                                      >
-                                        <span>{label}</span>
-                                        {count > 1 && (
-                                          <span className="ml-1 text-[10px] text-muted-foreground font-semibold">
-                                            ×{count}
-                                          </span>
-                                        )}
-                                      </Badge>
-                                    ))}
-                                  </div>
-                                );
-                              })()}
-                              {peripheral.connector && (
-                                <p class="mt-2 text-xs text-muted-foreground">
-                                  <span class="font-medium text-foreground">Connector:</span>&nbsp;{peripheral.connector}
-                                </p>
-                              )}
-                              {peripheral.voltage && (
-                                <p class="text-xs text-muted-foreground">
-                                  <span class="font-medium text-foreground">Voltage:</span> {peripheral.voltage}
-                                </p>
-                              )}
-                              {peripheral.notes && (
-                                <p class="text-xs text-muted-foreground leading-snug mt-1">
-                                  {peripheral.notes}
-                                </p>
-                              )}
-                            </div>
-                          ))}
+                    {variant.spec.peripheral_ports && variant.spec.peripheral_ports.length > 0 ? (
+                      <TableRow label="Peripheral Ports" class="!px-0">
+                        <div class="space-y-3 px-3">
+                          <div class="flex flex-wrap items-center justify-between gap-3">
+                            <p class="text-xs text-muted-foreground">
+                              Signal levels, connector types, and default assignments for each exposed port.
+                            </p>
+                            {controllerLinks.pinout?.url && (
+                              <a
+                                class={cn(
+                                  buttonVariants({ variant: 'secondary', size: 'sm' }),
+                                  'shrink-0'
+                                )}
+                                href={controllerLinks.pinout.url}
+                                target="_blank"
+                                rel="noreferrer noopener"
+                              >
+                                View Pinout
+                              </a>
+                            )}
+                          </div>
+                          <div class="overflow-x-auto rounded-sm border border-black/10 bg-background/60 dark:border-white/10">
+                            <table class="w-full table-auto text-sm">
+                              <thead class="bg-muted/50 text-xs uppercase tracking-wide text-muted-foreground">
+                                <tr>
+                                  <th class="px-3 py-2 text-left font-semibold">Port</th>
+                                  <th class="px-3 py-2 text-left font-semibold">Type</th>
+                                  <th class="px-3 py-2 text-left font-semibold">Default Function</th>
+                                  <th class="px-3 py-2 text-left font-semibold">Voltage / Level</th>
+                                  <th class="px-3 py-2 text-left font-semibold">Connector</th>
+                                  <th class="px-3 py-2 text-left font-semibold">Notes</th>
+                                </tr>
+                              </thead>
+                              <tbody
+                                class="[&>tr:not(:first-child)]:border-t [&>tr:not(:first-child)]:border-black/5 dark:[&>tr:not(:first-child)]:border-white/10"
+                              >
+                                {variant.spec.peripheral_ports.map((port) => {
+                                  const typeMeta = getPortTypeMeta(port.type);
+                                  const typeLabel = port.type
+                                    ? formatPeripheralType(port.type)
+                                    : '—';
+                                  return (
+                                    <tr
+                                      class="hover:bg-muted/40 transition-colors"
+                                      key={`${port.port}-${port.type ?? 'unknown'}`}
+                                      title={port.notes ?? undefined}
+                                    >
+                                      <td class="px-3 py-2 font-semibold text-foreground">
+                                        <span class="inline-flex items-center gap-2">
+                                          {port.port}
+                                          {port.notes && (
+                                            <span class="text-muted-foreground" aria-hidden="true">ⓘ</span>
+                                          )}
+                                        </span>
+                                      </td>
+                                      <td class="px-3 py-2">
+                                        <span
+                                          class={cn(
+                                            'inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold',
+                                            typeMeta.className
+                                          )}
+                                        >
+                                          <span aria-hidden="true">{typeMeta.icon}</span>
+                                          <span>{typeLabel}</span>
+                                        </span>
+                                      </td>
+                                      <td class="px-3 py-2 text-sm text-foreground/90">
+                                        {port.default_use ?? '—'}
+                                      </td>
+                                      <td class="px-3 py-2 text-sm text-foreground/90">
+                                        {port.voltage ?? '—'}
+                                      </td>
+                                      <td class="px-3 py-2 text-sm text-foreground/90">
+                                        {port.connector ?? '—'}
+                                      </td>
+                                      <td class="px-3 py-2 text-sm text-muted-foreground">
+                                        {port.notes ?? '—'}
+                                      </td>
+                                    </tr>
+                                  );
+                                })}
+                              </tbody>
+                            </table>
+                          </div>
                         </div>
                       </TableRow>
+                    ) : (
+                      variant.spec.io.peripherals &&
+                      variant.spec.io.peripherals.length > 0 && (
+                        <TableRow label="Peripheral Ports">
+                          <div class="grid gap-3 sm:grid-cols-2">
+                            {variant.spec.io.peripherals.map((peripheral, idx) => (
+                              <div
+                                class="rounded-sm border border-border/40 bg-background/70 p-3 shadow-xs"
+                                key={`${peripheral.name}-${idx}`}
+                              >
+                                <div class="flex items-center justify-between gap-2">
+                                  <span class="font-semibold text-sm text-foreground">
+                                    {peripheral.name}
+                                    {peripheral.count && (
+                                      <span class="ml-1 text-xs text-muted-foreground font-medium">
+                                        ×{peripheral.count}
+                                      </span>
+                                    )}
+                                  </span>
+                                  <Badge className="text-[10px] tracking-wide font-medium">
+                                    {formatPeripheralType(peripheral.type)}
+                                  </Badge>
+                                </div>
+                                {(() => {
+                                  const interfaceBadges = normalizePeripheralInterfaces(
+                                    peripheral.interfaces,
+                                  );
+                                  if (interfaceBadges.length === 0) return null;
+                                  return (
+                                    <div class="mt-2 flex flex-wrap gap-1.5">
+                                      {interfaceBadges.map(({ label, count }) => (
+                                        <Badge
+                                          variant="secondary"
+                                          className="text-[10px] tracking-wide font-medium"
+                                          key={`${peripheral.name}-${label}`}
+                                        >
+                                          <span>{label}</span>
+                                          {count > 1 && (
+                                            <span className="ml-1 text-[10px] text-muted-foreground font-semibold">
+                                              ×{count}
+                                            </span>
+                                          )}
+                                        </Badge>
+                                      ))}
+                                    </div>
+                                  );
+                                })()}
+                                {peripheral.connector && (
+                                  <p class="mt-2 text-xs text-muted-foreground">
+                                    <span class="font-medium text-foreground">Connector:</span>&nbsp;{peripheral.connector}
+                                  </p>
+                                )}
+                                {peripheral.voltage && (
+                                  <p class="text-xs text-muted-foreground">
+                                    <span class="font-medium text-foreground">Voltage:</span> {peripheral.voltage}
+                                  </p>
+                                )}
+                                {peripheral.notes && (
+                                  <p class="text-xs text-muted-foreground leading-snug mt-1">
+                                    {peripheral.notes}
+                                  </p>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        </TableRow>
+                      )
                     )}
                     <TableSection title="Onboard Sensors" />
                     
