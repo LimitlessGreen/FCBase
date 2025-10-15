@@ -33,7 +33,7 @@ power:
 ### 1. Analyse: `migrate-power-inputs.ts`
 Analysiert alle Controller und schlägt Migrationen vor:
 ```bash
-npx tsx scripts/migrate-power-inputs.ts
+pnpm exec tsx scripts/migrate-power-inputs.ts
 ```
 
 Erstellt `power-migration-results.json` mit Details.
@@ -43,12 +43,12 @@ Migriert einfache Fälle automatisch:
 
 **Dry-Run** (empfohlen zuerst):
 ```bash
-npx tsx scripts/apply-power-migration.ts --verbose
+pnpm exec tsx scripts/apply-power-migration.ts --verbose
 ```
 
 **Tatsächlich anwenden**:
 ```bash
-npx tsx scripts/apply-power-migration.ts --apply
+pnpm exec tsx scripts/apply-power-migration.ts --apply
 ```
 
 ## Status
