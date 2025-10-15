@@ -111,6 +111,36 @@
         "notes": { "type": "string" }
       }
     },
+    "peripheralPort": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["port", "type"],
+      "properties": {
+        "port": { "type": "string" },
+        "type": {
+          "type": "string",
+          "enum": [
+            "uart",
+            "i2c",
+            "can",
+            "power",
+            "usb",
+            "ethernet",
+            "pwm",
+            "spi",
+            "rc",
+            "gps",
+            "analog",
+            "debug",
+            "other"
+          ]
+        },
+        "default_use": { "type": "string" },
+        "voltage": { "type": "string" },
+        "connector": { "type": "string" },
+        "notes": { "type": "string" }
+      }
+    },
     "ioBase": {
       "type": "object",
       "additionalProperties": false,
@@ -242,12 +272,17 @@
       "properties": {
         "sensors": { "$ref": "#/definitions/sensorsSpec" },
         "io": { "$ref": "#/definitions/ioOverride" },
-        "power": { "$ref": "#/definitions/powerOverride" }
+        "power": { "$ref": "#/definitions/powerOverride" },
+        "peripheral_ports": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/peripheralPort" }
+        }
       },
       "anyOf": [
         { "required": ["sensors"] },
         { "required": ["io"] },
-        { "required": ["power"] }
+        { "required": ["power"] },
+        { "required": ["peripheral_ports"] }
       ]
     }
   },
@@ -291,6 +326,10 @@
     },
     "power": { "$ref": "#/definitions/powerSpec" },
     "io": { "$ref": "#/definitions/ioSpec" },
+    "peripheral_ports": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/peripheralPort" }
+    },
     "hardware": {
       "type": "object",
       "additionalProperties": false,

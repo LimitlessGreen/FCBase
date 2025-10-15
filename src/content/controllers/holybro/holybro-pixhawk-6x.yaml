@@ -127,6 +127,103 @@ io:
     - microsd
     connector: Internal microSD
     notes: Built-in microSD card slot for logging.
+peripheral_ports:
+  - port: TELEM1
+    type: uart
+    default_use: MAVLink telemetry (primary)
+    voltage: "3.3 V signal / 5 V supply"
+    connector: JST-GH 6-pin
+    notes: Shared 5 V regulator with TELEM2; supports hardware flow control.
+  - port: TELEM2
+    type: uart
+    default_use: Companion computer or RTK corrections
+    voltage: "3.3 V signal / 5 V supply"
+    connector: JST-GH 6-pin
+    notes: Ideal for high-bandwidth MAVLink or RTK radios.
+  - port: TELEM3
+    type: uart
+    default_use: Payload or scripting UART
+    voltage: "3.3 V signal"
+    connector: JST-GH 6-pin
+    notes: Routed through carrier board; configurable via SERIAL3 parameters.
+  - port: TELEM4
+    type: uart
+    default_use: Secondary telemetry
+    voltage: "3.3 V signal"
+    connector: JST-GH 6-pin
+    notes: Shares power rail with TELEM3; supports TTL-level peripherals only.
+  - port: TELEM5
+    type: uart
+    default_use: Debug console / ESC telemetry
+    voltage: "3.3 V signal"
+    connector: JST-GH 6-pin
+    notes: Labeled "FMU Debug" on carrier; defaults to system console in PX4.
+  - port: TELEM6
+    type: uart
+    default_use: Auxiliary telemetry / SBUS out
+    voltage: "3.3 V signal"
+    connector: JST-GH 6-pin
+    notes: Supports serial RC protocols or additional MAVLink link.
+  - port: GPS1
+    type: gps
+    default_use: Primary GNSS + compass + safety switch
+    voltage: "5 V supply / 3.3 V I2C"
+    connector: JST-GH 10-pin
+    notes: Carries I2C for compass and safety switch passthrough.
+  - port: GPS2
+    type: gps
+    default_use: Redundant GNSS + compass
+    voltage: "5 V supply / 3.3 V I2C"
+    connector: JST-GH 6-pin
+    notes: Provides backup GPS with integrated I2C lines.
+  - port: I2C1
+    type: i2c
+    default_use: Magnetometer / Airspeed bus
+    voltage: 3.3 V
+    connector: JST-GH 4-pin
+    notes: Shares bus with GPS headers; do not mix 5 V I2C devices.
+  - port: I2C2
+    type: i2c
+    default_use: External sensors expansion
+    voltage: 3.3 V
+    connector: JST-GH 4-pin
+    notes: Routed to carrier board expansion header for payload sensors.
+  - port: CAN1
+    type: can
+    default_use: DroneCAN node bus
+    voltage: "5 V accessory power"
+    connector: JST-GH 4-pin
+    notes: Provides regulated 5 V for smart peripherals up to 1 A shared.
+  - port: CAN2
+    type: can
+    default_use: Redundant DroneCAN bus
+    voltage: "5 V accessory power"
+    connector: JST-GH 4-pin
+    notes: Isolated from CAN1 for dual-redundant power modules.
+  - port: POWER1
+    type: power
+    default_use: Primary power module input
+    voltage: "4.9–5.5 V"
+    connector: 6-pin power monitor
+    notes: Supports Holybro PM06/PM07 modules with SMBus telemetry.
+  - port: POWER2
+    type: power
+    default_use: Redundant power module input
+    voltage: "4.9–5.5 V"
+    connector: 6-pin power monitor
+    notes: Backup BEC feed with current/voltage sense.
+  - port: USB-C
+    type: usb
+    default_use: Console / firmware update
+    voltage: "5 V USB"
+    connector: USB Type-C
+    notes: Supplies cube when no external BEC is present; limited to 1 A.
+  - port: RCIN/SBUS
+    type: rc
+    default_use: Serial RC receiver input
+    voltage: "3.3 V signal / 5 V supply"
+    connector: JST-GH 6-pin
+    notes: Compatible with SBUS, CRSF, and DSM protocols via configuration.
 sensors:
   barometer:
   - count: 1
