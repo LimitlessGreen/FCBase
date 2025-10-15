@@ -1,0 +1,43 @@
+---
+import { Badge } from '@/components/ui/Badge';
+import { cn } from '@/lib/utils';
+
+interface Props {
+  label: string;
+  value?: string | number | boolean | null;
+  class?: string;
+}
+
+const { label, value = null, class: className } = Astro.props as Props;
+const hasSlot = Astro.slots.has('default');
+
+const normalizedValue = (() => {
+  if (typeof value === 'string') {
+    const trimmed = value.trim();
+    return trimmed.length > 0 ? trimmed : null;
+  }
+  if (typeof value === 'number') {
+    return Number.isFinite(value) ? String(value) : null;
+  }
+  if (typeof value === 'boolean') {
+    return value ? 'Yes' : 'No';
+  }
+  return value ?? null;
+})();
+
+const displayValue = normalizedValue ?? '—';
+---
+<Badge
+  variant="outline"
+  className={cn(
+    'inline-flex items-center gap-1 rounded-full border-border/50 bg-muted/40 px-2.5 py-1 text-xs font-normal text-muted-foreground',
+    className
+  )}
+>
+  <span class="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground/80">
+    {label}
+  </span>
+  <span class="font-semibold text-foreground">
+    {hasSlot ? <slot /> : displayValue}
+  </span>
+</Badge>
