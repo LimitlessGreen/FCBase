@@ -7,62 +7,88 @@ type GitMetadata = {
 
 const gitMetadataCache = new Map<string, GitMetadata>();
 const GIT_FIELD_SEPARATOR = "\u001F";
+let gitMetadataInitialized = false;
 
-function getFileGitMetadata(filePath?: string | null): GitMetadata {
-  if (!filePath) {
-    return { contributors: [], lastModified: null };
+function loadGitMetadata(): void {
+  if (gitMetadataInitialized) {
+    return;
   }
 
-  const cached = gitMetadataCache.get(filePath);
-  if (cached) {
-    return cached;
-  }
+  gitMetadataInitialized = true;
 
   try {
     const output = execSync(
-      `git log --follow --format=%an%x1f%cI -- "${filePath}"`,
+      "git log --name-only --pretty=format:%an%x1f%cI",
       {
         encoding: "utf8",
         stdio: ["ignore", "pipe", "ignore"],
       },
     );
 
-    const contributors = new Set<string>();
-    let lastModified: string | null = null;
+    const contributorsByPath = new Map<string, Set<string>>();
+    const lastModifiedByPath = new Map<string, string>();
+
+    let currentAuthor: string | null = null;
+    let currentDate: string | null = null;
 
     for (const line of output.split("\n")) {
       const trimmed = line.trim();
+
       if (!trimmed) {
         continue;
       }
 
-      const [author, isoDate] = trimmed.split(GIT_FIELD_SEPARATOR);
-
-      if (!lastModified && isoDate) {
-        lastModified = isoDate.trim() || null;
+      if (line.includes(GIT_FIELD_SEPARATOR)) {
+        const [author, isoDate] = trimmed.split(GIT_FIELD_SEPARATOR);
+        currentAuthor = author?.trim() || null;
+        currentDate = isoDate?.trim() || null;
+        continue;
       }
 
-      if (author) {
-        const normalizedAuthor = author.trim();
-        if (normalizedAuthor) {
-          contributors.add(normalizedAuthor);
-        }
+      const filePath = trimmed;
+      if (!filePath) {
+        continue;
+      }
+
+      if (!contributorsByPath.has(filePath)) {
+        contributorsByPath.set(filePath, new Set());
+      }
+
+      if (currentAuthor) {
+        contributorsByPath.get(filePath)!.add(currentAuthor);
+      }
+
+      if (!lastModifiedByPath.has(filePath) && currentDate) {
+        lastModifiedByPath.set(filePath, currentDate);
       }
     }
 
-    const metadata: GitMetadata = {
-      contributors: Array.from(contributors),
-      lastModified,
-    };
-
-    gitMetadataCache.set(filePath, metadata);
-    return metadata;
+    for (const [filePath, contributors] of contributorsByPath.entries()) {
+      gitMetadataCache.set(filePath, {
+        contributors: Array.from(contributors),
+        lastModified: lastModifiedByPath.get(filePath) ?? null,
+      });
+    }
   } catch (error) {
-    console.warn(`[git] Unable to resolve git metadata for ${filePath}:`, error);
-    const fallback: GitMetadata = { contributors: [], lastModified: null };
-    gitMetadataCache.set(filePath, fallback);
-    return fallback;
+    console.warn("[git] Unable to load git metadata:", error);
   }
+}
+
+function getFileGitMetadata(filePath?: string | null): GitMetadata {
+  if (!filePath) {
+    return { contributors: [], lastModified: null };
+  }
+
+  loadGitMetadata();
+
+  const cached = gitMetadataCache.get(filePath);
+  if (cached) {
+    return cached;
+  }
+
+  const fallback: GitMetadata = { contributors: [], lastModified: null };
+  gitMetadataCache.set(filePath, fallback);
+  return fallback;
 }
 
 /**
