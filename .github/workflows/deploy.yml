@@ -43,15 +43,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: .astro
-          key: ${{ runner.os }}-astro-${{ hashFiles(
-            'package.json',
-            'pnpm-lock.yaml',
-            'astro.config.mjs',
-            'src/lib/controller-images.ts',
-            'src/components/cards/**/*.astro',
-            'src/pages/controllers/**/*.astro',
-            'src/assets/images/**/*'
-          ) }}
+          key: ${{ runner.os }}-astro-${{ hashFiles('package.json', 'pnpm-lock.yaml', 'astro.config.mjs', 'src/lib/controller-images.ts', 'src/components/cards/**/*.astro', 'src/pages/controllers/**/*.astro', 'src/assets/images/**/*') }}
           restore-keys: |
             ${{ runner.os }}-astro-
 
