@@ -115,6 +115,103 @@ io:
     - adsb
     connector: Integrated patch
     notes: Built-in uAvionix ADS-B In antenna and receiver on the carrier board wired to Serial5.
+peripheral_ports:
+  - port: TELEM1
+    type: uart
+    default_use: Primary MAVLink telemetry
+    voltage: "3.3 V signal / 5 V supply"
+    connector: JST-GH 6-pin
+    notes: Full RTS/CTS telemetry port powering radios or companion computers.
+  - port: TELEM2
+    type: uart
+    default_use: Secondary telemetry or RTK link
+    voltage: "3.3 V signal / 5 V supply"
+    connector: JST-GH 6-pin
+    notes: Second hardware flow-control port for redundant radios or payload links.
+  - port: GPS1
+    type: gps
+    default_use: Primary GPS/compass/safety harness
+    voltage: "3.3 V signal / 5 V supply"
+    connector: JST-GH 10-pin
+    notes: Integrates safety switch, buzzer, and LED wiring with the first GNSS receiver.
+  - port: GPS2
+    type: gps
+    default_use: Secondary GPS
+    voltage: "3.3 V signal / 5 V supply"
+    connector: JST-GH 6-pin
+    notes: Provides redundant GNSS interface or alternative UART/I2C combination.
+  - port: CAN1
+    type: can
+    default_use: DroneCAN peripheral bus
+    voltage: "Differential CAN / 5 V supply"
+    connector: JST-GH 4-pin
+    notes: Powered CAN-FD connector for smart nodes, ESCs, or power modules.
+  - port: CAN2
+    type: can
+    default_use: Redundant DroneCAN bus
+    voltage: "Differential CAN / 5 V supply"
+    connector: JST-GH 4-pin
+    notes: Second CAN interface for redundant networks or payloads.
+  - port: I2C
+    type: i2c
+    default_use: External sensor bus
+    voltage: "3.3 V"
+    connector: JST-GH 4-pin
+    notes: Shared I2C bus for magnetometers, airspeed sensors, or peripheral hubs.
+  - port: ADC
+    type: analog
+    default_use: Differential pressure / analog sensing
+    voltage: "0-3.3 V"
+    connector: JST-GH 3-pin
+    notes: Analog input with reference and ground for secondary battery or pitot sensors.
+  - port: RCIN
+    type: rc
+    default_use: Serial RC input
+    voltage: "3.3 V signal / 5 V supply"
+    connector: JST-GH 6-pin
+    notes: Supports CPPM, SBUS, and Spektrum receivers with dedicated power and RSSI pins.
+  - port: PWM OUT (1-8)
+    type: pwm
+    default_use: Primary servo outputs
+    voltage: "Servo rail (0-36 V tolerant)"
+    connector: Carrier board servo rail
+    notes: IOMCU-managed outputs for actuators, landing gear, or camera gimbals.
+  - port: PWM OUT (9-14)
+    type: pwm
+    default_use: FMU aux outputs
+    voltage: "Servo rail (0-36 V tolerant)"
+    connector: Carrier board aux rail
+    notes: FMU-controlled outputs supporting DShot on compatible channels.
+  - port: POWER1
+    type: power
+    default_use: Primary power module input
+    voltage: "4.1-5.7 V"
+    connector: 6-pin power monitor
+    notes: Provides regulated 5 V with current and voltage telemetry.
+  - port: POWER2
+    type: power
+    default_use: Secondary power module input
+    voltage: "4.1-5.7 V"
+    connector: 6-pin power monitor
+    notes: Redundant power module connection for high-reliability builds.
+  - port: SERVO RAIL
+    type: power
+    default_use: Servo rail supply
+    voltage: "0-36 V tolerant"
+    connector: Servo rail bus
+    notes: High-voltage tolerant rail powering PWM outputs separately from logic supply.
+  - port: Micro-USB
+    type: usb
+    default_use: Console and firmware updates
+    voltage: "5 V"
+    connector: Micro-USB
+    notes: Provides SERIAL0 console and bootloader access via the carrier board harness.
+  - port: ADS-B Serial5
+    type: uart
+    default_use: Integrated ADS-B receiver
+    voltage: "3.3 V signal"
+    connector: Internal carrier connection
+    notes: Dedicated Serial5 link from the carrier board’s uAvionix ADS-B receiver to the cube core.
 sensors:
   barometer:
   - count: 2

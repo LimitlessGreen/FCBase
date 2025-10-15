@@ -104,6 +104,97 @@ io:
     - microsd
     connector: Internal microSD
     notes: Onboard microSD card slot for data logging.
+peripheral_ports:
+  - port: TELEM1
+    type: uart
+    default_use: Primary MAVLink telemetry
+    voltage: "3.3 V signal / 5 V @ 1.5 A peripheral power"
+    connector: JST-GH 6-pin
+    notes: High-current telemetry rail powering radios or companion computers with flow control.
+  - port: TELEM2
+    type: uart
+    default_use: Secondary telemetry or RTK link
+    voltage: "3.3 V signal / 5 V supply"
+    connector: JST-GH 6-pin
+    notes: Full-duplex UART with RTS/CTS for redundant communications.
+  - port: UART4
+    type: uart
+    default_use: Auxiliary serial expansion
+    voltage: "3.3 V signal"
+    connector: JST-GH 6-pin
+    notes: Configurable UART for scripting engines, serial RC, or payload telemetry.
+  - port: GPS1
+    type: gps
+    default_use: Primary GPS/compass/safety harness
+    voltage: "3.3 V signal / 5 V supply"
+    connector: JST-GH 10-pin
+    notes: Combines GNSS, safety switch, buzzer, and I2C compass wiring.
+  - port: GPS2
+    type: gps
+    default_use: Secondary GPS or telemetry
+    voltage: "3.3 V signal / 5 V supply"
+    connector: JST-GH 6-pin
+    notes: Redundant GNSS header sharing the external I2C bus.
+  - port: CAN1
+    type: can
+    default_use: DroneCAN peripheral bus
+    voltage: "Differential CAN / 5 V supply"
+    connector: JST-GH 4-pin
+    notes: Standard CAN-FD port for ESCs or payload nodes.
+  - port: CAN2
+    type: can
+    default_use: Redundant DroneCAN bus
+    voltage: "Differential CAN / 5 V supply"
+    connector: JST-GH 4-pin
+    notes: Second CAN-FD channel for redundant sensors.
+  - port: CAN3 (Power)
+    type: can
+    default_use: CAN power module input
+    voltage: "Differential CAN / 5 V supply"
+    connector: JST-GH 4-pin
+    notes: Dedicated CAN port for CUAV CAN power module or smart battery interface.
+  - port: RCIN
+    type: rc
+    default_use: Serial RC input
+    voltage: "3.3 V signal / 5 V supply"
+    connector: JST-GH 6-pin
+    notes: Supports SBUS, CRSF, FPort, DSM, and PPM receivers through UART remapping.
+  - port: PWM OUT (1-14)
+    type: pwm
+    default_use: Motor and servo outputs
+    voltage: "Selectable 3.3/5 V signal (servo rail configurable)"
+    connector: Servo breakout
+    notes: Fourteen outputs with DShot capability and configurable signal level jumpers.
+  - port: POWER A
+    type: power
+    default_use: Primary power module input
+    voltage: "Regulated by external power brick"
+    connector: 6-pin power monitor
+    notes: Supplies regulated 5 V and analog telemetry from the included power module.
+  - port: SERVO RAIL
+    type: power
+    default_use: PWM servo supply
+    voltage: "Configurable 3.3/5 V (0-36 V tolerant)"
+    connector: Servo rail bus
+    notes: Adjustable servo rail voltage using onboard jumpers for sensitive servos.
+  - port: Ethernet
+    type: ethernet
+    default_use: 100 Mbps companion link
+    voltage: "3.3 V logic"
+    connector: RJ45 breakout
+    notes: Provides high-bandwidth networking for onboard computers.
+  - port: USB-C
+    type: usb
+    default_use: Console and firmware updates
+    voltage: "5 V"
+    connector: USB Type-C
+    notes: Primary configuration interface and log access point.
+  - port: Buzzer/Safety
+    type: other
+    default_use: External safety switch and buzzer
+    voltage: "5 V supply"
+    connector: JST harness
+    notes: Combined harness powering safety switch, RGB LED, and buzzer assembly.
 sensors:
   imu:
   - count: 1

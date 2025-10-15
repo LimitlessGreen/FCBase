@@ -84,6 +84,97 @@ io:
         - analog-osd
       connector: Solder pads
       notes: Built-in OSD supports analog FPV wiring with camera and VTX pads.
+peripheral_ports:
+  - port: UART1 (TX1/RX1)
+    type: uart
+    default_use: GPS receiver
+    voltage: "3.3 V signal"
+    connector: JST-SH pigtail / solder pads
+    notes: Default mapping for external GPS and compass modules.
+  - port: UART2 (TX2/RX2)
+    type: uart
+    default_use: MAVLink telemetry
+    voltage: "3.3 V signal"
+    connector: JST-SH pigtail / solder pads
+    notes: Commonly wired to telemetry radios or USB serial adapters.
+  - port: UART3 (TX3/RX3)
+    type: uart
+    default_use: RC receiver / SmartPort
+    voltage: "3.3 V signal"
+    connector: JST-SH receiver header
+    notes: Hardware inverter supports SBUS while pads expose uninverted signal for CRSF/FPort.
+  - port: UART4 (TX4/RX4)
+    type: uart
+    default_use: VTX or camera control
+    voltage: "3.3 V signal"
+    connector: Solder pads
+    notes: Often assigned to SmartAudio, IRC Tramp, or camera serial control.
+  - port: UART5 (TX5/RX5)
+    type: uart
+    default_use: AUX telemetry or ESC feedback
+    voltage: "3.3 V signal"
+    connector: Solder pads
+    notes: General-purpose UART for ESC telemetry, rangefinders, or companion devices.
+  - port: UART6 (TX6/RX6)
+    type: uart
+    default_use: Spare serial / softserial target
+    voltage: "3.3 V signal"
+    connector: Solder pads
+    notes: Routed near the MCU for scripting engines, companion links, or inverter bypass.
+  - port: I2C (SCL/SDA)
+    type: i2c
+    default_use: Compass / airspeed sensor
+    voltage: "3.3 V"
+    connector: JST-SH 4-pin
+    notes: Shared external bus for digital airspeed sensors and magnetometers.
+  - port: RCIN
+    type: rc
+    default_use: PPM/SBUS/CRSF receiver input
+    voltage: "3.3 V signal / 5 V supply"
+    connector: Dedicated receiver header
+    notes: Supports inverted SBUS via onboard inverter with jumpers for serial protocols.
+  - port: PWM OUT (1-6)
+    type: pwm
+    default_use: Primary motor/servo outputs
+    voltage: "5 V servo rail"
+    connector: Servo headers
+    notes: Six outputs supporting PWM or DShot for VTOL motors and control surfaces.
+  - port: PWM OUT (7-10)
+    type: pwm
+    default_use: Auxiliary outputs / camera trigger
+    voltage: "5 V servo rail"
+    connector: Servo headers and pads
+    notes: Additional outputs for flaps, retracts, or camera trigger lines.
+  - port: Video IN/OUT
+    type: other
+    default_use: Analog FPV pass-through with OSD
+    voltage: "5 V camera rail"
+    connector: Solder pads
+    notes: Provides camera and VTX pads with integrated OSD overlay and filtered supply.
+  - port: Power IN (BAT)
+    type: power
+    default_use: Main battery input
+    voltage: "9-30 V"
+    connector: XT60 / solder pads
+    notes: Primary LiPo input feeding onboard BECs and current sensor.
+  - port: 5V BEC
+    type: power
+    default_use: Regulated 5 V peripheral rail
+    voltage: "5 V @ 3 A"
+    connector: 5 V pads
+    notes: Powers receivers, servos, and auxiliary electronics from onboard regulator.
+  - port: 9V/Camera BEC
+    type: power
+    default_use: Video transmitter supply
+    voltage: "9 V @ 2 A"
+    connector: VTX pads
+    notes: Filtered regulator dedicated to analog/HD video transmitters.
+  - port: Micro-USB
+    type: usb
+    default_use: Console and firmware updates
+    voltage: "5 V"
+    connector: Micro-USB
+    notes: Provides Betaflight/ArduPilot console access and firmware flashing.
 sensors:
   imu:
     - count: 1

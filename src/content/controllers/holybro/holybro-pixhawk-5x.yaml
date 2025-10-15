@@ -126,6 +126,127 @@ io:
     - safety
     connector: JST harness
     notes: External safety switch with audible buzzer indicator.
+peripheral_ports:
+  - port: TELEM1
+    type: uart
+    default_use: Primary MAVLink telemetry
+    voltage: "3.3 V signal / 5 V @ 1.5 A peripheral power"
+    connector: JST-GH 6-pin
+    notes: DMA-enabled serial port with hardware flow control and highest current 5 V rail.
+  - port: TELEM2
+    type: uart
+    default_use: Secondary telemetry link
+    voltage: "3.3 V signal / 5 V supply"
+    connector: JST-GH 6-pin
+    notes: Full RTS/CTS UART suited to long-range radios or RTK corrections.
+  - port: TELEM3
+    type: uart
+    default_use: Configurable serial payload bus
+    voltage: "3.3 V signal / 5 V supply"
+    connector: JST-GH 6-pin
+    notes: UART2 port typically reassigned to scripting engines, ESC telemetry, or serial RC receivers.
+  - port: USER UART4
+    type: uart
+    default_use: Auxiliary UART for payloads or RC
+    voltage: "3.3 V signal"
+    connector: JST-GH 6-pin
+    notes: UART4 header with shared GPIO for RSSI/FPort wiring.
+  - port: GPS1
+    type: gps
+    default_use: Primary GPS/compass/safety harness
+    voltage: "3.3 V signal / 5 V supply"
+    connector: JST-GH 10-pin
+    notes: Includes safety switch, buzzer, and I2C compass wiring.
+  - port: GPS2
+    type: gps
+    default_use: Secondary GPS
+    voltage: "3.3 V signal / 5 V supply"
+    connector: JST-GH 6-pin
+    notes: Provides redundant navigation receiver interface.
+  - port: CAN1
+    type: can
+    default_use: DroneCAN peripheral bus
+    voltage: "Differential CAN / 5 V supply"
+    connector: JST-GH 4-pin
+    notes: Powers smart modules such as ESCs or GPS with CAN-FD support.
+  - port: CAN2
+    type: can
+    default_use: Redundant CAN network
+    voltage: "Differential CAN / 5 V supply"
+    connector: JST-GH 4-pin
+    notes: Enables second CAN segment or ESC daisy-chain.
+  - port: I2C1
+    type: i2c
+    default_use: Auxiliary sensor bus
+    voltage: "3.3 V"
+    connector: JST-GH 4-pin
+    notes: Shared with GPS harness for magnetometers or digital peripherals.
+  - port: I2C2
+    type: i2c
+    default_use: External I2C expansion
+    voltage: "3.3 V"
+    connector: JST-GH 4-pin
+    notes: Dedicated side-panel connector for airspeed sensors or rangefinders.
+  - port: RCIN
+    type: rc
+    default_use: Primary receiver input
+    voltage: "3.3 V signal / 5 V supply"
+    connector: JST-GH 6-pin
+    notes: Supports PPM, SBUS, DSM, FPort, and CRSF protocols with dedicated RSSI pin.
+  - port: S.BUS OUT / RSSI
+    type: rc
+    default_use: S.Bus passthrough and analog RSSI
+    voltage: "3.3 V signal"
+    connector: JST-GH 3-pin
+    notes: Provides redundant receiver output and RSSI monitoring for ground stations.
+  - port: FMU PWM OUT (1-8)
+    type: pwm
+    default_use: Primary motor outputs
+    voltage: "Servo rail (0-36 V tolerant)"
+    connector: Servo rail bank A
+    notes: FMU-controlled outputs supporting DShot on all groups except 7-8.
+  - port: IO PWM OUT (9-16)
+    type: pwm
+    default_use: Auxiliary PWM outputs
+    voltage: "Servo rail (0-36 V tolerant)"
+    connector: Servo rail bank B
+    notes: IOMCU-managed outputs for secondary actuators or camera triggers.
+  - port: POWER1
+    type: power
+    default_use: Primary power module input
+    voltage: "4.75-6.0 V"
+    connector: 6-pin power monitor
+    notes: SMBus-enabled connector for current/voltage telemetry and redundant 5 V supply.
+  - port: POWER2
+    type: power
+    default_use: Secondary power module input
+    voltage: "4.75-6.0 V"
+    connector: 6-pin power monitor
+    notes: Backup SMBus power input for redundant supply architectures.
+  - port: SERVO RAIL
+    type: power
+    default_use: PWM servo supply
+    voltage: "0-36 V tolerant"
+    connector: Servo rail bus
+    notes: High-voltage tolerant servo power isolated from FMU electronics.
+  - port: Micro-USB
+    type: usb
+    default_use: Console and firmware updates
+    voltage: "5 V"
+    connector: Micro-USB
+    notes: Provides SERIAL0 console, bootloader, and SLCAN access.
+  - port: Ethernet
+    type: ethernet
+    default_use: 100 Mbps companion link
+    voltage: "3.3 V logic"
+    connector: RJ45 breakout
+    notes: Disabled in STM32F7 firmware but fully routed to the RJ45 breakout board.
+  - port: FMU Debug
+    type: debug
+    default_use: SWD + system console
+    voltage: "3.3 V"
+    connector: JST-GH 6-pin
+    notes: Provides SWDIO/SWCLK and UART console for firmware development.
 sensors:
   imu:
   - count: 1

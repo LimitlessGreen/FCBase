@@ -95,6 +95,121 @@ io:
     - led
     connector: 3-pin JST
     notes: Addressable LED strip output sharing the 5 V peripheral rail.
+peripheral_ports:
+  - port: UART1
+    type: uart
+    default_use: RC input (SBUS/CRSF)
+    voltage: "3.3 V signal / 4.5 V receiver rail"
+    connector: JST-GH 4-pin
+    notes: Hardware-inverted serial port powering receivers from dedicated 4.5 V regulator.
+  - port: UART2
+    type: uart
+    default_use: GPS receiver
+    voltage: "3.3 V signal"
+    connector: JST-GH harness / solder pads
+    notes: Default GNSS connection with 5 V supply and SDA/SCL breakout for compass modules.
+  - port: UART3
+    type: uart
+    default_use: MAVLink telemetry
+    voltage: "3.3 V signal"
+    connector: JST-GH harness / solder pads
+    notes: Provides full-duplex serial for telemetry radios or companion computers.
+  - port: UART4
+    type: uart
+    default_use: ESC telemetry
+    voltage: "3.3 V signal"
+    connector: ESC header pads
+    notes: Positioned near PWM outputs for bidirectional ESC telemetry wiring.
+  - port: UART5
+    type: uart
+    default_use: DJI MSP / VTX control
+    voltage: "3.3 V signal"
+    connector: DJI HD plug
+    notes: Shares harness with DJI digital video connector for MSP OSD control.
+  - port: UART6
+    type: uart
+    default_use: Auxiliary payload link
+    voltage: "3.3 V signal"
+    connector: JST-GH harness / pads
+    notes: General-purpose UART for scripting, companion links, or secondary telemetry.
+  - port: UART7
+    type: uart
+    default_use: Debug / SLCAN
+    voltage: "3.3 V signal"
+    connector: Solder pads
+    notes: Spare serial channel for debugging, SLCAN, or additional peripherals.
+  - port: I2C
+    type: i2c
+    default_use: Compass / airspeed sensor
+    voltage: "3.3 V"
+    connector: JST-GH 4-pin
+    notes: External I2C bus for magnetometers, airspeed sensors, or OLED displays.
+  - port: RCIN
+    type: rc
+    default_use: Serial RC input
+    voltage: "3.3 V signal / 4.5 V supply"
+    connector: JST-GH 4-pin
+    notes: Supports SBUS, CRSF, FPort, SRXL2, and DSM protocols via selectable inversion pads.
+  - port: ESC OUT (M1-M12)
+    type: pwm
+    default_use: DShot/PWM motor outputs
+    voltage: "5 V signal reference"
+    connector: Dual 8-pin ESC headers and pads
+    notes: Twelve outputs across twin connectors supporting DShot600 and conventional PWM.
+  - port: BAT IN
+    type: power
+    default_use: Main battery input
+    voltage: "3-6S LiPo"
+    connector: XT60 / solder pads
+    notes: Primary LiPo input feeding dual onboard BEC rails and current sensing.
+  - port: POWER_MON1
+    type: power
+    default_use: Primary power monitor
+    voltage: "Regulated via external module"
+    connector: 6-pin power monitor
+    notes: SMBus/analog power monitor connector for current and voltage telemetry.
+  - port: POWER_MON2
+    type: power
+    default_use: Secondary power monitor
+    voltage: "Regulated via external module"
+    connector: 6-pin power monitor
+    notes: Redundant power monitor input for dual-battery setups.
+  - port: 5V BEC
+    type: power
+    default_use: Peripheral rail
+    voltage: "5 V @ 2.5 A"
+    connector: 5 V pads
+    notes: Powers receivers, LEDs, and ancillary electronics.
+  - port: 9V BEC
+    type: power
+    default_use: DJI/HD video supply
+    voltage: "9 V @ 3 A"
+    connector: DJI HD plug
+    notes: Dedicated regulator for DJI Air Unit or high-power video transmitters.
+  - port: USB-C
+    type: usb
+    default_use: Configuration and firmware updates
+    voltage: "5 V"
+    connector: USB Type-C
+    notes: Provides console access, firmware flashing, and log retrieval.
+  - port: DJI video
+    type: other
+    default_use: Digital FPV interface
+    voltage: "9 V supply / 3.3 V control"
+    connector: DJI HD plug
+    notes: Carries power, UART control, and video for DJI Air Unit or Goggles connection.
+  - port: LED Strip
+    type: other
+    default_use: WS2812 addressable LEDs
+    voltage: "5 V"
+    connector: 3-pin JST
+    notes: Provides 5 V, data, and ground for programmable LED strips.
+  - port: Buzzer
+    type: other
+    default_use: High-power buzzer output
+    voltage: "5 V"
+    connector: 2-pin JST
+    notes: Drives external buzzer for audible failsafe and status alerts.
 sensors:
   imu:
   - count: 1

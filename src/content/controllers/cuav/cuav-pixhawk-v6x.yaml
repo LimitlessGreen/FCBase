@@ -125,6 +125,109 @@ io:
         - microsd
       connector: Internal microSD
       notes: Accessible microSD card slot for high-rate data logging.
+peripheral_ports:
+  - port: TELEM1
+    type: uart
+    default_use: Primary MAVLink telemetry
+    voltage: "3.3 V signal / 5 V @ 1.5 A peripheral power"
+    connector: JST-GH 6-pin
+    notes: High-current regulator for telemetry radios or companion computers with hardware flow control.
+  - port: TELEM2
+    type: uart
+    default_use: Secondary telemetry link
+    voltage: "3.3 V signal / 5 V supply"
+    connector: JST-GH 6-pin
+    notes: Full RTS/CTS UART for redundant radios, RTK corrections, or payload links.
+  - port: TELEM3
+    type: uart
+    default_use: Configurable serial payload bus
+    voltage: "3.3 V signal / 5 V supply"
+    connector: JST-GH 6-pin
+    notes: Assignable UART commonly used for scripting engines or serial RC receivers.
+  - port: GPS1
+    type: gps
+    default_use: Primary GPS/compass/safety harness
+    voltage: "3.3 V signal / 5 V supply"
+    connector: JST-GH 10-pin
+    notes: Includes safety switch, buzzer, and I2C compass wiring for the first GNSS unit.
+  - port: GPS2
+    type: gps
+    default_use: Secondary GPS or telemetry
+    voltage: "3.3 V signal / 5 V supply"
+    connector: JST-GH 6-pin
+    notes: Provides redundant GNSS interface or alternate UART with shared I2C breakout.
+  - port: CAN1
+    type: can
+    default_use: DroneCAN peripheral bus
+    voltage: "Differential CAN / 5 V supply"
+    connector: JST-GH 4-pin
+    notes: Powered CAN-FD connector for smart power modules, ESCs, or payload nodes.
+  - port: CAN2
+    type: can
+    default_use: Redundant DroneCAN bus
+    voltage: "Differential CAN / 5 V supply"
+    connector: JST-GH 4-pin
+    notes: Supports second CAN segment or ESC daisy-chain with switchable 5 V feed.
+  - port: SPI6
+    type: spi
+    default_use: External payload SPI
+    voltage: "3.3 V"
+    connector: JST-GH 6-pin
+    notes: Breaks out SPI6 with chip-selects for high-rate sensors or data loggers.
+  - port: RCIN
+    type: rc
+    default_use: Serial RC input (SBUS/CRSF/FPort)
+    voltage: "3.3 V signal / 5 V supply"
+    connector: JST-GH 6-pin
+    notes: Timer-capable input supporting PWM/PPM and serial receiver protocols.
+  - port: FMU PWM OUT (1-8)
+    type: pwm
+    default_use: Primary motor outputs
+    voltage: "Servo rail (0-36 V tolerant)"
+    connector: Servo breakout bank A
+    notes: FMU-controlled outputs supporting DShot across grouped channels.
+  - port: IO PWM OUT (9-16)
+    type: pwm
+    default_use: Auxiliary PWM outputs
+    voltage: "Servo rail (0-36 V tolerant)"
+    connector: Servo breakout bank B
+    notes: IOMCU-managed outputs for secondary motors, retracts, or camera triggers.
+  - port: POWER1
+    type: power
+    default_use: Primary power module input
+    voltage: "4.9-5.5 V"
+    connector: 6-pin SMBus power module
+    notes: SMBus-enabled power module supplying redundant 5 V and battery telemetry.
+  - port: POWER2
+    type: power
+    default_use: Secondary power module input
+    voltage: "4.9-5.5 V"
+    connector: 6-pin SMBus power module
+    notes: Secondary SMBus connector for redundant power module or smart battery.
+  - port: SERVO RAIL
+    type: power
+    default_use: PWM servo supply
+    voltage: "0-36 V tolerant"
+    connector: Servo rail bus
+    notes: High-voltage tolerant rail powering PWM outputs separate from logic supply.
+  - port: USB-C (remote)
+    type: usb
+    default_use: Console and firmware updates
+    voltage: "5 V"
+    connector: Remote-mounted USB Type-C
+    notes: Includes detachable harness for in-airframe access to SERIAL0 console.
+  - port: Ethernet
+    type: ethernet
+    default_use: 100 Mbps companion link
+    voltage: "3.3 V logic"
+    connector: RJ45 breakout
+    notes: Provides high-bandwidth link to companion computers via included breakout.
+  - port: Buzzer/Safety
+    type: other
+    default_use: External safety switch and buzzer
+    voltage: "5 V supply"
+    connector: JST harness
+    notes: Combined harness powering the safety button, RGB LED, and audible buzzer module.
 sensors:
   barometer:
     - count: 2

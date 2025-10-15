@@ -115,6 +115,91 @@ io:
     - microsd
     connector: Internal microSD
     notes: Integrated microSD logging slot.
+peripheral_ports:
+  - port: TELEM1
+    type: uart
+    default_use: Primary MAVLink telemetry
+    voltage: "3.3 V signal / 5 V supply"
+    connector: JST-GH 6-pin
+    notes: Provides hardware flow control and dedicated regulator for telemetry radios.
+  - port: TELEM2
+    type: uart
+    default_use: Secondary telemetry or companion link
+    voltage: "3.3 V signal / 5 V supply"
+    connector: JST-GH 6-pin
+    notes: Full RTS/CTS UART for redundant radios or RC backhaul.
+  - port: GPS
+    type: gps
+    default_use: Combined GPS/compass harness
+    voltage: "3.3 V signal / 5 V supply"
+    connector: JST-GH 10-pin
+    notes: Bundles GPS, external magnetometer, safety switch, and buzzer wiring.
+  - port: CAN1
+    type: can
+    default_use: DroneCAN bus
+    voltage: "Differential CAN / 5 V supply"
+    connector: JST-GH 4-pin
+    notes: Provides regulated power for DroneCAN peripherals or smart power modules.
+  - port: I2C1
+    type: i2c
+    default_use: External sensor bus
+    voltage: "3.3 V"
+    connector: JST-GH 4-pin
+    notes: Shared with GPS harness for magnetometers or digital sensors.
+  - port: I2C2
+    type: i2c
+    default_use: Auxiliary I2C expansion
+    voltage: "3.3 V"
+    connector: JST-GH 4-pin
+    notes: Secondary I2C connector for airspeed sensors or rangefinders.
+  - port: RCIN
+    type: rc
+    default_use: Serial RC or PPM input
+    voltage: "3.3 V signal / 5 V supply"
+    connector: JST-GH 6-pin
+    notes: Supports SBUS, DSM, and PPM receivers through dedicated harness.
+  - port: FMU PWM OUT (1-8)
+    type: pwm
+    default_use: Primary motor outputs
+    voltage: "Servo rail (0-24 V tolerant)"
+    connector: Servo rail bank A
+    notes: FMU-controlled PWM outputs with DShot support on main groups.
+  - port: AUX PWM OUT (9-11)
+    type: pwm
+    default_use: Auxiliary actuator outputs
+    voltage: "Servo rail (0-24 V tolerant)"
+    connector: JST-GH breakout
+    notes: Additional PWM pads for camera triggers, retracts, or tail servos.
+  - port: POWER1
+    type: power
+    default_use: Primary power module input
+    voltage: "4.75-5.5 V"
+    connector: 6-pin power monitor
+    notes: Supplies regulated 5 V and telemetry from the included PM07 power module.
+  - port: POWER2
+    type: power
+    default_use: Secondary power module input
+    voltage: "4.75-5.5 V"
+    connector: 6-pin power monitor
+    notes: Backup power module connection for redundant supply setups.
+  - port: SERVO RAIL
+    type: power
+    default_use: PWM servo supply
+    voltage: "0-24 V tolerant"
+    connector: Servo rail bus
+    notes: High-voltage tolerant servo power rail isolated from FMU logic.
+  - port: Micro-USB
+    type: usb
+    default_use: Console and firmware updates
+    voltage: "5 V"
+    connector: Micro-USB
+    notes: Provides SERIAL0 console and bootloader access for configuration.
+  - port: Buzzer/Safety
+    type: other
+    default_use: External safety switch and buzzer
+    voltage: "5 V supply"
+    connector: JST harness
+    notes: Shared harness powering the LED safety switch and piezo buzzer.
 sensors:
   imu:
   - count: 1

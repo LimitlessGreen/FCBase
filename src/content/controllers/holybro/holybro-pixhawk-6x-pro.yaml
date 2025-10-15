@@ -142,6 +142,133 @@ io:
     - microsd
     connector: Internal microSD
     notes: Vibration-isolated core module includes removable microSD storage for high-rate logging.
+peripheral_ports:
+  - port: TELEM1
+    type: uart
+    default_use: Primary MAVLink telemetry
+    voltage: "3.3 V signal / 5 V @ 1.5 A peripheral power"
+    connector: JST-GH 6-pin
+    notes: Provides hardware flow control and the highest-current 5 V rail for radios or companion links.
+  - port: TELEM2
+    type: uart
+    default_use: Secondary telemetry or RTK corrections
+    voltage: "3.3 V signal / 5 V supply"
+    connector: JST-GH 6-pin
+    notes: Full RTS/CTS UART well-suited for long-range radios or RTK base modems.
+  - port: TELEM3
+    type: uart
+    default_use: Payload telemetry or RC backhaul
+    voltage: "3.3 V signal / 5 V supply"
+    connector: JST-GH 6-pin
+    notes: DMA-enabled serial port commonly reassigned to high-speed peripherals or ELRS receivers.
+  - port: UART4/I2C
+    type: uart
+    default_use: Configurable UART with shared I2C for peripherals
+    voltage: "3.3 V signal"
+    connector: JST-GH 6-pin
+    notes: Labeled UART4 on the AD&IO port; shares pins with auxiliary I2C and GPIO functions.
+  - port: GPS1
+    type: gps
+    default_use: Primary GPS/compass/safety switch combo
+    voltage: "3.3 V signal / 5 V supply"
+    connector: JST-GH 10-pin
+    notes: Bundles safety switch, buzzer, and I2C compass with the first GPS receiver.
+  - port: GPS2
+    type: gps
+    default_use: Secondary GPS
+    voltage: "3.3 V signal / 5 V supply"
+    connector: JST-GH 6-pin
+    notes: Minimalist GPS connector for redundant navigation receivers or RTK base input.
+  - port: CAN1
+    type: can
+    default_use: DroneCAN peripheral bus
+    voltage: "Differential CAN / 5 V supply"
+    connector: JST-GH 4-pin
+    notes: Routed through the baseboard with switchable 5 V feed for smart nodes.
+  - port: CAN2
+    type: can
+    default_use: Redundant DroneCAN or ESC network
+    voltage: "Differential CAN / 5 V supply"
+    connector: JST-GH 4-pin
+    notes: Supports CAN-FD devices and ESC RX-MUX functionality.
+  - port: I2C1
+    type: i2c
+    default_use: Auxiliary sensor bus
+    voltage: "3.3 V"
+    connector: JST-GH 4-pin
+    notes: Dedicated auxiliary I2C port for airspeed, rangefinders, or peripheral hubs.
+  - port: SPI1
+    type: spi
+    default_use: External payload SPI
+    voltage: "3.3 V"
+    connector: Autopilot Bus SPI header
+    notes: Provides two chip selects plus sync/reset lines for high-rate payload integration.
+  - port: AD&IO
+    type: pwm
+    default_use: Camera trigger or timing capture
+    voltage: "3.3 V signal / 5 V supply"
+    connector: JST-GH 10-pin (AD&IO)
+    notes: Exposes PWM capture, GPIO, and voltage reference on the accessory port.
+  - port: RCIN
+    type: rc
+    default_use: Primary receiver input (PPM/S.Bus/DSM)
+    voltage: "3.3 V signal / 5 V supply"
+    connector: JST-GH 6-pin
+    notes: Timer-based input with dedicated RSSI pin for legacy receivers.
+  - port: S.BUS OUT / RSSI
+    type: rc
+    default_use: S.Bus out and analog RSSI
+    voltage: "3.3 V signal"
+    connector: JST-GH 3-pin
+    notes: Allows redundant receivers or servo expanders with analog RSSI monitoring.
+  - port: FMU PWM OUT (1-8)
+    type: pwm
+    default_use: Primary motor outputs
+    voltage: "Servo rail (0-36 V tolerant)"
+    connector: Servo rail bank A
+    notes: DShot-capable FMU-controlled outputs grouped for synchronous protocols.
+  - port: IO PWM OUT (9-16)
+    type: pwm
+    default_use: Auxiliary/IO motor outputs
+    voltage: "Servo rail (0-36 V tolerant)"
+    connector: Servo rail bank B
+    notes: IOMCU-managed outputs for flight controls, retracts, or camera gimbals.
+  - port: POWER1
+    type: power
+    default_use: Primary power module input
+    voltage: "4.9-5.5 V"
+    connector: Molex CLIK-Mate 2.0mm 6-pin
+    notes: Provides SMBus telemetry and redundant 5 V supply from the first power module.
+  - port: POWER2
+    type: power
+    default_use: Secondary power module input
+    voltage: "4.9-5.5 V"
+    connector: Molex CLIK-Mate 2.0mm 6-pin
+    notes: Independent redundant supply supporting SMBus smart battery modules.
+  - port: SERVO RAIL
+    type: power
+    default_use: High-voltage servo bus
+    voltage: "0-36 V tolerant"
+    connector: Servo rail bus
+    notes: Isolated from FMU logic supply; do not backfeed the redundant power circuits.
+  - port: USB-C
+    type: usb
+    default_use: Console and firmware updates
+    voltage: "5 V"
+    connector: USB Type-C
+    notes: Provides SERIAL0 console access and bootloader flashing capability.
+  - port: Ethernet
+    type: ethernet
+    default_use: 100 Mbps companion link
+    voltage: "3.3 V logic"
+    connector: Pixhawk Autopilot Bus Ethernet header
+    notes: Requires compatible baseboard breakout for RJ45 connection.
+  - port: FMU Debug
+    type: debug
+    default_use: SWD + system console
+    voltage: "3.3 V"
+    connector: JST SM10B (Pixhawk Debug Full)
+    notes: Combined SWD/JTAG and serial console for firmware development and diagnostics.
 sensors:
   imu:
   - count: 1

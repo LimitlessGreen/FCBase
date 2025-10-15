@@ -101,6 +101,127 @@ io:
         - microsd
       connector: Push-push microSD
       notes: Onboard microSD logging for high-rate data capture.
+peripheral_ports:
+  - port: UART1 (TX1/RX1)
+    type: uart
+    default_use: GPS receiver
+    voltage: "3.3 V signal"
+    connector: JST-GH pigtail / solder pads
+    notes: Default GNSS/UART mapping for external GPS modules.
+  - port: UART2 (TX2/RX2)
+    type: uart
+    default_use: Primary MAVLink telemetry
+    voltage: "3.3 V signal"
+    connector: JST-GH pigtail / solder pads
+    notes: Provides hardware flow control for telemetry radios or serial radios.
+  - port: UART3 (TX3/RX3)
+    type: uart
+    default_use: Serial RC input
+    voltage: "3.3 V signal"
+    connector: JST-GH receiver header
+    notes: Inverted pad for SBUS with adjacent uninverted pads for CRSF/FPort.
+  - port: UART4 (TX4/RX4)
+    type: uart
+    default_use: ESC telemetry / payload
+    voltage: "3.3 V signal"
+    connector: Solder pads
+    notes: Typically wired to bidirectional ESC telemetry or airspeed sensors.
+  - port: UART5 (TX5/RX5)
+    type: uart
+    default_use: Companion computer link
+    voltage: "3.3 V signal"
+    connector: Solder pads
+    notes: Additional UART for scripting, companion computers, or camera control.
+  - port: UART6 (TX6/RX6)
+    type: uart
+    default_use: VTX control / SmartAudio
+    voltage: "3.3 V signal"
+    connector: Solder pads
+    notes: Routed near video connectors for SmartAudio or IRC Tramp protocols.
+  - port: UART7 (TX7/RX7)
+    type: uart
+    default_use: Spare serial / debugging
+    voltage: "3.3 V signal"
+    connector: Solder pads
+    notes: General-purpose UART for logging, scripting, or secondary telemetry.
+  - port: I2C1 (SCL/SDA)
+    type: i2c
+    default_use: Compass / airspeed sensor
+    voltage: "3.3 V"
+    connector: JST-GH 4-pin
+    notes: External I2C bus for magnetometers, airspeed sensors, or LED controllers.
+  - port: I2C2 (SCL2/SDA2)
+    type: i2c
+    default_use: Auxiliary I2C expansion
+    voltage: "3.3 V"
+    connector: JST-GH 4-pin
+    notes: Secondary I2C header for rangefinders or digital peripherals.
+  - port: CAN1
+    type: can
+    default_use: DroneCAN peripheral bus
+    voltage: "Differential CAN / 5 V supply"
+    connector: JST-GH 4-pin
+    notes: Single CAN-FD port for smart servos, GPS, or power modules.
+  - port: RCIN
+    type: rc
+    default_use: Serial RC input
+    voltage: "3.3 V signal / 5 V supply"
+    connector: JST-GH 6-pin
+    notes: Supports SBUS, CRSF, FPort, and DSM receivers via UART remapping.
+  - port: PWM OUT (1-8)
+    type: pwm
+    default_use: Primary motor/servo outputs
+    voltage: "5 V servo rail"
+    connector: Servo headers
+    notes: Eight outputs capable of PWM or DShot for VTOL motors and control surfaces.
+  - port: PWM OUT (9-13)
+    type: pwm
+    default_use: Auxiliary outputs
+    voltage: "5 V servo rail"
+    connector: Servo headers and pads
+    notes: Additional outputs for payloads, landing gear, or camera triggers.
+  - port: Camera IN A/B
+    type: other
+    default_use: Dual camera inputs
+    voltage: "5 V camera rail"
+    connector: JST-GH 3-pin
+    notes: Dual camera switch feeding the onboard OSD and VTX output.
+  - port: VTX OUT
+    type: other
+    default_use: OSD video output
+    voltage: "5 V camera rail"
+    connector: JST-GH 3-pin
+    notes: Provides filtered video output to the FPV transmitter with OSD overlay.
+  - port: Power IN (BAT)
+    type: power
+    default_use: Main battery input
+    voltage: "9-36 V"
+    connector: XT60 / solder pads
+    notes: Primary LiPo input feeding onboard regulators and current sensor.
+  - port: 5V BEC
+    type: power
+    default_use: Regulated 5 V peripheral rail
+    voltage: "5 V @ 5 A"
+    connector: 5 V pads
+    notes: Supplies receivers, peripherals, and digital sensors from onboard regulator.
+  - port: 9V BEC
+    type: power
+    default_use: Video transmitter supply
+    voltage: "9 V @ 3 A"
+    connector: VTX pads
+    notes: Dedicated regulator for HD or analog video transmitters.
+  - port: Servo BEC (adjustable)
+    type: power
+    default_use: Servo rail regulator
+    voltage: "5/6/7.2 V selectable"
+    connector: Servo rail bus
+    notes: Adjustable high-current BEC powering servos independently from logic.
+  - port: USB-C
+    type: usb
+    default_use: Console and firmware updates
+    voltage: "5 V"
+    connector: USB Type-C
+    notes: Provides configuration, Betaflight passthrough, and log access.
 sensors:
   barometer:
     - count: 1
