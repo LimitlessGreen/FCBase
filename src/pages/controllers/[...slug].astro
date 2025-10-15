@@ -749,12 +749,46 @@ const hasLinkItems = linkItems.length > 0;
     <ul class="mt-3 flex flex-wrap gap-2">
       <li>
         <a
-          href="#specs"
+          href="#hardware-overview"
           class="inline-flex items-center justify-center rounded-md border border-transparent bg-background px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-foreground shadow-xs transition focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
         >
-          Specifications
+          Hardware
         </a>
       </li>
+      <li>
+        <a
+          href="#power-supply"
+          class="inline-flex items-center justify-center rounded-md border border-transparent bg-background px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-foreground shadow-xs transition focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+        >
+          Power
+        </a>
+      </li>
+      <li>
+        <a
+          href="#connectivity"
+          class="inline-flex items-center justify-center rounded-md border border-transparent bg-background px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-foreground shadow-xs transition focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+        >
+          Connectivity
+        </a>
+      </li>
+      <li>
+        <a
+          href="#sensors"
+          class="inline-flex items-center justify-center rounded-md border border-transparent bg-background px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-foreground shadow-xs transition focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+        >
+          Sensors
+        </a>
+      </li>
+      {data.features && data.features.length > 0 && (
+        <li>
+          <a
+            href="#features"
+            class="inline-flex items-center justify-center rounded-md border border-transparent bg-background px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-foreground shadow-xs transition focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+          >
+            Features
+          </a>
+        </li>
+      )}
       <li>
         <a
           href="#issues"
@@ -813,16 +847,10 @@ const hasLinkItems = linkItems.length > 0;
         </CardContent>
       </Card>
 
-      <div class="grid grid-cols-1 gap-4 mb-8 lg:grid-cols-4">
-    <!-- Left Column - Complete Specs Table -->
-    <div class="lg:col-span-3">
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Technical Specifications</CardTitle>
-        </CardHeader>
-        <CardContent>
+      <div class="grid grid-cols-1 gap-4 lg:grid-cols-4">
+        <div class="space-y-6 lg:col-span-3">
           <div
-            class="space-y-4"
+            class="space-y-6"
             data-revision-root
             data-default-variant={defaultVariantId}
           >
@@ -863,660 +891,756 @@ const hasLinkItems = linkItems.length > 0;
                 </div>
               </div>
             )}
-              {revisionVariantsWithSensors.map((variant, idx) => (
-                <section
-                  key={variant.id}
-                  data-revision-panel={variant.id}
-                  class={`space-y-4 ${idx === 0 ? '' : 'hidden'}`}
-                  aria-hidden={idx === 0 ? 'false' : 'true'}
-                >
-                  {variant.revision ? (
-                    <div class="rounded-sm border border-border/40 bg-muted/30 p-3 space-y-2">
-                      <div class="flex flex-wrap items-center justify-between gap-2">
-                        <div class="flex flex-wrap items-center gap-2">
-                          <Badge className="text-[10px] uppercase tracking-wide bg-primary/10 text-primary border-primary/20">
-                            {variant.label}
-                          </Badge>
-                          {variant.revision.released && (
-                            <span class="text-xs font-mono text-muted-foreground">
-                              {variant.revision.released}
-                            </span>
-                          )}
-                        </div>
-                        <span class="text-xs font-semibold text-muted-foreground">
-                          Revision overview
-                        </span>
-                      </div>
-                      {variant.revision.notes && (
-                        <p class="text-xs leading-snug text-muted-foreground">
-                          {variant.revision.notes}
-                        </p>
-                      )}
-                      {variant.revision.changes && variant.revision.changes.length > 0 && (
-                        <ul class="space-y-1">
-                          {variant.revision.changes.map((change, changeIdx) => (
-                            <li
-                              key={`${variant.id}-change-${changeIdx}`}
-                              class="flex items-start gap-2 text-xs text-muted-foreground"
-                            >
-                              <span class="text-primary font-bold mt-0.5">•</span>
-                              <span class="leading-snug text-foreground">{change}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      )}
-                      {variant.revision.overrides && (
-                        <div class="flex flex-wrap gap-1.5">
-                          {variant.revision.overrides.sensors && (
-                            <Badge className="text-[10px] uppercase tracking-wide bg-purple-500/10 text-purple-500 border-purple-500/30">
-                              Sensor overrides
-                            </Badge>
-                          )}
-                          {variant.revision.overrides.io && (
-                            <Badge className="text-[10px] uppercase tracking-wide bg-blue-500/10 text-blue-500 border-blue-500/30">
-                              I/O overrides
-                            </Badge>
-                          )}
-                          {variant.revision.overrides.power && (
-                            <Badge className="text-[10px] uppercase tracking-wide bg-amber-500/10 text-amber-500 border-amber-500/30">
-                              Power overrides
-                            </Badge>
-                          )}
-                        </div>
-                      )}
-                      {variant.sourceEntries.length > 0 && (
-                        <div class="flex flex-wrap gap-1.5">
-                          {variant.sourceEntries.map((source) =>
-                            source.url ? (
-                              <a
-                                key={source.id}
-                                href={source.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                class="text-[10px] uppercase tracking-wide font-semibold inline-flex items-center gap-1 rounded-sm border border-primary/30 bg-primary/5 px-2 py-1 text-primary hover:bg-primary/10 transition-colors"
-                              >
-                                {source.title}
-                                <span>↗</span>
-                              </a>
-                            ) : (
-                              <span
-                                key={source.id}
-                                class="text-[10px] uppercase tracking-wide font-semibold inline-flex items-center gap-1 rounded-sm border border-border/40 bg-muted/30 px-2 py-1 text-muted-foreground"
-                              >
-                                {source.title}
-                              </span>
-                            )
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  ) : (
-                    <div class="rounded-sm border border-border/40 bg-muted/20 p-3 space-y-2">
-                      <div class="flex flex-wrap items-center justify-between gap-2">
-                        <span class="text-sm font-semibold text-foreground">
-                          Base hardware specification
-                        </span>
-                        <Badge className="text-[10px] uppercase tracking-wide bg-primary/10 text-primary border-primary/20">
-                          Default
-                        </Badge>
-                      </div>
-                      {data.hardware.notes && (
-                        <p class="text-xs leading-snug text-muted-foreground">{data.hardware.notes}</p>
-                      )}
-                    </div>
-                  )}
-                  <ProfessionalTable>
-                    <TableSection title="Core Hardware" />
-                    
-                    <TableRow2Col
-                      label1="MCU"
-                      value1={mcu?.data.title || mcu?.data.name || variant.spec.mcu}
-                      label2="Mounting"
-                      value2={formatMounting(variant.spec.mounting)}
-                      mono1
-                      mono2
-                    />
-                    
-                    {variant.spec.dimensions && (
-                      <TableRow2Col
-                        label1="Dimensions"
-                        value1={formatDimensions(variant.spec.dimensions)}
-                        label2="Weight"
-                        value2={formatWeight(variant.spec.dimensions.weight_g) || '—'}
-                        mono1
-                        mono2
-                      />
-                    )}
-                    <TableSection title="Power" />
-                    
-                    {variant.spec.power.inputs && variant.spec.power.inputs.length > 0 ? (
-                      <>
-                        <TableRow label="Power Inputs">
-                          <div class="space-y-2">
-                            {variant.spec.power.inputs.map((input, idx) => {
-                              const voltageLabel = formatVoltageRange(input.voltage);
-                              const typeLabel = getPowerTypeLabel(input.type);
-                              return (
-                                <div
-                                  key={`${input.name}-${idx}`}
-                                  class="rounded-sm border border-border/40 bg-muted/20 p-3 space-y-1"
-                                >
-                                  <div class="flex flex-wrap items-center justify-between gap-2">
-                                    <span class="font-mono font-semibold text-sm text-foreground">
-                                      {input.name}
-                                    </span>
-                                    {typeLabel && (
-                                      <span class="text-[10px] uppercase tracking-wide text-muted-foreground">
-                                        {typeLabel}
-                                      </span>
-                                    )}
-                                  </div>
-                                  {input.connector && (
-                                    <div class="text-xs text-muted-foreground">
-                                      Connector:&nbsp;
-                                      <span class="font-mono text-foreground">{input.connector}</span>
-                                    </div>
-                                  )}
-                                  {voltageLabel && (
-                                    <div class="text-xs text-muted-foreground">
-                                      Voltage:&nbsp;
-                                      <span class="font-semibold text-foreground">{voltageLabel}</span>
-                                    </div>
-                                  )}
-                                  {input.notes && (
-                                    <p class="text-xs text-muted-foreground leading-snug">{input.notes}</p>
-                                  )}
-                                </div>
-                              );
-                            })}
-                          </div>
-                        </TableRow>
-                        {variant.spec.power.redundant && (
-                          <TableRow 
-                            label="Redundancy" 
-                            value="✓ Yes"
-                            class="font-semibold text-green-600 dark:text-green-400"
-                          />
-                        )}
-                      </>
-                    ) : (
-                      <>
-                        <TableRow2Col
-                          label1="Input Voltage"
-                          value1={variant.spec.power.voltage_in ?? '—'}
-                          label2="Redundancy"
-                          value2={variant.spec.power.redundant ? '✓ Yes' : '—'}
-                          mono1
-                        />
-                      </>
-                    )}
-                    {variant.spec.power.notes && (
-                      <TableRow label=" " class="text-xs text-muted-foreground italic">
-                        {variant.spec.power.notes}
-                      </TableRow>
-                    )}
-                    <TableSection title="Connectivity & I/O" />
-                    
-                    <TableRow2Col
-                      label1="UARTs"
-                      value1={variant.spec.io.uarts}
-                      label2="CAN Bus"
-                      value2={variant.spec.io.can}
-                    />
-                    
-                    <TableRow2Col
-                      label1="PWM Outputs"
-                      value1={variant.spec.io.pwm}
-                      label2="SD Card"
-                      value2={variant.spec.io.sd_card ? '✓ Yes' : '✗ No'}
-                    />
-                    
-                    {variant.spec.io.ethernet !== undefined && (
-                      <TableRow
-                        label="Ethernet"
-                        value={variant.spec.io.ethernet ? '✓ Yes' : '✗ No'}
-                      />
-                    )}
-                    
-                    {variant.spec.peripheral_ports && variant.spec.peripheral_ports.length > 0 ? (
-                      <TableRow label="Peripheral Ports" class="!px-0">
-                        <div class="space-y-3 px-3">
-                          <div class="flex flex-wrap items-center justify-between gap-3">
-                            <p class="text-xs text-muted-foreground">
-                              Signal levels, connector types, and default assignments for each exposed port.
-                            </p>
-                            {controllerLinks.pinout?.url && (
-                              <a
-                                class={cn(
-                                  buttonVariants({ variant: 'secondary', size: 'sm' }),
-                                  'shrink-0'
-                                )}
-                                href={controllerLinks.pinout.url}
-                                target="_blank"
-                                rel="noreferrer noopener"
-                              >
-                                View Pinout
-                              </a>
-                            )}
-                          </div>
-                          <div class="overflow-x-auto rounded-sm border border-black/10 bg-background/60 dark:border-white/10">
-                            <table class="w-full table-auto text-sm">
-                              <thead class="bg-muted/50 text-xs uppercase tracking-wide text-muted-foreground">
-                                <tr>
-                                  <th class="px-3 py-2 text-left font-semibold">Port</th>
-                                  <th class="px-3 py-2 text-left font-semibold">Type</th>
-                                  <th class="px-3 py-2 text-left font-semibold">Default Function</th>
-                                  <th class="px-3 py-2 text-left font-semibold">Voltage / Level</th>
-                                  <th class="px-3 py-2 text-left font-semibold">Connector</th>
-                                  <th class="px-3 py-2 text-left font-semibold">Notes</th>
-                                </tr>
-                              </thead>
-                              <tbody
-                                class="[&>tr:not(:first-child)]:border-t [&>tr:not(:first-child)]:border-black/5 dark:[&>tr:not(:first-child)]:border-white/10"
-                              >
-                                {variant.spec.peripheral_ports.map((port) => {
-                                  const typeMeta = getPortTypeMeta(port.type);
-                                  const typeLabel = port.type
-                                    ? formatPeripheralType(port.type)
-                                    : '—';
-                                  return (
-                                    <tr
-                                      class="hover:bg-muted/40 transition-colors"
-                                      key={`${port.port}-${port.type ?? 'unknown'}`}
-                                      title={port.notes ?? undefined}
-                                    >
-                                      <td class="px-3 py-2 font-semibold text-foreground">
-                                        <span class="inline-flex items-center gap-2">
-                                          {port.port}
-                                          {port.notes && (
-                                            <span class="text-muted-foreground" aria-hidden="true">ⓘ</span>
-                                          )}
-                                        </span>
-                                      </td>
-                                      <td class="px-3 py-2">
-                                        <span
-                                          class={cn(
-                                            'inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold',
-                                            typeMeta.className
-                                          )}
-                                        >
-                                          <span aria-hidden="true">{typeMeta.icon}</span>
-                                          <span>{typeLabel}</span>
-                                        </span>
-                                      </td>
-                                      <td class="px-3 py-2 text-sm text-foreground/90">
-                                        {port.default_use ?? '—'}
-                                      </td>
-                                      <td class="px-3 py-2 text-sm text-foreground/90">
-                                        {port.voltage ?? '—'}
-                                      </td>
-                                      <td class="px-3 py-2 text-sm text-foreground/90">
-                                        {port.connector ?? '—'}
-                                      </td>
-                                      <td class="px-3 py-2 text-sm text-muted-foreground">
-                                        {port.notes ?? '—'}
-                                      </td>
-                                    </tr>
-                                  );
-                                })}
-                              </tbody>
-                            </table>
-                          </div>
-                        </div>
-                      </TableRow>
-                    ) : (
-                      variant.spec.io.peripherals &&
-                      variant.spec.io.peripherals.length > 0 && (
-                        <TableRow label="Peripheral Ports">
-                          <div class="grid gap-3 sm:grid-cols-2">
-                            {variant.spec.io.peripherals.map((peripheral, idx) => (
-                              <div
-                                class="rounded-sm border border-border/40 bg-background/70 p-3 shadow-xs"
-                                key={`${peripheral.name}-${idx}`}
-                              >
-                                <div class="flex items-center justify-between gap-2">
-                                  <span class="font-semibold text-sm text-foreground">
-                                    {peripheral.name}
-                                    {peripheral.count && (
-                                      <span class="ml-1 text-xs text-muted-foreground font-medium">
-                                        ×{peripheral.count}
-                                      </span>
-                                    )}
+
+            <section id="hardware-overview" aria-labelledby="hardware-overview-heading">
+              <Card className="border border-border/60 bg-background/80 shadow-xs">
+                <CardHeader className="pb-4">
+                  <h3 class="text-base font-semibold text-foreground" id="hardware-overview-heading">
+                    Hardware Overview
+                  </h3>
+                  <p class="text-sm text-muted-foreground">
+                    Core MCU, mounting, and mechanical data.
+                  </p>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  {revisionVariantsWithSensors.map((variant, idx) => {
+                    const dimensions = variant.spec.dimensions ?? data.dimensions;
+                    const variantMcuLabel =
+                      variant.spec.mcu && variant.spec.mcu !== data.mcu ? variant.spec.mcu : mcuName;
+
+                    return (
+                      <div
+                        key={`${variant.id}-hardware`}
+                        data-revision-panel={variant.id}
+                        class={`space-y-4 ${idx === 0 ? '' : 'hidden'}`}
+                        aria-hidden={idx === 0 ? 'false' : 'true'}
+                      >
+                        {variant.revision ? (
+                          <div class="rounded-sm border border-border/40 bg-muted/30 p-3 space-y-2">
+                            <div class="flex flex-wrap items-center justify-between gap-2">
+                              <div class="flex flex-wrap items-center gap-2">
+                                <Badge className="text-[10px] uppercase tracking-wide bg-primary/10 text-primary border-primary/20">
+                                  {variant.label}
+                                </Badge>
+                                {variant.revision.released && (
+                                  <span class="text-xs font-mono text-muted-foreground">
+                                    {variant.revision.released}
                                   </span>
-                                  <Badge className="text-[10px] tracking-wide font-medium">
-                                    {formatPeripheralType(peripheral.type)}
-                                  </Badge>
-                                </div>
-                                {(() => {
-                                  const interfaceBadges = normalizePeripheralInterfaces(
-                                    peripheral.interfaces,
-                                  );
-                                  if (interfaceBadges.length === 0) return null;
-                                  return (
-                                    <div class="mt-2 flex flex-wrap gap-1.5">
-                                      {interfaceBadges.map(({ label, count }) => (
-                                        <Badge
-                                          variant="secondary"
-                                          className="text-[10px] tracking-wide font-medium"
-                                          key={`${peripheral.name}-${label}`}
-                                        >
-                                          <span>{label}</span>
-                                          {count > 1 && (
-                                            <span className="ml-1 text-[10px] text-muted-foreground font-semibold">
-                                              ×{count}
-                                            </span>
-                                          )}
-                                        </Badge>
-                                      ))}
-                                    </div>
-                                  );
-                                })()}
-                                {peripheral.connector && (
-                                  <p class="mt-2 text-xs text-muted-foreground">
-                                    <span class="font-medium text-foreground">Connector:</span>&nbsp;{peripheral.connector}
-                                  </p>
-                                )}
-                                {peripheral.voltage && (
-                                  <p class="text-xs text-muted-foreground">
-                                    <span class="font-medium text-foreground">Voltage:</span> {peripheral.voltage}
-                                  </p>
-                                )}
-                                {peripheral.notes && (
-                                  <p class="text-xs text-muted-foreground leading-snug mt-1">
-                                    {peripheral.notes}
-                                  </p>
                                 )}
                               </div>
-                            ))}
+                              <span class="text-xs font-semibold text-muted-foreground">
+                                Revision overview
+                              </span>
+                            </div>
+                            {variant.revision.notes && (
+                              <p class="text-xs leading-snug text-muted-foreground">
+                                {variant.revision.notes}
+                              </p>
+                            )}
+                            {variant.revision.changes && variant.revision.changes.length > 0 && (
+                              <ul class="space-y-1">
+                                {variant.revision.changes.map((change, changeIdx) => (
+                                  <li
+                                    key={`${variant.id}-change-${changeIdx}`}
+                                    class="flex items-start gap-2 text-xs text-muted-foreground"
+                                  >
+                                    <span class="text-primary font-bold mt-0.5">•</span>
+                                    <span class="leading-snug text-foreground">{change}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            )}
+                            {variant.revision.overrides && (
+                              <div class="flex flex-wrap gap-1.5">
+                                {variant.revision.overrides.sensors && (
+                                  <Badge className="text-[10px] uppercase tracking-wide bg-purple-500/10 text-purple-500 border-purple-500/30">
+                                    Sensor overrides
+                                  </Badge>
+                                )}
+                                {variant.revision.overrides.io && (
+                                  <Badge className="text-[10px] uppercase tracking-wide bg-blue-500/10 text-blue-500 border-blue-500/30">
+                                    I/O overrides
+                                  </Badge>
+                                )}
+                                {variant.revision.overrides.power && (
+                                  <Badge className="text-[10px] uppercase tracking-wide bg-amber-500/10 text-amber-500 border-amber-500/30">
+                                    Power overrides
+                                  </Badge>
+                                )}
+                              </div>
+                            )}
+                            {variant.sourceEntries.length > 0 && (
+                              <div class="flex flex-wrap gap-1.5">
+                                {variant.sourceEntries.map((source) =>
+                                  source.url ? (
+                                    <a
+                                      key={source.id}
+                                      href={source.url}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      class="text-[10px] uppercase tracking-wide font-semibold inline-flex items-center gap-1 rounded-sm border border-primary/30 bg-primary/5 px-2 py-1 text-primary hover:bg-primary/10 transition-colors"
+                                    >
+                                      {source.title}
+                                      <span>↗</span>
+                                    </a>
+                                  ) : (
+                                    <span
+                                      key={source.id}
+                                      class="text-[10px] uppercase tracking-wide font-semibold inline-flex items-center gap-1 rounded-sm border border-border/40 bg-muted/30 px-2 py-1 text-muted-foreground"
+                                    >
+                                      {source.title}
+                                    </span>
+                                  )
+                                )}
+                              </div>
+                            )}
                           </div>
-                        </TableRow>
-                      )
-                    )}
-                    <TableSection title="Onboard Sensors" />
-                    
-                    {variant.sensorDetails.imu.length > 0 && (
-                      <TableRow label="IMU">
-                        <SensorList 
-                          sensors={variant.sensorDetails.imu.map(s => ({
-                            id: s.id,
-                            name: s.name ?? s.id,
-                            instances: s.count
-                          }))}
-                          linkable={true}
-                          size="sm"
-                        />
-                      </TableRow>
-                    )}
-                    
-                    {variant.sensorDetails.barometer.length > 0 && (
-                      <TableRow label="Barometer">
-                        <SensorList 
-                          sensors={variant.sensorDetails.barometer.map(s => ({
-                            id: s.id,
-                            name: s.name ?? s.id,
-                            instances: s.count
-                          }))}
-                          linkable={true}
-                          size="sm"
-                        />
-                      </TableRow>
-                    )}
-                    
-                    {variant.sensorDetails.magnetometer.length > 0 && (
-                      <TableRow label="Magnetometer">
-                        <SensorList 
-                          sensors={variant.sensorDetails.magnetometer.map(s => ({
-                            id: s.id,
-                            name: s.name ?? s.id,
-                            instances: s.count
-                          }))}
-                          linkable={true}
-                          size="sm"
-                        />
-                      </TableRow>
-                    )}
-                    {data.features && data.features.length > 0 && (
-                      <>
-                        <TableSection title="Additional Features" />
-                        <TableRow label=" ">
-                          <ul class="grid grid-cols-2 gap-x-4 gap-y-1.5 text-sm">
-                            {data.features.map((feature) => (
-                              <li class="flex items-start gap-2" key={feature}>
-                                <span class="text-emerald-600 dark:text-emerald-400 font-bold text-sm mt-0.5">✓</span>
-                                <span class="font-medium">{feature}</span>
-                              </li>
-                            ))}
-                          </ul>
-                        </TableRow>
-                      </>
-                    )}
-                  </ProfessionalTable>
-                </section>
-              ))}
-            </div>
-            {hasMultipleVariants && (
-              <script type="module">
-                const script = document.currentScript;
-                const root = script?.parentElement?.querySelector('[data-revision-root]');
-                if (!root) return;
-                const defaultId = root.dataset.defaultVariant;
-                const tabs = Array.from(root.querySelectorAll('[data-revision-tab]'));
-                const panels = Array.from(root.querySelectorAll('[data-revision-panel]'));
-                const issueSections = Array.from(
-                  document.querySelectorAll('[data-variant-issues]')
-                ).filter((el) => el instanceof HTMLElement);
-                const select = root.querySelector('[data-revision-select]');
-                const activeClasses = ['bg-primary/10', 'border-primary/40', 'text-primary'];
-                const inactiveClasses = ['bg-muted/30', 'border-border/60', 'text-muted-foreground'];
-                const setActive = (id) => {
-                  panels.forEach((panel) => {
-                    const isActive = panel.dataset.revisionPanel === id;
-                    panel.classList.toggle('hidden', !isActive);
-                    panel.setAttribute('aria-hidden', isActive ? 'false' : 'true');
-                  });
-                  issueSections.forEach((section) => {
-                    const el = section;
-                    const isActive = el.dataset.variantIssues === id;
-                    el.classList.toggle('hidden', !isActive);
-                    el.setAttribute('aria-hidden', isActive ? 'false' : 'true');
-                  });
-                  tabs.forEach((tab) => {
-                    const isActive = tab.dataset.revisionTab === id;
-                    tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
-                    activeClasses.forEach((cls) => tab.classList.toggle(cls, isActive));
-                    inactiveClasses.forEach((cls) => tab.classList.toggle(cls, !isActive));
-                  });
-                  if (select && select.value !== id) {
-                    select.value = id;
-                  }
-                };
-                tabs.forEach((tab) => {
-                  tab.addEventListener('click', () => setActive(tab.dataset.revisionTab));
-                });
-                if (select) {
-                  select.addEventListener('change', (event) => setActive(event.target.value));
-                }
-                if (defaultId) {
-                  setActive(defaultId);
-                }
-              </script>
-            )}
-          </CardContent>
-        </Card>
-      </div>
+                        ) : (
+                          <div class="rounded-sm border border-border/40 bg-muted/20 p-3 space-y-2">
+                            <div class="flex flex-wrap items-center justify-between gap-2">
+                              <span class="text-sm font-semibold text-foreground">
+                                Base hardware specification
+                              </span>
+                              <Badge className="text-[10px] uppercase tracking-wide bg-primary/10 text-primary border-primary/20">
+                                Default
+                              </Badge>
+                            </div>
+                            {data.hardware.notes && (
+                              <p class="text-xs leading-snug text-muted-foreground">{data.hardware.notes}</p>
+                            )}
+                          </div>
+                        )}
+                        <ProfessionalTable class="text-sm">
+                          <tbody>
+                            <TableRow2Col
+                              label1="MCU"
+                              value1={variantMcuLabel}
+                              label2="Mounting"
+                              value2={formatMounting(variant.spec.mounting ?? data.mounting)}
+                              mono1
+                              mono2
+                            />
+                            {dimensions && (
+                              <TableRow2Col
+                                label1="Dimensions"
+                                value1={formatDimensions(dimensions)}
+                                label2="Weight"
+                                value2={formatWeight(dimensions.weight_g) || '—'}
+                                mono1
+                                mono2
+                              />
+                            )}
+                          </tbody>
+                        </ProfessionalTable>
+                      </div>
+                    );
+                  })}
+                </CardContent>
+              </Card>
+            </section>
 
-      <!-- Right Column - Professional Sidebar -->
-      <div class="space-y-4">
-        <!-- Firmware & Info Combined -->
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base font-bold uppercase tracking-wide text-primary">Quick Reference</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ProfessionalTable class="text-xs">
-              <TableSection title="Firmware Support" colspan={2} />
-              {firmware.map((fw) => (
-                <tr class="even:bg-muted/30 hover:bg-muted/50 transition-colors" key={fw.id}>
-                  <td class="px-2 py-1.5 font-semibold">{fw.name}</td>
+            <section id="power-supply" aria-labelledby="power-supply-heading">
+              <Card className="border border-border/60 bg-background/80 shadow-xs">
+                <CardHeader className="pb-4">
+                  <h3 class="text-base font-semibold text-foreground" id="power-supply-heading">
+                    Power Supply
+                  </h3>
+                  <p class="text-sm text-muted-foreground">
+                    Input rails, regulators, and redundancy.
+                  </p>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  {revisionVariantsWithSensors.map((variant, idx) => {
+                    const power = variant.spec.power ?? data.power;
+                    const inputs = power?.inputs ?? [];
+                    const hasInputs = Array.isArray(inputs) && inputs.length > 0;
+
+                    return (
+                      <div
+                        key={`${variant.id}-power`}
+                        data-revision-panel={variant.id}
+                        class={`space-y-4 ${idx === 0 ? '' : 'hidden'}`}
+                        aria-hidden={idx === 0 ? 'false' : 'true'}
+                      >
+                        {hasInputs && (
+                          <div class="space-y-3">
+                            <h4 class="text-sm font-semibold text-foreground">Power Inputs</h4>
+                            <div class="grid gap-3 md:grid-cols-2">
+                              {inputs.map((input, inputIdx) => {
+                                const voltageLabel = formatVoltageRange(input.voltage);
+                                const typeLabel = getPowerTypeLabel(input.type);
+                                return (
+                                  <div
+                                    key={`${input.name ?? 'input'}-${inputIdx}`}
+                                    class="rounded-sm border border-border/40 bg-muted/20 p-3 space-y-1"
+                                  >
+                                    <div class="flex flex-wrap items-center justify-between gap-2">
+                                      <span class="font-mono font-semibold text-sm text-foreground">
+                                        {input.name ?? `Input ${inputIdx + 1}`}
+                                      </span>
+                                      {typeLabel && (
+                                        <span class="text-[10px] uppercase tracking-wide text-muted-foreground">
+                                          {typeLabel}
+                                        </span>
+                                      )}
+                                    </div>
+                                    {input.connector && (
+                                      <div class="text-xs text-muted-foreground">
+                                        Connector:&nbsp;
+                                        <span class="font-mono text-foreground">{input.connector}</span>
+                                      </div>
+                                    )}
+                                    {voltageLabel && (
+                                      <div class="text-xs text-muted-foreground">
+                                        Voltage:&nbsp;
+                                        <span class="font-semibold text-foreground">{voltageLabel}</span>
+                                      </div>
+                                    )}
+                                    {input.notes && (
+                                      <p class="text-xs leading-snug text-muted-foreground">{input.notes}</p>
+                                    )}
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        )}
+                        <ProfessionalTable class="text-sm">
+                          <tbody>
+                            <TableRow2Col
+                              label1="Input Voltage"
+                              value1={power?.voltage_in ?? '—'}
+                              label2="Redundancy"
+                              value2={power?.redundant ? '✓ Yes' : '—'}
+                              mono1
+                            />
+                          </tbody>
+                        </ProfessionalTable>
+                        {power?.notes && (
+                          <p class="text-sm leading-relaxed text-muted-foreground">{power.notes}</p>
+                        )}
+                      </div>
+                    );
+                  })}
+                </CardContent>
+              </Card>
+            </section>
+
+            <section id="connectivity" aria-labelledby="connectivity-heading">
+              <Card className="border border-border/60 bg-background/80 shadow-xs">
+                <CardHeader className="pb-4">
+                  <h3 class="text-base font-semibold text-foreground" id="connectivity-heading">
+                    Connectivity & I/O
+                  </h3>
+                  <p class="text-sm text-muted-foreground">
+                    Port availability, buses, and expansion options.
+                  </p>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  {revisionVariantsWithSensors.map((variant, idx) => {
+                    const io = variant.spec.io ?? data.io;
+                    const peripheralPorts = variant.spec.peripheral_ports ?? [];
+                    const legacyPeripherals = io?.peripherals ?? [];
+                    const hasPeripheralPorts = Array.isArray(peripheralPorts) && peripheralPorts.length > 0;
+                    const hasLegacyPeripherals = Array.isArray(legacyPeripherals) && legacyPeripherals.length > 0;
+
+                    return (
+                      <div
+                        key={`${variant.id}-io`}
+                        data-revision-panel={variant.id}
+                        class={`space-y-4 ${idx === 0 ? '' : 'hidden'}`}
+                        aria-hidden={idx === 0 ? 'false' : 'true'}
+                      >
+                        <ProfessionalTable class="text-sm">
+                          <tbody>
+                            <TableRow2Col
+                              label1="UARTs"
+                              value1={io?.uarts ?? '—'}
+                              label2="CAN Bus"
+                              value2={io?.can ?? '—'}
+                            />
+                            <TableRow2Col
+                              label1="PWM Outputs"
+                              value1={io?.pwm ?? '—'}
+                              label2="SD Card"
+                              value2={io?.sd_card === undefined ? '—' : io.sd_card ? '✓ Yes' : '✗ No'}
+                            />
+                            {io?.ethernet !== undefined && (
+                              <TableRow label="Ethernet" value={io.ethernet ? '✓ Yes' : '✗ No'} />
+                            )}
+                          </tbody>
+                        </ProfessionalTable>
+
+                        {hasPeripheralPorts && (
+                          <div class="space-y-3">
+                            <div class="flex flex-wrap items-center justify-between gap-3">
+                              <h4 class="text-sm font-semibold text-foreground">Peripheral Ports</h4>
+                              {controllerLinks.pinout?.url && (
+                                <a
+                                  class={cn(
+                                    buttonVariants({ variant: 'secondary', size: 'sm' }),
+                                    'shrink-0'
+                                  )}
+                                  href={controllerLinks.pinout.url}
+                                  target="_blank"
+                                  rel="noreferrer noopener"
+                                >
+                                  View Pinout
+                                </a>
+                              )}
+                            </div>
+                            <div class="overflow-x-auto rounded-sm border border-black/10 bg-background/60 dark:border-white/10">
+                              <table class="w-full table-auto text-sm">
+                                <thead class="bg-muted/50 text-xs uppercase tracking-wide text-muted-foreground">
+                                  <tr>
+                                    <th class="px-3 py-2 text-left font-semibold">Port</th>
+                                    <th class="px-3 py-2 text-left font-semibold">Type</th>
+                                    <th class="px-3 py-2 text-left font-semibold">Default Function</th>
+                                    <th class="px-3 py-2 text-left font-semibold">Voltage / Level</th>
+                                    <th class="px-3 py-2 text-left font-semibold">Connector</th>
+                                    <th class="px-3 py-2 text-left font-semibold">Notes</th>
+                                  </tr>
+                                </thead>
+                                <tbody class="[&>tr:not(:first-child)]:border-t [&>tr:not(:first-child)]:border-black/5 dark:[&>tr:not(:first-child)]:border-white/10">
+                                  {peripheralPorts.map((port) => {
+                                    const typeMeta = getPortTypeMeta(port.type);
+                                    const typeLabel = port.type ? formatPeripheralType(port.type) : '—';
+                                    return (
+                                      <tr
+                                        class="hover:bg-muted/40 transition-colors"
+                                        key={`${port.port}-${port.type ?? 'unknown'}`}
+                                        title={port.notes ?? undefined}
+                                      >
+                                        <td class="px-3 py-2 font-semibold text-foreground">
+                                          <span class="inline-flex items-center gap-2">
+                                            {port.port}
+                                            {port.notes && (
+                                              <span class="text-muted-foreground" aria-hidden="true">ⓘ</span>
+                                            )}
+                                          </span>
+                                        </td>
+                                        <td class="px-3 py-2">
+                                          <span
+                                            class={cn(
+                                              'inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold',
+                                              typeMeta.className
+                                            )}
+                                          >
+                                            <span aria-hidden="true">{typeMeta.icon}</span>
+                                            <span>{typeLabel}</span>
+                                          </span>
+                                        </td>
+                                        <td class="px-3 py-2 text-sm text-foreground/90">
+                                          {port.default_use ?? '—'}
+                                        </td>
+                                        <td class="px-3 py-2 text-sm text-foreground/90">
+                                          {port.voltage ?? '—'}
+                                        </td>
+                                        <td class="px-3 py-2 text-sm text-foreground/90">
+                                          {port.connector ?? '—'}
+                                        </td>
+                                        <td class="px-3 py-2 text-sm text-muted-foreground">
+                                          {port.notes ?? '—'}
+                                        </td>
+                                      </tr>
+                                    );
+                                  })}
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+                        )}
+
+                        {!hasPeripheralPorts && hasLegacyPeripherals && (
+                          <div class="space-y-3">
+                            <h4 class="text-sm font-semibold text-foreground">Peripheral Ports</h4>
+                            <div class="grid gap-3 sm:grid-cols-2">
+                              {legacyPeripherals.map((peripheral, idx) => {
+                                const interfaceBadges = normalizePeripheralInterfaces(peripheral.interfaces);
+                                return (
+                                  <div
+                                    class="rounded-sm border border-border/40 bg-background/70 p-3 shadow-xs"
+                                    key={`${peripheral.name}-${idx}`}
+                                  >
+                                    <div class="flex items-center justify-between gap-2">
+                                      <span class="text-sm font-semibold text-foreground">
+                                        {peripheral.name}
+                                        {peripheral.count && (
+                                          <span class="ml-1 text-xs font-medium text-muted-foreground">×{peripheral.count}</span>
+                                        )}
+                                      </span>
+                                      <Badge className="text-[10px] tracking-wide font-medium">
+                                        {formatPeripheralType(peripheral.type)}
+                                      </Badge>
+                                    </div>
+                                    {interfaceBadges.length > 0 && (
+                                      <div class="mt-2 flex flex-wrap gap-1.5">
+                                        {interfaceBadges.map(({ label, count }) => (
+                                          <Badge
+                                            variant="secondary"
+                                            className="text-[10px] tracking-wide font-medium"
+                                            key={`${peripheral.name}-${label}`}
+                                          >
+                                            <span>{label}</span>
+                                            {count > 1 && (
+                                              <span className="ml-1 text-[10px] text-muted-foreground font-semibold">×{count}</span>
+                                            )}
+                                          </Badge>
+                                        ))}
+                                      </div>
+                                    )}
+                                    {peripheral.connector && (
+                                      <p class="mt-2 text-xs text-muted-foreground">
+                                        <span class="font-medium text-foreground">Connector:</span>&nbsp;{peripheral.connector}
+                                      </p>
+                                    )}
+                                    {peripheral.voltage && (
+                                      <p class="text-xs text-muted-foreground">
+                                        <span class="font-medium text-foreground">Voltage:</span> {peripheral.voltage}
+                                      </p>
+                                    )}
+                                    {peripheral.notes && (
+                                      <p class="mt-1 text-xs leading-snug text-muted-foreground">{peripheral.notes}</p>
+                                    )}
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </CardContent>
+              </Card>
+            </section>
+
+            <section id="sensors" aria-labelledby="sensors-heading">
+              <Card className="border border-border/60 bg-background/80 shadow-xs">
+                <CardHeader className="pb-4">
+                  <h3 class="text-base font-semibold text-foreground" id="sensors-heading">
+                    Onboard Sensors
+                  </h3>
+                  <p class="text-sm text-muted-foreground">
+                    IMU, barometer, and magnetometer load-outs per revision.
+                  </p>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  {revisionVariantsWithSensors.map((variant, idx) => {
+                    const hasSensors =
+                      variant.sensorDetails.imu.length > 0 ||
+                      variant.sensorDetails.barometer.length > 0 ||
+                      variant.sensorDetails.magnetometer.length > 0;
+
+                    return (
+                      <div
+                        key={`${variant.id}-sensors`}
+                        data-revision-panel={variant.id}
+                        class={`space-y-4 ${idx === 0 ? '' : 'hidden'}`}
+                        aria-hidden={idx === 0 ? 'false' : 'true'}
+                      >
+                        {hasSensors ? (
+                          <ProfessionalTable class="text-sm">
+                            <tbody>
+                              {variant.sensorDetails.imu.length > 0 && (
+                                <TableRow label="IMU">
+                                  <SensorList
+                                    sensors={variant.sensorDetails.imu.map((s) => ({
+                                      id: s.id,
+                                      name: s.name ?? s.id,
+                                      instances: s.count
+                                    }))}
+                                    linkable={true}
+                                    size="sm"
+                                  />
+                                </TableRow>
+                              )}
+                              {variant.sensorDetails.barometer.length > 0 && (
+                                <TableRow label="Barometer">
+                                  <SensorList
+                                    sensors={variant.sensorDetails.barometer.map((s) => ({
+                                      id: s.id,
+                                      name: s.name ?? s.id,
+                                      instances: s.count
+                                    }))}
+                                    linkable={true}
+                                    size="sm"
+                                  />
+                                </TableRow>
+                              )}
+                              {variant.sensorDetails.magnetometer.length > 0 && (
+                                <TableRow label="Magnetometer">
+                                  <SensorList
+                                    sensors={variant.sensorDetails.magnetometer.map((s) => ({
+                                      id: s.id,
+                                      name: s.name ?? s.id,
+                                      instances: s.count
+                                    }))}
+                                    linkable={true}
+                                    size="sm"
+                                  />
+                                </TableRow>
+                              )}
+                            </tbody>
+                          </ProfessionalTable>
+                        ) : (
+                          <p class="text-sm text-muted-foreground">
+                            No onboard sensors catalogued for this revision.
+                          </p>
+                        )}
+                      </div>
+                    );
+                  })}
+                </CardContent>
+              </Card>
+            </section>
+
+            {data.features && data.features.length > 0 && (
+              <section id="features" aria-labelledby="features-heading">
+                <Card className="border border-border/60 bg-background/80 shadow-xs">
+                  <CardHeader className="pb-4">
+                    <h3 class="text-base font-semibold text-foreground" id="features-heading">
+                      Additional Features
+                    </h3>
+                    <p class="text-sm text-muted-foreground">
+                      Value-add capabilities bundled with the controller.
+                    </p>
+                  </CardHeader>
+                  <CardContent>
+                    <ul class="grid gap-2 sm:grid-cols-2">
+                      {data.features.map((feature) => (
+                        <li class="flex items-start gap-2" key={feature}>
+                          <span class="mt-0.5 text-sm font-bold text-emerald-600 dark:text-emerald-400">✓</span>
+                          <span class="text-sm font-medium text-foreground">{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </CardContent>
+                </Card>
+              </section>
+            )}
+          </div>
+
+          {hasMultipleVariants && (
+            <script type="module">
+              const script = document.currentScript;
+              const root = script?.parentElement?.querySelector('[data-revision-root]');
+              if (!root) return;
+              const defaultId = root.dataset.defaultVariant;
+              const tabs = Array.from(root.querySelectorAll('[data-revision-tab]'));
+              const panels = Array.from(root.querySelectorAll('[data-revision-panel]'));
+              const issueSections = Array.from(
+                document.querySelectorAll('[data-variant-issues]')
+              ).filter((el) => el instanceof HTMLElement);
+              const select = root.querySelector('[data-revision-select]');
+              const activeClasses = ['bg-primary/10', 'border-primary/40', 'text-primary'];
+              const inactiveClasses = ['bg-muted/30', 'border-border/60', 'text-muted-foreground'];
+              const setActive = (id) => {
+                panels.forEach((panel) => {
+                  const isActive = panel.dataset.revisionPanel === id;
+                  panel.classList.toggle('hidden', !isActive);
+                  panel.setAttribute('aria-hidden', isActive ? 'false' : 'true');
+                });
+                issueSections.forEach((section) => {
+                  const el = section;
+                  const isActive = el.dataset.variantIssues === id;
+                  el.classList.toggle('hidden', !isActive);
+                  el.setAttribute('aria-hidden', isActive ? 'false' : 'true');
+                });
+                tabs.forEach((tab) => {
+                  const isActive = tab.dataset.revisionTab === id;
+                  tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
+                  activeClasses.forEach((cls) => tab.classList.toggle(cls, isActive));
+                  inactiveClasses.forEach((cls) => tab.classList.toggle(cls, !isActive));
+                });
+                if (select && select.value !== id) {
+                  select.value = id;
+                }
+              };
+              tabs.forEach((tab) => {
+                tab.addEventListener('click', () => setActive(tab.dataset.revisionTab));
+              });
+              if (select) {
+                select.addEventListener('change', (event) => setActive(event.target.value));
+              }
+              if (defaultId) {
+                setActive(defaultId);
+              }
+            </script>
+          )}
+        </div>
+
+        <aside class="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base font-bold uppercase tracking-wide text-primary">Quick Reference</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ProfessionalTable class="text-xs">
+                <TableSection title="Firmware Support" colspan={2} />
+                {firmware.map((fw) => (
+                  <tr class="even:bg-muted/30 hover:bg-muted/50 transition-colors" key={fw.id}>
+                    <td class="px-2 py-1.5 font-semibold">{fw.name}</td>
+                    <td class="px-2 py-1.5 text-right">
+                      <StatusBadge
+                        variant="firmware"
+                        status={fw.status}
+                        size="xs"
+                      />
+                    </td>
+                  </tr>
+                ))}
+
+                <TableSection title="Information" colspan={2} />
+                <tr class="even:bg-muted/30 hover:bg-muted/50 transition-colors">
+                  <td class="px-2 py-1.5 text-muted-foreground font-medium">Verification</td>
                   <td class="px-2 py-1.5 text-right">
-                    <StatusBadge 
-                      variant="firmware" 
-                      status={fw.status}
+                    <StatusBadge
+                      variant="verification"
+                      status={data.verification.level}
                       size="xs"
                     />
                   </td>
                 </tr>
-              ))}
-              
-              <TableSection title="Information" colspan={2} />
-              <tr class="even:bg-muted/30 hover:bg-muted/50 transition-colors">
-                <td class="px-2 py-1.5 text-muted-foreground font-medium">Verification</td>
-                <td class="px-2 py-1.5 text-right">
-                  <StatusBadge 
-                    variant="verification" 
-                    status={data.verification.level}
-                    size="xs"
-                  />
-                </td>
-              </tr>
-              <tr class="even:bg-muted/30 hover:bg-muted/50 transition-colors">
-                <td class="px-2 py-1.5 text-muted-foreground font-medium">Hardware</td>
-                <td class="px-2 py-1.5 text-right">
-                  <StatusBadge 
-                    variant="hardware" 
-                    status={data.hardware.openness}
-                    size="xs"
-                  />
-                </td>
-              </tr>
-              <tr class="even:bg-muted/30 hover:bg-muted/50 transition-colors">
-                <td class="px-2 py-1.5 text-muted-foreground font-medium">Updated</td>
-                <td class="px-2 py-1.5 font-mono font-semibold text-right">{data.verification.last_updated}</td>
-              </tr>
-              <tr class="even:bg-muted/30 hover:bg-muted/50 transition-colors">
-                <td class="px-2 py-1.5 text-muted-foreground font-medium">Sources</td>
-                <td class="px-2 py-1.5 font-mono font-semibold text-right">{data.sources.length}</td>
-              </tr>
-              {manufacturerName && (
                 <tr class="even:bg-muted/30 hover:bg-muted/50 transition-colors">
-                  <td class="px-2 py-1.5 text-muted-foreground font-medium">Manufacturer</td>
+                  <td class="px-2 py-1.5 text-muted-foreground font-medium">Hardware</td>
                   <td class="px-2 py-1.5 text-right">
-                    {manufacturerUrl ? (
-                      <a
-                        href={manufacturerUrl}
-                        class="font-semibold hover:text-primary transition-colors text-xs inline-flex items-center gap-1"
-                      >
-                        {manufacturerName}
-                        <span class="text-primary">→</span>
-                      </a>
-                    ) : (
-                      <span class="font-semibold text-xs">{manufacturerName}</span>
-                    )}
+                    <StatusBadge
+                      variant="hardware"
+                      status={data.hardware.openness}
+                      size="xs"
+                    />
                   </td>
                 </tr>
-              )}
-            </ProfessionalTable>
-          </CardContent>
-        </Card>
-        {hardwareRevisionSummaries.length > 0 && (
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base font-bold uppercase tracking-wide text-primary">
-                Hardware Revisions
-              </CardTitle>
-              {data.hardware.notes && (
-                <CardDescription className="text-xs text-muted-foreground leading-relaxed">
-                  {data.hardware.notes}
-                </CardDescription>
-              )}
-            </CardHeader>
-            <CardContent>
-              <div class="space-y-3">
-                {hardwareRevisionSummaries.map((variant) => {
-                  const revision = variant.revision!;
-                  return (
-                    <div
-                      key={variant.id}
-                      class="rounded-sm border border-border/40 bg-background/70 p-3 shadow-xs"
-                    >
-                      <div class="flex flex-wrap items-center justify-between gap-2">
-                        <span class="font-semibold text-sm text-foreground">{variant.label}</span>
-                        {revision.released && (
-                          <Badge className="text-[10px] uppercase tracking-wide bg-primary/10 text-primary border-primary/20">
-                            {revision.released}
-                          </Badge>
-                        )}
-                      </div>
-                      {revision.notes && (
-                        <p class="mt-1 text-xs leading-snug text-muted-foreground">{revision.notes}</p>
+                <tr class="even:bg-muted/30 hover:bg-muted/50 transition-colors">
+                  <td class="px-2 py-1.5 text-muted-foreground font-medium">Updated</td>
+                  <td class="px-2 py-1.5 font-mono font-semibold text-right">{data.verification.last_updated}</td>
+                </tr>
+                <tr class="even:bg-muted/30 hover:bg-muted/50 transition-colors">
+                  <td class="px-2 py-1.5 text-muted-foreground font-medium">Sources</td>
+                  <td class="px-2 py-1.5 font-mono font-semibold text-right">{data.sources.length}</td>
+                </tr>
+                {manufacturerName && (
+                  <tr class="even:bg-muted/30 hover:bg-muted/50 transition-colors">
+                    <td class="px-2 py-1.5 text-muted-foreground font-medium">Manufacturer</td>
+                    <td class="px-2 py-1.5 text-right">
+                      {manufacturerUrl ? (
+                        <a
+                          href={manufacturerUrl}
+                          class="font-semibold hover:text-primary transition-colors text-xs inline-flex items-center gap-1"
+                        >
+                          {manufacturerName}
+                          <span class="text-primary">→</span>
+                        </a>
+                      ) : (
+                        <span class="font-semibold text-xs">{manufacturerName}</span>
                       )}
-                      {revision.changes && revision.changes.length > 0 && (
-                        <ul class="mt-2 space-y-1">
-                          {revision.changes.map((change, changeIdx) => (
-                            <li
-                              key={`${variant.id}-change-${changeIdx}`}
-                              class="flex items-start gap-2 text-xs text-muted-foreground"
-                            >
-                              <span class="text-primary font-bold mt-0.5">•</span>
-                              <span class="leading-snug text-foreground">{change}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      )}
-                      {revision.overrides && (
-                        <div class="mt-2 flex flex-wrap gap-1.5">
-                          {revision.overrides.sensors && (
-                            <Badge className="text-[10px] uppercase tracking-wide bg-purple-500/10 text-purple-500 border-purple-500/30">
-                              Sensor overrides
-                            </Badge>
-                          )}
-                          {revision.overrides.io && (
-                            <Badge className="text-[10px] uppercase tracking-wide bg-blue-500/10 text-blue-500 border-blue-500/30">
-                              I/O overrides
-                            </Badge>
-                          )}
-                          {revision.overrides.power && (
-                            <Badge className="text-[10px] uppercase tracking-wide bg-amber-500/10 text-amber-500 border-amber-500/30">
-                              Power overrides
-                            </Badge>
-                          )}
-                        </div>
-                      )}
-                      {variant.sourceEntries.length > 0 && (
-                        <div class="mt-2 flex flex-wrap gap-1.5">
-                          {variant.sourceEntries.map((source) =>
-                            source.url ? (
-                              <a
-                                key={source.id}
-                                href={source.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                class="text-[10px] uppercase tracking-wide font-semibold inline-flex items-center gap-1 rounded-sm border border-primary/30 bg-primary/5 px-2 py-1 text-primary hover:bg-primary/10 transition-colors"
-                              >
-                                {source.title}
-                                <span>↗</span>
-                              </a>
-                            ) : (
-                              <span
-                                key={source.id}
-                                class="text-[10px] uppercase tracking-wide font-semibold inline-flex items-center gap-1 rounded-sm border border-border/40 bg-muted/30 px-2 py-1 text-muted-foreground"
-                              >
-                                {source.title}
-                              </span>
-                            )
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
+                    </td>
+                  </tr>
+                )}
+              </ProfessionalTable>
             </CardContent>
           </Card>
-    )}
+          {hardwareRevisionSummaries.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base font-bold uppercase tracking-wide text-primary">
+                  Hardware Revisions
+                </CardTitle>
+                {data.hardware.notes && (
+                  <CardDescription className="text-xs text-muted-foreground leading-relaxed">
+                    {data.hardware.notes}
+                  </CardDescription>
+                )}
+              </CardHeader>
+              <CardContent>
+                <div class="space-y-3">
+                  {hardwareRevisionSummaries.map((variant) => {
+                    const revision = variant.revision!;
+                    return (
+                      <div
+                        key={variant.id}
+                        class="rounded-sm border border-border/40 bg-background/70 p-3 shadow-xs"
+                      >
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                          <span class="font-semibold text-sm text-foreground">{variant.label}</span>
+                          {revision.released && (
+                            <Badge className="text-[10px] uppercase tracking-wide bg-primary/10 text-primary border-primary/20">
+                              {revision.released}
+                            </Badge>
+                          )}
+                        </div>
+                        {revision.notes && (
+                          <p class="mt-1 text-xs leading-snug text-muted-foreground">{revision.notes}</p>
+                        )}
+                        {revision.changes && revision.changes.length > 0 && (
+                          <ul class="mt-2 space-y-1">
+                            {revision.changes.map((change, changeIdx) => (
+                              <li
+                                key={`${variant.id}-change-${changeIdx}`}
+                                class="flex items-start gap-2 text-xs text-muted-foreground"
+                              >
+                                <span class="text-primary font-bold mt-0.5">•</span>
+                                <span class="leading-snug text-foreground">{change}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                        {revision.overrides && (
+                          <div class="mt-2 flex flex-wrap gap-1.5">
+                            {revision.overrides.sensors && (
+                              <Badge className="text-[10px] uppercase tracking-wide bg-purple-500/10 text-purple-500 border-purple-500/30">
+                                Sensor overrides
+                              </Badge>
+                            )}
+                            {revision.overrides.io && (
+                              <Badge className="text-[10px] uppercase tracking-wide bg-blue-500/10 text-blue-500 border-blue-500/30">
+                                I/O overrides
+                              </Badge>
+                            )}
+                            {revision.overrides.power && (
+                              <Badge className="text-[10px] uppercase tracking-wide bg-amber-500/10 text-amber-500 border-amber-500/30">
+                                Power overrides
+                              </Badge>
+                            )}
+                          </div>
+                        )}
+                        {variant.sourceEntries.length > 0 && (
+                          <div class="mt-2 flex flex-wrap gap-1.5">
+                            {variant.sourceEntries.map((source) =>
+                              source.url ? (
+                                <a
+                                  key={source.id}
+                                  href={source.url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  class="text-[10px] uppercase tracking-wide font-semibold inline-flex items-center gap-1 rounded-sm border border-primary/30 bg-primary/5 px-2 py-1 text-primary hover:bg-primary/10 transition-colors"
+                                >
+                                  {source.title}
+                                  <span>↗</span>
+                                </a>
+                              ) : (
+                                <span
+                                  key={source.id}
+                                  class="text-[10px] uppercase tracking-wide font-semibold inline-flex items-center gap-1 rounded-sm border border-border/40 bg-muted/30 px-2 py-1 text-muted-foreground"
+                                >
+                                  {source.title}
+                                </span>
+                              )
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+        </aside>
       </div>
-    </div>
   </section>
+
 
   <section id="issues" aria-labelledby="controller-issues" class="mt-16 space-y-4">
     <h2 class="text-lg font-semibold tracking-tight text-foreground" id="controller-issues">
