@@ -1,0 +1,172 @@
+id: cuav-x7
+title: CUAV X7
+brand: cuav
+mcu: stmicro-stm32h743
+mounting: custom
+power:
+  inputs:
+  - name: POWERA
+    type: power_module
+    voltage:
+      min: 4.3
+      max: 5.4
+      unit: V
+    notes: Analog power module input with voltage and current sensing.
+  - name: POWERC
+    type: power_module
+    voltage:
+      min: 4.3
+      max: 5.4
+      unit: V
+    notes: DroneCAN smart battery input for redundant supply.
+  - name: USB
+    type: usb
+    connector: USB Type-C
+    voltage:
+      min: 4.75
+      max: 5.25
+      unit: V
+  - name: SERVO_RAIL
+    type: servo_rail
+    voltage:
+      min: 0
+      max: 36
+      unit: V
+    notes: High-voltage tolerant output rail isolated from the flight controller power domain.
+  redundant: true
+  notes: Triple-source power architecture prioritises POWERA/POWERC inputs before USB and isolates the servo rail from the MCU power domain.
+io:
+  uarts: 8
+  can: 2
+  pwm: 14
+  ethernet: false
+  sd_card: true
+  peripherals:
+  - name: PWM outputs
+    type: pwm
+    count: 14
+    interfaces:
+    - pwm
+    - dshot
+    connector: Carrier board servo rail
+    notes: Four PWM groups provide 14 motor or servo channels with DShot support on groups 1-3.
+  - name: RC input
+    type: rc
+    interfaces:
+    - sbus
+    - ppm
+    - dsm
+    - crsf
+    - fport
+    connector: Baseboard RC header
+    notes: RCIN supports serial receivers via dedicated UART mapping and provides RSSI breakout.
+  - name: GPS ports
+    type: gps
+    count: 2
+    interfaces:
+    - uart
+    - i2c
+    connector: JST GH (BM10B-GHMG-TB and BM06B-GHMG-TB)
+    notes: GPS1 combines safety switch, LED, and I2C compass while GPS2 offers a secondary UART/I2C header.
+  - name: Telemetry ports
+    type: uart
+    count: 2
+    interfaces:
+    - uart
+    - mavlink
+    connector: JST GH BM06B-GHMG-TB
+    notes: TELEM1 includes a 1.5 A current-limited supply while TELEM2 mirrors PX4/ArduPilot telemetry pinouts.
+  - name: Auxiliary UARTs
+    type: uart
+    count: 2
+    interfaces:
+    - uart
+    connector: JST GH BM06B-GHMG-TB
+    notes: UART4/UART7 headers provide additional serial expansion for payloads or RC protocols.
+  - name: CAN bus
+    type: can
+    count: 2
+    interfaces:
+    - can
+    connector: JST GH BM04B-GHMG-TB
+    notes: Dual DroneCAN ports share the Pixhawk Autopilot Bus pinout for smart peripherals and power modules.
+  - name: I2C expansion
+    type: i2c
+    count: 4
+    interfaces:
+    - i2c
+    connector: JST GH SM04B-GHMG-TB
+    notes: Two external I2C headers plus shared lines on the GPS connectors support airspeed sensors and compasses.
+  - name: Analog inputs
+    type: analog
+    count: 2
+    interfaces:
+    - analog
+    connector: JST GH SM04B-GHS-TB
+    notes: Dedicated 3.3 V and 6.6 V tolerant ADC connectors for payload monitoring or secondary battery sensing.
+  - name: USB-C service
+    type: usb
+    interfaces:
+    - usb
+    connector: USB Type-C
+    notes: High-speed USB interface for firmware flashing, console access, and log download.
+  - name: Debug port
+    type: debug
+    interfaces:
+    - swd
+    - uart
+    connector: JST BM06B-GHS-TBT
+    notes: DSU7 debug header exposes FTDI console alongside SWDIO/SWCLK for development.
+  - name: Buzzer and safety switch
+    type: buzzer
+    interfaces:
+    - safety
+    - buzzer
+    connector: JST harness
+    notes: Safety switch harness includes high-power buzzer output on the baseboard.
+  - name: MicroSD slot
+    type: storage
+    interfaces:
+    - microsd
+    connector: TF card slot
+    notes: Core module integrates a TF/microSD card for high-rate logging.
+sensors:
+  imu:
+  - count: 1
+    id: invensense-icm20689
+  - count: 1
+    id: invensense-icm20649
+  - count: 1
+    id: bosch-bmi088
+  magnetometer:
+  - count: 1
+    id: pni-rm3100
+  barometer:
+  - count: 2
+    id: meas-ms5611
+features:
+- Modular Pixhawk Autopilot Bus design compatible with custom carrier boards.
+- Triple IMU stack with RM3100 magnetometer for industrial reliability.
+- Dedicated DroneCAN battery interface with redundant analog power monitoring.
+firmware_support:
+- id: ardupilot
+  status: stable
+- id: px4
+  status: stable
+sources:
+- ardupilot-cuav-x7-family
+- cuav-x7-base-rc03
+- cuav-x7-core-rc03
+- px4-cuav-x7
+verification:
+  last_updated: "2025-10-15"
+  level: community
+hardware:
+  openness: closed
+keywords:
+- ardupilot
+- cuav
+- px4
+- stm32h743
+- x7
+notes: Bi-directional DShot supported on PWM groups 1-3 when using the dedicated firmware build; Servo rail remains isolated up to 36 V.
