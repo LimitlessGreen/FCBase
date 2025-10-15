@@ -3,8 +3,9 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import MainLayout from '@/layouts/MainLayout.astro';
 import SiteSearch from '@/components/search/SiteSearch';
 import faviconUrl from '@/assets/favicon.svg?url';
+import { getBasePath } from '@/lib/paths';
 
-const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
+const basePath = getBasePath();
 const pageTitle = 'Search FCBase - Flight Controller & Component Database';
 const pageDescription = 'Search flight controllers, MCUs, sensors, firmware, and manufacturers across the FCBase knowledge base using a static Pagefind index.';
 const canonicalUrl = Astro.site

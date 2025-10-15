@@ -5,6 +5,7 @@
  * Provides consistent styling across all pages
  */
 import StatusBadge from '@/components/ui/StatusBadge.astro';
+import { getBasePath } from '@/lib/paths';
 
 interface Sensor {
   id: string;
@@ -23,7 +24,7 @@ interface Props {
 }
 
 const { sensors, linkable = true, size = 'sm', class: className } = Astro.props;
-const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
+const basePath = getBasePath();
 ---
 
 {sensors.length > 0 && (

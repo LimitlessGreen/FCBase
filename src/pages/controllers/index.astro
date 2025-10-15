@@ -3,10 +3,11 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import MainLayout from '@/layouts/MainLayout.astro';
 import ControllerSearch from '@/components/search/ControllerSearch';
+import { getBasePath } from '@/lib/paths';
 
 const controllers = await getCollection('controllers');
 const totalControllers = controllers.length;
-const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
+const basePath = getBasePath();
 ---
 
 <BaseLayout

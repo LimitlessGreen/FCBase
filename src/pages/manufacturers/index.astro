@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import MainLayout from '@/layouts/MainLayout.astro';
 import { Badge } from '@/components/ui/Badge';
+import { getBasePath } from '@/lib/paths';
 
 // Load all manufacturers
 const allManufacturers = await getCollection('manufacturers');
@@ -22,7 +23,7 @@ const manufacturersWithCounts = allManufacturers.map((manufacturer) => {
   };
 }).sort((a, b) => a.data.name.localeCompare(b.data.name));
 
-const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
+const basePath = getBasePath();
 ---
 
 <BaseLayout

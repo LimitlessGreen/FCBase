@@ -48,6 +48,7 @@ import {
   ExternalLink,
   Pencil,
 } from 'lucide-react';
+import { getBasePath } from '@/lib/paths';
 
 export async function getStaticPaths() {
   const controllers = await getCollection('controllers');
@@ -155,7 +156,7 @@ const hardwareRevisionSummaries = revisionVariantsWithSensors.filter(
   (variant) => variant.revision
 );
 
-const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
+const basePath = getBasePath();
 const manufacturerUrl = manufacturer ? `${basePath}/manufacturers/${manufacturer.id}` : null;
 const controllerSlug = (controller as { slug?: string }).slug ?? controller.id;
 const tabsIdBase = `controller-tabs-${controllerSlug.replace(/[^a-z0-9-]+/gi, '-').toLowerCase()}`;

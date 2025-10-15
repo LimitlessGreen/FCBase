@@ -4,6 +4,7 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import MainLayout from '@/layouts/MainLayout.astro';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
+import { getBasePath } from '@/lib/paths';
 
 // Load all sensors
 const allSensors = await getCollection('sensors');
@@ -45,7 +46,7 @@ const typeDisplay: Record<string, string> = {
   other: 'Other',
 };
 
-const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
+const basePath = getBasePath();
 ---
 
 <BaseLayout
