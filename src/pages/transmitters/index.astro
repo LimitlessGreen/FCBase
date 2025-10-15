@@ -62,7 +62,7 @@ const basePath = getBasePath();
         </div>
       </div>
 
-      <Tabs client:load defaultValue="grid" class="space-y-12">
+      <Tabs client:load defaultValue="grid" className="space-y-12">
         <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <span id="transmitter-layout-toggle" class="text-sm font-medium text-muted-foreground">
             Choose how to view transmitter support information
@@ -73,7 +73,7 @@ const basePath = getBasePath();
           </TabsList>
         </div>
 
-        <TabsContent value="grid" class="space-y-16">
+        <TabsContent value="grid" className="space-y-16">
           {(Object.entries(groupedByLevel) as [keyof typeof groupedByLevel, typeof transmittersWithMeta][]).map(
             ([level, items]) =>
               items.length > 0 && (
@@ -124,7 +124,7 @@ const basePath = getBasePath();
           )}
         </TabsContent>
 
-        <TabsContent value="compact" class="space-y-12">
+        <TabsContent value="compact" className="space-y-12">
           {(Object.entries(groupedByLevel) as [keyof typeof groupedByLevel, typeof transmittersWithMeta][]).map(
             ([level, items]) =>
               items.length > 0 && (
