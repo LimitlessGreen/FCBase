@@ -9,7 +9,10 @@ images:
     credit: "ArduPilot Documentation"
     source_url: "https://ardupilot.org/copter/docs/common-cuav-nora-overview.html"
 dimensions:
-  weight_g: 101
+  length_mm: 64
+  width_mm: 46
+  height_mm: 22
+  weight_g: 75
 power:
   inputs:
   - name: POWER1
@@ -226,20 +229,30 @@ peripheral_ports:
     voltage: "5 V supply"
     connector: JST harness
     notes: Combined harness powering the illuminated safety switch and high-output buzzer.
+links:
+  docs:
+    url: https://www.st.com/resource/en/datasheet/stm32h743zi.pdf
+    label: "STM32H743 Datasheet"
+    description: "Primary MCU reference for Nora"
 sensors:
   barometer:
   - count: 2
     id: meas-ms5611
+    notes: "Datasheet: https://www.mouser.com/datasheet/2/418/ENG_DS_MS5611-01BA03_B1-1133474.pdf"
   imu:
   - count: 1
     id: invensense-icm20649
+    notes: "Datasheet: https://www.mouser.com/datasheet/2/400/DS-000166-ICM-20649-v1.2-1506982.pdf"
   - count: 1
     id: invensense-icm20689
+    notes: "Datasheet: https://invensense.tdk.com/wp-content/uploads/2015/02/DS-000189-ICM-20689-v1.0.pdf"
   - count: 1
     id: bosch-bmi088
+    notes: "Datasheet: https://www.mouser.com/datasheet/2/783/BST-BMI088-DS000-1501734.pdf"
   magnetometer:
   - count: 1
     id: pni-rm3100
+    notes: "Datasheet: https://www.mouser.com/datasheet/2/724/RM3100_datasheet-1514316.pdf"
 features:
 - Built-in vibration isolation with temperature-compensated IMU platform
 - Dual CAN buses supporting DroneCAN peripherals

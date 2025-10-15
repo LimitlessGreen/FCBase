@@ -8,6 +8,10 @@ images:
     alt: "Top-down view of the Aocoda-RC H743Dual flight controller with dual-stack connectors and labeled ports."
     credit: "ArduPilot Documentation"
     source_url: "https://ardupilot.org/copter/docs/common-aocoda-h743dual.html"
+dimensions:
+  length_mm: 37
+  width_mm: 37
+  weight_g: 8.8
 power:
   inputs:
   - name: BATTERY
@@ -210,15 +214,23 @@ peripheral_ports:
     voltage: "5 V"
     connector: 2-pin JST
     notes: Drives external buzzer for audible failsafe and status alerts.
+links:
+  docs:
+    url: https://www.st.com/resource/en/datasheet/stm32h743zi.pdf
+    label: "STM32H743 Datasheet"
+    description: "Official MCU electrical specification for the H743 core"
 sensors:
   imu:
   - count: 1
     id: invensense-mpu6000
+    notes: "Datasheet: https://invensense.tdk.com/wp-content/uploads/2015/02/MPU-6000-Datasheet1.pdf"
   - count: 2
     id: bosch-bmi270
+    notes: "Datasheet: https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bmi270-ds000.pdf"
   barometer:
   - count: 1
     id: infineon-dps310
+    notes: "Datasheet: https://www.infineon.com/assets/row/public/documents/24/49/infineon-dps310-datasheet-en.pdf"
 features:
 - STM32H743 flight controller with 128 MB flash logging storage.
 - Dual BEC design providing 5 V / 2.5 A and 9 V / 3 A rails for peripherals and video systems.
