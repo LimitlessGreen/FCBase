@@ -152,6 +152,50 @@
   .animate-pulse-soft {
     animation: pulse-soft 14s ease-in-out infinite;
   }
+
+  .bg-hero-radial {
+    background-image:
+      radial-gradient(120% 95% at 50% 0%, rgba(33, 69, 255, 0.24), transparent 68%),
+      radial-gradient(90% 80% at 80% 20%, rgba(18, 214, 255, 0.18), transparent 62%),
+      radial-gradient(110% 90% at 20% 30%, rgba(255, 140, 0, 0.12), transparent 70%);
+    background-repeat: no-repeat;
+  }
+
+  .hero-orb {
+    position: absolute;
+    border-radius: 9999px;
+    filter: blur(0.5px);
+    mix-blend-mode: screen;
+    opacity: 0.6;
+    pointer-events: none;
+  }
+
+  .hero-orb::after {
+    content: "";
+    position: absolute;
+    inset: 12%;
+    border-radius: inherit;
+    background: radial-gradient(circle at 50% 45%, rgba(255, 255, 255, 0.18), transparent 65%);
+    filter: blur(24px);
+  }
+
+  .hero-orb-primary {
+    top: -6rem;
+    right: -5rem;
+    height: 22rem;
+    width: 22rem;
+    background: radial-gradient(circle at 30% 30%, rgba(72, 116, 255, 0.8), rgba(72, 116, 255, 0.2) 45%, transparent 70%);
+    animation: float-slow 18s ease-in-out infinite;
+  }
+
+  .hero-orb-secondary {
+    bottom: -7rem;
+    left: -6rem;
+    height: 26rem;
+    width: 26rem;
+    background: radial-gradient(circle at 70% 70%, rgba(18, 214, 255, 0.6), rgba(18, 214, 255, 0.18) 50%, transparent 75%);
+    animation: float-slower 22s ease-in-out infinite;
+  }
 }
 
 @keyframes grid-pan {
@@ -199,5 +243,25 @@
   50% {
     opacity: 0.75;
     filter: saturate(140%);
+  }
+}
+
+@keyframes float-slow {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(4%, -6%, 0) scale(1.08);
+  }
+}
+
+@keyframes float-slower {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(-5%, 8%, 0) scale(1.05);
   }
 }
