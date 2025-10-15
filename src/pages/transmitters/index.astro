@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import MainLayout from '@/layouts/MainLayout.astro';
 import TransmitterCard from '@/components/cards/TransmitterCard.astro';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/Tabs';
 import { getManufacturersMap } from '@/lib/content-cache';
 import { getBasePath } from '@/lib/paths';
 
@@ -36,13 +37,6 @@ const supportLevelLabels: Record<'official' | 'manufacturer' | 'community', stri
   community: 'Community Maintained',
 };
 
-const supportStatusLabels: Record<'supported' | 'limited' | 'sunset' | 'planned', string> = {
-  supported: 'Active support',
-  limited: 'Limited support',
-  sunset: 'Support ending',
-  planned: 'Planned support',
-};
-
 const basePath = getBasePath();
 ---
 
@@ -68,53 +62,119 @@ const basePath = getBasePath();
         </div>
       </div>
 
-      {(Object.entries(groupedByLevel) as [keyof typeof groupedByLevel, typeof transmittersWithMeta][]).map(
-        ([level, items]) =>
-          items.length > 0 && (
-            <section key={level} class="space-y-6">
-              <header class="flex flex-col gap-2">
-                <h2 class="text-2xl font-semibold tracking-tight">{supportLevelLabels[level]}</h2>
-                <p class="text-sm text-muted-foreground max-w-3xl">
-                  {level === 'official' &&
-                    'Maintained by the EdgeTX core team and available through EdgeTX Buddy/Companion.'}
-                  {level === 'manufacturer' &&
-                    'Firmware images maintained by hardware vendors in collaboration with the EdgeTX project.'}
-                  {level === 'community' &&
-                    'Community volunteers maintain builds for these radios. Check the support window before updating.'}
-                </p>
-              </header>
+      <Tabs client:load defaultValue="grid" class="space-y-12">
+        <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <span id="transmitter-layout-toggle" class="text-sm font-medium text-muted-foreground">
+            Choose how to view transmitter support information
+          </span>
+          <TabsList aria-labelledby="transmitter-layout-toggle" class="w-full max-w-sm sm:w-auto">
+            <TabsTrigger value="grid">Detailed cards</TabsTrigger>
+            <TabsTrigger value="compact">Compact list</TabsTrigger>
+          </TabsList>
+        </div>
 
-              <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-                {items.map((item) => {
-                  const support = item.data.support;
-                  const revisions = item.data.hardware?.revisions ?? [];
-                  const compliance = item.data.compliance ?? [];
-                  const slug = item.slug ?? item.id;
+        <TabsContent value="grid" class="space-y-16">
+          {(Object.entries(groupedByLevel) as [keyof typeof groupedByLevel, typeof transmittersWithMeta][]).map(
+            ([level, items]) =>
+              items.length > 0 && (
+                <section key={level} class="space-y-6">
+                  <header class="flex flex-col gap-2">
+                    <h2 class="text-2xl font-semibold tracking-tight">{supportLevelLabels[level]}</h2>
+                    <p class="text-sm text-muted-foreground max-w-3xl">
+                      {level === 'official' &&
+                        'Maintained by the EdgeTX core team and available through EdgeTX Buddy/Companion.'}
+                      {level === 'manufacturer' &&
+                        'Firmware images maintained by hardware vendors in collaboration with the EdgeTX project.'}
+                      {level === 'community' &&
+                        'Community volunteers maintain builds for these radios. Check the support window before updating.'}
+                    </p>
+                  </header>
 
-                  return (
-                    <TransmitterCard
-                      key={item.id}
-                      id={item.id}
-                      slug={slug}
-                      title={item.data.title}
-                      manufacturer={item.manufacturerName}
-                      support={{
-                        level: support.level,
-                        status: support.status,
-                        sinceVersion: support.since_version,
-                        lastVersion: support.last_version,
-                        notes: support.notes,
-                      }}
-                      hardwareRevisions={revisions}
-                      compliance={compliance}
-                      basePath={basePath}
-                      variant="grid"
-                    />
-                  );
-                })}
-              </div>
-            </section>
-          )
-      )}
+                  <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+                    {items.map((item) => {
+                      const support = item.data.support;
+                      const revisions = item.data.hardware?.revisions ?? [];
+                      const compliance = item.data.compliance ?? [];
+                      const slug = item.slug ?? item.id;
+
+                      return (
+                        <TransmitterCard
+                          key={item.id}
+                          id={item.id}
+                          slug={slug}
+                          title={item.data.title}
+                          manufacturer={item.manufacturerName}
+                          support={{
+                            level: support.level,
+                            status: support.status,
+                            sinceVersion: support.since_version,
+                            lastVersion: support.last_version,
+                            notes: support.notes,
+                          }}
+                          hardwareRevisions={revisions}
+                          compliance={compliance}
+                          basePath={basePath}
+                          variant="grid"
+                        />
+                      );
+                    })}
+                  </div>
+                </section>
+              )
+          )}
+        </TabsContent>
+
+        <TabsContent value="compact" class="space-y-12">
+          {(Object.entries(groupedByLevel) as [keyof typeof groupedByLevel, typeof transmittersWithMeta][]).map(
+            ([level, items]) =>
+              items.length > 0 && (
+                <section key={level} class="space-y-6">
+                  <header class="flex flex-col gap-2">
+                    <h2 class="text-2xl font-semibold tracking-tight">{supportLevelLabels[level]}</h2>
+                    <p class="text-sm text-muted-foreground max-w-3xl">
+                      {level === 'official' &&
+                        'Maintained by the EdgeTX core team and available through EdgeTX Buddy/Companion.'}
+                      {level === 'manufacturer' &&
+                        'Firmware images maintained by hardware vendors in collaboration with the EdgeTX project.'}
+                      {level === 'community' &&
+                        'Community volunteers maintain builds for these radios. Check the support window before updating.'}
+                    </p>
+                  </header>
+
+                  <div role="list" class="flex flex-col gap-3">
+                    {items.map((item) => {
+                      const support = item.data.support;
+                      const revisions = item.data.hardware?.revisions ?? [];
+                      const compliance = item.data.compliance ?? [];
+                      const slug = item.slug ?? item.id;
+
+                      return (
+                        <div key={item.id} role="listitem">
+                          <TransmitterCard
+                            id={item.id}
+                            slug={slug}
+                            title={item.data.title}
+                            manufacturer={item.manufacturerName}
+                            support={{
+                              level: support.level,
+                              status: support.status,
+                              sinceVersion: support.since_version,
+                              lastVersion: support.last_version,
+                              notes: support.notes,
+                            }}
+                            hardwareRevisions={revisions}
+                            compliance={compliance}
+                            basePath={basePath}
+                            variant="compact"
+                          />
+                        </div>
+                      );
+                    })}
+                  </div>
+                </section>
+              )
+          )}
+        </TabsContent>
+      </Tabs>
     </div>
 </MainLayout>
