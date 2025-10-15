@@ -2,52 +2,204 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import MainLayout from '@/layouts/MainLayout.astro';
-import ControllerSearch from '@/components/search/ControllerSearch';
+import { Badge } from '@/components/ui/Badge';
+import { formatMounting } from '@/lib/data-utils';
 
 const controllers = await getCollection('controllers');
+const manufacturers = await getCollection('manufacturers');
+const mcuEntries = await getCollection('mcu');
+
 const totalControllers = controllers.length;
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+const manufacturerMap = new Map(
+  manufacturers.map((manufacturer) => [manufacturer.id, manufacturer])
+);
+const mcuNameMap = new Map(
+  mcuEntries.map((entry) => [entry.id, entry.data.name ?? (entry.data as { title?: string }).title ?? entry.id])
+);
+
+const groupedControllers = new Map<
+  string,
+  {
+    manufacturer: (typeof manufacturers)[number] | null;
+    controllers: typeof controllers;
+  }
+>();
+
+for (const controller of controllers) {
+  const brandId = controller.data.brand ?? null;
+  const manufacturerEntry = brandId ? manufacturerMap.get(brandId) ?? null : null;
+  const key = manufacturerEntry?.id ?? 'unknown';
+
+  if (!groupedControllers.has(key)) {
+    groupedControllers.set(key, { manufacturer: manufacturerEntry, controllers: [] });
+  }
+
+  groupedControllers.get(key)!.controllers.push(controller);
+}
+
+const manufacturerGroups = Array.from(groupedControllers.values())
+  .map((group) => {
+    const manufacturer = group.manufacturer;
+    const manufacturerName = manufacturer
+      ? manufacturer.data.name ?? (manufacturer.data as { title?: string }).title ?? manufacturer.id
+      : 'Other manufacturers';
+    const manufacturerDescription = manufacturer?.data.description ?? null;
+    const manufacturerId = manufacturer?.id ?? 'other-manufacturers';
+
+    const controllerCards = group.controllers
+      .slice()
+      .sort((a, b) => a.data.title.localeCompare(b.data.title))
+      .map((controller) => {
+        const slug = (controller as { slug?: string }).slug ?? controller.id;
+        const firmwareCount = Array.isArray(controller.data.firmware_support)
+          ? controller.data.firmware_support.length
+          : 0;
+        const uartCount =
+          typeof controller.data.io?.uarts === 'number' ? controller.data.io?.uarts : null;
+        const canValue = controller.data.io?.can;
+        const canDisplay =
+          typeof canValue === 'number'
+            ? String(canValue)
+            : typeof canValue === 'boolean'
+            ? canValue
+              ? 'Yes'
+              : 'No'
+            : null;
+        const hasSdCard =
+          typeof controller.data.io?.sd_card === 'boolean' ? controller.data.io.sd_card : null;
+
+        return {
+          id: controller.id,
+          title: controller.data.title,
+          url: `${basePath}/controllers/${slug}`,
+          mounting: formatMounting(controller.data.mounting),
+          mcu: mcuNameMap.get(controller.data.mcu) ?? controller.data.mcu,
+          uartCount,
+          canDisplay,
+          hasSdCard,
+          firmwareCount,
+        };
+      });
+
+    return {
+      manufacturer,
+      manufacturerId,
+      manufacturerName,
+      manufacturerDescription,
+      controllers: controllerCards,
+    };
+  })
+  .sort((a, b) => {
+    if (a.manufacturer && b.manufacturer) {
+      return a.manufacturerName.localeCompare(b.manufacturerName);
+    }
+
+    if (a.manufacturer && !b.manufacturer) return -1;
+    if (!a.manufacturer && b.manufacturer) return 1;
+    return 0;
+  });
 ---
 
 <BaseLayout
   title="Flight Controllers - FCBase"
-  description="Browse all flight controllers in the FCBase database. Compare specs, firmware support, and find the perfect board for your project."
+  description="Browse all flight controllers in the FCBase database. Grouped by manufacturer for easy discovery."
 >
   <MainLayout editPath="src/pages/controllers/index.astro">
-    <div class="container py-8">
+    <div class="container py-8 space-y-12">
       <!-- Header -->
-      <div class="mb-8">
-        <nav class="mb-4 flex items-center gap-2 text-sm text-muted-foreground">
-          <a href={`${basePath}/`} class="hover:text-foreground transition-colors">Home</a>
+      <div class="space-y-3">
+        <nav class="flex items-center gap-2 text-sm text-muted-foreground">
+          <a href={`${basePath}/`} class="transition-colors hover:text-foreground">Home</a>
           <span>/</span>
           <span class="text-foreground">Controllers</span>
         </nav>
-        
-        <h1 class="text-4xl font-bold tracking-tight mb-3">Flight Controllers</h1>
-        <p class="text-lg text-muted-foreground">
-          Browse {totalControllers} flight controllers from various manufacturers
-        </p>
-      </div>
 
-      <!-- Search & Filters -->
-      <div class="mb-10 space-y-6">
-        <div class="flex flex-col gap-2 text-center">
-          <h2 class="text-2xl font-semibold tracking-tight md:text-3xl">Find your flight controller</h2>
-          <p class="text-base text-muted-foreground md:text-lg">
-            Pagefind provides instant search with MCU, mounting, CAN, MicroSD, and lifecycle facets generated at build-time.
+        <div class="space-y-2">
+          <h1 class="text-4xl font-bold tracking-tight">Flight Controllers</h1>
+          <p class="text-lg text-muted-foreground">
+            Browse {totalControllers} flight controllers organised by manufacturer.
           </p>
         </div>
-        <ControllerSearch client:load totalControllers={totalControllers} />
       </div>
 
-      <noscript>
-        <div class="rounded-lg border border-dashed bg-muted/20 p-6 text-sm text-muted-foreground">
-          <p class="font-medium text-foreground">Interactive search requires JavaScript.</p>
-          <p>
-            Enable JavaScript or browse individual controller pages from the sitemap to explore the full FCBase catalogue.
-          </p>
-        </div>
-      </noscript>
+      <!-- Manufacturer Groups -->
+      <div class="space-y-10">
+        {manufacturerGroups.map((group) => (
+          <section id={group.manufacturerId} class="space-y-5" aria-labelledby={`${group.manufacturerId}-title`}>
+            <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+              <div class="space-y-2">
+                <div class="flex items-center gap-3">
+                  <h2 id={`${group.manufacturerId}-title`} class="text-2xl font-semibold tracking-tight">
+                    {group.manufacturerName}
+                  </h2>
+                  <Badge variant="secondary" className="text-xs">
+                    {group.controllers.length} {group.controllers.length === 1 ? 'controller' : 'controllers'}
+                  </Badge>
+                </div>
+                {group.manufacturerDescription && (
+                  <p class="text-sm text-muted-foreground md:max-w-3xl">
+                    {group.manufacturerDescription}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {group.controllers.map((controller) => (
+                <a
+                  href={controller.url}
+                  class="group block h-full rounded-xl border bg-card text-card-foreground shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg"
+                >
+                  <div class="flex h-full flex-col gap-3 p-5">
+                    <div class="space-y-1">
+                      <h3 class="text-lg font-semibold transition-colors group-hover:text-primary">
+                        {controller.title}
+                      </h3>
+                      <p class="text-sm text-muted-foreground">View detailed specifications</p>
+                    </div>
+                    <dl class="mt-auto space-y-2 text-sm text-muted-foreground">
+                      <div class="flex items-center justify-between gap-2">
+                        <dt class="font-medium text-foreground">MCU</dt>
+                        <dd class="text-right">{controller.mcu}</dd>
+                      </div>
+                      <div class="flex items-center justify-between gap-2">
+                        <dt class="font-medium text-foreground">Mounting</dt>
+                        <dd class="text-right">{controller.mounting}</dd>
+                      </div>
+                      {controller.uartCount !== null && (
+                        <div class="flex items-center justify-between gap-2">
+                          <dt class="font-medium text-foreground">UARTs</dt>
+                          <dd class="text-right">{controller.uartCount}</dd>
+                        </div>
+                      )}
+                      {controller.canDisplay !== null && (
+                        <div class="flex items-center justify-between gap-2">
+                          <dt class="font-medium text-foreground">CAN</dt>
+                          <dd class="text-right">{controller.canDisplay}</dd>
+                        </div>
+                      )}
+                      {controller.hasSdCard !== null && (
+                        <div class="flex items-center justify-between gap-2">
+                          <dt class="font-medium text-foreground">MicroSD</dt>
+                          <dd class="text-right">{controller.hasSdCard ? 'Yes' : 'No'}</dd>
+                        </div>
+                      )}
+                      {controller.firmwareCount > 0 && (
+                        <div class="flex items-center justify-between gap-2">
+                          <dt class="font-medium text-foreground">Firmware</dt>
+                          <dd class="text-right">{controller.firmwareCount}</dd>
+                        </div>
+                      )}
+                    </dl>
+                  </div>
+                </a>
+              ))}
+            </div>
+          </section>
+        ))}
+      </div>
     </div>
   </MainLayout>
 </BaseLayout>
