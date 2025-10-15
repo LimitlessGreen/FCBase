@@ -55,6 +55,7 @@ const controllerImageSchema = z.object({
   alt: z.string(),
   credit: z.string().optional(),
   source_url: z.string().url().optional(),
+  src: z.string().min(1).optional(),
   url: z.string().url().optional(),
   width: z.number().int().positive().optional(),
   height: z.number().int().positive().optional(),

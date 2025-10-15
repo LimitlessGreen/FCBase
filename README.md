@@ -25,3 +25,11 @@ pnpm run dev
 ```
 
 Additional scripts such as `pnpm run build` and `pnpm run preview` are available through the standard `package.json` commands.
+
+## Data Validation
+
+Run `pnpm run validate` before committing controller updates. The validator checks every file in
+`src/content/controllers/` against `meta/schema/controller.schema.json` and verifies cross-file
+references for manufacturers, MCUs, sensors, firmware entries, and sources. The command exits with a
+non-zero status when schema or reference errors are found so issues can be fixed before opening a
+pull request.
