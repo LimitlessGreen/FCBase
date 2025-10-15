@@ -3,8 +3,11 @@ name: TDK InvenSense IIM-42652
 manufacturer: TDK InvenSense
 type: imu
 axes: 6
-interface: i3c, i2c, spi
-notes: Compact 6-axis industrial IMU with 3-axis gyroscope and accelerometer, integrated FIFO, and flexible host interfaces for high-speed control loops.
+interface:
+  - I2C
+  - SPI
+notes: Compact 6-axis industrial IMU with 3-axis gyroscope and accelerometer, 
+  integrated FIFO, and flexible host interfaces for high-speed control loops.
 datasheet:
   title: "TDK InvenSense IIM-42652 Datasheet"
   publisher: TDK InvenSense
@@ -12,5 +15,27 @@ datasheet:
   url: https://invensense.tdk.com/download-pdf/iim-42652-datasheet/
   retrieved: "2025-10-13"
   language: en
+specs:
+  supply_voltage_v:
+    - 1.71
+    - 3.6
+  temperature_range_c:
+    - -40
+    - 105
+  gyroscope:
+    range_dps:
+      - -2000
+      - 2000
+    noise_dps_rtHz: 0.004
+    zero_rate_offset_dps: 0.5
+  accelerometer:
+    range_g:
+      - -16
+      - 16
+    noise_mg_rtHz: 0.09
+    offset_mg: 40
+controllers:
+  - cuav-7-nano
+  - holybro-pixhawk-6x-pro
 sources:
   - ardupilot-cuav-7-nano

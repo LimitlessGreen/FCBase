@@ -3,14 +3,37 @@ name: "TDK InvenSense ICM-45686"
 manufacturer: TDK InvenSense
 type: imu
 axes: 6
-interface: spi
+interface:
+  - I2C
+  - SPI
 notes: "Industrial 6-axis IMU with BalancedGyro technology used on Pixhawk 6X revisions."
 datasheet:
   title: "TDK InvenSense ICM-45686 Datasheet"
   publisher: TDK InvenSense
   year: 2025
-  url: https://www.mouser.com/datasheet/2/400/DS-000476-ICM-45686-v1.1-3140767.pdf
+  url: https://invensense.tdk.com/download-pdf/icm-45686-datasheet/
   retrieved: "2025-10-13"
   language: en
+specs:
+  supply_voltage_v:
+    - 1.71
+    - 1.89
+  temperature_range_c:
+    - -40
+    - 105
+  gyroscope:
+    range_dps:
+      - -4000
+      - 4000
+    noise_dps_rtHz: 0.0038
+    zero_rate_offset_dps: 0.4
+  accelerometer:
+    range_g:
+      - -32
+      - 32
+    noise_mg_rtHz: 0.08
+    offset_mg: 20
+controllers:
+  - holybro-pixhawk-6x-pro
 sources:
   - holybro-pixhawk6x-product

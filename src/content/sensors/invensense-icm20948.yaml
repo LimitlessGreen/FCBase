@@ -3,15 +3,47 @@ name: TDK InvenSense ICM-20948
 manufacturer: TDK InvenSense
 type: imu
 axes: 9
-interface: spi
-notes: 9-axis IMU with integrated AK09916 compass used for redundant attitude sensing.
+interface:
+  - I2C
+  - SPI
+notes: 9-axis IMU with integrated AK09916 compass used for redundant attitude 
+  sensing.
 datasheet:
   title: "TDK InvenSense ICM-20948 Datasheet"
   publisher: TDK InvenSense
   year: 2025
-  url: https://www.mouser.com/datasheet/2/400/DS-000219-ICM-20948-v1.3-1592083.pdf
+  url: https://invensense.tdk.com/download-pdf/icm-20948-datasheet/
   retrieved: "2025-10-13"
   language: en
+specs:
+  supply_voltage_v:
+    - 1.71
+    - 3.6
+  temperature_range_c:
+    - -40
+    - 85
+  gyroscope:
+    range_dps:
+      - -2000
+      - 2000
+    noise_dps_rtHz: 0.004
+    zero_rate_offset_dps: 0.5
+  accelerometer:
+    range_g:
+      - -16
+      - 16
+    noise_mg_rtHz: 0.1
+    offset_mg: 40
+  magnetometer:
+    range_uT:
+      - -4900
+      - 4900
+    noise_uT_rtHz: 0.6
+    absolute_accuracy_uT: 1.0
+controllers:
+  - cubepilot-cube-black
+  - cubepilot-cube-orange-plus
+  - mro-pixracer-pro
 sources:
   - ardupilot-cube-orange-overview
   - px4-cube-orange-plus

@@ -3,15 +3,43 @@ name: "TDK InvenSense ICM-20649"
 manufacturer: TDK InvenSense
 type: imu
 axes: 6
-interface: spi
+interface:
+  - I2C
+  - SPI
 notes: "32g/4000 dps 6-axis IMU for high-dynamic vehicles."
 datasheet:
   title: "TDK InvenSense ICM-20649 Datasheet"
   publisher: TDK InvenSense
   year: 2025
-  url: https://www.mouser.com/datasheet/2/400/DS-000166-ICM-20649-v1.2-1506982.pdf
+  url: https://invensense.tdk.com/download-pdf/icm-20649-datasheet/
   retrieved: "2025-10-13"
   language: en
+specs:
+  supply_voltage_v:
+    - 1.71
+    - 3.6
+  temperature_range_c:
+    - -40
+    - 85
+  gyroscope:
+    range_dps:
+      - -4000
+      - 4000
+    noise_dps_rtHz: 0.012
+    zero_rate_offset_dps: 0.5
+  accelerometer:
+    range_g:
+      - -30
+      - 30
+    noise_mg_rtHz: 0.2
+    offset_mg: 40
+controllers:
+  - cuav-nora
+  - cuav-pixhawk-v6x
+  - cuav-x7
+  - cubepilot-cube-orange-plus
+  - holybro-pixhawk-5x
+  - holybro-pixhawk-6x
 sources:
   - px4-cube-orange-plus
   - px4-pixhawk6x

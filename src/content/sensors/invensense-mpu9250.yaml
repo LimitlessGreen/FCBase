@@ -3,14 +3,44 @@ name: TDK InvenSense MPU-9250
 manufacturer: TDK InvenSense
 type: imu
 axes: 9
-interface: spi
-notes: 9-axis MotionTracking device combining gyroscope, accelerometer, and AK8963 magnetometer for redundant navigation.
+interface:
+  - I2C
+  - SPI
+notes: 9-axis MotionTracking device combining gyroscope, accelerometer, and 
+  AK8963 magnetometer for redundant navigation.
 datasheet:
   title: "MPU-9250 Product Specification"
   publisher: TDK InvenSense
   year: 2016
-  url: https://invensense.tdk.com/wp-content/uploads/2015/02/PS-MPU-9250A-01-v1.1.pdf
+  url: https://invensense.tdk.com/download-pdf/mpu-9250-datasheet/
   retrieved: "2025-10-13"
   language: en
+specs:
+  supply_voltage_v:
+    - 2.4
+    - 3.6
+  temperature_range_c:
+    - -40
+    - 85
+  gyroscope:
+    range_dps:
+      - -2000
+      - 2000
+    noise_dps_rtHz: 0.005
+    zero_rate_offset_dps: 0.5
+  accelerometer:
+    range_g:
+      - -16
+      - 16
+    noise_mg_rtHz: 0.1
+    offset_mg: 40
+  magnetometer:
+    range_uT:
+      - -4900
+      - 4900
+    noise_uT_rtHz: 0.6
+    absolute_accuracy_uT: 1.5
+controllers:
+  - cubepilot-cube-black
 sources:
   - ardupilot-thecube-overview

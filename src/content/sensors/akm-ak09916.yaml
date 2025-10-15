@@ -3,9 +3,12 @@ name: AKM AK09916
 manufacturer: Asahi Kasei Microdevices
 type: magnetometer
 axes: 3
-interface: i2c
+interface:
+  - I2C
+  - SPI
 package: "2.0 x 2.0 x 0.65 mm ultra-small package"
-description: 3-axis digital magnetometer (eCompass) designed for precise heading and tilt-compensated navigation in compact embedded systems.
+description: 3-axis digital magnetometer (eCompass) designed for precise heading
+  and tilt-compensated navigation in compact embedded systems.
 features:
   - ±4912 µT measurement range with 0.15 µT/LSB sensitivity
   - 16-bit data output with self-test and built-in offset cancellation
@@ -14,7 +17,8 @@ datasheet:
   title: "AKM AK09916 Datasheet"
   publisher: Asahi Kasei Microdevices
   year: 2017
-  url: https://www.digikey.com/htmldatasheets/production/2044105/0/0/1/ak09916.html
+  url: 
+    https://www.akm.com/content/dam/documents/products/magnetic-sensors/electronic-compass/ak09916c/ak09916c-en-datasheet.pdf
   retrieved: "2025-01-16"
   language: en
 specs:
@@ -24,15 +28,15 @@ specs:
   temperature_range_c:
     - -30
     - 85
-  current_consumption_ma:
-    normal: 1.5
-    standby: 0.001
   magnetometer:
     range_uT:
       - -4912
       - 4912
-    sensitivity_uT_lsb: 0.15
+    noise_uT_rtHz: 0.6
+    absolute_accuracy_uT: 0.6
 notes: |
   Provides stable heading data when combined with accelerometer and gyroscope sensors, drawing 1.5 mA typical during active measurement and about 1 µA in power-down mode.
+controllers:
+  - cubepilot-cube-orange-plus
 sources:
   - ardupilot-pixhawk6x-release

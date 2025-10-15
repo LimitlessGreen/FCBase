@@ -3,15 +3,37 @@ name: Bosch Sensortec BMP280
 manufacturer: Bosch Sensortec
 type: barometer
 axes: 1
-interface: i2c
-notes: Digital barometric pressure sensor with integrated temperature sensing for altitude estimation.
+interface:
+  - I2C
+  - SPI
+notes: Digital barometric pressure sensor with integrated temperature sensing 
+  for altitude estimation.
 datasheet:
   title: "Bosch Sensortec BMP280 Datasheet"
   publisher: Bosch Sensortec
   year: 2025
-  url: https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bmp280-ds001.pdf
+  url: 
+    https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bmp280-ds001.pdf
   retrieved: "2025-10-13"
   language: en
+specs:
+  supply_voltage_v:
+    - 1.71
+    - 3.6
+  temperature_range_c:
+    - -40
+    - 85
+  barometer:
+    pressure_range_hpa:
+      - 300
+      - 1100
+    absolute_accuracy_pa: 100
+    relative_accuracy_pa: 12
+    noise_pa_rms: 0.2
+controllers:
+  - holybro-kakute-h7-v2
+  - mateksys-f405-wing
+  - mateksys-f765-wing
 sources:
   - ardupilot-holybro-kakuteh7-v2
   - ardupilot-matek-f405-wing

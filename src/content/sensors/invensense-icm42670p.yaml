@@ -3,14 +3,36 @@ name: "TDK InvenSense ICM-42670-P"
 manufacturer: TDK InvenSense
 type: imu
 axes: 6
-interface: spi
+interface:
+  - I2C
+  - SPI
 notes: "Low-noise 6-axis IMU used for redundant inertial sensing."
 datasheet:
   title: "TDK InvenSense ICM-42670-P Datasheet"
   publisher: TDK InvenSense
   year: 2025
-  url: https://www.mouser.com/datasheet/2/400/DS-000347-ICM-42670-P-v1.1-1987543.pdf
+  url: https://invensense.tdk.com/download-pdf/icm-42670-p-datasheet/
   retrieved: "2025-10-13"
   language: en
+specs:
+  supply_voltage_v:
+    - 1.71
+    - 3.6
+  temperature_range_c:
+    - -40
+    - 85
+  gyroscope:
+    range_dps:
+      - -2000
+      - 2000
+    noise_dps_rtHz: 0.007
+    zero_rate_offset_dps: 0.5
+  accelerometer:
+    range_g:
+      - -16
+      - 16
+    noise_mg_rtHz: 0.1
+    offset_mg: 40
+controllers: []
 sources:
   - px4-pixhawk6x

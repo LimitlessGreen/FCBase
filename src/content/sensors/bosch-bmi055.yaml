@@ -3,14 +3,39 @@ name: "Bosch Sensortec BMI055"
 manufacturer: Bosch Sensortec
 type: imu
 axes: 6
-interface: spi
+interface:
+  - I2C
+  - SPI
 notes: "6-axis IMU combining BMG160 gyroscope and BMA280 accelerometer."
 datasheet:
   title: "Bosch Sensortec BMI055 Datasheet"
   publisher: Bosch Sensortec
   year: 2025
-  url: https://www.mouser.com/datasheet/2/783/BST-BMI055-DS000-1506567.pdf
+  url: 
+    https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bmi055-ds000.pdf
   retrieved: "2025-10-13"
   language: en
+specs:
+  supply_voltage_v:
+    - 2.4
+    - 3.6
+  temperature_range_c:
+    - -40
+    - 85
+  gyroscope:
+    range_dps:
+      - -2000
+      - 2000
+    noise_dps_rtHz: 0.014
+    zero_rate_offset_dps: 0.5
+  accelerometer:
+    range_g:
+      - -16
+      - 16
+    noise_mg_rtHz: 0.14
+    offset_mg: 40
+controllers:
+  - holybro-pixhawk-4
+  - holybro-pixhawk-4-mini
 sources:
   - px4-pixhawk6c

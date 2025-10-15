@@ -4,20 +4,21 @@ manufacturer: TDK InvenSense
 type: imu
 axes: 6
 interface:
-  - i3c
-  - i2c
-  - spi
+  - I2C
+  - SPI
 package: "2.5 x 3.0 x 0.91 mm LGA-14"
-description: High-precision 6-axis IMU that combines a triple-axis accelerometer and gyroscope with TDK's APEX motion engine and a 2 KB FIFO buffer.
+description: High-precision 6-axis IMU that combines a triple-axis accelerometer
+  and gyroscope with TDK's APEX motion engine and a 2 KB FIFO buffer.
 features:
   - Eight selectable gyroscope ranges from ±15.625 dps to ±2000 dps
   - Four selectable accelerometer ranges from ±2 g to ±16 g
-  - 20-bit FIFO data format with embedded temperature sensor and wake-on-motion support
+  - 20-bit FIFO data format with embedded temperature sensor and wake-on-motion 
+    support
 datasheet:
   title: "TDK InvenSense ICM-42688-P Datasheet"
   publisher: TDK InvenSense
   year: 2020
-  url: https://uploadcdn.oneyac.com/attachments/files/brand_pdf/tdk/product/sensor/mortion-inertial/imu/data_sheet/ds-000347-icm-42688-p-v1.2.pdf
+  url: https://invensense.tdk.com/download-pdf/icm-42688-p-datasheet/
   retrieved: "2025-01-16"
   language: en
 specs:
@@ -27,23 +28,27 @@ specs:
   temperature_range_c:
     - -40
     - 85
-  package_mm:
-    - 2.5
-    - 3
-    - 0.91
-  fifo_bytes: 2048
-  interface_max_speed_mhz: 24
-  accelerometer:
-    range_g:
-      - 2
-      - 16
-    noise_mg_sqrtHz: 0.07
   gyroscope:
     range_dps:
-      - 15.625
+      - -2000
       - 2000
-    noise_mdps_sqrtHz: 2.8
-notes: Supports I3C, I2C, and SPI host interfaces with up to 24 MHz bus rates, external clocking for reduced drift, and dual programmable interrupts for event-based motion detection.
+    noise_dps_rtHz: 0.004
+    zero_rate_offset_dps: 0.5
+  accelerometer:
+    range_g:
+      - -16
+      - 16
+    noise_mg_rtHz: 0.09
+    offset_mg: 40
+notes: Supports I3C, I2C, and SPI host interfaces with up to 24 MHz bus rates, 
+  external clocking for reduced drift, and dual programmable interrupts for 
+  event-based motion detection.
+controllers:
+  - cuav-pixhawk-v6x
+  - cubepilot-cube-orange-plus
+  - holybro-pixhawk-5x
+  - holybro-pixhawk-6c
+  - holybro-pixhawk-6x
 sources:
   - px4-cube-orange-plus
   - px4-pixhawk6c

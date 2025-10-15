@@ -3,19 +3,23 @@ name: Bosch Sensortec BMP388
 manufacturer: Bosch Sensortec
 type: barometer
 interface:
-  - i2c
-  - spi
+  - I2C
+  - SPI
 package: "2.0 x 2.0 x 0.75 mm metal-lid LGA"
-description: Barometric pressure sensor with integrated temperature sensing, 512-byte FIFO buffering, and low power consumption for altitude estimation and navigation.
+description: Barometric pressure sensor with integrated temperature sensing, 
+  512-byte FIFO buffering, and low power consumption for altitude estimation and
+  navigation.
 features:
   - 300 to 1250 hPa measurement range with ±50 Pa absolute accuracy
   - Typical ±8 Pa relative accuracy equivalent to ±0.66 m altitude error
-  - Configurable oversampling, IIR filtering, and interrupt-driven FIFO streaming
+  - Configurable oversampling, IIR filtering, and interrupt-driven FIFO 
+    streaming
 datasheet:
   title: "Bosch Sensortec BMP388 Datasheet"
   publisher: Bosch Sensortec
   year: 2020
-  url: https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bmp388-ds001.pdf
+  url: 
+    https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bmp388-ds001.pdf
   retrieved: "2025-01-16"
   language: en
 specs:
@@ -25,13 +29,6 @@ specs:
   temperature_range_c:
     - -40
     - 85
-  package_mm:
-    - 2
-    - 2
-    - 0.75
-  current_consumption_ma:
-    normal: 0.0034
-    standby: 0.002
   barometer:
     pressure_range_hpa:
       - 300
@@ -39,7 +36,12 @@ specs:
     relative_accuracy_pa: 8
     absolute_accuracy_pa: 50
     noise_pa_rms: 0.03
-notes: Provides 3.4 µA typical current draw at 1 Hz pressure updates and includes interrupts for data-ready, FIFO watermark, and FIFO full conditions.
+notes: Provides 3.4 µA typical current draw at 1 Hz pressure updates and 
+  includes interrupts for data-ready, FIFO watermark, and FIFO full conditions.
+controllers:
+  - holybro-pixhawk-5x
+  - holybro-pixhawk-6x
+  - holybro-pixhawk-6x-pro
 sources:
   - holybro-pixhawk6x-product
   - px4-pixhawk6x

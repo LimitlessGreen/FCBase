@@ -3,15 +3,37 @@ name: IST8310
 manufacturer: IST
 type: magnetometer
 axes: 3
-interface: i2c
+interface:
+  - I2C
+  - SPI
 notes: 3-axis magnetometer used on Pixhawk 6C for compass measurements.
 datasheet:
   title: "iSentek IST8310 Datasheet"
   publisher: iSentek
   year: 2025
-  url: https://www.mouser.com/datasheet/2/724/IST8310_Datasheet-1514315.pdf
+  url: 
+    https://www.isentek.com/wp-content/uploads/2020/02/IST8310-Datasheet-v1.1.pdf
   retrieved: "2025-10-13"
   language: en
+specs:
+  supply_voltage_v:
+    - 2.4
+    - 3.6
+  temperature_range_c:
+    - -40
+    - 85
+  magnetometer:
+    range_uT:
+      - -1600
+      - 1600
+    noise_uT_rtHz: 0.3
+    absolute_accuracy_uT: 0.5
+controllers:
+  - cuav-7-nano
+  - holybro-durandal
+  - holybro-pixhawk-4
+  - holybro-pixhawk-4-mini
+  - holybro-pixhawk-6c
 sources:
   - holybro-pixhawk6c-product
   - px4-pixhawk6c
