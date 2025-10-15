@@ -59,7 +59,15 @@ const {
       })();
     </script>
   </head>
-  <body class="min-h-screen flex flex-col">
+<body class="min-h-screen bg-background text-foreground antialiased">
+  <div class="relative flex min-h-screen flex-col overflow-hidden">
+    <div class="pointer-events-none absolute inset-0 -z-10">
+      <div class="absolute inset-0 bg-[radial-gradient(circle_at_15%_20%,hsl(var(--primary))/0.2,transparent_55%),radial-gradient(circle_at_85%_25%,hsl(var(--accent))/0.15,transparent_60%),radial-gradient(circle_at_50%_80%,hsl(var(--primary))/0.12,transparent_65%)] animate-gradient-shift" />
+      <div class="absolute inset-0 bg-tech-grid mask-tech-fade animate-grid-pan" />
+      <div class="absolute left-1/2 top-[12%] h-[42rem] w-[42rem] -translate-x-1/2 rounded-full bg-[conic-gradient(from_180deg_at_50%_50%,hsl(var(--primary))/0.25_0deg,hsl(var(--accent))/0.18_120deg,hsl(var(--primary))/0.25_240deg)] opacity-60 blur-3xl mix-blend-screen animate-orbit" />
+      <div class="absolute inset-0 bg-[radial-gradient(circle_at_top,hsl(var(--primary))/0.35,transparent_60%)] opacity-50 animate-pulse-soft" />
+    </div>
     <slot />
-  </body>
+  </div>
+</body>
 </html>

@@ -23,19 +23,27 @@ interface NavigationLinkProps {
 
 function NavigationLink({ basePath, href, label, className, isActive }: NavigationLinkProps) {
   const fullHref = `${basePath}${href}`.replace(/\/{2,}/g, "/");
+
   return (
     <a
       href={fullHref}
       className={cn(
-        "inline-flex items-center rounded-full px-3 py-1 text-sm font-medium transition-colors",
+        "group relative inline-flex items-center gap-1 rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40",
         isActive
-          ? "bg-primary/10 text-primary"
-          : "text-muted-foreground hover:text-foreground hover:bg-muted/60",
+          ? "text-foreground"
+          : "text-muted-foreground hover:text-foreground",
         className,
       )}
       aria-current={isActive ? "page" : undefined}
     >
-      {label}
+      <span
+        aria-hidden="true"
+        className={cn(
+          "absolute inset-0 scale-95 rounded-[inherit] bg-primary/10 opacity-0 transition-all duration-200 group-hover:scale-105 group-hover:opacity-100",
+          isActive && "scale-105 bg-primary/20 opacity-100 shadow-lg",
+        )}
+      />
+      <span className="relative flex items-center gap-1">{label}</span>
     </a>
   );
 }
@@ -46,7 +54,8 @@ interface NavigationProps {
 }
 
 export function Navigation({ className, basePath = "" }: NavigationProps) {
-  const [isOpen, setIsOpen] = React.useState(false);
+  const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+  const [isScrolled, setIsScrolled] = React.useState(false);
   const [currentPath, setCurrentPath] = React.useState(() => {
     if (typeof window !== "undefined") {
       return normalizePath(window.location.pathname);
@@ -59,17 +68,82 @@ export function Navigation({ className, basePath = "" }: NavigationProps) {
     [basePath],
   );
   const homeHref = React.useMemo(() => `${basePath}/`.replace(/\/{2,}/g, "/"), [basePath]);
+  const mobileMenuId = React.useId();
 
   React.useEffect(() => {
-    if (typeof window !== "undefined") {
-      const updatePath = () => setCurrentPath(normalizePath(window.location.pathname));
-      updatePath();
-
-      window.addEventListener("popstate", updatePath);
-      return () => window.removeEventListener("popstate", updatePath);
+    if (typeof window === "undefined") {
+      return undefined;
     }
 
-    return undefined;
+    const updatePath = () => setCurrentPath(normalizePath(window.location.pathname));
+    updatePath();
+
+    window.addEventListener("popstate", updatePath);
+    window.addEventListener("hashchange", updatePath);
+    return () => {
+      window.removeEventListener("popstate", updatePath);
+      window.removeEventListener("hashchange", updatePath);
+    };
+  }, []);
+
+  React.useEffect(() => {
+    if (typeof window === "undefined") {
+      return undefined;
+    }
+
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 8);
+    };
+
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  React.useEffect(() => {
+    if (!isMenuOpen) {
+      return;
+    }
+
+    setIsMenuOpen(false);
+  }, [currentPath, isMenuOpen]);
+
+  React.useEffect(() => {
+    if (typeof document === "undefined") {
+      return undefined;
+    }
+
+    const { body } = document;
+    const previousOverflow = body.style.overflow;
+
+    if (isMenuOpen) {
+      body.style.overflow = "hidden";
+    } else {
+      body.style.overflow = "";
+    }
+
+    return () => {
+      body.style.overflow = previousOverflow;
+    };
+  }, [isMenuOpen]);
+
+  React.useEffect(() => {
+    if (!isMenuOpen || typeof window === "undefined") {
+      return undefined;
+    }
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsMenuOpen(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isMenuOpen]);
+
+  const toggleMenu = React.useCallback(() => {
+    setIsMenuOpen((previous) => !previous);
   }, []);
 
   const getLinkIsActive = React.useCallback(
@@ -81,80 +155,95 @@ export function Navigation({ className, basePath = "" }: NavigationProps) {
   );
 
   return (
-    <nav
-      className={cn(
-        "relative overflow-hidden border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60",
-        className,
-      )}
-    >
-      <div className="absolute inset-0 -z-10 bg-gradient-to-r from-primary/20 via-background to-background" />
-      <div className="absolute inset-y-0 right-[-25%] w-1/2 -z-10 opacity-40 bg-[radial-gradient(circle_at_top,hsl(var(--primary))_0%,transparent_65%)]" />
-      <div className="container">
-        <div className="flex h-16 items-center justify-between">
-          <div className="flex items-center gap-6">
-            <a href={homeHref} className="flex items-center gap-2">
-              <span className="flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xl font-semibold text-primary">
+    <>
+      <nav
+        aria-label="Primary navigation"
+        className={cn(
+          "relative isolate border-b border-white/10 bg-background/90 transition-colors duration-300 supports-[backdrop-filter]:bg-background/60",
+          isScrolled
+            ? "backdrop-blur-md supports-[backdrop-filter]:backdrop-blur-xl shadow-lg"
+            : "backdrop-blur-sm supports-[backdrop-filter]:backdrop-blur-md shadow-sm",
+          "dark:border-white/5",
+          className,
+        )}
+      >
+        <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden" aria-hidden="true">
+          <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/35 to-transparent" />
+          <div className="absolute inset-y-0 right-0 w-px bg-gradient-to-b from-transparent via-primary/25 to-transparent" />
+        </div>
+        <div className="container">
+          <div className="flex h-16 items-center justify-between gap-3">
+            <div className="flex items-center gap-6">
+              <a
+                href={homeHref}
+                className="flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-sm font-semibold text-primary transition-transform duration-200 hover:-translate-y-0.5"
+              >
                 <Compass className="h-5 w-5" aria-hidden="true" />
-                <span className="text-foreground">FCBase</span>
-              </span>
-            </a>
-
-            {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center gap-6">
-              {navLinks.map((link) => (
-                <NavigationLink
-                  key={link.href}
-                  basePath={basePath}
-                  isActive={getLinkIsActive(link.href)}
-                  {...link}
-                />
-              ))}
+                <span className="text-base text-foreground">FCBase</span>
+              </a>
+              <div className="hidden items-center gap-2 md:flex lg:gap-3">
+                {navLinks.map((link) => (
+                  <NavigationLink
+                    key={link.href}
+                    basePath={basePath}
+                    isActive={getLinkIsActive(link.href)}
+                    {...link}
+                  />
+                ))}
+              </div>
+            </div>
+            <div className="hidden items-center gap-2 md:flex">
+              <Button asChild size="sm" variant="secondary" className="rounded-full px-4">
+                <a href={contributeHref}>Contribute</a>
+              </Button>
+              <ThemeToggle />
+            </div>
+            <div className="flex items-center gap-1 md:hidden">
+              <ThemeToggle />
+              <Button
+                variant="ghost"
+                size="icon"
+                className="md:hidden"
+                onClick={toggleMenu}
+                aria-controls={mobileMenuId}
+                aria-expanded={isMenuOpen}
+                aria-label={isMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+              >
+                {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              </Button>
             </div>
           </div>
-
-          {/* Desktop Actions */}
-          <div className="hidden md:flex items-center gap-2">
-            <Button asChild variant="secondary" size="sm">
-              <a href={contributeHref}>Contribute</a>
-            </Button>
-            <ThemeToggle />
-          </div>
-
-          {/* Mobile Menu Button */}
-          <div className="flex md:hidden items-center gap-2">
-            <ThemeToggle />
-            <Button
-              variant="ghost"
-              size="icon"
-              className="md:hidden"
-              onClick={() => setIsOpen(!isOpen)}
-            >
-              {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-            </Button>
-          </div>
+        </div>
+      </nav>
+      <div
+        id={mobileMenuId}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Mobile primary navigation"
+        className={cn(
+          "fixed inset-x-0 top-0 z-30 flex h-screen flex-col bg-background/95 pb-12 pt-24 shadow-xl backdrop-blur-xl transition-all duration-200 md:hidden",
+          "border-b border-white/10 dark:border-white/5",
+          isMenuOpen
+            ? "pointer-events-auto opacity-100 translate-y-0"
+            : "pointer-events-none -translate-y-4 opacity-0",
+        )}
+      >
+        <div className="container flex flex-1 flex-col gap-4 overflow-y-auto">
+          {navLinks.map((link) => (
+            <NavigationLink
+              key={link.href}
+              basePath={basePath}
+              className="w-full justify-between rounded-lg px-3 py-2 text-base"
+              isActive={getLinkIsActive(link.href)}
+              {...link}
+            />
+          ))}
+          <Button asChild size="lg" className="mt-2 w-full justify-center rounded-lg">
+            <a href={contributeHref}>Contribute</a>
+          </Button>
         </div>
       </div>
-
-      {/* Mobile Navigation */}
-      {isOpen && (
-        <div className="md:hidden border-t">
-          <div className="container py-4 flex flex-col gap-3">
-            {navLinks.map((link) => (
-              <NavigationLink
-                key={link.href}
-                basePath={basePath}
-                className="rounded-sm px-3 py-2 hover:bg-muted"
-                isActive={getLinkIsActive(link.href)}
-                {...link}
-              />
-            ))}
-            <Button asChild size="sm" className="w-full justify-center">
-              <a href={contributeHref}>Contribute</a>
-            </Button>
-          </div>
-        </div>
-      )}
-    </nav>
+    </>
   );
 }
 
