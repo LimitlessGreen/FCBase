@@ -38,6 +38,7 @@ export const BadgeVariants = {
     primary: 'bg-primary/10 text-primary border-primary/20',
     secondary: 'bg-secondary/10 text-secondary border-secondary/20',
     muted: 'bg-muted/10 text-muted-foreground border-muted/20',
+    info: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
   } as const,
 } as const;
 

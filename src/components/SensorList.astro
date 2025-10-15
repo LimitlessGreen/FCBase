@@ -6,6 +6,7 @@
  */
 import StatusBadge from '@/components/ui/StatusBadge.astro';
 import { getBasePath } from '@/lib/paths';
+import type { DefaultVariant } from '@/lib/badge-styles';
 
 interface Sensor {
   id: string;
@@ -25,6 +26,7 @@ interface Props {
 
 const { sensors, linkable = true, size = 'sm', class: className } = Astro.props;
 const basePath = getBasePath();
+const sensorBadgeStatus: DefaultVariant = 'info';
 ---
 
 {sensors.length > 0 && (
@@ -39,12 +41,12 @@ const basePath = getBasePath();
           href={`${basePath}/sensors/${sensor.id}`}
           class="inline-block transition-transform hover:scale-105"
         >
-          <StatusBadge variant="default" status="info" size={size}>
+          <StatusBadge variant="default" status={sensorBadgeStatus} size={size}>
             {displayText}
           </StatusBadge>
         </a>
       ) : (
-        <StatusBadge variant="default" status="info" size={size}>
+        <StatusBadge variant="default" status={sensorBadgeStatus} size={size}>
           {displayText}
         </StatusBadge>
       );
