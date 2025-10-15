@@ -2,14 +2,35 @@ id: bosch-bmp581
 name: Bosch Sensortec BMP581
 manufacturer: Bosch Sensortec
 type: barometer
-interface: i2c, i3c, spi
-notes: High-precision barometric pressure sensor offering ±30 Pa absolute accuracy, 0.08 Pa noise floor, and up to 480 Hz sampling for responsive altitude estimation.
+interface:
+  - I2C
+  - SPI
+notes: High-precision barometric pressure sensor offering ±30 Pa absolute 
+  accuracy, 0.08 Pa noise floor, and up to 480 Hz sampling for responsive 
+  altitude estimation.
 datasheet:
   title: "Bosch Sensortec BMP581 Datasheet"
   publisher: Bosch Sensortec
   year: 2025
-  url: https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bmp581-ds004.pdf
+  url: 
+    https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bmp581-ds000.pdf
   retrieved: "2025-10-13"
   language: en
+specs:
+  supply_voltage_v:
+    - 1.2
+    - 3.6
+  temperature_range_c:
+    - -40
+    - 85
+  barometer:
+    pressure_range_hpa:
+      - 300
+      - 1250
+    absolute_accuracy_pa: 30
+    relative_accuracy_pa: 3
+    noise_pa_rms: 0.02
+controllers:
+  - cuav-7-nano
 sources:
   - ardupilot-cuav-7-nano

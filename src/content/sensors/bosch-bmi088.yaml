@@ -3,19 +3,19 @@ name: Bosch Sensortec BMI088
 manufacturer: Bosch Sensortec
 type: imu
 axes: 6
-interface: spi
-notes: Automotive-grade 6-axis IMU combining BMI090L gyro and BMA456 accelerometer.
+interface:
+  - I2C
+  - SPI
+notes: Automotive-grade 6-axis IMU combining BMI090L gyro and BMA456 
+  accelerometer.
 datasheet:
   title: "Bosch Sensortec BMI088 Datasheet"
   publisher: Bosch Sensortec
   year: 2025
-  url: https://www.mouser.com/datasheet/2/783/BST-BMI088-DS000-1501734.pdf
+  url: 
+    https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bmi088-ds001.pdf
   retrieved: "2025-10-13"
   language: en
-sources:
-  - ardupilot-cuav-pixhawkv6x
-  - px4-pixhawk6x
-  - github-px4-bmi088-i2c-jitter
 known_issues:
   - id: px4-bmi088-i2c-jitter
     title: "BMI088 I²C driver produces unstable gyro data"
@@ -23,4 +23,37 @@ known_issues:
     date: "2024-05-08"
     source: github-px4-bmi088-i2c-jitter
     url: https://github.com/PX4/PX4-Autopilot/issues/23111
-    description: "PX4's bmi088_i2c driver reports severe gyro jitter and unusable orientation on Crazyflie and other I²C-based boards."
+    description: "PX4's bmi088_i2c driver reports severe gyro jitter and unusable
+      orientation on Crazyflie and other I²C-based boards."
+specs:
+  supply_voltage_v:
+    - 2.4
+    - 3.6
+  temperature_range_c:
+    - -40
+    - 105
+  gyroscope:
+    range_dps:
+      - -2000
+      - 2000
+    noise_dps_rtHz: 0.014
+    zero_rate_offset_dps: 0.5
+  accelerometer:
+    range_g:
+      - -24
+      - 24
+    noise_mg_rtHz: 0.14
+    offset_mg: 20
+controllers:
+  - cuav-7-nano
+  - cuav-nora
+  - cuav-pixhawk-v6x
+  - cuav-x7
+  - holybro-durandal
+  - holybro-pixhawk-6c
+  - holybro-pixhawk-6x
+  - mro-pixracer-pro
+sources:
+  - ardupilot-cuav-pixhawkv6x
+  - px4-pixhawk6x
+  - github-px4-bmi088-i2c-jitter

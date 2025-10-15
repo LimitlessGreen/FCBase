@@ -2,15 +2,36 @@ id: tdk-icp20100
 name: "TDK InvenSense ICP-20100"
 manufacturer: TDK InvenSense
 type: barometer
-interface: i2c
+interface:
+  - I2C
+  - SPI
 notes: "Digital barometric pressure sensor providing redundant altitude data."
 datasheet:
   title: "TDK InvenSense ICP-20100 Datasheet"
   publisher: TDK InvenSense
   year: 2025
-  url: https://www.mouser.com/datasheet/2/400/DS-000228-ICP-20100-v1.3-1987548.pdf
+  url: https://invensense.tdk.com/download-pdf/icp-20100-datasheet/
   retrieved: "2025-10-13"
   language: en
+specs:
+  supply_voltage_v:
+    - 1.14
+    - 3.6
+  temperature_range_c:
+    - -40
+    - 85
+  barometer:
+    pressure_range_hpa:
+      - 300
+      - 1260
+    absolute_accuracy_pa: 9
+    relative_accuracy_pa: 0.5
+    noise_pa_rms: 0.04
+controllers:
+  - cuav-7-nano
+  - cuav-pixhawk-v6x
+  - holybro-pixhawk-6x
+  - holybro-pixhawk-6x-pro
 sources:
   - ardupilot-cuav-pixhawkv6x
   - holybro-pixhawk6x-product

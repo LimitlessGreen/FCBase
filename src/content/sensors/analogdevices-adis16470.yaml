@@ -3,14 +3,38 @@ name: Analog Devices ADIS16470
 manufacturer: Analog Devices
 type: imu
 axes: 6
-interface: spi
-description: "Precision 6-axis industrial IMU with ±40 g accelerometers and ±2000 dps gyroscopes on a vibration isolated MEMS core."
+interface: SPI
+description: "Precision 6-axis industrial IMU with ±40 g accelerometers and ±2000
+  dps gyroscopes on a vibration isolated MEMS core."
 datasheet:
   title: "ADIS16470 Low Noise, Low Drift Industrial IMU"
   publisher: Analog Devices
-  url: https://www.analog.com/media/en/technical-documentation/data-sheets/adis16470.pdf
+  url: 
+    https://www.analog.com/media/en/technical-documentation/data-sheets/adis16470.pdf
   retrieved: "2025-10-15"
   language: en
-notes: "Delivers industrial temperature operation with integrated factory calibration for bias, sensitivity, and alignment."
+notes: "Delivers industrial temperature operation with integrated factory calibration
+  for bias, sensitivity, and alignment."
+specs:
+  supply_voltage_v:
+    - 4.75
+    - 5.25
+  temperature_range_c:
+    - -40
+    - 105
+  gyroscope:
+    range_dps:
+      - -2000
+      - 2000
+    noise_dps_rtHz: 0.015
+    in_run_bias_stability_deg_per_hr: 8
+  accelerometer:
+    range_g:
+      - -40
+      - 40
+    noise_mg_rtHz: 0.14
+    bias_instability_mg: 0.2
+controllers:
+  - holybro-pixhawk-6x-pro
 sources:
   - px4-pixhawk6x-pro

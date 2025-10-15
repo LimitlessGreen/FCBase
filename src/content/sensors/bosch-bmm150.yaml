@@ -3,14 +3,37 @@ name: "Bosch Sensortec BMM150"
 manufacturer: Bosch Sensortec
 type: magnetometer
 axes: 3
-interface: i2c
+interface:
+  - I2C
+  - SPI
 notes: "Geomagnetic sensor providing 3-axis compass data for autopilot heading."
 datasheet:
   title: "Bosch Sensortec BMM150 Datasheet"
   publisher: Bosch Sensortec
   year: 2025
-  url: https://www.mouser.com/datasheet/2/783/BST-BMM150-DS000-1508729.pdf
+  url: 
+    https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bmm150-ds001.pdf
   retrieved: "2025-10-13"
   language: en
+specs:
+  supply_voltage_v:
+    - 1.62
+    - 3.6
+  temperature_range_c:
+    - -40
+    - 85
+  magnetometer:
+    range_uT:
+      - -1300
+      - 1300
+    z_axis_range_uT:
+      - -2500
+      - 2500
+    noise_uT_rtHz: 0.3
+    sensitivity_error_percent: 1.0
+controllers:
+  - holybro-pixhawk-5x
+  - holybro-pixhawk-6x
+  - holybro-pixhawk-6x-pro
 sources:
   - px4-pixhawk6x

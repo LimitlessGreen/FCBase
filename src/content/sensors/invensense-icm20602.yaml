@@ -3,15 +3,39 @@ name: "TDK InvenSense ICM-20602"
 manufacturer: TDK InvenSense
 type: imu
 axes: 6
-interface: spi
+interface: SPI
 notes: "High-rate 6-axis IMU paired with MPU6000 on Matek H743 series."
 datasheet:
   title: "TDK InvenSense ICM-20602 Datasheet"
   publisher: TDK InvenSense
   year: 2025
-  url: https://www.mouser.com/datasheet/2/400/DS-000162-ICM-20602-v1.0-1506983.pdf
+  url: https://invensense.tdk.com/download-pdf/icm-20602-datasheet/
   retrieved: "2025-10-13"
   language: en
+specs:
+  supply_voltage_v:
+    - 1.71
+    - 3.45
+  temperature_range_c:
+    - -40
+    - 85
+  gyroscope:
+    range_dps:
+      - -2000
+      - 2000
+    noise_dps_rtHz: 0.004
+    zero_rate_offset_dps: 0.5
+  accelerometer:
+    range_g:
+      - -16
+      - 16
+    noise_mg_rtHz: 0.09
+    offset_mg: 40
+controllers:
+  - holybro-pixhawk-5x
+  - mateksys-f765-wing
+  - mateksys-h743-wing
+  - mro-pixracer-pro
 sources:
   - ardupilot-matek-f765-wing
   - ardupilot-matek-h743-wing

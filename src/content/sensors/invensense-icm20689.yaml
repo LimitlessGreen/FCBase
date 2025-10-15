@@ -3,19 +3,18 @@ name: TDK InvenSense ICM-20689
 manufacturer: TDK InvenSense
 type: imu
 axes: 6
-interface: spi
-notes: 6-axis industrial-grade accelerometer/gyroscope with 30 kHz gyro bandwidth used for vibration-resilient flight control.
+interface:
+  - I2C
+  - SPI
+notes: 6-axis industrial-grade accelerometer/gyroscope with 30 kHz gyro 
+  bandwidth used for vibration-resilient flight control.
 datasheet:
   title: "ICM-20689 High Performance 6-Axis MotionTracking IC"
   publisher: TDK InvenSense
   year: 2020
-  url: https://invensense.tdk.com/wp-content/uploads/2015/02/DS-000189-ICM-20689-v1.0.pdf
+  url: https://invensense.tdk.com/download-pdf/icm-20689-datasheet/
   retrieved: "2025-10-13"
   language: en
-sources:
-  - ardupilot-cuav-nora-overview
-  - ardupilot-holybro-durandal
-  - github-px4-icm20689-integral-dt
 known_issues:
   - id: px4-icm20689-integral-dt
     title: "ICM-20689 integral timing spikes under PX4"
@@ -23,4 +22,34 @@ known_issues:
     date: "2023-10-08"
     source: github-px4-icm20689-integral-dt
     url: https://github.com/PX4/PX4-Autopilot/issues/22197
-    description: "PX4 v1.12 builds show random accelerometer_integral_dt and gyro_integral_dt spikes on the ICM-20689, destabilising EKF attitude estimates."
+    description: "PX4 v1.12 builds show random accelerometer_integral_dt and gyro_integral_dt
+      spikes on the ICM-20689, destabilising EKF attitude estimates."
+specs:
+  supply_voltage_v:
+    - 1.71
+    - 3.45
+  temperature_range_c:
+    - -40
+    - 85
+  gyroscope:
+    range_dps:
+      - -2000
+      - 2000
+    noise_dps_rtHz: 0.004
+    zero_rate_offset_dps: 0.5
+  accelerometer:
+    range_g:
+      - -16
+      - 16
+    noise_mg_rtHz: 0.09
+    offset_mg: 40
+controllers:
+  - cuav-nora
+  - cuav-x7
+  - holybro-durandal
+  - holybro-pixhawk-4
+  - holybro-pixhawk-4-mini
+sources:
+  - ardupilot-cuav-nora-overview
+  - ardupilot-holybro-durandal
+  - github-px4-icm20689-integral-dt

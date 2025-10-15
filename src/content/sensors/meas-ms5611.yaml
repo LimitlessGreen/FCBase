@@ -2,15 +2,41 @@ id: meas-ms5611
 name: "TE Connectivity MS5611"
 manufacturer: TE Connectivity
 type: barometer
-interface: spi
+interface:
+  - I2C
+  - SPI
 notes: "High-resolution MEMS barometric pressure sensor used for altitude estimation."
 datasheet:
   title: "TE Connectivity MS5611-01BA03 Datasheet"
   publisher: TE Connectivity
   year: 2025
-  url: https://www.mouser.com/datasheet/2/418/ENG_DS_MS5611-01BA03_B1-1133474.pdf
+  url: 
+    https://www.te.com/commerce/DocumentDelivery/DDEController?Action=showdoc&DocId=Data+Sheet%7FMS5611-01BA03%7FB1%7Fpdf%7FEnglish%7FENG_DS_MS5611-01BA03_B1.pdf
   retrieved: "2025-10-13"
   language: en
+specs:
+  supply_voltage_v:
+    - 1.8
+    - 3.6
+  temperature_range_c:
+    - -40
+    - 85
+  barometer:
+    pressure_range_hpa:
+      - 10
+      - 1200
+    absolute_accuracy_pa: 150
+    relative_accuracy_pa: 10
+    noise_pa_rms: 0.03
+controllers:
+  - cuav-nora
+  - cuav-x7
+  - cubepilot-cube-black
+  - cubepilot-cube-orange-plus
+  - holybro-durandal
+  - holybro-pixhawk-4
+  - holybro-pixhawk-4-mini
+  - holybro-pixhawk-6c
 sources:
   - px4-cube-orange-plus
   - px4-pixhawk6c

@@ -3,15 +3,41 @@ name: "TDK InvenSense MPU-6000"
 manufacturer: TDK InvenSense
 type: imu
 axes: 6
-interface: spi
+interface:
+  - I2C
+  - SPI
 notes: "Legacy 6-axis IMU widely used on fixed-wing autopilots for its low noise."
 datasheet:
   title: "TDK InvenSense MPU-6000 Datasheet"
   publisher: TDK InvenSense
   year: 2025
-  url: https://invensense.tdk.com/wp-content/uploads/2015/02/MPU-6000-Datasheet1.pdf
+  url: https://invensense.tdk.com/download-pdf/mpu-6000-datasheet/
   retrieved: "2025-10-13"
   language: en
+specs:
+  supply_voltage_v:
+    - 2.375
+    - 3.46
+  temperature_range_c:
+    - -40
+    - 85
+  gyroscope:
+    range_dps:
+      - -2000
+      - 2000
+    noise_dps_rtHz: 0.005
+    zero_rate_offset_dps: 0.5
+  accelerometer:
+    range_g:
+      - -16
+      - 16
+    noise_mg_rtHz: 0.1
+    offset_mg: 40
+controllers:
+  - aocoda-h743dual
+  - mateksys-f405-wing
+  - mateksys-f765-wing
+  - mateksys-h743-wing
 sources:
   - ardupilot-matek-f405-wing
   - ardupilot-matek-f765-wing

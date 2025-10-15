@@ -3,14 +3,38 @@ name: TDK InvenSense ICM-20648
 manufacturer: TDK InvenSense
 type: imu
 axes: 6
-interface: spi
-notes: Low-noise 6-axis IMU with programmable digital filters used for redundant inertial sensing in Cube-class autopilots.
+interface:
+  - I2C
+  - SPI
+notes: Low-noise 6-axis IMU with programmable digital filters used for redundant
+  inertial sensing in Cube-class autopilots.
 datasheet:
   title: "ICM-20648 Six-Axis MEMS MotionTracking Device"
   publisher: TDK InvenSense
   year: 2019
-  url: https://invensense.tdk.com/wp-content/uploads/2015/02/DS-000178-ICM-20648-v1.1.pdf
+  url: https://invensense.tdk.com/download-pdf/icm-20648-datasheet/
   retrieved: "2025-10-13"
   language: en
+specs:
+  supply_voltage_v:
+    - 1.71
+    - 3.45
+  temperature_range_c:
+    - -40
+    - 85
+  gyroscope:
+    range_dps:
+      - -2000
+      - 2000
+    noise_dps_rtHz: 0.009
+    zero_rate_offset_dps: 0.5
+  accelerometer:
+    range_g:
+      - -16
+      - 16
+    noise_mg_rtHz: 0.1
+    offset_mg: 40
+controllers:
+  - cubepilot-cube-black
 sources:
   - ardupilot-thecube-overview
