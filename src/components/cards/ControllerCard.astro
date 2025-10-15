@@ -28,7 +28,7 @@
  */
 
 import type { ImageMetadata } from 'astro';
-import { buildResponsivePicture } from '@/lib/responsive-image';
+import { Picture } from 'astro:assets';
 
 interface Props {
   // Required
@@ -95,10 +95,9 @@ const mountingDisplay = mounting
   : undefined;
 
 const imageAlt = image?.alt ?? title;
+const responsiveSizes = '(max-width: 1024px) 100vw, 360px';
 
-const localPicture = image?.src && typeof image.src !== 'string'
-  ? await buildResponsivePicture(image.src, '(max-width: 1024px) 100vw, 360px')
-  : null;
+const localImage = image?.src && typeof image.src !== 'string' ? (image.src as ImageMetadata) : null;
 
 const remoteImage = image?.src && typeof image.src === 'string'
   ? {
@@ -118,23 +117,18 @@ const remoteImage = image?.src && typeof image.src === 'string'
       <div class="relative aspect-video w-full overflow-hidden bg-gradient-to-br from-muted via-background to-muted">
         {image?.src ? (
           <>
-            {localPicture ? (
-              <picture class="block h-full w-full">
-                {localPicture.sources.map((source) => (
-                  <source srcset={source.srcset} type={source.type} sizes="(max-width: 1024px) 100vw, 360px" />
-                ))}
-                <img
-                  src={localPicture.img.src}
-                  alt={imageAlt}
-                  loading="lazy"
-                  decoding="async"
-                  width={localPicture.img.width}
-                  height={localPicture.img.height}
-                  srcset={localPicture.img.srcset}
-                  sizes="(max-width: 1024px) 100vw, 360px"
-                  class="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
-                />
-              </picture>
+            {localImage ? (
+              <Picture
+                src={localImage}
+                widths={[320, 640, 960]}
+                formats={["avif", "webp"]}
+                sizes={responsiveSizes}
+                alt={imageAlt}
+                loading="lazy"
+                decoding="async"
+                pictureClass="block h-full w-full"
+                imgClass="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+              />
             ) : remoteImage ? (
               <img
                 src={remoteImage.src}
@@ -143,7 +137,7 @@ const remoteImage = image?.src && typeof image.src === 'string'
                 decoding="async"
                 width={remoteImage.width}
                 height={remoteImage.height}
-                sizes="(max-width: 1024px) 100vw, 360px"
+                sizes={responsiveSizes}
                 class="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
               />
             ) : (
