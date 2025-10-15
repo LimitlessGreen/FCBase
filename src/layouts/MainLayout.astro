@@ -29,6 +29,16 @@ const showBottomBar = Boolean(contributors.length > 0 || historyUrl || lastModif
 ---
 
 <BaseLayout title={title} description={description}>
+  <div class="border-b border-amber-200 bg-amber-50">
+    <div class="mx-auto max-w-7xl px-4 py-2 sm:px-6 lg:px-8">
+      <p class="flex items-center gap-2 text-sm font-medium text-amber-900">
+        <span aria-hidden="true">🚧</span>
+        <span>
+          FCBase is currently under construction — features and content may change while we build the site.
+        </span>
+      </p>
+    </div>
+  </div>
   <Header client:load basePath={basePath} />
   <main class="flex-1">
     {/* Top Bar: Edit Button */}
