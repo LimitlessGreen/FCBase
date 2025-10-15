@@ -110,7 +110,7 @@ const mcuSummary = data.notes
       </div>
 
       <div class="grid gap-6 lg:grid-cols-3">
-        <Card client:load class="lg:col-span-2">
+        <Card class="lg:col-span-2">
           <CardHeader>
             <h2 class="text-base font-bold uppercase tracking-wide text-primary">Technical Specifications</h2>
           </CardHeader>
@@ -175,7 +175,7 @@ const mcuSummary = data.notes
         </Card>
 
         {controllersUsingMcu.length > 0 && (
-          <Card client:load>
+          <Card>
             <CardHeader>
               <h2 class="text-base font-bold uppercase tracking-wide text-primary">Usage Overview</h2>
             </CardHeader>
@@ -223,7 +223,7 @@ const mcuSummary = data.notes
                 <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                   {controllers.map((controller) => (
                     <a href={`${basePath}/controllers/${controller.id}`} class="group block">
-                      <Card client:load class="h-full transition-all hover:shadow-lg hover:-translate-y-1 border-2 hover:border-primary/30">
+                      <Card class="h-full transition-all hover:shadow-lg hover:-translate-y-1 border-2 hover:border-primary/30">
                         <CardContent class="pt-4 pb-3 px-3">
                           <h3 class="font-bold text-sm mb-1.5 line-clamp-2 group-hover:text-primary transition-colors">
                             {controller.data.title}
