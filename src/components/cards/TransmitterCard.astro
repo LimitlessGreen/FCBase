@@ -166,8 +166,8 @@ const showBadgeFooter = !isCompact && !showImage && shouldShowSupportBadges;
   <Fragment slot="specs">
     {isCompact ? (
       <div class="space-y-2.5 text-[11px]">
-        <div class="flex flex-wrap items-center justify-between gap-2">
-          <div class="flex flex-wrap items-center gap-1.5">
+        <div class="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-2">
+          <div class="flex flex-wrap gap-1.5">
             {supportLevelLabel && (
               <span class="inline-flex items-center rounded-sm border px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide">
                 {supportLevelLabel}
@@ -179,18 +179,18 @@ const showBadgeFooter = !isCompact && !showImage && shouldShowSupportBadges;
               </span>
             )}
           </div>
-          <div class="flex items-center gap-3 text-[10px] text-muted-foreground">
-            <span class="inline-flex items-baseline gap-1 font-semibold leading-tight text-foreground">
-              <span>{support.sinceVersion}</span>
-              <span class="text-[9px] uppercase tracking-wide text-muted-foreground">Since</span>
-            </span>
+          <dl class="grid gap-1 text-right text-[10px] text-muted-foreground">
+            <div class="flex items-baseline justify-end gap-1">
+              <dt class="text-[9px] uppercase tracking-wide">Since</dt>
+              <dd class="text-[11px] font-semibold leading-tight text-foreground">{support.sinceVersion}</dd>
+            </div>
             {support.lastVersion && (
-              <span class="inline-flex items-baseline gap-1 font-semibold leading-tight text-foreground">
-                <span>{support.lastVersion}</span>
-                <span class="text-[9px] uppercase tracking-wide text-muted-foreground">Last</span>
-              </span>
+              <div class="flex items-baseline justify-end gap-1">
+                <dt class="text-[9px] uppercase tracking-wide">Last</dt>
+                <dd class="text-[11px] font-semibold leading-tight text-foreground">{support.lastVersion}</dd>
+              </div>
             )}
-          </div>
+          </dl>
         </div>
 
         {support.notes && (
