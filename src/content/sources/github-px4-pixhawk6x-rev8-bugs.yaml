@@ -1,0 +1,8 @@
+id: github-px4-pixhawk6x-rev8-bugs
+title: "Pixhawk 6x Rev8 Bugs"
+publisher: PX4 Autopilot Issue Tracker
+url: https://github.com/PX4/PX4-Autopilot/issues/23514
+date: "2024-08-07"
+retrieved: "2025-01-16"
+language: en
+notes: "Community report documenting TELEM1, RC input, and motor output failures on Pixhawk 6X Rev8 hardware with PX4 1.14.x firmware."

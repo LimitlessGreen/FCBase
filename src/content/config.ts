@@ -281,6 +281,7 @@ const controllersCollection = defineCollection({
 
 export type ControllerData = z.infer<typeof controllerSchema>;
 export type HardwareRevision = z.infer<typeof hardwareRevisionSchema>;
+export type KnownIssue = z.infer<typeof knownIssueSchema>;
 type RevisionOverrides = z.infer<typeof hardwareRevisionOverridesSchema>;
 type ControllerSensors = ControllerData['sensors'];
 type ControllerIo = ControllerData['io'];
@@ -612,6 +613,7 @@ const sensorsCollection = defineCollection({
     }).optional(),
     sources: z.array(z.string()).optional(),
     notes: z.string().optional(),
+    known_issues: z.array(knownIssueSchema).optional(),
   }),
 });
 
