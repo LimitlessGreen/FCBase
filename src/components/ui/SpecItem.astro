@@ -9,7 +9,8 @@ interface Props extends HTMLAttributes<'div'> {
 }
 
 const { icon: Icon, label, value, iconClass = 'text-muted-foreground', class: className, ...rest } = Astro.props;
-const displayValue = value ?? '—';
+const hasValueSlot = Astro.slots.has('value');
+const displayValue = hasValueSlot ? null : value ?? '—';
 ---
 
 <div class:list={['flex items-start gap-3 group', className]} {...rest}>
@@ -23,7 +24,7 @@ const displayValue = value ?? '—';
       {label}
     </div>
     <div class="text-sm font-semibold text-foreground break-words leading-tight">
-      {displayValue}
+      {hasValueSlot ? <slot name="value" /> : displayValue}
     </div>
   </div>
 </div>

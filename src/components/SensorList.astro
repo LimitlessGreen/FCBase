@@ -7,11 +7,13 @@
 import StatusBadge from '@/components/ui/StatusBadge.astro';
 import { getBasePath } from '@/lib/paths';
 import type { DefaultVariant } from '@/lib/badge-styles';
+import ResourceLinkList, { type ResourceLink } from '@/components/ResourceLinkList.astro';
 
 interface Sensor {
   id: string;
   name: string;
   instances?: number;
+  links?: ResourceLink[];
 }
 
 interface Props {
@@ -30,25 +32,33 @@ const sensorBadgeStatus: DefaultVariant = 'info';
 ---
 
 {sensors.length > 0 && (
-  <div class={`flex flex-wrap gap-2 ${className || ''}`}>
+  <div class={`flex flex-wrap gap-3 ${className || ''}`}>
     {sensors.map((sensor) => {
-      const displayText = sensor.instances && sensor.instances > 1 
-        ? `${sensor.name} ×${sensor.instances}` 
+      const displayText = sensor.instances && sensor.instances > 1
+        ? `${sensor.name} ×${sensor.instances}`
         : sensor.name;
-      
-      return linkable ? (
-        <a 
-          href={`${basePath}/sensors/${sensor.id}`}
-          class="inline-block transition-transform hover:scale-105"
-        >
-          <StatusBadge variant="default" status={sensorBadgeStatus} size={size}>
-            {displayText}
-          </StatusBadge>
-        </a>
-      ) : (
-        <StatusBadge variant="default" status={sensorBadgeStatus} size={size}>
-          {displayText}
-        </StatusBadge>
+
+      return (
+        <div class="flex items-center gap-2" data-sensor-id={sensor.id} key={sensor.id}>
+          {linkable ? (
+            <a
+              href={`${basePath}/sensors/${sensor.id}`}
+              class="inline-flex transition-transform hover:scale-105"
+            >
+              <StatusBadge variant="default" status={sensorBadgeStatus} size={size}>
+                {displayText}
+              </StatusBadge>
+            </a>
+          ) : (
+            <StatusBadge variant="default" status={sensorBadgeStatus} size={size}>
+              {displayText}
+            </StatusBadge>
+          )}
+
+          {Array.isArray(sensor.links) && sensor.links.length > 0 && (
+            <ResourceLinkList links={sensor.links} size="xs" class="gap-1.5" />
+          )}
+        </div>
       );
     })}
   </div>

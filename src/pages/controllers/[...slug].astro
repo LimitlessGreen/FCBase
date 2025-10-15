@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/Badge';
 import { buttonVariants } from '@/components/ui/Button';
 import StatusBadge from '@/components/ui/StatusBadge.astro';
 import SpecItem from '@/components/ui/SpecItem.astro';
+import ResourceLinkList from '@/components/ResourceLinkList.astro';
 import ProfessionalTable from '@/components/table/ProfessionalTable.astro';
 import TableSection from '@/components/table/TableSection.astro';
 import TableRow from '@/components/table/TableRow.astro';
@@ -52,6 +53,14 @@ import {
 import { getBasePath, getSiteUrl } from '@/lib/paths';
 import { Picture } from 'astro:assets';
 
+type ResourceKind = 'datasheet' | 'ardupilot' | 'px4' | 'hardware';
+
+type ResourceLink = {
+  kind: ResourceKind;
+  url: string;
+  title: string;
+};
+
 export async function getStaticPaths() {
   const controllers = await getCollection('controllers');
   return controllers.map((controller) => ({
@@ -84,19 +93,85 @@ const manufacturer = data.brand ? manufacturers.get(data.brand) ?? null : null;
 const manufacturerName = getManufacturerName(manufacturer, data.brand);
 const mcu = data.mcu ? await getEntry('mcu', data.mcu) : null;
 const firmwareMap = await getFirmwareMap();
-const firmware = data.firmware_support.map((fw) => {
-  const entry = firmwareMap.get(fw.id);
-  return { ...fw, name: entry?.data.title || entry?.data.name || fw.id };
-});
 
 const revisionVariants = buildRevisionVariants(data);
 
 // Use data-utils for sensor deduplication
 const uniqueSensorIds = extractUniqueSensorIds(revisionVariants);
 const sensorsMap = await getSensorsMap();
+const sourcesMap = await getSourcesMap();
+
+type SourceEntry = {
+  id: string;
+  url: string;
+  title: string;
+  type: string;
+  publisher: string;
+};
+
+const normalizeSourceEntries = (sourceIds: string[] | undefined): SourceEntry[] => {
+  if (!Array.isArray(sourceIds)) return [];
+
+  return sourceIds
+    .map((sourceId) => {
+      const entry = sourcesMap.get(sourceId);
+      if (!entry?.data) return null;
+
+      const data = entry.data as {
+        url?: string | null;
+        title?: string | null;
+        type?: string | null;
+        publisher?: string | null;
+      };
+
+      if (!data.url) return null;
+
+      return {
+        id: sourceId,
+        url: data.url,
+        title: data.title ?? sourceId,
+        type: (data.type ?? '').toString().toLowerCase(),
+        publisher: (data.publisher ?? '').toString().toLowerCase(),
+      };
+    })
+    .filter((entry): entry is SourceEntry => Boolean(entry));
+};
+
+const matchesResourceKind = (source: SourceEntry, kind: ResourceKind): boolean => {
+  const haystack = `${source.id} ${source.type} ${source.publisher} ${source.title}`.toLowerCase();
+
+  switch (kind) {
+    case 'datasheet':
+      return haystack.includes('datasheet');
+    case 'ardupilot':
+      return haystack.includes('ardupilot');
+    case 'px4':
+      return haystack.includes('px4');
+    case 'hardware':
+      return (
+        haystack.includes('hardware') ||
+        haystack.includes('manufacturer') ||
+        haystack.includes('product') ||
+        haystack.includes('reference')
+      );
+    default:
+      return false;
+  }
+};
+
+const resolveResourceLink = (
+  entries: SourceEntry[],
+  kind: ResourceKind
+): ResourceLink | null => {
+  const entry = entries.find((source) => matchesResourceKind(source, kind));
+  if (!entry) return null;
+
+  return { kind, url: entry.url, title: entry.title };
+};
+
 const sensorMetadataMap = new Map<
   string,
-  { name: string; issues: KnownIssue[] }
+  { name: string; issues: KnownIssue[]; links: ResourceLink[] }
 >();
 const sensorNameMap = new Map<string, string>();
 
@@ -107,7 +182,26 @@ const registerSensorMetadata = (sensorId: string) => {
     const issues = Array.isArray(entry?.data.known_issues)
       ? entry.data.known_issues
       : [];
-    sensorMetadataMap.set(sensorId, { name, issues });
+    const links: ResourceLink[] = [];
+
+    const datasheetUrl = entry?.data.datasheet?.url ?? null;
+    if (datasheetUrl) {
+      links.push({ kind: 'datasheet', url: datasheetUrl, title: `${name} datasheet` });
+    }
+
+    const sourceEntries = normalizeSourceEntries(entry?.data.sources);
+    const seenKinds = new Set<ResourceKind>(links.map((link) => link.kind));
+
+    (['ardupilot', 'px4', 'hardware'] as ResourceKind[]).forEach((kind) => {
+      if (seenKinds.has(kind)) return;
+      const link = resolveResourceLink(sourceEntries, kind);
+      if (link) {
+        links.push(link);
+        seenKinds.add(kind);
+      }
+    });
+
+    sensorMetadataMap.set(sensorId, { name, issues, links });
     sensorNameMap.set(sensorId, name);
   }
 
@@ -117,8 +211,6 @@ const registerSensorMetadata = (sensorId: string) => {
 uniqueSensorIds.forEach((sensorId) => {
   registerSensorMetadata(sensorId);
 });
-
-const sourcesMap = await getSourcesMap();
 
 const revisionVariantsWithSensors = revisionVariants.map((variant) => {
   const revision = variant.revision;
@@ -139,10 +231,18 @@ const revisionVariantsWithSensors = revisionVariants.map((variant) => {
     });
   });
 
+  const enrichSensors = <T extends { id: string }>(
+    sensors: T[] | undefined
+  ) =>
+    mapSensorsWithNames(sensors, sensorNameMap).map((sensor) => ({
+      ...sensor,
+      links: sensorMetadataMap.get(sensor.id)?.links ?? [],
+    }));
+
   const sensorDetails = {
-    imu: mapSensorsWithNames(variant.spec.sensors?.imu, sensorNameMap),
-    barometer: mapSensorsWithNames(variant.spec.sensors?.barometer, sensorNameMap),
-    magnetometer: mapSensorsWithNames(variant.spec.sensors?.magnetometer, sensorNameMap),
+    imu: enrichSensors(variant.spec.sensors?.imu),
+    barometer: enrichSensors(variant.spec.sensors?.barometer),
+    magnetometer: enrichSensors(variant.spec.sensors?.magnetometer),
   };
 
   return {
@@ -209,6 +309,50 @@ const productLdJson = JSON.stringify(productLd, null, 2);
 
 const normalizedEditPath = editPath.replace(/^\/+/, '');
 const editUrl = normalizedEditPath ? `${GITHUB_EDIT_BASE_URL}/${normalizedEditPath}` : null;
+
+const controllerSourceEntries = normalizeSourceEntries(data.sources);
+const controllerArdupilotLink = resolveResourceLink(controllerSourceEntries, 'ardupilot');
+const controllerPx4Link = resolveResourceLink(controllerSourceEntries, 'px4');
+const controllerHardwareLink = resolveResourceLink(controllerSourceEntries, 'hardware');
+const controllerDatasheetLink = resolveResourceLink(controllerSourceEntries, 'datasheet');
+
+const controllerResourceLinks = [
+  controllerDatasheetLink,
+  controllerArdupilotLink,
+  controllerPx4Link,
+  controllerHardwareLink,
+].filter((link): link is ResourceLink => Boolean(link));
+
+const mcuSourceEntries = mcu ? normalizeSourceEntries(mcu.data.sources) : [];
+const mcuResourceLinks = [
+  mcu?.data.datasheet?.url
+    ? ({
+        kind: 'datasheet',
+        url: mcu.data.datasheet.url,
+        title: mcu.data.datasheet.title ?? `${mcuName} datasheet`,
+      } satisfies ResourceLink)
+    : null,
+  resolveResourceLink(mcuSourceEntries, 'hardware'),
+  resolveResourceLink(mcuSourceEntries, 'ardupilot'),
+  resolveResourceLink(mcuSourceEntries, 'px4'),
+].filter((link): link is ResourceLink => Boolean(link));
+
+const firmwareDocMap = new Map<string, string>();
+if (controllerArdupilotLink) {
+  firmwareDocMap.set('ardupilot', controllerArdupilotLink.url);
+}
+if (controllerPx4Link) {
+  firmwareDocMap.set('px4', controllerPx4Link.url);
+}
+
+const firmware = data.firmware_support.map((fw) => {
+  const entry = firmwareMap.get(fw.id);
+  return {
+    ...fw,
+    name: entry?.data.title || entry?.data.name || fw.id,
+    docUrl: firmwareDocMap.get(fw.id) ?? null,
+  };
+});
 
 const countPeripheralsByType = (type: string) =>
   data.io.peripherals?.reduce((total, peripheral) => {
@@ -649,12 +793,23 @@ const hasLinkItems = linkItems.length > 0;
               <h3 class="text-sm uppercase tracking-wide font-bold text-foreground mb-4 pb-2 border-b border-border/40">Key Specifications</h3>
               <div class="space-y-4">
                 {/* MCU */}
-                <SpecItem 
-                  icon={Cpu} 
-                  label="MCU" 
-                  value={mcuName}
-                  iconClass="text-muted-foreground"
-                />
+                <SpecItem icon={Cpu} label="MCU" iconClass="text-muted-foreground">
+                  <div slot="value" class="flex flex-wrap items-center gap-2">
+                    {mcu?.id ? (
+                      <a
+                        href={`${basePath}/mcu/${mcu.id}`}
+                        class="text-primary hover:underline font-semibold"
+                      >
+                        {mcuName}
+                      </a>
+                    ) : (
+                      <span>{mcuName ?? '—'}</span>
+                    )}
+                    {mcuResourceLinks.length > 0 && (
+                      <ResourceLinkList links={mcuResourceLinks} size="xs" class="gap-1.5" />
+                    )}
+                  </div>
+                </SpecItem>
                 
                 {/* Mounting */}
                 <SpecItem 
@@ -699,17 +854,40 @@ const hasLinkItems = linkItems.length > 0;
                   Firmware Support
                 </div>
                 <div class="flex flex-wrap gap-2">
-                  {firmware.map((fw) => (
-                    <StatusBadge 
-                      key={fw.id}
-                      variant="firmware" 
-                      status={fw.status}
-                      size="sm"
-                    >
-                      {fw.name}
-                    </StatusBadge>
-                  ))}
+                  {firmware.map((fw) => {
+                    const badge = (
+                      <StatusBadge variant="firmware" status={fw.status} size="sm">
+                        {fw.name}
+                      </StatusBadge>
+                    );
+
+                    return fw.docUrl ? (
+                      <a
+                        href={fw.docUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="inline-flex"
+                        key={fw.id}
+                        title={`Open ${fw.name} hardware documentation`}
+                      >
+                        {badge}
+                      </a>
+                    ) : (
+                      <span key={fw.id} class="inline-flex">
+                        {badge}
+                      </span>
+                    );
+                  })}
                 </div>
+              </div>
+            )}
+
+            {controllerResourceLinks.length > 0 && (
+              <div class="pt-4 border-t border-border/40">
+                <div class="text-xs uppercase tracking-wide font-semibold text-muted-foreground mb-3">
+                  Reference Docs
+                </div>
+                <ResourceLinkList links={controllerResourceLinks} size="sm" class="gap-2" />
               </div>
             )}
 
@@ -824,12 +1002,29 @@ const hasLinkItems = linkItems.length > 0;
             <tbody>
               <TableRow2Col
                 label1="MCU"
-                value1={mcuName}
                 label2="Mounting"
                 value2={formattedMounting}
                 mono1
                 mono2
-              />
+              >
+                <Fragment slot="value1">
+                  <div class="flex flex-wrap items-center gap-2">
+                    {mcu?.id ? (
+                      <a
+                        href={`${basePath}/mcu/${mcu.id}`}
+                        class="text-primary hover:underline font-semibold"
+                      >
+                        {mcuName}
+                      </a>
+                    ) : (
+                      <span>{mcuName ?? '—'}</span>
+                    )}
+                    {mcuResourceLinks.length > 0 && (
+                      <ResourceLinkList links={mcuResourceLinks} size="xs" class="gap-1.5" />
+                    )}
+                  </div>
+                </Fragment>
+              </TableRow2Col>
               <TableRow2Col
                 label1="Power"
                 value1={powerSummary}
@@ -1014,12 +1209,34 @@ const hasLinkItems = linkItems.length > 0;
                           <tbody>
                             <TableRow2Col
                               label1="MCU"
-                              value1={variantMcuLabel}
                               label2="Mounting"
                               value2={formatMounting(variant.spec.mounting ?? data.mounting)}
                               mono1
                               mono2
-                            />
+                            >
+                              <Fragment slot="value1">
+                                <div class="flex flex-wrap items-center gap-2">
+                                  {(!variant.spec.mcu || variant.spec.mcu === data.mcu) && mcu?.id ? (
+                                    <a
+                                      href={`${basePath}/mcu/${mcu.id}`}
+                                      class="text-primary hover:underline font-semibold"
+                                    >
+                                      {variantMcuLabel}
+                                    </a>
+                                  ) : (
+                                    <span>{variantMcuLabel}</span>
+                                  )}
+                                  {(!variant.spec.mcu || variant.spec.mcu === data.mcu) &&
+                                    mcuResourceLinks.length > 0 && (
+                                      <ResourceLinkList
+                                        links={mcuResourceLinks}
+                                        size="xs"
+                                        class="gap-1.5"
+                                      />
+                                    )}
+                                </div>
+                              </Fragment>
+                            </TableRow2Col>
                             {dimensions && (
                               <TableRow2Col
                                 label1="Dimensions"
@@ -1348,7 +1565,8 @@ const hasLinkItems = linkItems.length > 0;
                                     sensors={variant.sensorDetails.imu.map((s) => ({
                                       id: s.id,
                                       name: s.name ?? s.id,
-                                      instances: s.count
+                                      instances: s.count,
+                                      links: s.links,
                                     }))}
                                     linkable={true}
                                     size="sm"
@@ -1361,7 +1579,8 @@ const hasLinkItems = linkItems.length > 0;
                                     sensors={variant.sensorDetails.barometer.map((s) => ({
                                       id: s.id,
                                       name: s.name ?? s.id,
-                                      instances: s.count
+                                      instances: s.count,
+                                      links: s.links,
                                     }))}
                                     linkable={true}
                                     size="sm"
@@ -1374,7 +1593,8 @@ const hasLinkItems = linkItems.length > 0;
                                     sensors={variant.sensorDetails.magnetometer.map((s) => ({
                                       id: s.id,
                                       name: s.name ?? s.id,
-                                      instances: s.count
+                                      instances: s.count,
+                                      links: s.links,
                                     }))}
                                     linkable={true}
                                     size="sm"
