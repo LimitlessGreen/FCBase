@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import ControllerCard from '@/components/cards/ControllerCard.astro';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/Tabs';
 import { createControllerCardModel } from '@/lib/controller-card-model';
 import MainLayout from '@/layouts/MainLayout.astro';
 import { getBasePath } from '@/lib/paths';
@@ -53,65 +54,164 @@ const basePath = getBasePath();
 >
     <div class="container py-8">
       <!-- Header -->
-      <div class="mb-10">
-        <nav class="mb-4 flex items-center gap-2 text-sm text-muted-foreground">
-          <a href={`${basePath}/`} class="hover:text-foreground transition-colors">Home</a>
-          <span>/</span>
-          <span class="text-foreground">Controllers</span>
-        </nav>
+      <nav class="mb-4 flex items-center gap-2 text-sm text-muted-foreground">
+        <a href={`${basePath}/`} class="hover:text-foreground transition-colors">Home</a>
+        <span>/</span>
+        <span class="text-foreground">Controllers</span>
+      </nav>
 
-        <h1 class="text-4xl font-bold tracking-tight mb-3">Flight Controllers</h1>
-        <p class="text-lg text-muted-foreground">
-          Explore {totalControllers} flight controllers organised by manufacturer.
-        </p>
-      </div>
-
-      <div class="space-y-12">
-        {controllerGroups.map((group) => (
-          <section id={`manufacturer-${group.manufacturer.id}`} class="space-y-4" aria-labelledby={`manufacturer-${group.manufacturer.id}-heading`}>
-            <div class="flex flex-wrap items-baseline justify-between gap-2">
-              <h2 id={`manufacturer-${group.manufacturer.id}-heading`} class="text-2xl font-semibold tracking-tight">
-                {group.manufacturer.data.name}
-              </h2>
-              <span class="text-sm text-muted-foreground">
-                {group.controllers.length} {group.controllers.length === 1 ? 'controller' : 'controllers'}
-              </span>
-            </div>
-            {group.manufacturer.data.description && (
-              <p class="text-sm text-muted-foreground max-w-3xl">
-                {group.manufacturer.data.description}
-              </p>
-            )}
-            <ul class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-              {group.controllers.map((controller) => (
-                <li key={controller.id}>
-                  <ControllerCard {...controller} basePath={basePath} />
-                </li>
-              ))}
-            </ul>
-          </section>
-        ))}
-
-        {unassignedControllers.length > 0 && (
-          <section class="space-y-4" aria-labelledby="unassigned-heading">
-            <div class="flex flex-wrap items-baseline justify-between gap-2">
-              <h2 id="unassigned-heading" class="text-2xl font-semibold tracking-tight">Other controllers</h2>
-              <span class="text-sm text-muted-foreground">
-                {unassignedControllers.length} {unassignedControllers.length === 1 ? 'controller' : 'controllers'}
-              </span>
-            </div>
-            <p class="text-sm text-muted-foreground max-w-3xl">
-              These controllers are not currently linked to a registered manufacturer.
+      <Tabs client:load defaultValue="grid" class="space-y-10">
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div class="space-y-3">
+            <h1 class="text-4xl font-bold tracking-tight">Flight Controllers</h1>
+            <p class="text-lg text-muted-foreground">
+              Explore {totalControllers} flight controllers organised by manufacturer.
             </p>
-            <ul class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-              {unassignedControllers.map((controller) => (
-                <li key={controller.id}>
-                  <ControllerCard {...controller} basePath={basePath} />
-                </li>
-              ))}
-            </ul>
-          </section>
-        )}
-      </div>
+          </div>
+          <div class="flex flex-col items-start gap-2 sm:items-end">
+            <span id="view-mode-label" class="sr-only">Select controller view</span>
+            <TabsList aria-labelledby="view-mode-label">
+              <TabsTrigger value="grid">Grid view</TabsTrigger>
+              <TabsTrigger value="compact">Compact view</TabsTrigger>
+            </TabsList>
+          </div>
+        </div>
+
+        <TabsContent value="grid" class="mt-0">
+          <div class="space-y-12">
+            {controllerGroups.map((group) => (
+              <section
+                id={`manufacturer-${group.manufacturer.id}`}
+                class="space-y-4"
+                aria-labelledby={`manufacturer-${group.manufacturer.id}-heading`}
+              >
+                <div class="flex flex-wrap items-baseline justify-between gap-2">
+                  <h2
+                    id={`manufacturer-${group.manufacturer.id}-heading`}
+                    class="text-2xl font-semibold tracking-tight"
+                  >
+                    {group.manufacturer.data.name}
+                  </h2>
+                  <span class="text-sm text-muted-foreground">
+                    {group.controllers.length}{' '}
+                    {group.controllers.length === 1 ? 'controller' : 'controllers'}
+                  </span>
+                </div>
+                {group.manufacturer.data.description && (
+                  <p class="text-sm text-muted-foreground max-w-3xl">
+                    {group.manufacturer.data.description}
+                  </p>
+                )}
+                <ul class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                  {group.controllers.map((controller) => (
+                    <li key={controller.id}>
+                      <ControllerCard {...controller} basePath={basePath} />
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            ))}
+
+            {unassignedControllers.length > 0 && (
+              <section class="space-y-4" aria-labelledby="unassigned-heading">
+                <div class="flex flex-wrap items-baseline justify-between gap-2">
+                  <h2 id="unassigned-heading" class="text-2xl font-semibold tracking-tight">
+                    Other controllers
+                  </h2>
+                  <span class="text-sm text-muted-foreground">
+                    {unassignedControllers.length}{' '}
+                    {unassignedControllers.length === 1 ? 'controller' : 'controllers'}
+                  </span>
+                </div>
+                <p class="text-sm text-muted-foreground max-w-3xl">
+                  These controllers are not currently linked to a registered manufacturer.
+                </p>
+                <ul class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                  {unassignedControllers.map((controller) => (
+                    <li key={controller.id}>
+                      <ControllerCard {...controller} basePath={basePath} />
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
+          </div>
+        </TabsContent>
+
+        <TabsContent value="compact" class="mt-0">
+          <div class="space-y-12">
+            {controllerGroups.map((group) => (
+              <section
+                id={`manufacturer-${group.manufacturer.id}-compact`}
+                class="space-y-4"
+                aria-labelledby={`manufacturer-${group.manufacturer.id}-compact-heading`}
+              >
+                <div class="flex flex-wrap items-baseline justify-between gap-2">
+                  <h2
+                    id={`manufacturer-${group.manufacturer.id}-compact-heading`}
+                    class="text-2xl font-semibold tracking-tight"
+                  >
+                    {group.manufacturer.data.name}
+                  </h2>
+                  <span class="text-sm text-muted-foreground">
+                    {group.controllers.length}{' '}
+                    {group.controllers.length === 1 ? 'controller' : 'controllers'}
+                  </span>
+                </div>
+                {group.manufacturer.data.description && (
+                  <p class="text-sm text-muted-foreground max-w-3xl">
+                    {group.manufacturer.data.description}
+                  </p>
+                )}
+                <div
+                  role="list"
+                  class="divide-y divide-[hsl(var(--border))] overflow-hidden rounded-lg border"
+                >
+                  {group.controllers.map((controller) => (
+                    <div key={controller.id} role="listitem" class="p-4 sm:p-5">
+                      <ControllerCard
+                        {...controller}
+                        basePath={basePath}
+                        variant="compact"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </section>
+            ))}
+
+            {unassignedControllers.length > 0 && (
+              <section class="space-y-4" aria-labelledby="unassigned-heading-compact">
+                <div class="flex flex-wrap items-baseline justify-between gap-2">
+                  <h2 id="unassigned-heading-compact" class="text-2xl font-semibold tracking-tight">
+                    Other controllers
+                  </h2>
+                  <span class="text-sm text-muted-foreground">
+                    {unassignedControllers.length}{' '}
+                    {unassignedControllers.length === 1 ? 'controller' : 'controllers'}
+                  </span>
+                </div>
+                <p class="text-sm text-muted-foreground max-w-3xl">
+                  These controllers are not currently linked to a registered manufacturer.
+                </p>
+                <div
+                  role="list"
+                  class="divide-y divide-[hsl(var(--border))] overflow-hidden rounded-lg border"
+                >
+                  {unassignedControllers.map((controller) => (
+                    <div key={controller.id} role="listitem" class="p-4 sm:p-5">
+                      <ControllerCard
+                        {...controller}
+                        basePath={basePath}
+                        variant="compact"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+          </div>
+        </TabsContent>
+      </Tabs>
     </div>
 </MainLayout>
