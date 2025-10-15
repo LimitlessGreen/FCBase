@@ -24,6 +24,9 @@ interface ComplianceEntry {
   url?: string | null;
 }
 
+type SupportBadge = { id: string; label: string };
+type TimelineEntry = { id: string; label: string; value: string };
+
 interface Props {
   id: string;
   slug: string;
@@ -64,7 +67,7 @@ const {
 const variant = variantProp;
 const isCompact = variant === 'compact';
 const showImage = isCompact ? false : showImageProp;
-const cardClass = isCompact ? 'p-4 sm:p-5' : undefined;
+const cardClass = isCompact ? 'p-3.5 sm:p-4' : 'pb-4';
 
 const targetSlug = slug || id;
 
@@ -83,6 +86,15 @@ const supportStatusLabels: Record<SupportStatus, string> = {
 
 const supportLevelLabel = supportLevelLabels[support.level];
 const supportStatusLabel = supportStatusLabels[support.status];
+const supportBadges: SupportBadge[] = [];
+
+if (supportLevelLabel) {
+  supportBadges.push({ id: 'level', label: supportLevelLabel });
+}
+
+if (supportStatusLabel) {
+  supportBadges.push({ id: 'status', label: supportStatusLabel });
+}
 
 const revisionCount = hardwareRevisions.length;
 const complianceCount = compliance.length;
@@ -92,9 +104,16 @@ const remainingRevisions = Math.max(0, revisionCount - trimmedRevisions.length);
 
 const trimmedCompliance = compliance.slice(0, 4);
 const remainingCompliance = Math.max(0, complianceCount - trimmedCompliance.length);
+const supportTimeline: TimelineEntry[] = [
+  { id: 'since', label: 'Since', value: support.sinceVersion },
+];
+
+if (support.lastVersion) {
+  supportTimeline.push({ id: 'last', label: 'Last', value: support.lastVersion });
+}
 
 const href = `${basePath}/transmitters/${targetSlug}`;
-const shouldShowSupportBadges = Boolean(supportLevelLabel || supportStatusLabel);
+const shouldShowSupportBadges = supportBadges.length > 0;
 const hasFallbackIcon = !image?.src;
 const showBadgeFooter = !isCompact && !showImage && shouldShowSupportBadges;
 ---
@@ -111,30 +130,28 @@ const showBadgeFooter = !isCompact && !showImage && shouldShowSupportBadges;
   {showImage && (
     <Fragment slot="imageOverlay">
       <div class="pointer-events-none relative h-full w-full">
-        <div class="absolute inset-0 bg-gradient-to-t from-black/55 via-black/25 to-transparent" aria-hidden="true" />
+        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent" aria-hidden="true" />
         <div class="relative flex h-full flex-col justify-between p-2">
-          <div class="max-w-[65%] space-y-1">
-            <h3 class="rounded-sm border bg-background/95 px-2 py-1 text-sm font-bold leading-tight text-foreground shadow transition-colors group-hover:text-primary">
+          <div class="max-w-[70%] space-y-1">
+            <h3 class="rounded-sm border bg-background/95 px-1.5 py-0.5 text-xs font-semibold leading-snug text-foreground shadow-sm transition-colors group-hover:text-primary">
               {title}
             </h3>
             {manufacturer && (
-              <p class="inline-flex rounded-sm border bg-background/95 px-2 py-0.5 text-xs font-medium text-muted-foreground shadow">
+              <p class="inline-flex rounded-sm border bg-background/95 px-1.5 py-0.5 text-[11px] font-medium text-muted-foreground shadow-sm">
                 {manufacturer}
               </p>
             )}
           </div>
           {shouldShowSupportBadges && (
             <div class="flex flex-wrap justify-end gap-1.5">
-              {supportLevelLabel && (
-                <span class="inline-flex items-center rounded-sm border bg-background/90 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-foreground shadow">
-                  {supportLevelLabel}
+              {supportBadges.map((badge) => (
+                <span
+                  key={badge.id}
+                  class="inline-flex items-center rounded-sm border bg-background/90 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-foreground shadow-sm"
+                >
+                  {badge.label}
                 </span>
-              )}
-              {supportStatusLabel && (
-                <span class="inline-flex items-center rounded-sm border bg-background/90 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-foreground shadow">
-                  {supportStatusLabel}
-                </span>
-              )}
+              ))}
             </div>
           )}
         </div>
@@ -165,39 +182,37 @@ const showBadgeFooter = !isCompact && !showImage && shouldShowSupportBadges;
 
   <Fragment slot="specs">
     {isCompact ? (
-      <div class="space-y-2.5 text-[11px]">
-        <div class="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-2">
-          <div class="flex flex-wrap gap-1.5">
-            {supportLevelLabel && (
-              <span class="inline-flex items-center rounded-sm border px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide">
-                {supportLevelLabel}
-              </span>
-            )}
-            {supportStatusLabel && (
-              <span class="inline-flex items-center rounded-sm border px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide">
-                {supportStatusLabel}
-              </span>
-            )}
-          </div>
-          <dl class="grid gap-1 text-right text-[10px] text-muted-foreground">
-            <div class="flex items-baseline justify-end gap-1">
-              <dt class="text-[9px] uppercase tracking-wide">Since</dt>
-              <dd class="text-[11px] font-semibold leading-tight text-foreground">{support.sinceVersion}</dd>
+      <div class="space-y-2 text-[10px] leading-snug">
+        <div class="flex flex-wrap items-start justify-between gap-2">
+          {supportBadges.length > 0 && (
+            <div class="flex flex-wrap gap-1.5">
+              {supportBadges.map((badge) => (
+                <span
+                  key={badge.id}
+                  class="inline-flex items-center rounded-sm border px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide"
+                >
+                  {badge.label}
+                </span>
+              ))}
             </div>
-            {support.lastVersion && (
-              <div class="flex items-baseline justify-end gap-1">
-                <dt class="text-[9px] uppercase tracking-wide">Last</dt>
-                <dd class="text-[11px] font-semibold leading-tight text-foreground">{support.lastVersion}</dd>
-              </div>
-            )}
-          </dl>
+          )}
+          {supportTimeline.length > 0 && (
+            <dl class="flex flex-wrap justify-end gap-2 text-right text-[9px] uppercase tracking-wide text-muted-foreground">
+              {supportTimeline.map((entry) => (
+                <div key={entry.id} class="flex items-baseline gap-1">
+                  <dt>{entry.label}</dt>
+                  <dd class="text-sm font-semibold leading-none text-foreground">{entry.value}</dd>
+                </div>
+              ))}
+            </dl>
+          )}
         </div>
 
         {support.notes && (
-          <p class="text-[11px] leading-snug text-muted-foreground">{support.notes}</p>
+          <p class="text-[10px] leading-snug text-muted-foreground">{support.notes}</p>
         )}
 
-        <div class="flex flex-col gap-2.5">
+        <div class="flex flex-col gap-2">
           {revisionCount > 0 && (
             <div class="space-y-1">
               <span class="text-[9px] font-semibold uppercase tracking-wide text-muted-foreground">Hardware variants</span>
@@ -242,94 +257,100 @@ const showBadgeFooter = !isCompact && !showImage && shouldShowSupportBadges;
         </div>
       </div>
     ) : (
-      <>
-        <div class="flex items-center justify-between gap-3 border-t pt-2 text-[11px]">
-          <div class="flex flex-wrap gap-3">
-            <div class="min-w-[72px]">
-              <div class="text-sm font-bold leading-tight">{support.sinceVersion}</div>
-              <div class="text-[9px] uppercase tracking-wide text-muted-foreground">Since</div>
+      <div class="space-y-2.5 text-[10px] leading-snug">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          {supportBadges.length > 0 && (
+            <div class="flex flex-wrap gap-1.5 text-[10px] uppercase tracking-wide text-muted-foreground">
+              {supportBadges.map((badge) => (
+                <span
+                  key={badge.id}
+                  class="inline-flex items-center rounded-sm border px-1.5 py-0.5 font-semibold"
+                >
+                  {badge.label}
+                </span>
+              ))}
             </div>
-            {support.lastVersion && (
-              <div class="min-w-[72px]">
-                <div class="text-sm font-bold leading-tight">{support.lastVersion}</div>
-                <div class="text-[9px] uppercase tracking-wide text-muted-foreground">Last</div>
-              </div>
-            )}
-          </div>
-          <div class="flex flex-wrap gap-3">
-            {revisionCount > 0 && (
-              <div class="text-center">
-                <div class="text-sm font-bold leading-tight">{revisionCount}</div>
-                <div class="text-[9px] uppercase tracking-wide text-muted-foreground">Revisions</div>
-              </div>
-            )}
-            {complianceCount > 0 && (
-              <div class="text-center">
-                <div class="text-sm font-bold leading-tight">{complianceCount}</div>
-                <div class="text-[9px] uppercase tracking-wide text-muted-foreground">Compliance</div>
-              </div>
-            )}
-          </div>
+          )}
+          {supportTimeline.length > 0 && (
+            <dl class="flex flex-wrap justify-end gap-3 text-right text-[9px] uppercase tracking-wide text-muted-foreground">
+              {supportTimeline.map((entry) => (
+                <div key={entry.id} class="flex items-baseline gap-1">
+                  <dt>{entry.label}</dt>
+                  <dd class="text-base font-semibold leading-tight text-foreground">{entry.value}</dd>
+                </div>
+              ))}
+            </dl>
+          )}
         </div>
 
         {support.notes && (
-          <p class="text-xs leading-snug text-muted-foreground">{support.notes}</p>
+          <p class="text-sm leading-snug text-muted-foreground">{support.notes}</p>
         )}
 
-        {revisionCount > 0 && (
-          <div class="space-y-1 border-t pt-2">
-            <span class="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">Hardware variants</span>
-            <div class="flex flex-wrap gap-1.5">
-              {trimmedRevisions.map((revision) => (
-                <span key={revision.id} class="inline-flex items-center rounded-sm border px-1.5 py-0.5 text-[10px] font-medium">
-                  {revision.name}
-                </span>
-              ))}
-              {remainingRevisions > 0 && (
-                <span class="inline-flex items-center rounded-sm border bg-muted/40 px-1.5 py-0.5 text-[10px] font-semibold">
-                  +{remainingRevisions} more
-                </span>
-              )}
-            </div>
+        {(revisionCount > 0 || complianceCount > 0) && (
+          <div class="grid gap-2 sm:grid-cols-2">
+            {revisionCount > 0 && (
+              <div class="space-y-1.5 rounded-sm border px-2.5 py-2">
+                <div class="flex items-center justify-between text-[9px] uppercase tracking-wide text-muted-foreground">
+                  <span>Hardware variants</span>
+                  <span class="font-semibold text-muted-foreground/80">{revisionCount}</span>
+                </div>
+                <div class="flex flex-wrap gap-1.5">
+                  {trimmedRevisions.map((revision) => (
+                    <span
+                      key={revision.id}
+                      class="inline-flex items-center rounded-sm border px-1.5 py-0.5 text-[10px] font-medium"
+                    >
+                      {revision.name}
+                    </span>
+                  ))}
+                  {remainingRevisions > 0 && (
+                    <span class="inline-flex items-center rounded-sm border bg-muted/40 px-1.5 py-0.5 text-[10px] font-semibold">
+                      +{remainingRevisions} more
+                    </span>
+                  )}
+                </div>
+              </div>
+            )}
+            {complianceCount > 0 && (
+              <div class="space-y-1.5 rounded-sm border px-2.5 py-2">
+                <div class="flex items-center justify-between text-[9px] uppercase tracking-wide text-muted-foreground">
+                  <span>Compliance IDs</span>
+                  <span class="font-semibold text-muted-foreground/80">{complianceCount}</span>
+                </div>
+                <div class="flex flex-wrap gap-1.5">
+                  {trimmedCompliance.map((entry) => (
+                    <span
+                      key={entry.id}
+                      class="inline-flex items-center rounded-sm border px-1.5 py-0.5 text-[10px] font-semibold text-primary"
+                    >
+                      {entry.id}
+                    </span>
+                  ))}
+                  {remainingCompliance > 0 && (
+                    <span class="inline-flex items-center rounded-sm border bg-muted/40 px-1.5 py-0.5 text-[10px] font-semibold">
+                      +{remainingCompliance} more
+                    </span>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         )}
-
-        {complianceCount > 0 && (
-          <div class="space-y-1 border-t pt-2">
-            <span class="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">Compliance IDs</span>
-            <div class="flex flex-wrap gap-1.5">
-              {trimmedCompliance.map((entry) => (
-                <span
-                  key={entry.id}
-                  class="inline-flex items-center rounded-sm border px-1.5 py-0.5 text-[10px] font-semibold text-primary"
-                >
-                  {entry.id}
-                </span>
-              ))}
-              {remainingCompliance > 0 && (
-                <span class="inline-flex items-center rounded-sm border bg-muted/40 px-1.5 py-0.5 text-[10px] font-semibold">
-                  +{remainingCompliance} more
-                </span>
-              )}
-            </div>
-          </div>
-        )}
-      </>
+      </div>
     )}
   </Fragment>
 
   {showBadgeFooter && (
     <Fragment slot="badges">
-      {supportLevelLabel && (
-        <span class="inline-flex items-center rounded-sm border bg-muted/40 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide">
-          {supportLevelLabel}
+      {supportBadges.map((badge) => (
+        <span
+          key={badge.id}
+          class="inline-flex items-center rounded-sm border bg-muted/40 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide"
+        >
+          {badge.label}
         </span>
-      )}
-      {supportStatusLabel && (
-        <span class="inline-flex items-center rounded-sm border bg-muted/40 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide">
-          {supportStatusLabel}
-        </span>
-      )}
+      ))}
     </Fragment>
   )}
 </BaseCard>

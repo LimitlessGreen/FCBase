@@ -50,7 +50,7 @@ const {
 const variant = variantProp;
 const isCompact = variant === 'compact';
 const showImage = isCompact ? false : showImageProp;
-const cardClass = isCompact ? 'p-4 sm:p-5' : undefined;
+const cardClass = isCompact ? 'p-3.5 sm:p-4' : 'pb-4';
 
 const mcuDisplay = mcu ? mcu.toUpperCase().replace(/^(STMICRO-|ATMEGA-)/, '') : 'UNKNOWN';
 const mountingDisplay = mounting
@@ -61,6 +61,12 @@ const mountingDisplay = mounting
 
 const firmwareBadges = firmwares.map((firmware) => firmware.toUpperCase());
 const href = `${basePath}/controllers/${id}`;
+const ioMetrics = [
+  { label: 'UART', value: uarts },
+  { label: 'CAN', value: can && can > 0 ? can : undefined },
+  { label: 'PWM', value: pwm },
+].filter((metric) => metric.value !== undefined);
+const featureFlags = [sdCard ? 'SD' : null, barometer ? 'Baro' : null].filter(Boolean);
 ---
 <BaseCard
   href={href}
@@ -75,13 +81,13 @@ const href = `${basePath}/controllers/${id}`;
   {showImage && (
     <Fragment slot="imageOverlay">
       <div class="pointer-events-none relative h-full w-full">
-        <div class="absolute inset-0 bg-gradient-to-t from-black/55 via-black/25 to-transparent" aria-hidden="true" />
-        <div class="absolute top-2 left-2 max-w-[65%] space-y-1">
-          <h3 class="rounded-sm border bg-background/95 px-2 py-1 text-sm font-bold leading-tight text-foreground shadow transition-colors group-hover:text-primary">
+        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent" aria-hidden="true" />
+        <div class="absolute top-2 left-2 max-w-[70%] space-y-1">
+          <h3 class="rounded-sm border bg-background/95 px-1.5 py-0.5 text-xs font-semibold leading-snug text-foreground shadow-sm transition-colors group-hover:text-primary">
             {title}
           </h3>
           {manufacturer && (
-            <p class="inline-flex rounded-sm border bg-background/95 px-2 py-0.5 text-xs font-medium text-muted-foreground shadow">
+            <p class="inline-flex rounded-sm border bg-background/95 px-1.5 py-0.5 text-[11px] font-medium text-muted-foreground shadow-sm">
               {manufacturer}
             </p>
           )}
@@ -89,7 +95,7 @@ const href = `${basePath}/controllers/${id}`;
         {firmwareBadges.length > 0 && (
           <div class="absolute top-2 right-2 flex flex-wrap justify-end gap-1.5">
             {firmwareBadges.map((label) => (
-              <span class="inline-flex items-center rounded-sm border bg-background/95 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider shadow">
+              <span class="inline-flex items-center rounded-sm border bg-background/95 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide shadow-sm">
                 {label}
               </span>
             ))}
@@ -101,10 +107,10 @@ const href = `${basePath}/controllers/${id}`;
 
   <Fragment slot="specs">
     {isCompact ? (
-      <div class="space-y-2.5 text-[11px]">
+      <div class="space-y-2 text-[10px] leading-snug">
         <div class="flex flex-wrap items-center justify-between gap-2">
           <div class="flex flex-wrap items-center gap-1.5">
-            <span class="inline-flex items-center rounded-sm border px-1.5 py-0.5 text-[9px] font-mono font-semibold uppercase tracking-wide">
+            <span class="inline-flex items-center rounded-sm border px-1.5 py-0.5 font-mono text-[9px] font-semibold uppercase tracking-wide">
               {mcuDisplay}
             </span>
             {mountingDisplay && (
@@ -113,75 +119,56 @@ const href = `${basePath}/controllers/${id}`;
               </span>
             )}
           </div>
-          <div class="flex items-center gap-2 text-[10px] text-muted-foreground">
-            {sdCard && <span class="inline-flex items-center gap-1 leading-tight"><span class="text-xs">✓</span>SD</span>}
-            {barometer && (
-              <span class="inline-flex items-center gap-1 leading-tight">
-                <span class="text-xs">✓</span>Baro
-              </span>
-            )}
-          </div>
-        </div>
-        <div class="flex flex-wrap items-center gap-3 text-[11px]">
-          {uarts !== undefined && (
-            <span class="inline-flex items-baseline gap-1 font-semibold leading-tight">
-              <span class="text-sm">{uarts}</span>
-              <span class="text-[9px] uppercase tracking-wide text-muted-foreground">UART</span>
-            </span>
-          )}
-          {can !== undefined && can > 0 && (
-            <span class="inline-flex items-baseline gap-1 font-semibold leading-tight">
-              <span class="text-sm">{can}</span>
-              <span class="text-[9px] uppercase tracking-wide text-muted-foreground">CAN</span>
-            </span>
-          )}
-          {pwm !== undefined && (
-            <span class="inline-flex items-baseline gap-1 font-semibold leading-tight">
-              <span class="text-sm">{pwm}</span>
-              <span class="text-[9px] uppercase tracking-wide text-muted-foreground">PWM</span>
-            </span>
+          {featureFlags.length > 0 && (
+            <div class="flex flex-wrap items-center gap-1.5 text-[9px] uppercase tracking-wide text-muted-foreground">
+              {featureFlags.map((flag) => (
+                <span key={flag} class="inline-flex items-center gap-1 rounded-sm border px-1 py-0.5 font-semibold">
+                  <span aria-hidden="true">•</span>
+                  {flag}
+                </span>
+              ))}
+            </div>
           )}
         </div>
+        {ioMetrics.length > 0 && (
+          <dl class="flex flex-wrap gap-3">
+            {ioMetrics.map((metric) => (
+              <div key={metric.label} class="flex items-baseline gap-1">
+                <dt class="text-[9px] uppercase tracking-wide text-muted-foreground">{metric.label}</dt>
+                <dd class="text-sm font-semibold leading-none text-foreground">{metric.value}</dd>
+              </div>
+            ))}
+          </dl>
+        )}
       </div>
     ) : (
-      <>
-        <div class="flex gap-1.5">
-          <span class="inline-flex items-center rounded-sm border px-1.5 py-0.5 text-[10px] font-mono font-bold">
+      <div class="space-y-2.5">
+        <div class="flex flex-wrap items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+          <span class="inline-flex items-center rounded-sm border px-1.5 py-0.5 font-mono text-[10px]">
             {mcuDisplay}
           </span>
           {mountingDisplay && (
-            <span class="inline-flex items-center rounded-sm border px-1.5 py-0.5 text-[10px] font-semibold">
+            <span class="inline-flex items-center rounded-sm border px-1.5 py-0.5 text-[10px]">
               {mountingDisplay}
             </span>
           )}
+          {featureFlags.map((flag) => (
+            <span key={flag} class="inline-flex items-center rounded-sm border px-1.5 py-0.5 text-[10px]">
+              {flag}
+            </span>
+          ))}
         </div>
-        <div class="flex items-center justify-between border-t pt-2 text-[11px]">
-          <div class="flex gap-3">
-            {uarts !== undefined && (
-              <div class="text-center">
-                <div class="font-bold">{uarts}</div>
-                <div class="text-[9px] text-muted-foreground">UART</div>
+        {ioMetrics.length > 0 && (
+          <dl class="grid grid-cols-[repeat(auto-fit,minmax(72px,1fr))] gap-2 text-center text-[10px] uppercase tracking-wide text-muted-foreground">
+            {ioMetrics.map((metric) => (
+              <div key={metric.label} class="rounded-sm border px-2 py-1">
+                <dd class="text-base font-semibold leading-tight text-foreground">{metric.value}</dd>
+                <dt>{metric.label}</dt>
               </div>
-            )}
-            {can !== undefined && can > 0 && (
-              <div class="text-center">
-                <div class="font-bold">{can}</div>
-                <div class="text-[9px] text-muted-foreground">CAN</div>
-              </div>
-            )}
-            {pwm !== undefined && (
-              <div class="text-center">
-                <div class="font-bold">{pwm}</div>
-                <div class="text-[9px] text-muted-foreground">PWM</div>
-              </div>
-            )}
-          </div>
-          <div class="flex gap-2 text-[11px] text-muted-foreground">
-            {sdCard && <span>✓ SD</span>}
-            {barometer && <span>✓ Baro</span>}
-          </div>
-        </div>
-      </>
+            ))}
+          </dl>
+        )}
+      </div>
     )}
   </Fragment>
 
@@ -190,8 +177,8 @@ const href = `${basePath}/controllers/${id}`;
       {firmwareBadges.map((label) => (
         <span
           key={label}
-          class={`inline-flex items-center rounded-sm border font-bold uppercase tracking-wider ${
-            isCompact ? 'px-1.5 py-0.5 text-[9px]' : 'px-2 py-0.5 text-[10px]'
+          class={`inline-flex items-center rounded-sm border font-semibold uppercase tracking-wide ${
+            isCompact ? 'px-1.5 py-0.5 text-[9px]' : 'px-1.5 py-0.5 text-[10px]'
           }`}
         >
           {label}
