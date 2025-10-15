@@ -130,6 +130,139 @@ io:
     - microsd
     connector: TF card slot
     notes: Core module integrates a TF/microSD card for high-rate logging.
+peripheral_ports:
+  - port: TELEM1
+    type: uart
+    default_use: Primary MAVLink telemetry
+    voltage: "3.3 V signal / 5 V @ 1.5 A peripheral power"
+    connector: JST GH BM06B-GHMG-TB
+    notes: Current-limited regulator powers high-draw telemetry radios or companion computers.
+  - port: TELEM2
+    type: uart
+    default_use: Secondary telemetry or RTK link
+    voltage: "3.3 V signal / 5 V supply"
+    connector: JST GH BM06B-GHMG-TB
+    notes: Full RTS/CTS UART mirroring PX4/ArduPilot telemetry pinouts.
+  - port: UART4
+    type: uart
+    default_use: Auxiliary payload UART
+    voltage: "3.3 V signal"
+    connector: JST GH BM06B-GHMG-TB
+    notes: Exposed on the baseboard for companion sensors, serial RC, or scripting engines.
+  - port: UART7
+    type: uart
+    default_use: Secondary expansion UART
+    voltage: "3.3 V signal"
+    connector: JST GH BM06B-GHMG-TB
+    notes: Provides additional serial expansion aligned with Pixhawk Autopilot Bus pinout.
+  - port: GPS1
+    type: gps
+    default_use: Primary GPS/compass/safety harness
+    voltage: "3.3 V signal / 5 V supply"
+    connector: JST GH BM10B-GHMG-TB
+    notes: Integrates safety switch, buzzer, and I2C compass wiring with the first GNSS receiver.
+  - port: GPS2
+    type: gps
+    default_use: Secondary GPS
+    voltage: "3.3 V signal / 5 V supply"
+    connector: JST GH BM06B-GHMG-TB
+    notes: Provides redundant GNSS interface or telemetry-grade UART with shared I2C lines.
+  - port: CAN1
+    type: can
+    default_use: DroneCAN peripheral bus
+    voltage: "Differential CAN / 5 V supply"
+    connector: JST GH BM04B-GHMG-TB
+    notes: Supports smart power modules, ESCs, and payload nodes with Pixhawk Autopilot Bus pinout.
+  - port: CAN2
+    type: can
+    default_use: Redundant DroneCAN bus
+    voltage: "Differential CAN / 5 V supply"
+    connector: JST GH BM04B-GHMG-TB
+    notes: Second CAN-FD channel for ESC networks or redundant sensors.
+  - port: I2C1
+    type: i2c
+    default_use: External sensor bus
+    voltage: "3.3 V"
+    connector: JST GH SM04B-GHMG-TB
+    notes: Primary I2C header for airspeed sensors or digital payloads.
+  - port: I2C2
+    type: i2c
+    default_use: Auxiliary I2C expansion
+    voltage: "3.3 V"
+    connector: JST GH SM04B-GHMG-TB
+    notes: Secondary external I2C header complementing GPS harness lines.
+  - port: I2C3 (GPS1 shared)
+    type: i2c
+    default_use: Compass bus via GPS1
+    voltage: "3.3 V"
+    connector: JST GH BM10B-GHMG-TB
+    notes: Shared SDA/SCL available on the primary GPS harness for magnetometers.
+  - port: I2C4 (GPS2 shared)
+    type: i2c
+    default_use: Secondary compass/airspeed bus
+    voltage: "3.3 V"
+    connector: JST GH BM06B-GHMG-TB
+    notes: Additional SDA/SCL breakout combined with the GPS2 connector.
+  - port: Analog IN 1 (3V3)
+    type: analog
+    default_use: Payload or battery monitoring
+    voltage: "0-3.3 V"
+    connector: JST GH SM04B-GHS-TB
+    notes: ADC channel for monitoring sensors or auxiliary battery voltages.
+  - port: Analog IN 2 (6V6)
+    type: analog
+    default_use: High-voltage analog sensing
+    voltage: "0-6.6 V"
+    connector: JST GH SM04B-GHS-TB
+    notes: 6.6 V tolerant ADC input for secondary battery monitoring or payload sensors.
+  - port: RCIN
+    type: rc
+    default_use: Serial RC input
+    voltage: "3.3 V signal / 5 V supply"
+    connector: Baseboard RC header
+    notes: Supports SBUS, CRSF, FPort, DSM, and PPM via dedicated header and RSSI breakout.
+  - port: PWM OUT (1-14)
+    type: pwm
+    default_use: Motor and servo outputs
+    voltage: "Servo rail (0-36 V tolerant)"
+    connector: Carrier board servo rail
+    notes: Four PWM groups with DShot support on outputs 1-12 and auxiliary outputs 13-14 for payloads.
+  - port: POWERA
+    type: power
+    default_use: Primary analog power module
+    voltage: "4.3-5.4 V"
+    connector: 6-pin power module
+    notes: Provides analog voltage/current telemetry and primary 5 V supply.
+  - port: POWERC
+    type: power
+    default_use: DroneCAN smart battery input
+    voltage: "4.3-5.4 V"
+    connector: DroneCAN power connector
+    notes: Accepts CUAV CAN power modules or smart batteries with redundant 5 V supply.
+  - port: SERVO RAIL
+    type: power
+    default_use: PWM servo supply
+    voltage: "0-36 V tolerant"
+    connector: Servo rail bus
+    notes: Isolated high-voltage rail powering servos independently from FMU logic.
+  - port: USB-C
+    type: usb
+    default_use: Console and firmware updates
+    voltage: "5 V"
+    connector: USB Type-C
+    notes: Provides high-speed USB interface for configuration and log download.
+  - port: Debug (DSU7)
+    type: debug
+    default_use: SWD + console
+    voltage: "3.3 V"
+    connector: JST BM06B-GHS-TBT
+    notes: Breaks out SWDIO/SWCLK and FTDI-compatible console pins for development.
+  - port: Buzzer/Safety
+    type: other
+    default_use: External safety switch and buzzer
+    voltage: "5 V supply"
+    connector: JST harness
+    notes: Combined harness powering the illuminated safety switch and high-output buzzer.
 sensors:
   imu:
   - count: 1

@@ -102,6 +102,121 @@ io:
         - analog
       connector: Solder pads
       notes: Six analog inputs for airspeed, RSSI, and additional voltage monitoring.
+peripheral_ports:
+  - port: UART1 (TX1/RX1)
+    type: uart
+    default_use: GPS receiver
+    voltage: "3.3 V signal"
+    connector: JST-SH pigtail / solder pads
+    notes: Default mapping for external GNSS and compass modules.
+  - port: UART2 (TX2/RX2)
+    type: uart
+    default_use: Primary MAVLink telemetry
+    voltage: "3.3 V signal"
+    connector: JST-SH pigtail / solder pads
+    notes: Hardware flow control supported for long-range telemetry radios.
+  - port: UART3 (TX3/RX3)
+    type: uart
+    default_use: Serial RC / SmartPort
+    voltage: "3.3 V signal"
+    connector: Receiver header with inverter
+    notes: Inverted input for SBUS with pads exposing uninverted CRSF/FPort signals.
+  - port: UART4 (TX4/RX4)
+    type: uart
+    default_use: ESC telemetry or payload link
+    voltage: "3.3 V signal"
+    connector: Solder pads
+    notes: Positioned near motor outputs for bidirectional ESC telemetry wiring.
+  - port: UART5 (TX5/RX5)
+    type: uart
+    default_use: Companion computer interface
+    voltage: "3.3 V signal"
+    connector: Solder pads
+    notes: Routed alongside SPI4 header for companion compute integration.
+  - port: UART6 (TX6/RX6)
+    type: uart
+    default_use: Secondary telemetry / ELRS
+    voltage: "3.3 V signal"
+    connector: Solder pads
+    notes: Assignable UART often used for ExpressLRS or additional radios.
+  - port: UART7 (TX7/RX7)
+    type: uart
+    default_use: Scripting / debugging
+    voltage: "3.3 V signal"
+    connector: Solder pads
+    notes: Spare serial channel for Lua scripting engines, companion links, or logging hardware.
+  - port: I2C1 (SCL/SDA)
+    type: i2c
+    default_use: Compass / airspeed sensor
+    voltage: "3.3 V"
+    connector: JST-SH 4-pin
+    notes: Primary external I2C bus for magnetometers and digital sensors.
+  - port: I2C2 (SCL2/SDA2)
+    type: i2c
+    default_use: Auxiliary I2C expansion
+    voltage: "3.3 V"
+    connector: JST-SH 4-pin
+    notes: Secondary I2C connector for rangefinders or LED controllers.
+  - port: SPI4
+    type: spi
+    default_use: External SPI payloads
+    voltage: "3.3 V"
+    connector: JST-SH 6-pin
+    notes: Breaks out SPI4 with chip select for loggers, optical flow, or IMU experiments.
+  - port: RCIN
+    type: rc
+    default_use: Serial RC input
+    voltage: "3.3 V signal / 5 V supply"
+    connector: Receiver header
+    notes: Supports SBUS, CRSF, FPort, SRXL2, and PPM via selectable inversion jumpers.
+  - port: PWM OUT (1-8)
+    type: pwm
+    default_use: Primary motor/servo outputs
+    voltage: "5 V servo rail"
+    connector: Dual-row servo headers
+    notes: Eight outputs supporting PWM or DShot for VTOL/wing control surfaces.
+  - port: PWM OUT (9-12)
+    type: pwm
+    default_use: Auxiliary outputs
+    voltage: "5 V servo rail"
+    connector: Servo headers and pads
+    notes: Additional outputs for payloads, landing gear, or camera trigger functions.
+  - port: Analog IN (A1-A6)
+    type: analog
+    default_use: Battery/airspeed sensing
+    voltage: "0-3.3 V"
+    connector: Solder pads
+    notes: Six ADC inputs for voltage, current, RSSI, or pitot sensors.
+  - port: Power IN (BAT)
+    type: power
+    default_use: Main battery input
+    voltage: "9-36 V"
+    connector: XT60 / solder pads
+    notes: High-voltage tolerant main input feeding onboard BECs and current sensor.
+  - port: 5V BEC
+    type: power
+    default_use: Regulated 5 V peripheral rail
+    voltage: "5 V @ 5 A"
+    connector: 5 V pads
+    notes: Supplies receivers, flight peripherals, and digital sensors.
+  - port: 9/12V BEC
+    type: power
+    default_use: Video transmitter supply
+    voltage: "Selectable 9 V or 12 V"
+    connector: VTX pads
+    notes: Switchable regulator dedicated to analog/HD video systems.
+  - port: Adjustable BEC
+    type: power
+    default_use: Servo rail regulator
+    voltage: "5/6/7.2 V selectable"
+    connector: Servo rail bus
+    notes: Adjustable high-current BEC powering servos independently from logic supply.
+  - port: Micro-USB
+    type: usb
+    default_use: Console and firmware updates
+    voltage: "5 V"
+    connector: Micro-USB
+    notes: Provides configuration, logging, and firmware flashing access.
 sensors:
   imu:
     - count: 1

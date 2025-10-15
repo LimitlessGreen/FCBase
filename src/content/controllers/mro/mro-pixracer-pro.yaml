@@ -124,6 +124,91 @@ io:
     - microsd
     connector: Push-push microSD
     notes: Internal microSD card slot for high-rate data logging.
+peripheral_ports:
+  - port: TELEM1
+    type: uart
+    default_use: Primary MAVLink telemetry
+    voltage: "3.3 V signal / 5 V selectable supply"
+    connector: JST-GH 6-pin
+    notes: Hardware flow control with selectable 3.3 V or 5 V logic level for telemetry radios.
+  - port: TELEM2
+    type: uart
+    default_use: Secondary telemetry or RTK link
+    voltage: "3.3 V signal / 5 V selectable supply"
+    connector: JST-GH 6-pin
+    notes: Full-duplex UART with RTS/CTS for redundant radios or companion computers.
+  - port: UART1/UART7 harness
+    type: uart
+    default_use: Auxiliary payload and console UARTs
+    voltage: "3.3 V signal"
+    connector: JST-GH 8-pin
+    notes: Combined harness exposing USART1 and UART7 for scripting, companion links, or peripheral control.
+  - port: GPS/I2C
+    type: gps
+    default_use: GPS + compass harness
+    voltage: "3.3 V signal / 5 V supply"
+    connector: JST-GH 6-pin
+    notes: Provides GNSS UART alongside shared SDA/SCL for external magnetometers.
+  - port: FrSky UART8
+    type: uart
+    default_use: SmartPort telemetry
+    voltage: "3.3 V signal"
+    connector: JST-GH 4-pin
+    notes: Dedicated USART8 header for FrSky SmartPort in/out with power and ground.
+  - port: RCIN/RSSI
+    type: rc
+    default_use: Serial RC input with RSSI
+    voltage: "3.3 V signal / 4.5 V receiver supply"
+    connector: JST-GH 5-pin
+    notes: Supports SBUS, DSM, SumD, ST24, and PPM with dedicated analog RSSI input.
+  - port: CAN1
+    type: can
+    default_use: DroneCAN peripheral bus
+    voltage: "Differential CAN / 5 V supply"
+    connector: JST-GH 4-pin
+    notes: Powered CAN-FD port for smart power modules, ESCs, or sensors.
+  - port: CAN2
+    type: can
+    default_use: Redundant DroneCAN bus
+    voltage: "Differential CAN / 5 V supply"
+    connector: JST-GH 4-pin
+    notes: Secondary CAN channel for redundant peripherals or ESC networks.
+  - port: PWM OUT (1-8)
+    type: pwm
+    default_use: Motor/servo outputs
+    voltage: "Selectable 3.3/5 V signal (servo rail)"
+    connector: 8-channel servo header
+    notes: Supports PWM or DShot with configurable signal level jumpers.
+  - port: SPI6
+    type: spi
+    default_use: External SPI payloads
+    voltage: "3.3 V"
+    connector: JST-GH 6-pin
+    notes: Breaks out SPI6 with chip select for sensors, loggers, or companion devices.
+  - port: Power Brick
+    type: power
+    default_use: Primary power module input
+    voltage: "5.0-5.5 V"
+    connector: JST-GH 6-pin
+    notes: Accepts ACSP4 or similar power modules with current and voltage telemetry.
+  - port: USB-C
+    type: usb
+    default_use: Console and firmware updates
+    voltage: "5 V"
+    connector: USB Type-C
+    notes: Provides composite USB device with bootloader, console, and SLCAN access.
+  - port: Onboard buzzer
+    type: other
+    default_use: Audible status output
+    voltage: "5 V"
+    connector: Onboard driver
+    notes: High-output piezo buzzer driven by dedicated amplifier for alarms.
+  - port: RGB LED
+    type: other
+    default_use: Status indication
+    voltage: "5 V"
+    connector: Onboard LED
+    notes: Addressable RGB status LED indicating flight mode and warnings.
 sensors:
   imu:
   - count: 1

@@ -158,6 +158,102 @@ peripheral_ports:
     voltage: "3.3 V signal"
     connector: JST-GH 6-pin
     notes: Labeled "FMU Debug" on carrier; defaults to system console in PX4.
+  - port: GPS1
+    type: gps
+    default_use: Primary GPS/compass/safety switch
+    voltage: "3.3 V signal / 5 V supply"
+    connector: JST-GH 10-pin
+    notes: Combined connector with safety switch, buzzer, and I2C compass harness.
+  - port: GPS2
+    type: gps
+    default_use: Secondary GPS
+    voltage: "3.3 V signal / 5 V supply"
+    connector: JST-GH 6-pin
+    notes: Secondary navigation receiver header for redundancy or RTK base station links.
+  - port: CAN1
+    type: can
+    default_use: DroneCAN peripheral bus
+    voltage: "Differential CAN / 5 V supply"
+    connector: JST-GH 4-pin
+    notes: Powered CAN-FD port for smart power modules, ESCs, or payloads.
+  - port: CAN2
+    type: can
+    default_use: Redundant CAN-FD bus
+    voltage: "Differential CAN / 5 V supply"
+    connector: JST-GH 4-pin
+    notes: Second CAN interface supporting ESC RX-MUX and payload networks.
+  - port: I2C1
+    type: i2c
+    default_use: Auxiliary sensor bus
+    voltage: "3.3 V"
+    connector: JST-GH 4-pin
+    notes: External I2C lines for airspeed sensors, compasses, or LED expanders.
+  - port: POWER1
+    type: power
+    default_use: Primary power module
+    voltage: "4.9-5.5 V"
+    connector: 6-pin power monitor
+    notes: Supplies regulated 5 V and SMBus telemetry from the first power module.
+  - port: POWER2
+    type: power
+    default_use: Secondary power module
+    voltage: "4.9-5.5 V"
+    connector: 6-pin power monitor
+    notes: Provides redundant power and SMBus battery data when paired with a second module.
+  - port: SERVO RAIL
+    type: power
+    default_use: PWM servo supply
+    voltage: "0-36 V tolerant"
+    connector: Servo breakout
+    notes: High-voltage tolerant rail powering PWM outputs independently from FMU logic.
+  - port: FMU PWM OUT (1-8)
+    type: pwm
+    default_use: Primary motor outputs
+    voltage: "Servo rail (0-36 V tolerant)"
+    connector: Servo breakout bank A
+    notes: FMU-controlled DShot/PWM outputs grouped for synchronous signaling.
+  - port: IO PWM OUT (9-16)
+    type: pwm
+    default_use: Auxiliary PWM outputs
+    voltage: "Servo rail (0-36 V tolerant)"
+    connector: Servo breakout bank B
+    notes: IOMCU-managed outputs for additional motors, gear, or payload servos.
+  - port: RCIN
+    type: rc
+    default_use: Serial RC or PPM input
+    voltage: "3.3 V signal / 5 V supply"
+    connector: JST-GH 6-pin
+    notes: Supports SBUS, DSM, FPort, CRSF, and PPM receiver connections.
+  - port: S.BUS OUT / RSSI
+    type: rc
+    default_use: S.Bus out and analog RSSI
+    voltage: "3.3 V signal"
+    connector: JST harness
+    notes: Provides redundant receiver output and RSSI monitoring for ground stations.
+  - port: USB-C
+    type: usb
+    default_use: Console and firmware updates
+    voltage: "5 V"
+    connector: USB Type-C
+    notes: Primary configuration interface and bootloader access.
+  - port: Ethernet
+    type: ethernet
+    default_use: 100 Mbps companion link
+    voltage: "3.3 V logic"
+    connector: RJ45 breakout
+    notes: On supported carrier boards, exposes the integrated Ethernet PHY for companion computers.
+  - port: I2C Expansion (UART breakout)
+    type: i2c
+    default_use: Additional I2C via TELEM3/4 harness
+    voltage: "3.3 V"
+    connector: JST-GH 6-pin shared
+    notes: TELEM3/4 harness exposes SCL/SDA pins for auxiliary digital sensors.
+  - port: Buzzer/Safety
+    type: other
+    default_use: External safety switch and buzzer
+    voltage: "5 V supply"
+    connector: JST harness
+    notes: Combined harness powering the safety switch, RGB LED, and high-output buzzer module.
   - port: TELEM6
     type: uart
     default_use: Auxiliary telemetry / SBUS out

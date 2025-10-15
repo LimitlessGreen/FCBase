@@ -123,6 +123,115 @@ io:
     - microsd
     connector: Internal microSD
     notes: Built-in microSD card slot for logging.
+peripheral_ports:
+  - port: TELEM1
+    type: uart
+    default_use: Primary MAVLink telemetry
+    voltage: "3.3 V signal / 5 V supply"
+    connector: JST-GH 6-pin
+    notes: UART7 with hardware RTS/CTS and dedicated 5 V regulator for telemetry radios.
+  - port: TELEM2
+    type: uart
+    default_use: Secondary telemetry or companion link
+    voltage: "3.3 V signal / 5 V supply"
+    connector: JST-GH 6-pin
+    notes: UART5 port with full flow control for redundant radios or RTK corrections.
+  - port: GPS1
+    type: gps
+    default_use: Primary GPS/compass/safety harness
+    voltage: "3.3 V signal / 5 V supply"
+    connector: JST-GH 10-pin
+    notes: Bundles GPS, magnetometer, safety switch, RGB LED, and buzzer wiring.
+  - port: GPS2
+    type: gps
+    default_use: Secondary GPS
+    voltage: "3.3 V signal / 5 V supply"
+    connector: JST-GH 6-pin
+    notes: Provides redundant GNSS receiver connection or RTK base link.
+  - port: CAN1
+    type: can
+    default_use: DroneCAN bus
+    voltage: "Differential CAN / 5 V supply"
+    connector: JST-GH 4-pin
+    notes: Supplies 5 V auxiliary power for smart modules or ESCs.
+  - port: CAN2
+    type: can
+    default_use: Redundant DroneCAN bus
+    voltage: "Differential CAN / 5 V supply"
+    connector: JST-GH 4-pin
+    notes: Second isolated CAN-FD port for peripherals or ESC networks.
+  - port: I2C A
+    type: i2c
+    default_use: External sensor bus
+    voltage: "3.3 V"
+    connector: JST-GH 4-pin
+    notes: Primary I2C port for airspeed sensors, rangefinders, or LED expanders.
+  - port: I2C B
+    type: i2c
+    default_use: Auxiliary I2C expansion
+    voltage: "3.3 V"
+    connector: JST-GH 4-pin
+    notes: Secondary I2C bus enabling multiple digital peripherals.
+  - port: ADC
+    type: analog
+    default_use: Analog sensing / airspeed input
+    voltage: "3.3 V reference"
+    connector: JST-GH 3-pin
+    notes: Provides analog voltage input and ground/reference pins for sensors.
+  - port: RCIN
+    type: rc
+    default_use: Serial RC or PPM input
+    voltage: "3.3 V signal / 5 V supply"
+    connector: JST-GH 6-pin
+    notes: Supports SBUS, DSM, PPM, and FPort protocols via dedicated header.
+  - port: S.BUS OUT / RSSI
+    type: rc
+    default_use: S.Bus passthrough and analog RSSI
+    voltage: "3.3 V signal"
+    connector: JST-GH 3-pin
+    notes: Allows redundant receivers or servo expanders with RSSI feedback.
+  - port: FMU PWM OUT (1-8)
+    type: pwm
+    default_use: Primary motor outputs
+    voltage: "Servo rail (0-42 V tolerant)"
+    connector: Servo rail bank A
+    notes: FMU-controlled outputs supporting DShot on grouped channels.
+  - port: IO PWM OUT (9-16)
+    type: pwm
+    default_use: Auxiliary PWM outputs
+    voltage: "Servo rail (0-42 V tolerant)"
+    connector: Servo rail bank B
+    notes: IOMCU-managed outputs for additional actuators and payloads.
+  - port: POWER1
+    type: power
+    default_use: Primary power module input
+    voltage: "4.9-5.5 V"
+    connector: 6-pin power monitor
+    notes: Provides redundant 5 V supply with current and voltage telemetry.
+  - port: POWER2
+    type: power
+    default_use: Secondary power module input
+    voltage: "4.9-5.5 V"
+    connector: 6-pin power monitor
+    notes: Backup SMBus-enabled power module connection.
+  - port: SERVO RAIL
+    type: power
+    default_use: PWM servo supply
+    voltage: "0-42 V tolerant"
+    connector: Servo rail bus
+    notes: High-voltage tolerant rail powering servos independently of FMU logic.
+  - port: Micro-USB
+    type: usb
+    default_use: Console and firmware updates
+    voltage: "5 V"
+    connector: Micro-USB
+    notes: Provides SERIAL0 console and bootloader access for configuration.
+  - port: FMU Debug
+    type: debug
+    default_use: SWD + console
+    voltage: "3.3 V"
+    connector: JST-GH 6-pin
+    notes: Breaks out SWDIO/SWCLK and serial console for firmware development.
 sensors:
   imu:
   - count: 1
