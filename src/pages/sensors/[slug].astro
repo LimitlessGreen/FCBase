@@ -2,14 +2,15 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import MainLayout from '@/layouts/MainLayout.astro';
-import { Card, CardContent, CardHeader } from '@/components/ui/Card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
 import ProfessionalTable from '@/components/table/ProfessionalTable.astro';
 import TableRow2Col from '@/components/table/TableRow2Col.astro';
 import TableRow from '@/components/table/TableRow.astro';
 import ControllerCard from '@/components/cards/ControllerCard.astro';
-import { ExternalLink } from 'lucide-react';
+import { Badge } from '@/components/ui/Badge';
+import { AlertTriangle, ExternalLink } from 'lucide-react';
 import { createControllerCardModel } from '@/lib/controller-card-model';
-import { getManufacturersMap } from '@/lib/content-cache';
+import { getManufacturersMap, getSourcesMap } from '@/lib/content-cache';
 
 export async function getStaticPaths() {
   const sensors = await getCollection('sensors');
@@ -25,6 +26,7 @@ const { data } = sensor;
 // Load all controllers using this sensor
 const allControllers = await getCollection('controllers');
 const manufacturersMap = await getManufacturersMap();
+const sourcesMap = await getSourcesMap();
 
 const controllersUsingSensor = allControllers.filter((controller) => {
   const sensors = controller.data.sensors;
@@ -82,6 +84,46 @@ const canonicalUrl = Astro.site
   ? new URL(`sensors/${sensor.id}`, Astro.site).toString()
   : `${basePath}/sensors/${sensor.id}`;
 const sensorSummary = data.summary || data.notes || `Technical specification for the ${sensorTitle} sensor used in FCBase controllers.`;
+
+const severityStyles = {
+  info: { label: 'Info', className: 'bg-sky-500/10 text-sky-600 border-sky-500/20' },
+  low: { label: 'Low', className: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/30' },
+  medium: { label: 'Medium', className: 'bg-amber-500/10 text-amber-600 border-amber-500/30' },
+  high: { label: 'High', className: 'bg-rose-500/10 text-rose-500 border-rose-500/30' },
+  critical: { label: 'Critical', className: 'bg-red-600/10 text-red-600 border-red-600/30' },
+} as const;
+
+const knownIssues = (data.known_issues ?? [])
+  .map((issue) => {
+    const severityKey = issue.severity in severityStyles ? issue.severity : 'medium';
+    const severityMeta = severityStyles[severityKey as keyof typeof severityStyles];
+    const sourceEntry = sourcesMap.get(issue.source) ?? null;
+    const sourceTitle = sourceEntry?.data.title ?? issue.source;
+    const sourceUrl = issue.url ?? sourceEntry?.data.url ?? null;
+    let displayDate: string | null = null;
+    if (issue.date) {
+      const parsed = new Date(issue.date);
+      displayDate = Number.isNaN(parsed.valueOf())
+        ? issue.date
+        : parsed.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+          });
+    }
+
+    return {
+      ...issue,
+      severityKey,
+      severityMeta,
+      sourceTitle,
+      sourceUrl,
+      displayDate,
+    };
+  })
+  .sort((a, b) => (a.date > b.date ? -1 : a.date < b.date ? 1 : 0));
+
+const hasKnownIssues = knownIssues.length > 0;
 ---
 
 <BaseLayout
@@ -164,6 +206,83 @@ const sensorSummary = data.summary || data.notes || `Technical specification for
             </ProfessionalTable>
           </CardContent>
         </Card>
+      </div>
+
+      <!-- Known Issues -->
+      <div class="mb-6">
+        <h2 class="text-xl font-bold tracking-tight mb-4 uppercase text-primary">Known Issues</h2>
+        {hasKnownIssues ? (
+          <div class="space-y-4">
+            {knownIssues.map((issue, index) => (
+              <Card
+                key={issue.id ?? `${issue.date}-${issue.title}-${index}`}
+                className="border border-border/60 bg-background/80 shadow-xs"
+              >
+                <CardHeader className="flex flex-col gap-3 border-b border-border/40 pb-4 sm:flex-row sm:items-start sm:justify-between">
+                  <div class="flex items-start gap-3">
+                    <span class="mt-1 inline-flex h-8 w-8 items-center justify-center rounded-full bg-amber-500/10 text-amber-500">
+                      <AlertTriangle className="h-4 w-4" />
+                    </span>
+                    <div class="space-y-1">
+                      <CardTitle className="text-base leading-tight">{issue.title}</CardTitle>
+                      {issue.description && (
+                        <CardDescription className="text-sm leading-snug text-muted-foreground">
+                          {issue.description}
+                        </CardDescription>
+                      )}
+                    </div>
+                  </div>
+                  <Badge
+                    variant="outline"
+                    className={`text-[10px] uppercase tracking-wide ${issue.severityMeta.className}`}
+                  >
+                    {issue.severityMeta.label}
+                  </Badge>
+                </CardHeader>
+                <CardContent className="flex flex-col gap-3 pt-4 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+                  <div class="flex items-center gap-2 text-xs uppercase tracking-wide text-muted-foreground">
+                    <span class="font-semibold text-foreground">Reported</span>
+                    {issue.displayDate ? (
+                      <time dateTime={issue.date} class="font-mono text-foreground">
+                        {issue.displayDate}
+                      </time>
+                    ) : (
+                      <span class="font-mono text-foreground">{issue.date}</span>
+                    )}
+                  </div>
+                  <div class="flex items-center gap-2 text-xs uppercase tracking-wide text-muted-foreground">
+                    <span class="font-semibold text-foreground">Source</span>
+                    {issue.sourceUrl ? (
+                      <a
+                        href={issue.sourceUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="inline-flex items-center gap-1 font-semibold text-primary transition hover:text-primary/80"
+                      >
+                        {issue.sourceTitle}
+                        <ExternalLink className="h-3.5 w-3.5" />
+                      </a>
+                    ) : (
+                      <span class="font-semibold text-foreground">{issue.sourceTitle}</span>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        ) : (
+          <Card className="border border-dashed border-border/60 bg-muted/20">
+            <CardHeader>
+              <CardTitle className="text-base font-semibold">No documented issues</CardTitle>
+              <CardDescription>
+                We have not recorded any open advisories for this sensor yet.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="text-sm text-muted-foreground">
+              Notice abnormal behavior? Share reproducible reports so we can update the community database.
+            </CardContent>
+          </Card>
+        )}
       </div>
 
       <!-- Controllers Using This Sensor -->

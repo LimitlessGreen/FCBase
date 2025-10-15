@@ -1,0 +1,8 @@
+id: github-px4-icm20689-integral-dt
+title: "[Bug] accelerometer_integral_dt/gyro_integral_dt is vibration"
+publisher: PX4 Autopilot Issue Tracker
+url: https://github.com/PX4/PX4-Autopilot/issues/22197
+date: "2023-10-08"
+retrieved: "2025-01-16"
+language: en
+notes: "PX4 issue #22197 describing sporadic integral timing spikes on the ICM-20689 IMU."

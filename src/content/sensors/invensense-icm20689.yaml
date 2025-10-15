@@ -15,3 +15,12 @@ datasheet:
 sources:
   - ardupilot-cuav-nora-overview
   - ardupilot-holybro-durandal
+  - github-px4-icm20689-integral-dt
+known_issues:
+  - id: px4-icm20689-integral-dt
+    title: "ICM-20689 integral timing spikes under PX4"
+    severity: medium
+    date: "2023-10-08"
+    source: github-px4-icm20689-integral-dt
+    url: https://github.com/PX4/PX4-Autopilot/issues/22197
+    description: "PX4 v1.12 builds show random accelerometer_integral_dt and gyro_integral_dt spikes on the ICM-20689, destabilising EKF attitude estimates."

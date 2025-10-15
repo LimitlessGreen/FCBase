@@ -1,6 +1,6 @@
 ---
 import { getCollection, getEntry } from 'astro:content';
-import { buildRevisionVariants } from '@/content/config';
+import { buildRevisionVariants, type KnownIssue } from '@/content/config';
 import DetailHeader from '@/components/detail/DetailHeader.astro';
 import DetailPageLayout from '@/components/detail/DetailPageLayout.astro';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
@@ -16,7 +16,6 @@ import { buildResponsivePicture } from '@/lib/responsive-image';
 import { GITHUB_EDIT_BASE_URL } from '@/lib/constants';
 import {
   extractUniqueSensorIds,
-  fetchSensorNameMap,
   mapSensorsWithNames,
   getManufacturerName,
   formatMounting,
@@ -28,7 +27,12 @@ import {
   normalizePeripheralInterfaces,
 } from '@/lib/data-utils';
 import { resolveControllerPreviewImage } from '@/lib/controller-images';
-import { getFirmwareMap, getManufacturersMap, getSourcesMap } from '@/lib/content-cache';
+import {
+  getFirmwareMap,
+  getManufacturersMap,
+  getSensorsMap,
+  getSourcesMap,
+} from '@/lib/content-cache';
 import { createControllerProductLd, resolveControllerSummary } from '@/lib/controller-seo';
 import {
   Cpu,
@@ -86,7 +90,31 @@ const revisionVariants = buildRevisionVariants(data);
 
 // Use data-utils for sensor deduplication
 const uniqueSensorIds = extractUniqueSensorIds(revisionVariants);
-const sensorNameMap = await fetchSensorNameMap(uniqueSensorIds);
+const sensorsMap = await getSensorsMap();
+const sensorMetadataMap = new Map<
+  string,
+  { name: string; issues: KnownIssue[] }
+>();
+const sensorNameMap = new Map<string, string>();
+
+const registerSensorMetadata = (sensorId: string) => {
+  if (!sensorMetadataMap.has(sensorId)) {
+    const entry = sensorsMap.get(sensorId);
+    const name = entry?.data.title ?? entry?.data.name ?? sensorId;
+    const issues = Array.isArray(entry?.data.known_issues)
+      ? entry.data.known_issues
+      : [];
+    sensorMetadataMap.set(sensorId, { name, issues });
+    sensorNameMap.set(sensorId, name);
+  }
+
+  return sensorMetadataMap.get(sensorId)!;
+};
+
+uniqueSensorIds.forEach((sensorId) => {
+  registerSensorMetadata(sensorId);
+});
+
 const sourcesMap = await getSourcesMap();
 
 const revisionVariantsWithSensors = revisionVariants.map((variant) => {
@@ -101,6 +129,12 @@ const revisionVariantsWithSensors = revisionVariants.map((variant) => {
         };
       })
     : [];
+
+  (['imu', 'barometer', 'magnetometer'] as const).forEach((category) => {
+    variant.spec.sensors?.[category]?.forEach((sensor) => {
+      registerSensorMetadata(sensor.id);
+    });
+  });
 
   const sensorDetails = {
     imu: mapSensorsWithNames(variant.spec.sensors?.imu, sensorNameMap),
@@ -273,9 +307,35 @@ const severityStyles = {
   critical: { label: 'Critical', className: 'bg-red-600/10 text-red-600 border-red-600/30' },
 } as const;
 
-const knownIssues = (data.known_issues ?? []).map((issue) => {
-  const severityKey = issue.severity in severityStyles ? issue.severity : 'medium';
-  const severityMeta = severityStyles[severityKey as keyof typeof severityStyles];
+const sensorCategoryLabels = {
+  imu: 'IMU',
+  barometer: 'Barometer',
+  magnetometer: 'Magnetometer',
+} as const;
+
+type SeverityKey = keyof typeof severityStyles;
+type IssueOrigin =
+  | { type: 'controller' }
+  | {
+      type: 'sensor';
+      sensorId: string;
+      sensorName: string;
+      sensorCategory: keyof typeof sensorCategoryLabels;
+    };
+
+type DisplayIssue = KnownIssue & {
+  severityKey: SeverityKey;
+  severityMeta: (typeof severityStyles)[SeverityKey];
+  sourceTitle: string;
+  sourceUrl: string | null;
+  displayDate: string | null;
+  origin: IssueOrigin;
+};
+
+const resolveIssue = (issue: KnownIssue, origin: IssueOrigin): DisplayIssue => {
+  const severityKey: SeverityKey =
+    issue.severity in severityStyles ? (issue.severity as SeverityKey) : 'medium';
+  const severityMeta = severityStyles[severityKey];
   const sourceEntry = sourcesMap.get(issue.source) ?? null;
   const sourceTitle = sourceEntry?.data.title ?? issue.source;
   const sourceUrl = issue.url ?? sourceEntry?.data.url ?? null;
@@ -298,9 +358,59 @@ const knownIssues = (data.known_issues ?? []).map((issue) => {
     sourceTitle,
     sourceUrl,
     displayDate,
+    origin,
   };
-}).sort((a, b) => (a.date > b.date ? -1 : a.date < b.date ? 1 : 0));
-const hasKnownIssues = knownIssues.length > 0;
+};
+
+const variantIssueBuckets = revisionVariantsWithSensors.map((variant) => {
+  const seen = new Set<string>();
+  const issues: DisplayIssue[] = [];
+
+  const addIssue = (issue: KnownIssue, origin: IssueOrigin) => {
+    const dedupeKey = [
+      origin.type,
+      origin.type === 'sensor'
+        ? `${origin.sensorId}:${origin.sensorCategory}`
+        : 'controller',
+      issue.id ?? issue.title,
+      issue.date,
+    ].join('|');
+
+    if (seen.has(dedupeKey)) {
+      return;
+    }
+
+    seen.add(dedupeKey);
+    issues.push(resolveIssue(issue, origin));
+  };
+
+  (variant.spec.known_issues ?? []).forEach((issue) => {
+    addIssue(issue, { type: 'controller' });
+  });
+
+  (['imu', 'barometer', 'magnetometer'] as const).forEach((category) => {
+    variant.spec.sensors?.[category]?.forEach((sensor) => {
+      const metadata = registerSensorMetadata(sensor.id);
+      const sensorIssues = metadata.issues ?? [];
+      sensorIssues.forEach((sensorIssue) => {
+        addIssue(sensorIssue, {
+          type: 'sensor',
+          sensorId: sensor.id,
+          sensorName: metadata.name,
+          sensorCategory: category,
+        });
+      });
+    });
+  });
+
+  issues.sort((a, b) => (a.date > b.date ? -1 : a.date < b.date ? 1 : 0));
+
+  return {
+    id: variant.id,
+    label: variant.label,
+    issues,
+  };
+});
 
 type ResolvedLink = { url: string; label: string | null; description: string | null } | null;
 const resolveLinkEntry = (entry: unknown): ResolvedLink => {
@@ -1113,6 +1223,9 @@ const hasLinkItems = linkItems.length > 0;
                 const defaultId = root.dataset.defaultVariant;
                 const tabs = Array.from(root.querySelectorAll('[data-revision-tab]'));
                 const panels = Array.from(root.querySelectorAll('[data-revision-panel]'));
+                const issueSections = Array.from(
+                  document.querySelectorAll('[data-variant-issues]')
+                ).filter((el) => el instanceof HTMLElement);
                 const select = root.querySelector('[data-revision-select]');
                 const activeClasses = ['bg-primary/10', 'border-primary/40', 'text-primary'];
                 const inactiveClasses = ['bg-muted/30', 'border-border/60', 'text-muted-foreground'];
@@ -1121,6 +1234,12 @@ const hasLinkItems = linkItems.length > 0;
                     const isActive = panel.dataset.revisionPanel === id;
                     panel.classList.toggle('hidden', !isActive);
                     panel.setAttribute('aria-hidden', isActive ? 'false' : 'true');
+                  });
+                  issueSections.forEach((section) => {
+                    const el = section;
+                    const isActive = el.dataset.variantIssues === id;
+                    el.classList.toggle('hidden', !isActive);
+                    el.setAttribute('aria-hidden', isActive ? 'false' : 'true');
                   });
                   tabs.forEach((tab) => {
                     const isActive = tab.dataset.revisionTab === id;
@@ -1327,78 +1446,107 @@ const hasLinkItems = linkItems.length > 0;
       aria-labelledby={`${tabsIdBase}-tab-issues`}
       class="space-y-4"
     >
-      {hasKnownIssues ? (
-        <div class="space-y-4">
-          {knownIssues.map((issue, index) => (
-            <Card
-              key={issue.id ?? `${issue.date}-${issue.title}-${index}`}
-              className="border border-border/60 bg-background/80 shadow-xs"
-            >
-              <CardHeader className="flex flex-col gap-3 border-b border-border/40 pb-4 sm:flex-row sm:items-start sm:justify-between">
-                <div class="flex items-start gap-3">
-                  <span class="mt-1 inline-flex h-8 w-8 items-center justify-center rounded-full bg-amber-500/10 text-amber-500">
-                    <AlertTriangle className="h-4 w-4" />
-                  </span>
-                  <div class="space-y-1">
-                    <CardTitle className="text-base leading-tight">{issue.title}</CardTitle>
-                    {issue.description && (
-                      <CardDescription className="text-sm leading-snug text-muted-foreground">
-                        {issue.description}
-                      </CardDescription>
+      {variantIssueBuckets.map((bucket, idx) => (
+        <div
+          data-variant-issues={bucket.id}
+          class={`space-y-4 ${idx === 0 ? '' : 'hidden'}`}
+          aria-hidden={idx === 0 ? 'false' : 'true'}
+        >
+          {bucket.issues.length > 0 ? (
+            bucket.issues.map((issue, index) => (
+              <Card
+                key={`${bucket.id}-${issue.id ?? `${issue.date}-${issue.title}-${index}`}`}
+                className="border border-border/60 bg-background/80 shadow-xs"
+              >
+                <CardHeader className="flex flex-col gap-3 border-b border-border/40 pb-4 sm:flex-row sm:items-start sm:justify-between">
+                  <div class="flex items-start gap-3">
+                    <span class="mt-1 inline-flex h-8 w-8 items-center justify-center rounded-full bg-amber-500/10 text-amber-500">
+                      <AlertTriangle className="h-4 w-4" />
+                    </span>
+                    <div class="space-y-1">
+                      <CardTitle className="text-base leading-tight">{issue.title}</CardTitle>
+                      {issue.description && (
+                        <CardDescription className="text-sm leading-snug text-muted-foreground">
+                          {issue.description}
+                        </CardDescription>
+                      )}
+                    </div>
+                  </div>
+                  <Badge
+                    variant="outline"
+                    className={`text-[10px] uppercase tracking-wide ${issue.severityMeta.className}`}
+                  >
+                    {issue.severityMeta.label}
+                  </Badge>
+                </CardHeader>
+                <CardContent className="flex flex-col gap-3 pt-4 text-sm text-muted-foreground sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+                  <div class="flex items-center gap-2 text-xs uppercase tracking-wide text-muted-foreground">
+                    <span class="font-semibold text-foreground">Reported</span>
+                    {issue.displayDate ? (
+                      <time dateTime={issue.date} class="font-mono text-foreground">
+                        {issue.displayDate}
+                      </time>
+                    ) : (
+                      <span class="font-mono text-foreground">{issue.date}</span>
                     )}
                   </div>
-                </div>
-                <Badge
-                  variant="outline"
-                  className={`text-[10px] uppercase tracking-wide ${issue.severityMeta.className}`}
-                >
-                  {issue.severityMeta.label}
-                </Badge>
+                  <div class="flex items-center gap-2 text-xs uppercase tracking-wide text-muted-foreground">
+                    <span class="font-semibold text-foreground">Source</span>
+                    {issue.sourceUrl ? (
+                      <a
+                        href={issue.sourceUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="inline-flex items-center gap-1 font-semibold text-primary transition hover:text-primary/80"
+                      >
+                        {issue.sourceTitle}
+                        <ExternalLink className="h-3.5 w-3.5" />
+                      </a>
+                    ) : (
+                      <span class="font-semibold text-foreground">{issue.sourceTitle}</span>
+                    )}
+                  </div>
+                  <div class="flex items-center gap-2 text-xs uppercase tracking-wide text-muted-foreground">
+                    <span class="font-semibold text-foreground">Affects</span>
+                    {issue.origin.type === 'sensor' ? (
+                      <span class="inline-flex items-center gap-2 text-foreground">
+                        <a
+                          href={`${basePath}/sensors/${issue.origin.sensorId}`}
+                          class="inline-flex items-center gap-1 font-semibold text-primary transition hover:text-primary/80"
+                        >
+                          {issue.origin.sensorName}
+                          <ExternalLink className="h-3.5 w-3.5" />
+                        </a>
+                        <Badge
+                          variant="outline"
+                          className="text-[10px] uppercase tracking-wide"
+                        >
+                          {`Onboard ${sensorCategoryLabels[issue.origin.sensorCategory]}`}
+                        </Badge>
+                      </span>
+                    ) : (
+                      <Badge variant="outline" className="text-[10px] uppercase tracking-wide">
+                        Controller Platform
+                      </Badge>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            ))
+          ) : (
+            <Card className="border border-dashed border-border/60 bg-muted/20">
+              <CardHeader>
+                <CardTitle className="text-base font-semibold">
+                  No documented issues for {bucket.label}
+                </CardTitle>
+                <CardDescription>
+                  Sensor advisories and controller errata for this revision will appear here once reported.
+                </CardDescription>
               </CardHeader>
-              <CardContent className="flex flex-col gap-3 pt-4 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
-                <div class="flex items-center gap-2 text-xs uppercase tracking-wide text-muted-foreground">
-                  <span class="font-semibold text-foreground">Reported</span>
-                  {issue.displayDate ? (
-                    <time dateTime={issue.date} class="font-mono text-foreground">
-                      {issue.displayDate}
-                    </time>
-                  ) : (
-                    <span class="font-mono text-foreground">{issue.date}</span>
-                  )}
-                </div>
-                <div class="flex items-center gap-2 text-xs uppercase tracking-wide text-muted-foreground">
-                  <span class="font-semibold text-foreground">Source</span>
-                  {issue.sourceUrl ? (
-                    <a
-                      href={issue.sourceUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      class="inline-flex items-center gap-1 font-semibold text-primary transition hover:text-primary/80"
-                    >
-                      {issue.sourceTitle}
-                      <ExternalLink className="h-3.5 w-3.5" />
-                    </a>
-                  ) : (
-                    <span class="font-semibold text-foreground">{issue.sourceTitle}</span>
-                  )}
-                </div>
-              </CardContent>
             </Card>
-          ))}
+          )}
         </div>
-      ) : (
-        <Card className="border border-dashed border-border/60 bg-muted/20">
-          <CardHeader>
-            <CardTitle className="text-base font-semibold">No documented issues</CardTitle>
-            <CardDescription>
-              We have not catalogued any known hardware advisories for this controller yet.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="text-sm text-muted-foreground">
-            Spot a reproducible hardware problem? Share it with the community via GitHub issues or the FCBase discussion board.
-          </CardContent>
-        </Card>
-      )}
+      ))}
     </div>
 
     <div

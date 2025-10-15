@@ -147,6 +147,14 @@ features:
 - Ethernet companion computer link
 - Modular baseboard ecosystem
 - Triple-redundant inertial sensing
+known_issues:
+  - id: px4-pixhawk6x-rev8-telem1
+    title: "Pixhawk 6X Rev8 reports dead TELEM1 on PX4 1.14 builds"
+    severity: high
+    date: "2024-08-07"
+    source: github-px4-pixhawk6x-rev8-bugs
+    url: https://github.com/PX4/PX4-Autopilot/issues/23514
+    description: "Multiple Pixhawk 6X Rev8 units shipped with PX4 1.14.x exhibit a non-functional TELEM1 port, RC input failures, and motors that refuse to arm until firmware is downgraded."
 firmware_support:
 - id: ardupilot
   status: stable
@@ -157,6 +165,7 @@ sources:
 - ardupilot-holybro-pixhawk6x
 - holybro-pixhawk6x-product
 - px4-pixhawk6x
+- github-px4-pixhawk6x-rev8-bugs
 verification:
   last_updated: "2025-10-13"
   level: community

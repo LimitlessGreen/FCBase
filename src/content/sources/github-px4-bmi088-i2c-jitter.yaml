@@ -1,0 +1,8 @@
+id: github-px4-bmi088-i2c-jitter
+title: "BMI088 connected via I2C does not work right"
+publisher: PX4 Autopilot Issue Tracker
+url: https://github.com/PX4/PX4-Autopilot/issues/23111
+date: "2024-05-08"
+retrieved: "2025-01-16"
+language: en
+notes: "PX4 issue #23111 reporting gyro jitter and unusable orientation from the bmi088_i2c driver."
