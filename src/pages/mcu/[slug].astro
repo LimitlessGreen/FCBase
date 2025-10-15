@@ -1,6 +1,5 @@
 ---
 import { getCollection } from 'astro:content';
-import BaseLayout from '@/layouts/BaseLayout.astro';
 import MainLayout from '@/layouts/MainLayout.astro';
 import { Card, CardContent, CardHeader } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
@@ -73,9 +72,11 @@ const mcuSummary = data.notes
   : `${mcuTitle} microcontroller from ${manufacturerName}${data.architecture ? ` using the ${data.architecture}` : ''}.`;
 ---
 
-<BaseLayout
+<MainLayout
   title={`${data.name || data.title || mcu.id} - MCUs - FCBase`}
   description={`Technical profile for ${data.name || data.title || mcu.id}. ${data.manufacturer ? `Manufactured by ${data.manufacturer}. ` : ''}${data.architecture ? `Architecture: ${data.architecture}. ` : ''}${data.notes || ''}`}
+  editPath={editPath}
+  showEditBar
 >
   <Fragment slot="head">
     <link rel="canonical" href={canonicalUrl} />
@@ -89,7 +90,6 @@ const mcuSummary = data.notes
     <meta name="pagefind:meta:summary" content={mcuSummary} />
     <meta name="pagefind:meta:url" content={canonicalUrl} />
   </Fragment>
-  <MainLayout editPath={editPath} showEditBar>
     <div class="container py-8">
       <nav class="mb-6 flex items-center gap-2 text-sm text-muted-foreground">
         <a href={`${basePath}/`} class="hover:text-foreground transition-colors">Home</a>
@@ -255,5 +255,4 @@ const mcuSummary = data.notes
         )}
       </div>
     </div>
-  </MainLayout>
-</BaseLayout>
+</MainLayout>

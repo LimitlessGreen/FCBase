@@ -1,6 +1,5 @@
 ---
 import { getCollection } from 'astro:content';
-import BaseLayout from '@/layouts/BaseLayout.astro';
 import MainLayout from '@/layouts/MainLayout.astro';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
@@ -47,11 +46,11 @@ const supportStatusLabels: Record<'supported' | 'limited' | 'sunset' | 'planned'
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 
-<BaseLayout
+<MainLayout
   title="EdgeTX Transmitters - FCBase"
   description="Browse EdgeTX-compatible transmitters, see support timelines, and follow FCC compliance links."
+  editPath="src/pages/transmitters/index.astro"
 >
-  <MainLayout editPath="src/pages/transmitters/index.astro">
     <div class="container py-8 space-y-16">
       <div>
         <nav class="mb-4 flex items-center gap-2 text-sm text-muted-foreground">
@@ -199,5 +198,4 @@ const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
           )
       )}
     </div>
-  </MainLayout>
-</BaseLayout>
+</MainLayout>
