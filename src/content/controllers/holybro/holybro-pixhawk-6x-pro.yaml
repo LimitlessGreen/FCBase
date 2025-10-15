@@ -61,7 +61,7 @@ io:
     connector: JST GH RC ports
     notes: Dedicated Spektrum/DSM and PPM/S.Bus headers with isolated RSSI output and S.Bus pass-through.
   - name: RSSI and S.Bus out
-    type: rssi
+    type: analog
     interfaces:
     - pwm
     - analog
