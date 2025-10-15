@@ -3,6 +3,13 @@ import { getCollection } from 'astro:content';
 import MainLayout from '@/layouts/MainLayout.astro';
 import ControllerCard from '@/components/cards/ControllerCard.astro';
 import { Badge } from '@/components/ui/Badge';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/Card';
 import { ExternalLink } from 'lucide-react';
 import { createControllerCardModels } from '@/lib/controller-card-model';
 import { getBasePath, getSiteUrl } from '@/lib/paths';
@@ -24,21 +31,70 @@ const manufacturerControllers = allControllers.filter(
   (controller) => controller.data.brand === manufacturer.id
 );
 
+const allTransmitters = await getCollection('transmitters');
+const manufacturerTransmitters = allTransmitters
+  .filter((transmitter) => transmitter.data.brand === manufacturer.id)
+  .sort((a, b) => a.data.title.localeCompare(b.data.title));
+
 // Sort by title
 manufacturerControllers.sort((a, b) => a.data.title.localeCompare(b.data.title));
 
 const controllerCards = await createControllerCardModels(manufacturerControllers);
 
+type SupportLevel = 'official' | 'manufacturer' | 'community';
+type SupportStatus = 'supported' | 'limited' | 'sunset' | 'planned';
+
+const supportLevelLabels: Record<SupportLevel, string> = {
+  official: 'Official EdgeTX Support',
+  manufacturer: 'Manufacturer Maintained',
+  community: 'Community Maintained',
+};
+
+const supportStatusLabels: Record<SupportStatus, string> = {
+  supported: 'Active support',
+  limited: 'Limited support',
+  sunset: 'Support ending',
+  planned: 'Planned support',
+};
+
 const basePath = getBasePath();
 const editPath = `src/content/manufacturers/${manufacturer.id}.yaml`;
 const manufacturerName = data.name || manufacturer.id;
 const canonicalUrl = getSiteUrl(`manufacturers/${manufacturer.id}`, Astro.site);
-const manufacturerSummary = data.description || `Manufacturer profile for ${manufacturerName} with ${manufacturerControllers.length} documented controllers.`;
+const manufacturerSummaryParts: string[] = [];
+if (data.description) {
+  manufacturerSummaryParts.push(data.description);
+}
+if (manufacturerControllers.length > 0) {
+  manufacturerSummaryParts.push(`Browse all ${manufacturerControllers.length} documented controller${manufacturerControllers.length === 1 ? '' : 's'}.`);
+}
+if (manufacturerTransmitters.length > 0) {
+  manufacturerSummaryParts.push(`Browse all ${manufacturerTransmitters.length} documented transmitter${manufacturerTransmitters.length === 1 ? '' : 's'}.`);
+}
+const fallbackDetailParts: string[] = [];
+if (manufacturerControllers.length > 0) {
+  fallbackDetailParts.push(
+    `${manufacturerControllers.length} controller${manufacturerControllers.length === 1 ? '' : 's'}`
+  );
+}
+if (manufacturerTransmitters.length > 0) {
+  fallbackDetailParts.push(
+    `${manufacturerTransmitters.length} transmitter${manufacturerTransmitters.length === 1 ? '' : 's'}`
+  );
+}
+const fallbackDetails =
+  fallbackDetailParts.length > 0
+    ? `Documented hardware: ${fallbackDetailParts.join(' and ')}.`
+    : 'No documented hardware listed yet.';
+const manufacturerSummary =
+  manufacturerSummaryParts.join(' ') ||
+  `Manufacturer profile for ${manufacturerName}. ${fallbackDetails}`;
+const pageDescription = `${manufacturerName} hardware catalog. ${manufacturerSummary}`.trim();
 ---
 
 <MainLayout
   title={`${data.name} - Manufacturers - FCBase`}
-  description={`${data.name} flight controllers. ${data.description || ''} Browse all ${manufacturerControllers.length} controllers.`}
+  description={pageDescription}
   editPath={editPath}
   showEditBar
 >
@@ -88,6 +144,9 @@ const manufacturerSummary = data.description || `Manufacturer profile for ${manu
           <Badge variant="secondary" className="text-sm">
             {manufacturerControllers.length} {manufacturerControllers.length === 1 ? 'Controller' : 'Controllers'}
           </Badge>
+          <Badge variant="outline" className="text-sm">
+            {manufacturerTransmitters.length} {manufacturerTransmitters.length === 1 ? 'Transmitter' : 'Transmitters'}
+          </Badge>
         </div>
       </div>
 
@@ -120,6 +179,111 @@ const manufacturerSummary = data.description || `Manufacturer profile for ${manu
       ) : (
         <div class="text-center py-12 bg-muted/20 rounded-lg">
           <p class="text-muted-foreground">No controllers found for this manufacturer yet.</p>
+        </div>
+      )}
+
+      {manufacturerTransmitters.length > 0 && (
+        <div class="mt-16">
+          <h2 class="text-2xl font-bold tracking-tight mb-6">Transmitters</h2>
+          <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {manufacturerTransmitters.map((transmitter) => {
+              const support = (transmitter.data.support ?? {
+                level: 'community',
+                status: 'supported',
+                since_version: 'Unknown',
+              }) as {
+                level: SupportLevel;
+                status: SupportStatus;
+                since_version: string;
+                last_version?: string;
+                notes?: string;
+              };
+              const revisions = transmitter.data.hardware?.revisions ?? [];
+              const compliance = transmitter.data.compliance ?? [];
+              const levelLabel = supportLevelLabels[support.level];
+              const statusLabel = supportStatusLabels[support.status];
+              const transmitterSlug = (transmitter as { slug?: string }).slug ?? transmitter.id;
+              const supportSince = support.since_version ?? 'Unknown';
+              const lastSupported = support.last_version ?? null;
+              const supportNotes = support.notes ?? null;
+
+              return (
+                <a
+                  key={transmitter.id}
+                  href={`${basePath}/transmitters/${transmitterSlug}`}
+                  class="group block h-full transition-transform duration-150 hover:-translate-y-1"
+                >
+                  <Card class="h-full transition-shadow group-hover:shadow-lg">
+                    <CardHeader class="space-y-3">
+                      <div class="flex flex-col gap-1">
+                        <CardTitle class="transition-colors group-hover:text-primary">
+                          {transmitter.data.title}
+                        </CardTitle>
+                        <CardDescription>{manufacturerName}</CardDescription>
+                      </div>
+                      <div class="flex flex-wrap gap-2">
+                        <Badge variant="secondary" className="text-xs uppercase">
+                          {levelLabel}
+                        </Badge>
+                        <Badge variant="outline" className="text-xs uppercase">
+                          {statusLabel}
+                        </Badge>
+                      </div>
+                    </CardHeader>
+                    <CardContent class="space-y-3 text-sm">
+                      <div class="flex items-center justify-between">
+                        <span class="text-muted-foreground">Support since</span>
+                        <span class="font-medium">{supportSince}</span>
+                      </div>
+                      {lastSupported && (
+                        <div class="flex items-center justify-between">
+                          <span class="text-muted-foreground">Last supported</span>
+                          <span class="font-medium">{lastSupported}</span>
+                        </div>
+                      )}
+                      {revisions.length > 0 && (
+                        <div class="space-y-2">
+                          <span class="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                            Hardware variants
+                          </span>
+                          <div class="flex flex-wrap gap-1.5">
+                            {revisions.map((revision) => (
+                              <Badge key={revision.id} variant="outline" className="text-xs">
+                                {revision.name}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      {compliance.length > 0 && (
+                        <div class="space-y-2">
+                          <span class="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                            Compliance
+                          </span>
+                          <div class="flex flex-wrap gap-1.5">
+                            {compliance.map((entry) => (
+                              <a
+                                key={`${entry.type}-${entry.id}`}
+                                href={entry.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold text-primary transition-colors hover:text-primary/80"
+                              >
+                                {entry.id}
+                              </a>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      {supportNotes && (
+                        <p class="leading-relaxed text-muted-foreground">{supportNotes}</p>
+                      )}
+                    </CardContent>
+                  </Card>
+                </a>
+              );
+            })}
+          </div>
         </div>
       )}
     </div>
