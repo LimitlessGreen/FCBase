@@ -107,11 +107,11 @@ const hasImageFallback = Astro.slots.has('imageFallback');
 
 <div class={`group relative ${className || ''}`}>
   <Card
-    class={`relative h-full border-2 transition-all group-hover:-translate-y-1 group-hover:border-primary/30 group-hover:shadow-lg group-focus-visible:-translate-y-1 group-focus-visible:border-primary/30 group-focus-visible:shadow-lg ${cardClass || ''}`}
+    class={`relative h-full border transition-all duration-300 ease-out group-hover:-translate-y-0.5 group-hover:border-primary/40 group-hover:shadow-md group-focus-visible:-translate-y-0.5 group-focus-visible:border-primary/40 group-focus-visible:shadow-md ${cardClass || ''}`}
   >
     {/* Image Banner (optional) */}
     {showImage && (
-      <div class={`relative ${aspectClasses[imageAspect]} w-full overflow-hidden rounded-t-xl bg-gradient-to-br from-muted via-background to-muted`}>
+      <div class={`relative ${aspectClasses[imageAspect]} w-full overflow-hidden rounded-t-xl bg-gradient-to-br from-muted/80 via-background to-muted/80`}>
         {image?.src ? (
           <>
             {localImage ? (
@@ -180,22 +180,22 @@ const hasImageFallback = Astro.slots.has('imageFallback');
 
     {/* Header: Title + Subtitle */}
     {showHeader && (
-      <CardHeader>
-        <CardTitle class="group-hover:text-primary transition-colors">
+      <CardHeader class="gap-1.5 p-4 pb-3 sm:p-5 sm:pb-4">
+        <CardTitle class="text-base font-semibold leading-tight transition-colors group-hover:text-primary">
           {title}
         </CardTitle>
-        {subtitle && <CardDescription>{subtitle}</CardDescription>}
+        {subtitle && <CardDescription class="text-xs text-muted-foreground sm:text-sm">{subtitle}</CardDescription>}
       </CardHeader>
     )}
 
     {/* Content: Specs + Badges */}
-    <CardContent>
-      <div class="space-y-3">
+    <CardContent class="p-4 pt-0 sm:p-5 sm:pt-0">
+      <div class="space-y-2.5">
         {/* Specs Slot */}
         <slot name="specs" />
-        
+
         {/* Badges Slot */}
-        <div class="flex flex-wrap gap-1.5 pt-2">
+        <div class="flex flex-wrap gap-1.5 pt-1.5">
           <slot name="badges" />
         </div>
       </div>
