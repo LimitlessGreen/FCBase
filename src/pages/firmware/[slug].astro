@@ -5,6 +5,7 @@ import MainLayout from '@/layouts/MainLayout.astro';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { ExternalLink } from 'lucide-react';
+import { getBasePath } from '@/lib/paths';
 
 export async function getStaticPaths() {
   const firmware = await getCollection('firmware');
@@ -26,7 +27,7 @@ const compatibleControllers = allControllers.filter((controller) =>
 // Sort by title
 compatibleControllers.sort((a, b) => a.data.title.localeCompare(b.data.title));
 
-const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
+const basePath = getBasePath();
 const editPath = `src/content/firmware/${firmware.id}.yaml`;
 ---
 

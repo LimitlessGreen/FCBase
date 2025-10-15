@@ -7,6 +7,7 @@ import { GITHUB_REPO_URL } from "@/lib/constants";
 import ControllerCard from "@/components/cards/ControllerCard.astro";
 import { getManufacturersMap } from "@/lib/content-cache";
 import { createControllerCardModels } from "@/lib/controller-card-model";
+import { getBasePath } from "@/lib/paths";
 
 const title = "FCBase – Open Flight Controller Database";
 const description = "Search and compare ArduPilot, PX4, and iNAV flight controllers plus EdgeTX transmitters – open, community-driven.";
@@ -39,7 +40,7 @@ const features = [
   },
 ];
 
-const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
+const basePath = getBasePath();
 ---
 
 <MainLayout title={title} description={description} editPath="src/pages/index.astro">
