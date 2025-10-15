@@ -42,6 +42,7 @@ interface Props {
   };
   basePath?: string;
   showImage?: boolean;
+  variant: 'grid' | 'compact';
   class?: string;
 }
 
@@ -55,9 +56,15 @@ const {
   compliance = [],
   image,
   basePath = '',
-  showImage = true,
+  variant: variantProp = 'grid',
+  showImage: showImageProp = true,
   class: className,
 } = Astro.props;
+
+const variant = variantProp;
+const isCompact = variant === 'compact';
+const showImage = isCompact ? false : showImageProp;
+const cardClass = isCompact ? 'p-4 sm:p-5' : undefined;
 
 const targetSlug = slug || id;
 
@@ -89,6 +96,7 @@ const remainingCompliance = Math.max(0, complianceCount - trimmedCompliance.leng
 const href = `${basePath}/transmitters/${targetSlug}`;
 const shouldShowSupportBadges = Boolean(supportLevelLabel || supportStatusLabel);
 const hasFallbackIcon = !image?.src;
+const showBadgeFooter = !isCompact && !showImage && shouldShowSupportBadges;
 ---
 <BaseCard
   href={href}
@@ -97,6 +105,7 @@ const hasFallbackIcon = !image?.src;
   image={image}
   showImage={showImage}
   showHeader={!showImage}
+  cardClass={cardClass}
   class={className}
 >
   {showImage && (
@@ -155,77 +164,161 @@ const hasFallbackIcon = !image?.src;
   )}
 
   <Fragment slot="specs">
-    <div class="flex items-center justify-between gap-3 border-t pt-2 text-[11px]">
-      <div class="flex flex-wrap gap-3">
-        <div class="min-w-[72px]">
-          <div class="text-sm font-bold leading-tight">{support.sinceVersion}</div>
-          <div class="text-[9px] uppercase tracking-wide text-muted-foreground">Since</div>
-        </div>
-        {support.lastVersion && (
-          <div class="min-w-[72px]">
-            <div class="text-sm font-bold leading-tight">{support.lastVersion}</div>
-            <div class="text-[9px] uppercase tracking-wide text-muted-foreground">Last</div>
+    {isCompact ? (
+      <div class="space-y-2.5 text-[11px]">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div class="flex flex-wrap items-center gap-1.5">
+            {supportLevelLabel && (
+              <span class="inline-flex items-center rounded-sm border px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide">
+                {supportLevelLabel}
+              </span>
+            )}
+            {supportStatusLabel && (
+              <span class="inline-flex items-center rounded-sm border px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide">
+                {supportStatusLabel}
+              </span>
+            )}
           </div>
+          <div class="flex items-center gap-3 text-[10px] text-muted-foreground">
+            <span class="inline-flex items-baseline gap-1 font-semibold leading-tight text-foreground">
+              <span>{support.sinceVersion}</span>
+              <span class="text-[9px] uppercase tracking-wide text-muted-foreground">Since</span>
+            </span>
+            {support.lastVersion && (
+              <span class="inline-flex items-baseline gap-1 font-semibold leading-tight text-foreground">
+                <span>{support.lastVersion}</span>
+                <span class="text-[9px] uppercase tracking-wide text-muted-foreground">Last</span>
+              </span>
+            )}
+          </div>
+        </div>
+
+        {support.notes && (
+          <p class="text-[11px] leading-snug text-muted-foreground">{support.notes}</p>
         )}
+
+        <div class="flex flex-col gap-2.5">
+          {revisionCount > 0 && (
+            <div class="space-y-1">
+              <span class="text-[9px] font-semibold uppercase tracking-wide text-muted-foreground">Hardware variants</span>
+              <div class="flex flex-wrap gap-1.5">
+                {trimmedRevisions.map((revision) => (
+                  <span
+                    key={revision.id}
+                    class="inline-flex items-center rounded-sm border px-1.5 py-0.5 text-[9px] font-medium"
+                  >
+                    {revision.name}
+                  </span>
+                ))}
+                {remainingRevisions > 0 && (
+                  <span class="inline-flex items-center rounded-sm border bg-muted/40 px-1.5 py-0.5 text-[9px] font-semibold">
+                    +{remainingRevisions} more
+                  </span>
+                )}
+              </div>
+            </div>
+          )}
+
+          {complianceCount > 0 && (
+            <div class="space-y-1">
+              <span class="text-[9px] font-semibold uppercase tracking-wide text-muted-foreground">Compliance IDs</span>
+              <div class="flex flex-wrap gap-1.5">
+                {trimmedCompliance.map((entry) => (
+                  <span
+                    key={entry.id}
+                    class="inline-flex items-center rounded-sm border px-1.5 py-0.5 text-[9px] font-semibold text-primary"
+                  >
+                    {entry.id}
+                  </span>
+                ))}
+                {remainingCompliance > 0 && (
+                  <span class="inline-flex items-center rounded-sm border bg-muted/40 px-1.5 py-0.5 text-[9px] font-semibold">
+                    +{remainingCompliance} more
+                  </span>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
-      <div class="flex flex-wrap gap-3">
+    ) : (
+      <>
+        <div class="flex items-center justify-between gap-3 border-t pt-2 text-[11px]">
+          <div class="flex flex-wrap gap-3">
+            <div class="min-w-[72px]">
+              <div class="text-sm font-bold leading-tight">{support.sinceVersion}</div>
+              <div class="text-[9px] uppercase tracking-wide text-muted-foreground">Since</div>
+            </div>
+            {support.lastVersion && (
+              <div class="min-w-[72px]">
+                <div class="text-sm font-bold leading-tight">{support.lastVersion}</div>
+                <div class="text-[9px] uppercase tracking-wide text-muted-foreground">Last</div>
+              </div>
+            )}
+          </div>
+          <div class="flex flex-wrap gap-3">
+            {revisionCount > 0 && (
+              <div class="text-center">
+                <div class="text-sm font-bold leading-tight">{revisionCount}</div>
+                <div class="text-[9px] uppercase tracking-wide text-muted-foreground">Revisions</div>
+              </div>
+            )}
+            {complianceCount > 0 && (
+              <div class="text-center">
+                <div class="text-sm font-bold leading-tight">{complianceCount}</div>
+                <div class="text-[9px] uppercase tracking-wide text-muted-foreground">Compliance</div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {support.notes && (
+          <p class="text-xs leading-snug text-muted-foreground">{support.notes}</p>
+        )}
+
         {revisionCount > 0 && (
-          <div class="text-center">
-            <div class="text-sm font-bold leading-tight">{revisionCount}</div>
-            <div class="text-[9px] uppercase tracking-wide text-muted-foreground">Revisions</div>
+          <div class="space-y-1 border-t pt-2">
+            <span class="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">Hardware variants</span>
+            <div class="flex flex-wrap gap-1.5">
+              {trimmedRevisions.map((revision) => (
+                <span key={revision.id} class="inline-flex items-center rounded-sm border px-1.5 py-0.5 text-[10px] font-medium">
+                  {revision.name}
+                </span>
+              ))}
+              {remainingRevisions > 0 && (
+                <span class="inline-flex items-center rounded-sm border bg-muted/40 px-1.5 py-0.5 text-[10px] font-semibold">
+                  +{remainingRevisions} more
+                </span>
+              )}
+            </div>
           </div>
         )}
+
         {complianceCount > 0 && (
-          <div class="text-center">
-            <div class="text-sm font-bold leading-tight">{complianceCount}</div>
-            <div class="text-[9px] uppercase tracking-wide text-muted-foreground">Compliance</div>
+          <div class="space-y-1 border-t pt-2">
+            <span class="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">Compliance IDs</span>
+            <div class="flex flex-wrap gap-1.5">
+              {trimmedCompliance.map((entry) => (
+                <span
+                  key={entry.id}
+                  class="inline-flex items-center rounded-sm border px-1.5 py-0.5 text-[10px] font-semibold text-primary"
+                >
+                  {entry.id}
+                </span>
+              ))}
+              {remainingCompliance > 0 && (
+                <span class="inline-flex items-center rounded-sm border bg-muted/40 px-1.5 py-0.5 text-[10px] font-semibold">
+                  +{remainingCompliance} more
+                </span>
+              )}
+            </div>
           </div>
         )}
-      </div>
-    </div>
-
-    {support.notes && (
-      <p class="text-xs leading-snug text-muted-foreground">{support.notes}</p>
-    )}
-
-    {revisionCount > 0 && (
-      <div class="space-y-1 border-t pt-2">
-        <span class="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">Hardware variants</span>
-        <div class="flex flex-wrap gap-1.5">
-          {trimmedRevisions.map((revision) => (
-            <span class="inline-flex items-center rounded-sm border px-1.5 py-0.5 text-[10px] font-medium">
-              {revision.name}
-            </span>
-          ))}
-          {remainingRevisions > 0 && (
-            <span class="inline-flex items-center rounded-sm border bg-muted/40 px-1.5 py-0.5 text-[10px] font-semibold">
-              +{remainingRevisions} more
-            </span>
-          )}
-        </div>
-      </div>
-    )}
-
-    {complianceCount > 0 && (
-      <div class="space-y-1 border-t pt-2">
-        <span class="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">Compliance IDs</span>
-        <div class="flex flex-wrap gap-1.5">
-          {trimmedCompliance.map((entry) => (
-            <span class="inline-flex items-center rounded-sm border px-1.5 py-0.5 text-[10px] font-semibold text-primary">
-              {entry.id}
-            </span>
-          ))}
-          {remainingCompliance > 0 && (
-            <span class="inline-flex items-center rounded-sm border bg-muted/40 px-1.5 py-0.5 text-[10px] font-semibold">
-              +{remainingCompliance} more
-            </span>
-          )}
-        </div>
-      </div>
+      </>
     )}
   </Fragment>
 
-  {!showImage && shouldShowSupportBadges && (
+  {showBadgeFooter && (
     <Fragment slot="badges">
       {supportLevelLabel && (
         <span class="inline-flex items-center rounded-sm border bg-muted/40 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide">
