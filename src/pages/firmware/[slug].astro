@@ -1,7 +1,8 @@
 ---
-import { getCollection, getEntry } from 'astro:content';
+import { getCollection } from 'astro:content';
 import MainLayout from '@/layouts/MainLayout.astro';
-import { Card, CardContent } from '@/components/ui/Card';
+import ControllerCard from '@/components/cards/ControllerCard.astro';
+import { createControllerCardModels } from '@/lib/controller-card-model';
 import { Badge } from '@/components/ui/Badge';
 import { ExternalLink } from 'lucide-react';
 import { getBasePath } from '@/lib/paths';
@@ -17,6 +18,8 @@ export async function getStaticPaths() {
 const { firmware } = Astro.props;
 const { data } = firmware;
 
+const manufacturers = await getCollection('manufacturers');
+
 // Load all controllers supporting this firmware
 const allControllers = await getCollection('controllers');
 const compatibleControllers = allControllers.filter((controller) =>
@@ -25,6 +28,33 @@ const compatibleControllers = allControllers.filter((controller) =>
 
 // Sort by title
 compatibleControllers.sort((a, b) => a.data.title.localeCompare(b.data.title));
+
+const manufacturerMap = new Map(manufacturers.map((entry) => [entry.id, entry]));
+
+const controllerCards = await createControllerCardModels(compatibleControllers, {
+  manufacturersMap: manufacturerMap,
+});
+
+const firmwareStatusByController = new Map(
+  compatibleControllers.map((controller) => {
+    const match = controller.data.firmware_support.find((fw) => fw.id === firmware.id);
+    return [controller.id, match?.status ?? 'stable'] as const;
+  })
+);
+
+const getStatusTone = (status: string | undefined) => {
+  switch (status) {
+    case 'beta':
+      return 'border-orange-500/30 bg-orange-500/15 text-orange-500';
+    case 'deprecated':
+      return 'border-red-500/30 bg-red-500/15 text-red-500';
+    case 'testing':
+    case 'alpha':
+      return 'border-amber-500/30 bg-amber-500/15 text-amber-600';
+    default:
+      return 'border-blue-500/30 bg-blue-500/15 text-blue-500';
+  }
+};
 
 const basePath = getBasePath();
 const editPath = `src/content/firmware/${firmware.id}.yaml`;
@@ -107,54 +137,32 @@ const editPath = `src/content/firmware/${firmware.id}.yaml`;
       {compatibleControllers.length > 0 ? (
         <>
           <h2 class="text-2xl font-bold tracking-tight mb-6">Compatible Controllers</h2>
-          <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {compatibleControllers.map((controller) => {
-              const fwSupport = controller.data.firmware_support.find((fw) => fw.id === firmware.id);
+          <ul class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {controllerCards.map((controller) => {
+              const status = firmwareStatusByController.get(controller.id);
+              const showStatus = status && status !== 'stable';
+              const tone = getStatusTone(status);
               return (
-                <a
-                  href={`${basePath}/controllers/${controller.id}`}
-                  class="group block"
-                >
-                  <Card class="h-full transition-all hover:shadow-lg hover:-translate-y-1">
-                    <div class="relative aspect-video w-full bg-gradient-to-br from-muted via-background to-muted overflow-hidden rounded-t-xl">
-                      <div class="absolute inset-0 flex items-center justify-center px-6 text-center">
-                        <div class="space-y-2">
-                          <h3 class="font-bold text-lg line-clamp-2">{controller.data.title}</h3>
-                          <p class="text-sm text-muted-foreground">{controller.data.brand}</p>
-                        </div>
-                      </div>
-                      {fwSupport?.status && fwSupport.status !== 'stable' && (
-                        <div class="absolute top-2 right-2">
-                          <Badge className={`text-xs ${
-                            fwSupport.status === 'beta' ? 'bg-orange-500/10 text-orange-500 border-orange-500/20' :
-                            fwSupport.status === 'deprecated' ? 'bg-red-500/10 text-red-500 border-red-500/20' :
-                            'bg-blue-500/10 text-blue-500 border-blue-500/20'
-                          }`}>
-                            {fwSupport.status}
-                          </Badge>
-                        </div>
-                      )}
+                <li key={controller.id} class="relative">
+                  <ControllerCard
+                    {...controller}
+                    basePath={basePath}
+                    firmwares={[firmware.id]}
+                  />
+                  {showStatus && (
+                    <div class="pointer-events-none absolute top-3 right-3 z-20">
+                      <Badge
+                        variant="outline"
+                        className={`text-[10px] font-semibold uppercase tracking-wide shadow ${tone}`}
+                      >
+                        {status}
+                      </Badge>
                     </div>
-                    <CardContent class="pt-4">
-                      <div class="space-y-3">
-                        <div class="flex flex-wrap gap-1.5">
-                          <Badge variant="outline" class="text-xs">
-                            {controller.data.mcu.replace('stmicro-', '').toUpperCase()}
-                          </Badge>
-                          <Badge variant="outline" class="text-xs">
-                            {controller.data.mounting}
-                          </Badge>
-                        </div>
-                        <p class="text-xs text-muted-foreground">
-                          {controller.data.io.uarts} UART • {controller.data.io.can || 0} CAN • {controller.data.io.pwm || 0} PWM
-                        </p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </a>
+                  )}
+                </li>
               );
             })}
-          </div>
+          </ul>
         </>
       ) : (
         <div class="text-center py-12 bg-muted/20 rounded-lg">
