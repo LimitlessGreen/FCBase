@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/Badge';
 import ProfessionalTable from '@/components/table/ProfessionalTable.astro';
 import TableRow2Col from '@/components/table/TableRow2Col.astro';
 import TableRow from '@/components/table/TableRow.astro';
-import { getBasePath } from '@/lib/paths';
+import { getBasePath, getSiteUrl } from '@/lib/paths';
 
 export async function getStaticPaths() {
   const mcus = await getCollection('mcu');
@@ -65,9 +65,7 @@ const basePath = getBasePath();
 const editPath = `src/content/mcu/${mcu.id}.yaml`;
 const mcuTitle = data.name || data.title || mcu.id;
 const manufacturerName = data.manufacturer || 'Unknown manufacturer';
-const canonicalUrl = Astro.site
-  ? new URL(`mcu/${mcu.id}`, Astro.site).toString()
-  : `${basePath}/mcu/${mcu.id}`;
+const canonicalUrl = getSiteUrl(`mcu/${mcu.id}`, Astro.site);
 const mcuSummary = data.notes
   ? data.notes
   : `${mcuTitle} microcontroller from ${manufacturerName}${data.architecture ? ` using the ${data.architecture}` : ''}.`;
