@@ -1,7 +1,9 @@
 id: ardupilot-autopilots
-title: Autopilot Hardware Options
-publisher: ArduPilot Documentation Team
-year: 2024
-url: https://ardupilot.org/plane/docs/common-autopilots.html
-retrieved: "2025-10-13"
+type: ardupilot-doc
+title: "ArduPilot Autopilot Hardware Options"
+url: https://ardupilot.org/copter/docs/common-autopilots.html
+date: "2025-10-15"
+reliability: A
+publisher: ArduPilot
 language: en
+notes: "ArduPilot's maintained catalog of supported flight controllers, including hardware selection guidance and compatibility notes."

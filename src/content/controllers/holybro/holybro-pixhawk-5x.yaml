@@ -271,6 +271,7 @@ firmware_support:
 sources:
 - ardupilot-autopilots
 - ardupilot-holybro-ph5x
+- holybro-pixhawk5x-product
 verification:
   last_updated: "2025-10-13"
   level: community

@@ -1,6 +1,9 @@
 id: ardupilot-holybro-pixhawk4
-title: Pixhawk4 Flight Controller
-publisher: ArduPilot Development Team
-url: https://holybro.com/products/pixhawk-4
-retrieved: "2025-10-13"
+type: ardupilot-doc
+title: "Holybro Pixhawk 4 — ArduPilot Hardware Overview"
+url: https://ardupilot.org/copter/docs/common-holybro-pixhawk4.html
+date: "2025-10-15"
+reliability: A
+publisher: ArduPilot
 language: en
+notes: "Official ArduPilot hardware guide for the Holybro Pixhawk 4 with specifications, pinouts, and recommended peripherals."

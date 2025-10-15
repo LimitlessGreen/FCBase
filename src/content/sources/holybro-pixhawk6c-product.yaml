@@ -1,6 +1,9 @@
 id: holybro-pixhawk6c-product
-title: Pixhawk 6C
-publisher: Holybro
+type: manufacturer-doc
+title: "Pixhawk 6C Flight Controller — Holybro"
 url: https://holybro.com/products/pixhawk-6c
-retrieved: "2025-10-13"
+date: "2025-10-15"
+reliability: A
+publisher: Holybro
 language: en
+notes: "Holybro's Pixhawk 6C product page with detailed specifications, kit contents, and sensor information."

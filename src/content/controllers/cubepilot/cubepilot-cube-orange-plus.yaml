@@ -240,6 +240,7 @@ firmware_support:
 sources:
 - ardupilot-autopilots
 - ardupilot-cube-orange-overview
+- cubepilot-cube-orange-plus-product
 - px4-cube-orange-plus
 verification:
   last_updated: "2025-10-13"

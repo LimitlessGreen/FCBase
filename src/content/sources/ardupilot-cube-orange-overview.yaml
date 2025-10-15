@@ -1,7 +1,9 @@
 id: ardupilot-cube-orange-overview
-title: The Cube Orange/+ With ADSB-In Overview
-publisher: ArduPilot Documentation Team
-year: 2023
-url: https://ardupilot.org/plane/docs/common-thecubeorange-overview.html
-retrieved: "2025-10-13"
+type: ardupilot-doc
+title: "Cube Orange/Orange+ — ArduPilot Hardware Overview"
+url: https://ardupilot.org/copter/docs/common-cubeorange-overview.html
+date: "2025-10-15"
+reliability: A
+publisher: ArduPilot
 language: en
+notes: "Official ArduPilot guide covering the Cube Orange and Orange+ modules, including specifications, carrier options, and setup information."

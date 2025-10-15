@@ -1,6 +1,9 @@
 id: ardupilot-holybro-durandal
-title: Holybro Durandal
+type: ardupilot-doc
+title: "Holybro Durandal — ArduPilot Hardware Overview"
+url: https://ardupilot.org/copter/docs/common-holybro-durandal.html
+date: "2025-10-15"
+reliability: A
 publisher: ArduPilot
-url: https://ardupilot.org/copter/docs/common-durandal-overview.html
-retrieved: "2025-10-13"
 language: en
+notes: "Official ArduPilot documentation detailing the Durandal flight controller specifications, power inputs, and wiring guidance."

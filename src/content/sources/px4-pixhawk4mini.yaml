@@ -1,7 +1,9 @@
 id: px4-pixhawk4mini
-title: Holybro Pixhawk 4 Mini | PX4 User Guide
-publisher: PX4
-year: 2024
-url: https://raw.githubusercontent.com/PX4/PX4-user_guide/main/en/flight_controller/pixhawk4_mini.md
-retrieved: "2025-10-13"
+type: px4-doc
+title: "Pixhawk 4 Mini — PX4 User Guide"
+url: https://docs.px4.io/main/en/flight_controller/pixhawk4_mini.html
+date: "2025-10-15"
+reliability: A
+publisher: PX4 Autopilot
 language: en
+notes: "Official PX4 documentation for the Pixhawk 4 Mini detailing specifications, wiring, and PX4-specific settings."

@@ -1,6 +1,9 @@
 id: cuav-x7-base-rc03
-title: "CUAV X7 Base RC03 Schematic"
+type: manufacturer-doc
+title: "CUAV X7 Base RC03 Carrier"
+url: https://doc.cuav.net/autopilot/x7/en/base-rc03.html
+date: "2025-10-15"
+reliability: A
 publisher: CUAV
-url: https://raw.githubusercontent.com/cuav/hardware/master/X7_Autopilot/X7_BASE_RC03.pdf
-retrieved: "2025-10-15"
 language: en
+notes: "Official CUAV documentation describing the X7 Base RC03 carrier board interfaces and wiring."

@@ -1,6 +1,9 @@
 id: px4-cuav-x7
-title: CUAV X7 Flight Controller | PX4 User Guide
-publisher: PX4
-url: https://raw.githubusercontent.com/PX4/PX4-user_guide/main/en/flight_controller/cuav_x7.md
-retrieved: "2025-10-15"
+type: px4-doc
+title: "CUAV X7 — PX4 User Guide"
+url: https://docs.px4.io/main/en/flight_controller/cuav_x7.html
+date: "2025-10-15"
+reliability: A
+publisher: PX4 Autopilot
 language: en
+notes: "Official PX4 documentation for the CUAV X7 flight controller including specifications, wiring, and configuration steps."

@@ -1,7 +1,9 @@
 id: ardupilot-cuav-pixhawkv6x
-title: CUAV Pixhawk v6X
-publisher: ArduPilot Documentation Team
-year: 2023
-url: https://ardupilot.org/plane/docs/common-cuav-pixhawkv6X.html
-retrieved: "2025-10-13"
+type: ardupilot-doc
+title: "CUAV Pixhawk V6X — ArduPilot Hardware Overview"
+url: https://ardupilot.org/copter/docs/common-cuav-pixhawk-v6x.html
+date: "2025-10-15"
+reliability: A
+publisher: ArduPilot
 language: en
+notes: "ArduPilot-maintained hardware reference for the CUAV Pixhawk V6X including specifications, connectors, and setup steps."

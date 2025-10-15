@@ -254,6 +254,7 @@ firmware_support:
 sources:
   - ardupilot-autopilots
   - ardupilot-cuav-pixhawkv6x
+  - cuav-pixhawk-v6x-product
 verification:
   last_updated: "2025-10-13"
   level: community

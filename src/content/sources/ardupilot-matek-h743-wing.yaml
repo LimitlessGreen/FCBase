@@ -1,7 +1,9 @@
 id: ardupilot-matek-h743-wing
-title: Mateksys H743-Wing/SLIM/MINI/WLITE
-publisher: ArduPilot Documentation Team
-year: 2023
+type: ardupilot-doc
+title: "Matek H743-Wing — ArduPilot Hardware Overview"
 url: https://ardupilot.org/plane/docs/common-matekh743-wing.html
-retrieved: "2025-10-13"
+date: "2025-10-15"
+reliability: A
+publisher: ArduPilot
 language: en
+notes: "Official ArduPilot documentation for the Matek H743-Wing describing specifications, wiring, and setup notes."

@@ -1,6 +1,9 @@
 id: ardupilot-cuav-x7-family
-title: CUAV X7 Family Overview | ArduPilot Documentation
+type: ardupilot-doc
+title: "CUAV X7 Family — ArduPilot Hardware Overview"
+url: https://ardupilot.org/copter/docs/common-cuav-x7.html
+date: "2025-10-15"
+reliability: A
 publisher: ArduPilot
-url: https://raw.githubusercontent.com/ArduPilot/ardupilot_wiki/master/common/source/docs/common-cuav-x7-family-overview.rst
-retrieved: "2025-10-15"
 language: en
+notes: "Official ArduPilot page outlining the CUAV X7-series flight controllers, baseboard options, and wiring guidance."

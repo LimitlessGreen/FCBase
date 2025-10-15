@@ -1,6 +1,9 @@
 id: ardupilot-cuav-nora-overview
-title: CUAV Nora Overview
-publisher: ArduPilot
+type: ardupilot-doc
+title: "CUAV Nora — ArduPilot Hardware Overview"
 url: https://ardupilot.org/copter/docs/common-cuav-nora-overview.html
-retrieved: "2025-10-13"
+date: "2025-10-15"
+reliability: A
+publisher: ArduPilot
 language: en
+notes: "Official ArduPilot guide for the CUAV Nora, summarizing hardware specs, power options, and setup recommendations."

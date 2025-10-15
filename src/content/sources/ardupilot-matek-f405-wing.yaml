@@ -1,7 +1,9 @@
 id: ardupilot-matek-f405-wing
-title: Mateksys F405-Wing
-publisher: ArduPilot Documentation Team
-year: 2024
+type: ardupilot-doc
+title: "Matek F405-Wing — ArduPilot Hardware Overview"
 url: https://ardupilot.org/plane/docs/common-matekf405-wing.html
-retrieved: "2025-10-14"
+date: "2025-10-15"
+reliability: A
+publisher: ArduPilot
 language: en
+notes: "Official ArduPilot article summarizing the Matek F405-Wing hardware, power design, and setup guidance."

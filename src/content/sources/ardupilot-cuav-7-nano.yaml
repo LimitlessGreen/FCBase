@@ -1,6 +1,9 @@
 id: ardupilot-cuav-7-nano
-title: CUAV-7-Nano Flight Controller
-publisher: ArduPilot
+type: ardupilot-doc
+title: "CUAV 7 Nano — ArduPilot Hardware Overview"
 url: https://ardupilot.org/copter/docs/common-CUAV-7-Nano.html
-retrieved: "2025-10-13"
+date: "2025-10-15"
+reliability: A
+publisher: ArduPilot
 language: en
+notes: "Official ArduPilot documentation covering the CUAV 7 Nano autopilot, including specifications, wiring, and supported firmware."

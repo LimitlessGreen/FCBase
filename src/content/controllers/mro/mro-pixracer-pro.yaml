@@ -233,6 +233,7 @@ firmware_support:
 sources:
 - ardupilot-autopilots
 - ardupilot-mro-pixracer-pro
+- mro-pixracer-pro-product
 verification:
   last_updated: "2025-10-13"
   level: community

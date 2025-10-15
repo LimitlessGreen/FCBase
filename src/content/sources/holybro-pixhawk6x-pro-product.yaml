@@ -1,0 +1,9 @@
+id: holybro-pixhawk6x-pro-product
+type: manufacturer-doc
+title: "Pixhawk 6X Pro Flight Controller — Holybro"
+url: https://holybro.com/products/pixhawk-6x-pro
+date: "2025-10-15"
+reliability: A
+publisher: Holybro
+language: en
+notes: "Holybro's product listing for the Pixhawk 6X Pro carrier, documenting the extended IO, Ethernet, and CAN interfaces."

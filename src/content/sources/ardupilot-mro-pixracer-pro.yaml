@@ -1,7 +1,9 @@
 id: ardupilot-mro-pixracer-pro
-title: Pixracer Pro
-publisher: ArduPilot Documentation Team
-year: 2024
-url: https://ardupilot.org/plane/docs/common-pixracer-pro.html
-retrieved: "2025-10-13"
+type: ardupilot-doc
+title: "mRo Pixracer Pro — ArduPilot Hardware Overview"
+url: https://ardupilot.org/copter/docs/common-mro-pixracer-pro.html
+date: "2025-10-15"
+reliability: A
+publisher: ArduPilot
 language: en
+notes: "Official ArduPilot page documenting the mRo Pixracer Pro hardware, connectors, and recommended configurations."

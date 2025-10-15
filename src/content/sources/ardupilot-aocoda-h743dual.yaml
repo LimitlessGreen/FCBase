@@ -1,6 +1,9 @@
 id: ardupilot-aocoda-h743dual
-title: Aocoda-RC H743Dual
-publisher: ArduPilot
+type: ardupilot-doc
+title: "Aocoda-RC H743Dual — ArduPilot Hardware Guide"
 url: https://ardupilot.org/copter/docs/common-aocoda-h743dual.html
-retrieved: "2025-10-13"
+date: "2025-10-15"
+reliability: A
+publisher: ArduPilot
 language: en
+notes: "Official ArduPilot reference page detailing specifications, wiring, and setup guidance for the Aocoda-RC H743Dual." 

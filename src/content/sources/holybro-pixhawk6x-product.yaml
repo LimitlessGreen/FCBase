@@ -1,6 +1,9 @@
 id: holybro-pixhawk6x-product
-title: Pixhawk 6X (ICM-45686)
-publisher: Holybro
+type: manufacturer-doc
+title: "Pixhawk 6X Flight Controller — Holybro"
 url: https://holybro.com/products/pixhawk-6x
-retrieved: "2025-10-13"
+date: "2025-10-15"
+reliability: A
+publisher: Holybro
 language: en
+notes: "Holybro's Pixhawk 6X product page highlighting specifications, sensor variants, and modular baseboard options."
