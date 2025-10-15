@@ -14,3 +14,14 @@ Each revision may declare an `overrides` block to document spec changes relative
 - `power`: override properties such as `voltage_in`, `inputs`, or `redundant` when a revision alters the power subsystem.
 
 When overrides are present the site automatically merges them with the base controller spec so the detail page can toggle between revisions. Keep narrative `notes`, `changes`, and `sources` alongside overrides to help reviewers understand why the data differs.
+
+## Development
+
+Set up the project with [pnpm](https://pnpm.io/) to ensure the correct dependency tree:
+
+```bash
+pnpm install
+pnpm run dev
+```
+
+Additional scripts such as `pnpm run build` and `pnpm run preview` are available through the standard `package.json` commands.
