@@ -6,7 +6,8 @@ brand: cuav
 mcu: stmicro-stm32h753
 mounting: cube
 images:
-  - alt: CUAV Pixhawk V6X autopilot in its black aluminum enclosure with labeled
+  - src: cuav-pixhawk-v6x.jpg
+    alt: CUAV Pixhawk V6X autopilot in its black aluminum enclosure with labeled
       power and data ports.
     credit: ArduPilot Documentation
     source_url: https://ardupilot.org/plane/docs/common-cuav-pixhawkv6X.html
