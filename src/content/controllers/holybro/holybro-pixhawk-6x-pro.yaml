@@ -296,6 +296,7 @@ firmware_support:
   status: stable
 sources:
 - ardupilot-pixhawk6x
+- holybro-pixhawk6x-pro-product
 - px4-pixhawk6x-pro
 verification:
   last_updated: "2025-10-15"

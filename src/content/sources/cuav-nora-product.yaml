@@ -1,6 +1,9 @@
 id: cuav-nora-product
-title: Nora Flight Controller
+type: manufacturer-doc
+title: "CUAV Nora Autopilot Manual"
+url: https://doc.cuav.net/autopilot/nora/en/
+date: "2025-10-15"
+reliability: A
 publisher: CUAV
-url: https://doc.cuav.net/flight-controller/x7/en/nora.html
-retrieved: "2025-10-13"
 language: en
+notes: "Official CUAV Nora documentation covering hardware specifications, pinouts, and installation guidance."

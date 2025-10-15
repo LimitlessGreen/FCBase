@@ -1,7 +1,9 @@
 id: ardupilot-holybro-pixhawk6c
-title: Pixhawk 6C 6C Mini Flight Controller
-publisher: ArduPilot Documentation Team
-year: 2023
-url: https://ardupilot.org/plane/docs/common-holybro-pixhawk6C.html
-retrieved: "2025-10-13"
+type: ardupilot-doc
+title: "Holybro Pixhawk 6C — ArduPilot Hardware Overview"
+url: https://ardupilot.org/copter/docs/common-holybro-pixhawk6c.html
+date: "2025-10-15"
+reliability: A
+publisher: ArduPilot
 language: en
+notes: "Official ArduPilot hardware page describing Pixhawk 6C specifications, sensors, and wiring considerations."

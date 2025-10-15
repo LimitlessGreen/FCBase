@@ -1,6 +1,9 @@
 id: cuav-7-nano-product
-title: CUAV 7-Nano Autopilot Differences
-publisher: CUAV
+type: manufacturer-doc
+title: "CUAV 7 Nano Autopilot Manual"
 url: https://doc.cuav.net/controller/7-nano/en/7-nano.html
-retrieved: "2025-10-13"
+date: "2025-10-15"
+reliability: A
+publisher: CUAV
 language: en
+notes: "Official CUAV product documentation describing the 7 Nano hardware, interfaces, and specifications."

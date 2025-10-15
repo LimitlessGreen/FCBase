@@ -1,6 +1,9 @@
 id: mateksys-h743-wing-product
-title: Flight Controller H743-WING
-publisher: Matek Systems
+type: manufacturer-doc
+title: "Matek H743-WING Product Page"
 url: https://www.mateksys.com/?portfolio=h743-wing
-retrieved: "2025-10-13"
+date: "2025-10-15"
+reliability: A
+publisher: Matek Systems
 language: en
+notes: "Official Matek Systems product page describing the H743-WING hardware, specifications, and wiring diagrams."

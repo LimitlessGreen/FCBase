@@ -1,6 +1,9 @@
 id: px4-pixhawk6x-pro
-title: Holybro Pixhawk 6X Pro | PX4 User Guide
-publisher: PX4
-url: https://raw.githubusercontent.com/PX4/PX4-user_guide/main/en/flight_controller/pixhawk6x_pro.md
-retrieved: "2025-10-15"
+type: px4-doc
+title: "Pixhawk 6X Pro — PX4 User Guide"
+url: https://docs.px4.io/main/en/flight_controller/pixhawk6x_pro.html
+date: "2025-10-15"
+reliability: A
+publisher: PX4 Autopilot
 language: en
+notes: "Official PX4 documentation for the Pixhawk 6X Pro carrier detailing interfaces, wiring, and PX4 setup."

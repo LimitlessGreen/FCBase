@@ -1,7 +1,9 @@
 id: mateksys-f405-wing-product
-title: (EOL) Flight Controller F405-WING
-publisher: Mateksys
-year: 2023
+type: manufacturer-doc
+title: "Matek F405-WING Product Page"
 url: https://www.mateksys.com/?portfolio=f405-wing
-retrieved: "2025-10-14"
+date: "2025-10-15"
+reliability: A
+publisher: Matek Systems
 language: en
+notes: "Official Matek Systems product page for the F405-WING detailing specifications, pad assignments, and accessories."

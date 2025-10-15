@@ -192,6 +192,7 @@ firmware_support:
 sources:
   - ardupilot-autopilots
   - ardupilot-holybro-kakuteh7-v2
+  - holybro-kakute-h7-v2-product
 verification:
   last_updated: "2025-10-13"
   level: community

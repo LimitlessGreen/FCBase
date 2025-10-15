@@ -1,6 +1,9 @@
 id: ardupilot-holybro-ph4mini
-title: Pixhawk4-Mini Flight Controller
-publisher: ArduPilot Documentation Team
-url: https://ardupilot.org/plane/docs/common-holybro-ph4mini.html
-retrieved: "2025-10-13"
+type: ardupilot-doc
+title: "Holybro Pixhawk 4 Mini — ArduPilot Hardware Overview"
+url: https://ardupilot.org/copter/docs/common-holybro-pixhawk4-mini.html
+date: "2025-10-15"
+reliability: A
+publisher: ArduPilot
 language: en
+notes: "Official ArduPilot hardware page for the Pixhawk 4 Mini covering specifications, wiring diagrams, and setup tips."

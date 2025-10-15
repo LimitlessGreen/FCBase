@@ -239,8 +239,9 @@ firmware_support:
 - id: ardupilot
   status: stable
 sources:
-- ardupilot-autopilots
+- aocoda-h743dual-product
 - ardupilot-aocoda-h743dual
+- ardupilot-autopilots
 verification:
   last_updated: "2025-10-13"
   level: community

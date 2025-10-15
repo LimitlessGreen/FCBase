@@ -1,7 +1,9 @@
 id: ardupilot-matek-f765-wing
-title: Mateksys F765-Wing
-publisher: ArduPilot Documentation Team
-year: 2024
+type: ardupilot-doc
+title: "Matek F765-Wing — ArduPilot Hardware Overview"
 url: https://ardupilot.org/plane/docs/common-matekf765-wing.html
-retrieved: "2025-10-14"
+date: "2025-10-15"
+reliability: A
+publisher: ArduPilot
 language: en
+notes: "Official ArduPilot hardware guide for the Matek F765-Wing including connectors, wiring, and setup notes."

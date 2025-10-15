@@ -1,6 +1,9 @@
 id: ardupilot-thecube-overview
-title: The Cube Black Overview
-publisher: ArduPilot
+type: ardupilot-doc
+title: "The Cube Family — ArduPilot Hardware Overview"
 url: https://ardupilot.org/copter/docs/common-thecube-overview.html
-retrieved: "2025-10-13"
+date: "2025-10-15"
+reliability: A
+publisher: ArduPilot
 language: en
+notes: "Official ArduPilot hardware overview for The Cube flight controller family, detailing variants, sensors, and carrier compatibility."

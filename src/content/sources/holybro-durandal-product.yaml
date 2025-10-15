@@ -1,6 +1,9 @@
 id: holybro-durandal-product
-title: Durandal Flight Controller
-publisher: Holybro
+type: manufacturer-doc
+title: "Durandal Flight Controller — Holybro"
 url: https://holybro.com/products/durandal
-retrieved: "2025-10-13"
+date: "2025-10-15"
+reliability: A
+publisher: Holybro
 language: en
+notes: "Holybro's product page for the Durandal flight controller with specifications, sensor details, and kit contents."

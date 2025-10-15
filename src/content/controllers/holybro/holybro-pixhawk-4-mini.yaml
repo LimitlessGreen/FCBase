@@ -224,6 +224,7 @@ firmware_support:
 sources:
 - ardupilot-autopilots
 - ardupilot-holybro-ph4mini
+- holybro-pixhawk4-mini-product
 - px4-pixhawk4mini
 verification:
   last_updated: "2025-10-13"

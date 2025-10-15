@@ -1,6 +1,9 @@
 id: px4-cuav-nora
-title: CUAV Nora Flight Controller | PX4 User Guide
-publisher: PX4
-url: https://raw.githubusercontent.com/PX4/PX4-user_guide/main/en/flight_controller/cuav_nora.md
-retrieved: "2025-10-13"
+type: px4-doc
+title: "CUAV Nora — PX4 User Guide"
+url: https://docs.px4.io/main/en/flight_controller/cuav_nora.html
+date: "2025-10-15"
+reliability: A
+publisher: PX4 Autopilot
 language: en
+notes: "Official PX4 documentation for the CUAV Nora autopilot covering specifications, wiring, and PX4 configuration."

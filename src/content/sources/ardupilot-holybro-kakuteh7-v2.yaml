@@ -1,7 +1,9 @@
 id: ardupilot-holybro-kakuteh7-v2
-title: Holybro Kakute H7 V2
-publisher: ArduPilot Documentation Team
-year: 2024
-url: https://ardupilot.org/plane/docs/common-holybro-kakuteh7-v2.html
-retrieved: "2025-10-13"
+type: ardupilot-doc
+title: "Holybro Kakute H7 V2 — ArduPilot Hardware Overview"
+url: https://ardupilot.org/copter/docs/common-holybro-kakuteh7-v2.html
+date: "2025-10-15"
+reliability: A
+publisher: ArduPilot
 language: en
+notes: "Official ArduPilot reference for the Kakute H7 V2, covering supported peripherals, pinouts, and configuration notes."

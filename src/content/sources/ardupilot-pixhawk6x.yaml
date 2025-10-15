@@ -1,6 +1,9 @@
 id: ardupilot-pixhawk6x
-title: Pixhawk 6X/6X Pro Flight Controller | ArduPilot Documentation
+type: ardupilot-doc
+title: "Pixhawk 6X Series — ArduPilot Hardware Overview"
+url: https://ardupilot.org/copter/docs/common-pixhawk6x-overview.html
+date: "2025-10-15"
+reliability: A
 publisher: ArduPilot
-url: https://raw.githubusercontent.com/ArduPilot/ardupilot_wiki/master/common/source/docs/common-holybro-pixhawk6X.rst
-retrieved: "2025-10-15"
 language: en
+notes: "ArduPilot-maintained overview covering the Pixhawk 6X family of controllers, hardware options, and setup considerations."
