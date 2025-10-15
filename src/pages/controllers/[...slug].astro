@@ -791,18 +791,18 @@ const hasLinkItems = linkItems.length > 0;
       )}
       <li>
         <a
-          href="#issues"
+          href="#known-issues"
           class="inline-flex items-center justify-center rounded-md border border-transparent bg-background px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-foreground shadow-xs transition focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
         >
-          Issues
+          Known Issues
         </a>
       </li>
       <li>
         <a
-          href="#links"
+          href="#resources"
           class="inline-flex items-center justify-center rounded-md border border-transparent bg-background px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-foreground shadow-xs transition focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
         >
-          Links
+          Documentation & Vendors
         </a>
       </li>
     </ul>
@@ -1421,53 +1421,6 @@ const hasLinkItems = linkItems.length > 0;
             )}
           </div>
 
-          {hasMultipleVariants && (
-            <script type="module">
-              const script = document.currentScript;
-              const root = script?.parentElement?.querySelector('[data-revision-root]');
-              if (!root) return;
-              const defaultId = root.dataset.defaultVariant;
-              const tabs = Array.from(root.querySelectorAll('[data-revision-tab]'));
-              const panels = Array.from(root.querySelectorAll('[data-revision-panel]'));
-              const issueSections = Array.from(
-                document.querySelectorAll('[data-variant-issues]')
-              ).filter((el) => el instanceof HTMLElement);
-              const select = root.querySelector('[data-revision-select]');
-              const activeClasses = ['bg-primary/10', 'border-primary/40', 'text-primary'];
-              const inactiveClasses = ['bg-muted/30', 'border-border/60', 'text-muted-foreground'];
-              const setActive = (id) => {
-                panels.forEach((panel) => {
-                  const isActive = panel.dataset.revisionPanel === id;
-                  panel.classList.toggle('hidden', !isActive);
-                  panel.setAttribute('aria-hidden', isActive ? 'false' : 'true');
-                });
-                issueSections.forEach((section) => {
-                  const el = section;
-                  const isActive = el.dataset.variantIssues === id;
-                  el.classList.toggle('hidden', !isActive);
-                  el.setAttribute('aria-hidden', isActive ? 'false' : 'true');
-                });
-                tabs.forEach((tab) => {
-                  const isActive = tab.dataset.revisionTab === id;
-                  tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
-                  activeClasses.forEach((cls) => tab.classList.toggle(cls, isActive));
-                  inactiveClasses.forEach((cls) => tab.classList.toggle(cls, !isActive));
-                });
-                if (select && select.value !== id) {
-                  select.value = id;
-                }
-              };
-              tabs.forEach((tab) => {
-                tab.addEventListener('click', () => setActive(tab.dataset.revisionTab));
-              });
-              if (select) {
-                select.addEventListener('change', (event) => setActive(event.target.value));
-              }
-              if (defaultId) {
-                setActive(defaultId);
-              }
-            </script>
-          )}
         </div>
 
         <aside class="space-y-4">
@@ -1642,8 +1595,8 @@ const hasLinkItems = linkItems.length > 0;
   </section>
 
 
-  <section id="issues" aria-labelledby="controller-issues" class="mt-16 space-y-4">
-    <h2 class="text-lg font-semibold tracking-tight text-foreground" id="controller-issues">
+  <section id="known-issues" aria-labelledby="known-issues-heading" class="mt-16 space-y-4">
+    <h2 class="text-lg font-semibold tracking-tight text-foreground" id="known-issues-heading">
       Known Issues & Advisories
     </h2>
       {variantIssueBuckets.map((bucket, idx) => (
@@ -1747,11 +1700,68 @@ const hasLinkItems = linkItems.length > 0;
     )}
         </div>
       ))}
+    {hasMultipleVariants && (
+      <script type="module">
+        const script = document.currentScript;
+        if (!(script instanceof HTMLScriptElement)) return;
+        const root = document.querySelector('[data-revision-root]');
+        if (!(root instanceof HTMLElement)) return;
+        const issuesSection = script.parentElement;
+        if (!issuesSection) return;
+        const defaultId = root.dataset.defaultVariant;
+        const tabs = Array.from(root.querySelectorAll('[data-revision-tab]'));
+        const panels = Array.from(root.querySelectorAll('[data-revision-panel]'));
+        const issueSections = Array.from(
+          issuesSection.querySelectorAll('[data-variant-issues]')
+        ).filter((el) => el instanceof HTMLElement);
+        const select = root.querySelector('[data-revision-select]');
+        const activeClasses = ['bg-primary/10', 'border-primary/40', 'text-primary'];
+        const inactiveClasses = ['bg-muted/30', 'border-border/60', 'text-muted-foreground'];
+        const setActive = (id) => {
+          if (typeof id !== 'string' || id.length === 0) return;
+          panels.forEach((panel) => {
+            if (!(panel instanceof HTMLElement)) return;
+            const isActive = panel.dataset.revisionPanel === id;
+            panel.classList.toggle('hidden', !isActive);
+            panel.setAttribute('aria-hidden', isActive ? 'false' : 'true');
+          });
+          issueSections.forEach((el) => {
+            const isActive = el.dataset.variantIssues === id;
+            el.classList.toggle('hidden', !isActive);
+            el.setAttribute('aria-hidden', isActive ? 'false' : 'true');
+          });
+          tabs.forEach((tab) => {
+            if (!(tab instanceof HTMLElement)) return;
+            const isActive = tab.dataset.revisionTab === id;
+            tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
+            activeClasses.forEach((cls) => tab.classList.toggle(cls, isActive));
+            inactiveClasses.forEach((cls) => tab.classList.toggle(cls, !isActive));
+          });
+          if (select instanceof HTMLSelectElement && select.value !== id) {
+            select.value = id;
+          }
+        };
+        tabs.forEach((tab) => {
+          tab.addEventListener('click', () => setActive(tab.dataset.revisionTab));
+        });
+        if (select instanceof HTMLSelectElement) {
+          select.addEventListener('change', (event) => {
+            const target = event.target;
+            if (target instanceof HTMLSelectElement) {
+              setActive(target.value);
+            }
+          });
+        }
+        if (defaultId) {
+          setActive(defaultId);
+        }
+      </script>
+    )}
   </section>
 
-  <section id="links" aria-labelledby="controller-links" class="mt-16 space-y-4">
-    <h2 class="text-lg font-semibold tracking-tight text-foreground" id="controller-links">
-      External Resources
+  <section id="resources" aria-labelledby="controller-resources" class="mt-16 space-y-4">
+    <h2 class="text-lg font-semibold tracking-tight text-foreground" id="controller-resources">
+      Documentation & Vendor Resources
     </h2>
       {hasLinkItems ? (
         <div class="grid gap-3 md:grid-cols-2">
@@ -1782,9 +1792,9 @@ const hasLinkItems = linkItems.length > 0;
       ) : (
         <Card className="border border-dashed border-border/60 bg-muted/20">
           <CardHeader>
-            <CardTitle className="text-base font-semibold">No external links available</CardTitle>
+            <CardTitle className="text-base font-semibold">No supporting resources available</CardTitle>
             <CardDescription>
-              Documentation, pinout diagrams, and vendor resources will appear here once they are added to the dataset.
+              Documentation, pinout diagrams, and vendor listings will appear here once they are added to the dataset.
             </CardDescription>
           </CardHeader>
         </Card>
