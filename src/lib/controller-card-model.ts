@@ -30,6 +30,7 @@ export interface ControllerCardModel {
   barometer: boolean;
   firmwares: string[];
   image?: ControllerCardImage;
+  variant: 'grid' | 'compact';
 }
 
 interface BuildOptions {
@@ -100,6 +101,7 @@ export async function createControllerCardModel(
     barometer: hasBarometer(controller),
     firmwares: resolveFirmwareIds(controller),
     image: normalizeImage(controller),
+    variant: 'grid',
   };
 }
 

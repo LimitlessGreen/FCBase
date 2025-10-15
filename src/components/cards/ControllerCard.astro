@@ -24,6 +24,7 @@ interface Props {
   };
   basePath?: string;
   showImage?: boolean;
+  variant: 'grid' | 'compact';
   class?: string;
 }
 
@@ -41,9 +42,15 @@ const {
   firmwares = [],
   image,
   basePath = '',
-  showImage = true,
+  variant: variantProp = 'grid',
+  showImage: showImageProp = true,
   class: className,
 } = Astro.props;
+
+const variant = variantProp;
+const isCompact = variant === 'compact';
+const showImage = isCompact ? false : showImageProp;
+const cardClass = isCompact ? 'p-4 sm:p-5' : undefined;
 
 const mcuDisplay = mcu ? mcu.toUpperCase().replace(/^(STMICRO-|ATMEGA-)/, '') : 'UNKNOWN';
 const mountingDisplay = mounting
@@ -62,6 +69,7 @@ const href = `${basePath}/controllers/${id}`;
   image={image}
   showImage={showImage}
   showHeader={!showImage}
+  cardClass={cardClass}
   class={className}
 >
   {showImage && (
@@ -92,48 +100,100 @@ const href = `${basePath}/controllers/${id}`;
   )}
 
   <Fragment slot="specs">
-    <div class="flex gap-1.5">
-      <span class="inline-flex items-center rounded-sm border px-1.5 py-0.5 text-[10px] font-mono font-bold">
-        {mcuDisplay}
-      </span>
-      {mountingDisplay && (
-        <span class="inline-flex items-center rounded-sm border px-1.5 py-0.5 text-[10px] font-semibold">
-          {mountingDisplay}
-        </span>
-      )}
-    </div>
-    <div class="flex items-center justify-between border-t pt-2 text-[11px]">
-      <div class="flex gap-3">
-        {uarts !== undefined && (
-          <div class="text-center">
-            <div class="font-bold">{uarts}</div>
-            <div class="text-[9px] text-muted-foreground">UART</div>
+    {isCompact ? (
+      <div class="space-y-2.5 text-[11px]">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div class="flex flex-wrap items-center gap-1.5">
+            <span class="inline-flex items-center rounded-sm border px-1.5 py-0.5 text-[9px] font-mono font-semibold uppercase tracking-wide">
+              {mcuDisplay}
+            </span>
+            {mountingDisplay && (
+              <span class="inline-flex items-center rounded-sm border px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide">
+                {mountingDisplay}
+              </span>
+            )}
           </div>
-        )}
-        {can !== undefined && can > 0 && (
-          <div class="text-center">
-            <div class="font-bold">{can}</div>
-            <div class="text-[9px] text-muted-foreground">CAN</div>
+          <div class="flex items-center gap-2 text-[10px] text-muted-foreground">
+            {sdCard && <span class="inline-flex items-center gap-1 leading-tight"><span class="text-xs">✓</span>SD</span>}
+            {barometer && (
+              <span class="inline-flex items-center gap-1 leading-tight">
+                <span class="text-xs">✓</span>Baro
+              </span>
+            )}
           </div>
-        )}
-        {pwm !== undefined && (
-          <div class="text-center">
-            <div class="font-bold">{pwm}</div>
-            <div class="text-[9px] text-muted-foreground">PWM</div>
-          </div>
-        )}
+        </div>
+        <div class="flex flex-wrap items-center gap-3 text-[11px]">
+          {uarts !== undefined && (
+            <span class="inline-flex items-baseline gap-1 font-semibold leading-tight">
+              <span class="text-sm">{uarts}</span>
+              <span class="text-[9px] uppercase tracking-wide text-muted-foreground">UART</span>
+            </span>
+          )}
+          {can !== undefined && can > 0 && (
+            <span class="inline-flex items-baseline gap-1 font-semibold leading-tight">
+              <span class="text-sm">{can}</span>
+              <span class="text-[9px] uppercase tracking-wide text-muted-foreground">CAN</span>
+            </span>
+          )}
+          {pwm !== undefined && (
+            <span class="inline-flex items-baseline gap-1 font-semibold leading-tight">
+              <span class="text-sm">{pwm}</span>
+              <span class="text-[9px] uppercase tracking-wide text-muted-foreground">PWM</span>
+            </span>
+          )}
+        </div>
       </div>
-      <div class="flex gap-2 text-[11px] text-muted-foreground">
-        {sdCard && <span>✓ SD</span>}
-        {barometer && <span>✓ Baro</span>}
-      </div>
-    </div>
+    ) : (
+      <>
+        <div class="flex gap-1.5">
+          <span class="inline-flex items-center rounded-sm border px-1.5 py-0.5 text-[10px] font-mono font-bold">
+            {mcuDisplay}
+          </span>
+          {mountingDisplay && (
+            <span class="inline-flex items-center rounded-sm border px-1.5 py-0.5 text-[10px] font-semibold">
+              {mountingDisplay}
+            </span>
+          )}
+        </div>
+        <div class="flex items-center justify-between border-t pt-2 text-[11px]">
+          <div class="flex gap-3">
+            {uarts !== undefined && (
+              <div class="text-center">
+                <div class="font-bold">{uarts}</div>
+                <div class="text-[9px] text-muted-foreground">UART</div>
+              </div>
+            )}
+            {can !== undefined && can > 0 && (
+              <div class="text-center">
+                <div class="font-bold">{can}</div>
+                <div class="text-[9px] text-muted-foreground">CAN</div>
+              </div>
+            )}
+            {pwm !== undefined && (
+              <div class="text-center">
+                <div class="font-bold">{pwm}</div>
+                <div class="text-[9px] text-muted-foreground">PWM</div>
+              </div>
+            )}
+          </div>
+          <div class="flex gap-2 text-[11px] text-muted-foreground">
+            {sdCard && <span>✓ SD</span>}
+            {barometer && <span>✓ Baro</span>}
+          </div>
+        </div>
+      </>
+    )}
   </Fragment>
 
   {!showImage && firmwareBadges.length > 0 && (
     <Fragment slot="badges">
       {firmwareBadges.map((label) => (
-        <span class="inline-flex items-center rounded-sm border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider">
+        <span
+          key={label}
+          class={`inline-flex items-center rounded-sm border font-bold uppercase tracking-wider ${
+            isCompact ? 'px-1.5 py-0.5 text-[9px]' : 'px-2 py-0.5 text-[10px]'
+          }`}
+        >
           {label}
         </span>
       ))}
