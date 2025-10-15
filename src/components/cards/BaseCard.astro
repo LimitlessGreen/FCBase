@@ -96,6 +96,9 @@ const remoteImage = image?.src && typeof image.src === 'string'
       height: image.height ?? 360,
     }
   : null;
+
+const hasImageOverlay = Astro.slots.has('imageOverlay');
+const hasImageFallback = Astro.slots.has('imageFallback');
 ---
 
 <div class={`group relative ${className || ''}`}>
@@ -135,26 +138,37 @@ const remoteImage = image?.src && typeof image.src === 'string'
                 {imageAlt}
               </div>
             )}
-            {image.credit && (
-              <span class="absolute bottom-2 right-2 z-20 rounded bg-background/80 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
-                {image.sourceUrl ? (
-                  <a
-                    href={image.sourceUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="pointer-events-auto hover:underline"
-                  >
-                    {image.credit}
-                  </a>
-                ) : (
-                  image.credit
-                )}
-              </span>
-            )}
           </>
+        ) : hasImageFallback ? (
+          <div class="absolute inset-0 flex items-center justify-center">
+            <slot name="imageFallback" />
+          </div>
         ) : (
           <span class="absolute inset-0 flex items-center justify-center px-6 text-center text-sm font-medium text-muted-foreground">
             {imageAlt}
+          </span>
+        )}
+
+        {hasImageOverlay && (
+          <div class="absolute inset-0 z-10">
+            <slot name="imageOverlay" />
+          </div>
+        )}
+
+        {image?.credit && (
+          <span class="absolute bottom-2 right-2 z-20 rounded bg-background/80 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+            {image.sourceUrl ? (
+              <a
+                href={image.sourceUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="pointer-events-auto hover:underline"
+              >
+                {image.credit}
+              </a>
+            ) : (
+              image.credit
+            )}
           </span>
         )}
       </div>
