@@ -98,8 +98,25 @@ const TabsTrigger = React.forwardRef<HTMLButtonElement, TabsTriggerProps>(
   ({ className, value, ...props }, ref) => {
     const context = React.useContext(TabsContext);
 
+    const fallbackId = React.useId();
+
     if (!context) {
-      throw new Error("TabsTrigger must be used within Tabs");
+      return (
+        <button
+          ref={ref}
+          type="button"
+          role="tab"
+          id={`${fallbackId}-trigger-${value}`}
+          data-value={value}
+          aria-selected={false}
+          aria-controls={`${fallbackId}-content-${value}`}
+          className={cn(
+            "inline-flex min-w-[80px] items-center justify-center whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-medium transition-all focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+            className
+          )}
+          {...props}
+        />
+      );
     }
 
     const { value: activeValue, setValue, baseId } = context;
@@ -136,8 +153,20 @@ const TabsContent = React.forwardRef<HTMLDivElement, TabsContentProps>(
   ({ className, value, ...props }, ref) => {
     const context = React.useContext(TabsContext);
 
+    const fallbackId = React.useId();
+
     if (!context) {
-      throw new Error("TabsContent must be used within Tabs");
+      return (
+        <div
+          ref={ref}
+          role="tabpanel"
+          tabIndex={0}
+          id={`${fallbackId}-content-${value}`}
+          aria-labelledby={`${fallbackId}-trigger-${value}`}
+          className={cn("mt-6 focus-visible:outline-hidden", className)}
+          {...props}
+        />
+      );
     }
 
     const { value: activeValue, baseId } = context;
