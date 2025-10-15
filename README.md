@@ -1,35 +1,49 @@
 # FCBase
-An open, community-maintained database of flight controllers for ArduPilot, PX4, and iNAV – searchable, comparable, and fully documented.
 
-## Hardware Openness Metadata
+## Overview
+FCBase is an open, community-maintained database of multirotor and fixed-wing flight controllers for ArduPilot, PX4, and iNAV. The project centralizes hardware specifications, firmware compatibility, and provenance so pilots, manufacturers, and reviewers can evaluate boards with consistent, transparent data.
 
-Each controller entry records a `hardware.openness` flag (`open`, `closed`, or `mixed`) sourced from the ArduPilot Autopilot Hardware guide. This highlights whether designs follow the open Pixhawk standard or are distributed as closed hardware.
+## Features
+- **Searchable catalog** of flight controllers with standardized metadata for quick comparison.
+- **Revision-aware specs** that document hardware changes, overrides, and supporting sources.
+- **Validation pipeline** that enforces schema compliance, vocabulary consistency, and cross-file links.
+- **Static site frontend** built with Astro, Tailwind CSS v4, and shadcn/ui components for fast browsing.
+- **Community contributions** tracked through structured YAML files and attribution-friendly licensing.
 
-Controllers can also enumerate `hardware.revisions` entries to describe manufacturer hardware updates, including optional release dates, notes, change summaries, and supporting sources.
+## Architecture
+- **Content layer**: YAML files in `/content/**` capture controller, manufacturer, MCU, sensor, firmware, and source records.
+- **Schemas & vocabularies**: JSON Schema definitions in `/meta/schema` and enumerations in `/meta/vocab` govern allowed fields and values.
+- **Presentation**: Astro 5 renders the static site, while React components and Tailwind CSS v4 deliver the interactive UI.
+- **Tooling**: pnpm scripts provide validation, development, and build workflows; data integrity checks run before publishing.
 
-Each revision may declare an `overrides` block to document spec changes relative to the base controller definition. Overrides support the following sections:
+## Installation
+1. Install [pnpm](https://pnpm.io/) if it is not already available.
+2. Clone the repository and install dependencies:
+   ```bash
+   pnpm install
+   ```
 
-- `sensors`: provide replacement `imu`, `barometer`, or `magnetometer` lists when a variant swaps sensing hardware. Arrays replace the base list for that sensor type, so include the full set used by the revision.
-- `io`: supply only the changed fields (e.g., `uarts`, `peripherals`) to update port counts or connectors for a specific revision.
-- `power`: override properties such as `voltage_in`, `inputs`, or `redundant` when a revision alters the power subsystem.
+## Usage
+- Start the local development server:
+  ```bash
+  pnpm run dev
+  ```
+- Validate content updates before committing:
+  ```bash
+  pnpm run validate
+  ```
+- Build the production site when ready to publish:
+  ```bash
+  pnpm run build
+  ```
 
-When overrides are present the site automatically merges them with the base controller spec so the detail page can toggle between revisions. Keep narrative `notes`, `changes`, and `sources` alongside overrides to help reviewers understand why the data differs.
+## Contributing
+- Keep all user-facing content in English and follow the directory structure outlined in `AGENTS.md`.
+- Add or update YAML content files with complete metadata, sources, and `verification` blocks.
+- Run `pnpm run validate` to ensure schema compliance and fix any reported issues before opening a pull request.
+- Summarize changes clearly in the PR description and follow the repository naming conventions for new controller entries.
 
-## Development
-
-Set up the project with [pnpm](https://pnpm.io/) to ensure the correct dependency tree:
-
-```bash
-pnpm install
-pnpm run dev
-```
-
-Additional scripts such as `pnpm run build` and `pnpm run preview` are available through the standard `package.json` commands.
-
-## Data Validation
-
-Run `pnpm run validate` before committing controller updates. The validator checks every file in
-`src/content/controllers/` against `meta/schema/controller.schema.json` and verifies cross-file
-references for manufacturers, MCUs, sensors, firmware entries, and sources. The command exits with a
-non-zero status when schema or reference errors are found so issues can be fixed before opening a
-pull request.
+## License
+- **Code** is released under the [MIT License](./LICENSE).
+- **Data** is provided under the [Creative Commons Attribution 4.0 International License](./LICENSE).
+- **Images** remain © their respective owners and must retain proper attribution when used.
