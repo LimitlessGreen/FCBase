@@ -6,7 +6,8 @@ brand: mateksys
 mcu: stmicro-stm32h743
 mounting: wing
 images:
-  - alt: Mateksys H743-Wing board showing dual IMU shielding and servo headers
+  - src: mateksys-h743-wing.jpg
+    alt: Mateksys H743-Wing board showing dual IMU shielding and servo headers
       across the edges.
     credit: Mateksys
     source_url: https://www.mateksys.com/?portfolio=h743-wing

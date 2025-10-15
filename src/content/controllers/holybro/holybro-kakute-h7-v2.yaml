@@ -6,7 +6,8 @@ brand: holybro
 mcu: stmicro-stm32h743
 mounting: custom
 images:
-  - alt: Holybro Kakute H7 V2 flight controller board shown at an angle highlighting
+  - src: holybro-kakute-h7-v2.jpg
+    alt: Holybro Kakute H7 V2 flight controller board shown at an angle highlighting
       the stacked layout.
     credit: Holybro Store
     source_url: https://holybro.com/products/kakute-h7-v2

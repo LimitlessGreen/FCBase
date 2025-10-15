@@ -6,7 +6,8 @@ brand: mateksys
 mcu: stmicro-stm32f765
 mounting: wing
 images:
-  - alt: Mateksys F765-Wing controller board with gold connectors and dual rows of
+  - src: mateksys-f765-wing.jpg
+    alt: Mateksys F765-Wing controller board with gold connectors and dual rows of
       servo pins.
     credit: Mateksys
     source_url: https://www.mateksys.com/?portfolio=f765-wing
