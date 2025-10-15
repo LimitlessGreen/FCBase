@@ -109,9 +109,9 @@ const remoteImage = image?.src && typeof image.src === 'string'
   : null;
 ---
 
-<a href={`${basePath}/controllers/${id}`} class={`group block ${className || ''}`}>
+<div class={`group relative ${className || ''}`}>
   <div
-    class="h-full overflow-hidden rounded-xl border bg-card text-card-foreground shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg"
+    class="relative h-full overflow-hidden rounded-xl border bg-card text-card-foreground shadow-sm transition-all group-hover:-translate-y-1 group-hover:shadow-lg group-focus-visible:-translate-y-1 group-focus-visible:shadow-lg group-focus-visible:border-primary/30 group-hover:border-primary/30"
   >
     {/* Image Banner with Overlays */}
     {showImage && (
@@ -176,14 +176,13 @@ const remoteImage = image?.src && typeof image.src === 'string'
               </div>
             )}
             {image.credit && (
-              <span class="absolute bottom-2 right-2 rounded bg-background/80 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+              <span class="absolute bottom-2 right-2 z-20 rounded bg-background/80 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
                 {image.sourceUrl ? (
                   <a
                     href={image.sourceUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    class="hover:underline"
-                    onclick="event.stopPropagation()"
+                    class="pointer-events-auto hover:underline"
                   >
                     {image.credit}
                   </a>
@@ -267,4 +266,11 @@ const remoteImage = image?.src && typeof image.src === 'string'
       </div>
     </div>
   </div>
-</a>
+  <a
+    href={`${basePath}/controllers/${id}`}
+    class="absolute inset-0 z-10 rounded-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+    aria-label={`View ${title}`}
+  >
+    <span class="sr-only">View {title}</span>
+  </a>
+</div>

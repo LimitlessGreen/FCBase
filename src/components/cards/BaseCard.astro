@@ -126,9 +126,9 @@ const remoteImage = image?.src && typeof image.src === 'string'
   : null;
 ---
 
-<a href={href} class={`group block ${className || ''}`}>
-  <Card 
-    class={`h-full transition-all hover:shadow-lg hover:-translate-y-1 border-2 hover:border-primary/30 ${cardClass || ''}`}
+<div class={`group relative ${className || ''}`}>
+  <Card
+    class={`relative h-full border-2 transition-all group-hover:-translate-y-1 group-hover:border-primary/30 group-hover:shadow-lg group-focus-visible:-translate-y-1 group-focus-visible:border-primary/30 group-focus-visible:shadow-lg ${cardClass || ''}`}
   >
     {/* Image Banner (optional) */}
     {showImage && (
@@ -169,14 +169,13 @@ const remoteImage = image?.src && typeof image.src === 'string'
               </div>
             )}
             {image.credit && (
-              <span class="absolute bottom-2 right-2 rounded bg-background/80 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+              <span class="absolute bottom-2 right-2 z-20 rounded bg-background/80 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
                 {image.sourceUrl ? (
                   <a
                     href={image.sourceUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    class="hover:underline"
-                    onclick="event.stopPropagation()"
+                    class="pointer-events-auto hover:underline"
                   >
                     {image.credit}
                   </a>
@@ -215,4 +214,11 @@ const remoteImage = image?.src && typeof image.src === 'string'
       </div>
     </CardContent>
   </Card>
-</a>
+  <a
+    href={href}
+    class="absolute inset-0 z-10 rounded-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+    aria-label={`View ${title}`}
+  >
+    <span class="sr-only">View {title}</span>
+  </a>
+</div>
