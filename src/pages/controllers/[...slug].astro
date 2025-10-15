@@ -47,7 +47,7 @@ import {
   ExternalLink,
   Pencil,
 } from 'lucide-react';
-import { getBasePath } from '@/lib/paths';
+import { getBasePath, getSiteUrl } from '@/lib/paths';
 import { Picture } from 'astro:assets';
 
 export async function getStaticPaths() {
@@ -168,14 +168,9 @@ const summaryResult = resolveControllerSummary(data, () =>
 );
 const pageDescription = summaryResult.metaDescription;
 const pageTitle = `${data.title} by ${manufacturerName} | FCBase`;
-const canonicalUrl = Astro.site
-  ? new URL(`controllers/${controllerSlug}`, Astro.site).toString()
-  : `${basePath}/controllers/${controllerSlug}`;
+const canonicalUrl = getSiteUrl(`controllers/${controllerSlug}`, Astro.site);
 const ogTitle = pageTitle;
-const ogImagePath = `${basePath}/controllers/og/${controllerSlug}.png`;
-const ogImageUrl = Astro.site
-  ? new URL(`controllers/og/${controllerSlug}.png`, Astro.site).toString()
-  : ogImagePath;
+const ogImageUrl = getSiteUrl(`controllers/og/${controllerSlug}.png`, Astro.site);
 const ogImageAlt = `${data.title} flight controller technical summary`;
 
 const mcuFamilyName = mcu?.data.family ?? data.mcu_family ?? null;

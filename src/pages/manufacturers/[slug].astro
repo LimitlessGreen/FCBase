@@ -5,7 +5,7 @@ import ControllerCard from '@/components/cards/ControllerCard.astro';
 import { Badge } from '@/components/ui/Badge';
 import { ExternalLink } from 'lucide-react';
 import { createControllerCardModels } from '@/lib/controller-card-model';
-import { getBasePath } from '@/lib/paths';
+import { getBasePath, getSiteUrl } from '@/lib/paths';
 
 export async function getStaticPaths() {
   const manufacturers = await getCollection('manufacturers');
@@ -32,9 +32,7 @@ const controllerCards = await createControllerCardModels(manufacturerControllers
 const basePath = getBasePath();
 const editPath = `src/content/manufacturers/${manufacturer.id}.yaml`;
 const manufacturerName = data.name || manufacturer.id;
-const canonicalUrl = Astro.site
-  ? new URL(`manufacturers/${manufacturer.id}`, Astro.site).toString()
-  : `${basePath}/manufacturers/${manufacturer.id}`;
+const canonicalUrl = getSiteUrl(`manufacturers/${manufacturer.id}`, Astro.site);
 const manufacturerSummary = data.description || `Manufacturer profile for ${manufacturerName} with ${manufacturerControllers.length} documented controllers.`;
 ---
 

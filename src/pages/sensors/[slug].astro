@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/Badge';
 import { AlertTriangle, ExternalLink } from 'lucide-react';
 import { createControllerCardModel } from '@/lib/controller-card-model';
 import { getManufacturersMap, getSourcesMap } from '@/lib/content-cache';
-import { getBasePath } from '@/lib/paths';
+import { getBasePath, getSiteUrl } from '@/lib/paths';
 
 export async function getStaticPaths() {
   const sensors = await getCollection('sensors');
@@ -80,9 +80,7 @@ const typeDisplay: Record<string, string> = {
 const basePath = getBasePath();
 const editPath = `src/content/sensors/${sensor.id}.yaml`;
 const sensorTitle = data.name || data.title || sensor.id;
-const canonicalUrl = Astro.site
-  ? new URL(`sensors/${sensor.id}`, Astro.site).toString()
-  : `${basePath}/sensors/${sensor.id}`;
+const canonicalUrl = getSiteUrl(`sensors/${sensor.id}`, Astro.site);
 const sensorSummary = data.summary || data.notes || `Technical specification for the ${sensorTitle} sensor used in FCBase controllers.`;
 
 const severityStyles = {
