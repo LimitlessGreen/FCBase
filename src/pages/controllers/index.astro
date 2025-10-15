@@ -1,6 +1,5 @@
 ---
 import { getCollection } from 'astro:content';
-import BaseLayout from '@/layouts/BaseLayout.astro';
 import MainLayout from '@/layouts/MainLayout.astro';
 import ControllerSearch from '@/components/search/ControllerSearch';
 import { getBasePath } from '@/lib/paths';
@@ -10,11 +9,11 @@ const totalControllers = controllers.length;
 const basePath = getBasePath();
 ---
 
-<BaseLayout
+<MainLayout
   title="Flight Controllers - FCBase"
   description="Browse all flight controllers in the FCBase database. Compare specs, firmware support, and find the perfect board for your project."
+  editPath="src/pages/controllers/index.astro"
 >
-  <MainLayout editPath="src/pages/controllers/index.astro">
     <div class="container py-8">
       <!-- Header -->
       <div class="mb-8">
@@ -50,5 +49,4 @@ const basePath = getBasePath();
         </div>
       </noscript>
     </div>
-  </MainLayout>
-</BaseLayout>
+</MainLayout>

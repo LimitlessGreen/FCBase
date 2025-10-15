@@ -1,6 +1,5 @@
 ---
 import { getCollection } from 'astro:content';
-import BaseLayout from '@/layouts/BaseLayout.astro';
 import MainLayout from '@/layouts/MainLayout.astro';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
@@ -49,11 +48,11 @@ const typeDisplay: Record<string, string> = {
 const basePath = getBasePath();
 ---
 
-<BaseLayout
+<MainLayout
   title="Sensors - FCBase"
   description="Browse flight controller sensors. Find IMU, barometer, magnetometer, and GPS specs used in flight controllers."
+  editPath="src/pages/sensors/index.astro"
 >
-  <MainLayout editPath="src/pages/sensors/index.astro">
     <div class="container py-8">
       <!-- Header -->
       <div class="mb-8">
@@ -132,5 +131,4 @@ const basePath = getBasePath();
         </div>
       )}
     </div>
-  </MainLayout>
-</BaseLayout>
+</MainLayout>

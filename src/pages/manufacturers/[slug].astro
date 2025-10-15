@@ -1,6 +1,5 @@
 ---
 import { getCollection } from 'astro:content';
-import BaseLayout from '@/layouts/BaseLayout.astro';
 import MainLayout from '@/layouts/MainLayout.astro';
 import ControllerCard from '@/components/cards/ControllerCard.astro';
 import { Badge } from '@/components/ui/Badge';
@@ -39,9 +38,11 @@ const canonicalUrl = Astro.site
 const manufacturerSummary = data.description || `Manufacturer profile for ${manufacturerName} with ${manufacturerControllers.length} documented controllers.`;
 ---
 
-<BaseLayout
+<MainLayout
   title={`${data.name} - Manufacturers - FCBase`}
   description={`${data.name} flight controllers. ${data.description || ''} Browse all ${manufacturerControllers.length} controllers.`}
+  editPath={editPath}
+  showEditBar
 >
   <Fragment slot="head">
     <link rel="canonical" href={canonicalUrl} />
@@ -53,7 +54,6 @@ const manufacturerSummary = data.description || `Manufacturer profile for ${manu
     <meta name="pagefind:meta:url" content={canonicalUrl} />
     {data.website && <meta name="pagefind:meta:website" content={data.website} />}
   </Fragment>
-  <MainLayout editPath={editPath} showEditBar>
     <div class="container py-8">
       <!-- Breadcrumb -->
       <nav class="mb-6 flex items-center gap-2 text-sm text-muted-foreground">
@@ -132,5 +132,4 @@ const manufacturerSummary = data.description || `Manufacturer profile for ${manu
         </div>
       )}
     </div>
-  </MainLayout>
-</BaseLayout>
+</MainLayout>

@@ -1,5 +1,4 @@
 ---
-import BaseLayout from '@/layouts/BaseLayout.astro';
 import MainLayout from '@/layouts/MainLayout.astro';
 import SiteSearch from '@/components/search/SiteSearch';
 import faviconUrl from '@/assets/favicon.svg?url';
@@ -33,24 +32,27 @@ const searchJsonLd = JSON.stringify(
 );
 ---
 
-<BaseLayout title={pageTitle} description={pageDescription}>
-  <MainLayout editPath="src/pages/search/index.astro">
-    <Fragment slot="head">
-      <link rel="canonical" href={canonicalUrl} />
-      <meta property="og:title" content={pageTitle} />
-      <meta property="og:description" content={pageDescription} />
-      <meta property="og:type" content="website" />
-      <meta property="og:url" content={canonicalUrl} />
-      <meta property="og:image" content={ogImage} />
-      <meta property="og:image:type" content="image/svg+xml" />
-      <meta name="twitter:card" content="summary" />
-      <meta name="twitter:title" content={pageTitle} />
-      <meta name="twitter:description" content={pageDescription} />
-      <meta name="twitter:image" content={ogImage} />
-      <script type="application/ld+json" is:inline>{searchJsonLd}</script>
-    </Fragment>
+<MainLayout
+  title={pageTitle}
+  description={pageDescription}
+  editPath="src/pages/search/index.astro"
+>
+  <Fragment slot="head">
+    <link rel="canonical" href={canonicalUrl} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={pageDescription} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:type" content="image/svg+xml" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={pageDescription} />
+    <meta name="twitter:image" content={ogImage} />
+    <script type="application/ld+json" is:inline>{searchJsonLd}</script>
+  </Fragment>
 
-    <div class="container py-8">
+  <div class="container py-8">
       <nav class="mb-6 flex items-center gap-2 text-sm text-muted-foreground">
         <a href={`${basePath}/`} class="transition-colors hover:text-foreground">Home</a>
         <span>/</span>
@@ -65,6 +67,5 @@ const searchJsonLd = JSON.stringify(
       </div>
 
       <SiteSearch client:load />
-    </div>
-  </MainLayout>
-</BaseLayout>
+  </div>
+</MainLayout>

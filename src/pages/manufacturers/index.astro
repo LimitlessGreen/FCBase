@@ -1,6 +1,5 @@
 ---
 import { getCollection } from 'astro:content';
-import BaseLayout from '@/layouts/BaseLayout.astro';
 import MainLayout from '@/layouts/MainLayout.astro';
 import { Badge } from '@/components/ui/Badge';
 import { getBasePath } from '@/lib/paths';
@@ -26,11 +25,11 @@ const manufacturersWithCounts = allManufacturers.map((manufacturer) => {
 const basePath = getBasePath();
 ---
 
-<BaseLayout
+<MainLayout
   title="Manufacturers - FCBase"
   description="Browse flight controller manufacturers. Find detailed information about brands, their products, and supported platforms."
+  editPath="src/pages/manufacturers/index.astro"
 >
-  <MainLayout editPath="src/pages/manufacturers/index.astro">
     <div class="container py-8">
       <!-- Header -->
       <div class="mb-8">
@@ -101,5 +100,4 @@ const basePath = getBasePath();
         </div>
       )}
     </div>
-  </MainLayout>
-</BaseLayout>
+</MainLayout>

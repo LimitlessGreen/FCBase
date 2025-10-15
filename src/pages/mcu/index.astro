@@ -1,6 +1,5 @@
 ---
 import { getCollection } from 'astro:content';
-import BaseLayout from '@/layouts/BaseLayout.astro';
 import MainLayout from '@/layouts/MainLayout.astro';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
@@ -53,11 +52,11 @@ const mcusWithStats = allMcus
 const basePath = getBasePath();
 ---
 
-<BaseLayout
+<MainLayout
   title="MCUs - FCBase"
   description="Browse flight controller microcontrollers. Compare architectures, clock speeds, and memory configurations used across autopilot designs."
+  editPath="src/pages/mcu/index.astro"
 >
-  <MainLayout editPath="src/pages/mcu/index.astro">
     <div class="container py-8">
       <div class="mb-8">
         <nav class="mb-4 flex items-center gap-2 text-sm text-muted-foreground">
@@ -138,5 +137,4 @@ const basePath = getBasePath();
         </div>
       )}
     </div>
-  </MainLayout>
-</BaseLayout>
+</MainLayout>

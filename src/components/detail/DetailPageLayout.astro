@@ -1,5 +1,4 @@
 ---
-import BaseLayout from '@/layouts/BaseLayout.astro';
 import MainLayout from '@/layouts/MainLayout.astro';
 
 interface Breadcrumb {
@@ -18,9 +17,8 @@ const { title, description, editPath, breadcrumbs = [] }: Props = Astro.props;
 const hasBreadcrumbs = breadcrumbs.length > 0;
 ---
 
-<BaseLayout title={title} description={description}>
+<MainLayout title={title} description={description} editPath={editPath} showEditBar>
   <slot name="head" slot="head" />
-  <MainLayout editPath={editPath} showEditBar>
     <div class="container py-8">
       {hasBreadcrumbs && (
         <nav class="mb-6 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
@@ -42,5 +40,4 @@ const hasBreadcrumbs = breadcrumbs.length > 0;
       <slot name="header" />
       <slot />
     </div>
-  </MainLayout>
-</BaseLayout>
+</MainLayout>
