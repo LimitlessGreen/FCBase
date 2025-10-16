@@ -9,6 +9,7 @@ import {
   readCompareList,
   writeCompareList,
 } from "@/lib/compare";
+import { getCompareComponentDefinition } from "@/lib/component-registry";
 
 interface ControllerCompareImage {
   url: string;
@@ -137,7 +138,9 @@ interface ControllerCompareTableProps {
   basePath: string;
 }
 
-const type = "controller" as const;
+const controllerComponent = getCompareComponentDefinition("controller");
+export const compareComponentId = controllerComponent.id;
+const type = compareComponentId;
 
 interface SpecRow {
   id: string;
