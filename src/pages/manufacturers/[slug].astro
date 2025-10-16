@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/Badge';
 import { ExternalLink } from 'lucide-react';
 import { createControllerCardModels } from '@/lib/controller-card-model';
 import { GITHUB_REPO_URL } from '@/lib/constants';
+import { resolveTransmitterPreviewImage } from '@/lib/transmitter-images';
 import { getBasePath, getSiteUrl } from '@/lib/paths';
 
 export async function getStaticPaths() {
@@ -43,16 +44,15 @@ const transmitterCards = manufacturerTransmitters.map((transmitter) => {
     since_version: 'Unknown',
   };
 
-  const image = transmitter.data.image;
-
-  const cardImage = image
+  const preview = resolveTransmitterPreviewImage(transmitter);
+  const cardImage = preview
     ? {
-        src: image.src,
-        alt: image.alt,
-        credit: image.credit,
-        sourceUrl: image.source_url,
-        width: image.width,
-        height: image.height,
+        src: preview.src,
+        alt: preview.alt,
+        credit: preview.credit,
+        sourceUrl: preview.sourceUrl,
+        width: preview.width,
+        height: preview.height,
       }
     : undefined;
 

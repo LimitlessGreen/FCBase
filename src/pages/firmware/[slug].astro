@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/Badge';
 import { ExternalLink } from 'lucide-react';
 import { getBasePath } from '@/lib/paths';
 import { GITHUB_REPO_URL } from '@/lib/constants';
+import { resolveTransmitterPreviewImage } from '@/lib/transmitter-images';
 
 export async function getStaticPaths() {
   const firmware = await getCollection('firmware');
@@ -97,6 +98,17 @@ const transmitterCards = compatibleTransmitters.map((transmitter) => {
   const slug = (transmitter as { slug?: string }).slug ?? transmitter.id;
   const remotePath = `src/content/transmitters/${slug}.yaml`;
   const remoteUrl = `${GITHUB_REPO_URL}/blob/main/${remotePath}`;
+  const preview = resolveTransmitterPreviewImage(transmitter);
+  const cardImage = preview
+    ? {
+        src: preview.src,
+        alt: preview.alt,
+        credit: preview.credit,
+        sourceUrl: preview.sourceUrl,
+        width: preview.width,
+        height: preview.height,
+      }
+    : undefined;
 
   return {
     id: transmitter.id,
@@ -112,6 +124,7 @@ const transmitterCards = compatibleTransmitters.map((transmitter) => {
     },
     hardwareRevisions: transmitter.data.hardware?.revisions ?? [],
     compliance: transmitter.data.compliance ?? [],
+    image: cardImage,
     remoteUrl,
   };
 });
@@ -279,6 +292,7 @@ const hasCompatibility =
                     support={transmitter.support}
                     hardwareRevisions={transmitter.hardwareRevisions}
                     compliance={transmitter.compliance}
+                    image={transmitter.image}
                     remoteUrl={transmitter.remoteUrl}
                     basePath={basePath}
                     variant="grid"
