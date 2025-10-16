@@ -128,7 +128,11 @@ const basePath = getBasePath();
                 <ul class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                   {group.controllers.map((controller) => (
                     <li key={controller.id}>
-                      <ControllerCard {...controller} basePath={basePath} />
+                      <ControllerCard
+                        {...controller}
+                        basePath={basePath}
+                        enableCompareToggle
+                      />
                     </li>
                   ))}
                 </ul>
@@ -152,7 +156,11 @@ const basePath = getBasePath();
                 <ul class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                   {unassignedControllers.map((controller) => (
                     <li key={controller.id}>
-                      <ControllerCard {...controller} basePath={basePath} />
+                      <ControllerCard
+                        {...controller}
+                        basePath={basePath}
+                        enableCompareToggle
+                      />
                     </li>
                   ))}
                 </ul>
@@ -196,6 +204,7 @@ const basePath = getBasePath();
                         {...controller}
                         basePath={basePath}
                         variant="compact"
+                        enableCompareToggle
                       />
                     </div>
                   ))}
@@ -227,6 +236,7 @@ const basePath = getBasePath();
                         {...controller}
                         basePath={basePath}
                         variant="compact"
+                        enableCompareToggle
                       />
                     </div>
                   ))}
