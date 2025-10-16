@@ -10,7 +10,7 @@ import {
   type CompareModule,
   type CompareModuleId,
   type RegisteredCompareModule,
-} from "@/components/compare/registry";
+} from "@/components/compare/registry.server";
 
 export type LoadedComparePage<Module extends RegisteredCompareModule> = {
   id: Module["id"];
