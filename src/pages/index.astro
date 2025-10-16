@@ -4,6 +4,7 @@ import MainLayout from "@/layouts/MainLayout.astro";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { GITHUB_REPO_URL } from "@/lib/constants";
+import { compareComponentDefinitions } from "@/lib/component-registry";
 import ControllerCard from "@/components/cards/ControllerCard.astro";
 import { getManufacturersMap } from "@/lib/content-cache";
 import { createControllerCardModels } from "@/lib/controller-card-model";
@@ -56,6 +57,16 @@ const features: {
 ];
 
 const basePath = getBasePath();
+const createHref = (path: string) => `${basePath}${path}`.replace(/\/{2,}/g, "/");
+const homepageNavigationEntries = compareComponentDefinitions.map((definition, index) => ({
+  id: definition.id,
+  href: createHref(definition.navigation.primaryRoute),
+  heroVariant: index === 0 ? "default" : "outline",
+  heroCtaCopy: definition.navigation.ctaCopy,
+  cardTitle: definition.homepage.title,
+  cardDescription: definition.homepage.description,
+  cardCtaCopy: definition.homepage.ctaCopy,
+}));
 ---
 
 <MainLayout title={title} description={description} editPath="src/pages/index.astro">
@@ -80,12 +91,17 @@ const basePath = getBasePath();
           The open hardware knowledge base for the ArduPilot, PX4, and iNAV ecosystems. Discover flight controllers, EdgeTX transmitters, compare specifications, and plan your next build.
         </p>
         <div class="flex flex-col sm:flex-row flex-wrap gap-3 md:gap-4 justify-center mt-2 md:mt-4 w-full sm:w-auto">
-          <Button size="lg" asChild class="w-full sm:w-auto">
-            <a href={`${basePath}/controllers`}>Browse Controllers</a>
-          </Button>
-          <Button variant="outline" size="lg" asChild class="w-full sm:w-auto">
-            <a href={`${basePath}/transmitters`}>Browse Transmitters</a>
-          </Button>
+          {homepageNavigationEntries.map((entry) => (
+            <Button
+              key={entry.id}
+              size="lg"
+              variant={entry.heroVariant}
+              asChild
+              class="w-full sm:w-auto"
+            >
+              <a href={entry.href}>{entry.heroCtaCopy}</a>
+            </Button>
+          ))}
           <Button variant="outline" size="lg" asChild class="w-full sm:w-auto">
             <a href={`${basePath}/contribute`}>Contribute</a>
           </Button>
@@ -135,36 +151,21 @@ const basePath = getBasePath();
         </div>
 
         <div class="grid gap-4 sm:grid-cols-2">
-          <a href={`${basePath}/controllers`} class="group">
-            <Card class="h-full transition-colors group-hover:border-primary">
-              <CardHeader>
-                <CardTitle class="text-xl">Flight Controllers</CardTitle>
-                <CardDescription>
-                  Browse verified boards, compare MCUs, and filter by firmware support.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button variant="outline" class="w-full">
-                  Browse flight controllers
-                </Button>
-              </CardContent>
-            </Card>
-          </a>
-          <a href={`${basePath}/transmitters`} class="group">
-            <Card class="h-full transition-colors group-hover:border-primary">
-              <CardHeader>
-                <CardTitle class="text-xl">Transmitters</CardTitle>
-                <CardDescription>
-                  Explore EdgeTX radios, track support versions, and jump to FCC compliance records.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button variant="outline" class="w-full">
-                  Browse transmitters
-                </Button>
-              </CardContent>
-            </Card>
-          </a>
+          {homepageNavigationEntries.map((entry) => (
+            <a href={entry.href} class="group" key={entry.id}>
+              <Card class="h-full transition-colors group-hover:border-primary">
+                <CardHeader>
+                  <CardTitle class="text-xl">{entry.cardTitle}</CardTitle>
+                  <CardDescription>{entry.cardDescription}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Button variant="outline" class="w-full">
+                    {entry.cardCtaCopy}
+                  </Button>
+                </CardContent>
+              </Card>
+            </a>
+          ))}
         </div>
       </div>
     </div>

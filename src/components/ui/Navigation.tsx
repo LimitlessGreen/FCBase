@@ -2,6 +2,7 @@ import * as React from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import { Compass, Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { compareComponentDefinitions } from "@/lib/component-registry";
 import { Button } from "./Button";
 import { CompareMenu } from "./CompareMenu";
 import { ThemeToggle } from "./ThemeToggle";
@@ -14,13 +15,30 @@ import {
   navigationMenuTriggerStyle,
 } from "./navigation-menu";
 
-const navLinks = [
-  { href: "/controllers", label: "Controllers" },
-  { href: "/transmitters", label: "Transmitters" },
-  { href: "/firmware", label: "Firmware" },
-  { href: "/sensors", label: "Sensors" },
-  { href: "/mcu", label: "MCUs" },
-  { href: "/manufacturers", label: "Manufacturers" },
+type NavigationItem = {
+  key: string;
+  href: string;
+  label: string;
+};
+
+const componentNavigationItems: NavigationItem[] = compareComponentDefinitions.map(
+  (definition) => ({
+    key: definition.id,
+    href: definition.navigation.primaryRoute,
+    label: definition.navigation.label,
+  }),
+);
+
+const supplementalNavigationItems: NavigationItem[] = [
+  { key: "firmware", href: "/firmware", label: "Firmware" },
+  { key: "sensors", href: "/sensors", label: "Sensors" },
+  { key: "mcu", href: "/mcu", label: "MCUs" },
+  { key: "manufacturers", href: "/manufacturers", label: "Manufacturers" },
+];
+
+const navigationItems: NavigationItem[] = [
+  ...componentNavigationItems,
+  ...supplementalNavigationItems,
 ];
 
 interface NavigationProps {
@@ -123,12 +141,12 @@ export function Navigation({ className, basePath = "" }: NavigationProps) {
               </a>
               <NavigationMenu className="hidden md:flex">
                 <NavigationMenuList>
-                  {navLinks.map((link) => {
+                  {navigationItems.map((link) => {
                     const isActive = getLinkIsActive(link.href);
                     const href = createHref(link.href);
 
                     return (
-                      <NavigationMenuItem key={link.href}>
+                      <NavigationMenuItem key={link.key}>
                         <NavigationMenuLink asChild>
                           <a
                             href={href}
@@ -195,13 +213,13 @@ export function Navigation({ className, basePath = "" }: NavigationProps) {
                         layout="stacked"
                         onNavigate={closeMobileMenu}
                       />
-                      {navLinks.map((link) => {
+                      {navigationItems.map((link) => {
                         const isActive = getLinkIsActive(link.href);
                         const href = createHref(link.href);
 
                         return (
                           <Button
-                            key={link.href}
+                            key={link.key}
                             asChild
                             variant="ghost"
                             size="lg"
