@@ -1,0 +1,100 @@
+---
+import ControllerCard from '@/components/cards/ControllerCard.astro';
+import type { ControllerCardModel } from '@/lib/controller-card-model';
+import type { CollectionEntry } from 'astro:content';
+
+interface ManufacturerGroup {
+  type: 'manufacturer';
+  manufacturer: CollectionEntry<'manufacturers'>;
+  controllers: ControllerCardModel[];
+}
+
+interface UnassignedGroup {
+  type: 'unassigned';
+  controllers: ControllerCardModel[];
+}
+
+type ControllerSectionGroup = ManufacturerGroup | UnassignedGroup;
+
+type ControllerSectionVariant = 'grid' | 'compact';
+
+interface Props {
+  group: ControllerSectionGroup;
+  basePath: string;
+  variant: ControllerSectionVariant;
+}
+
+const { group, basePath, variant } = Astro.props as Props;
+const isCompact = variant === 'compact';
+
+const baseSectionId =
+  group.type === 'manufacturer' ? `manufacturer-${group.manufacturer.id}` : 'unassigned';
+const headingId =
+  group.type === 'manufacturer'
+    ? isCompact
+      ? `${baseSectionId}-compact-heading`
+      : `${baseSectionId}-heading`
+    : isCompact
+      ? `${baseSectionId}-heading-compact`
+      : `${baseSectionId}-heading`;
+const sectionId =
+  group.type === 'manufacturer'
+    ? isCompact
+      ? `${baseSectionId}-compact`
+      : baseSectionId
+    : undefined;
+const heading =
+  group.type === 'manufacturer' ? group.manufacturer.data.name : 'Other controllers';
+const description =
+  group.type === 'manufacturer'
+    ? group.manufacturer.data.description
+    : 'These controllers are not currently linked to a registered manufacturer.';
+const controllerCount = group.controllers.length;
+const countLabel = `${controllerCount} ${
+  controllerCount === 1 ? 'controller' : 'controllers'
+}`;
+---
+{group.controllers.length > 0 && (
+  <section
+    id={sectionId}
+    class="space-y-4"
+    aria-labelledby={headingId}
+  >
+    <div class="flex flex-wrap items-baseline justify-between gap-2">
+      <h2 id={headingId} class="text-2xl font-semibold tracking-tight">
+        {heading}
+      </h2>
+      <span class="text-sm text-muted-foreground">{countLabel}</span>
+    </div>
+    {description && (
+      <p class="text-sm text-muted-foreground max-w-3xl">
+        {description}
+      </p>
+    )}
+    {isCompact ? (
+      <div
+        role="list"
+        class="divide-y divide-[hsl(var(--border))] overflow-hidden rounded-lg border"
+      >
+        {group.controllers.map((controller) => (
+          <div key={controller.id} role="listitem" class="p-4 sm:p-5">
+            <ControllerCard
+              {...controller}
+              basePath={basePath}
+              variant="compact"
+              enableCompareToggle
+            />
+          </div>
+        ))}
+      </div>
+    ) : (
+      <ul class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        {group.controllers.map((controller) => (
+          <li key={controller.id}>
+            <ControllerCard {...controller} basePath={basePath} enableCompareToggle />
+          </li>
+        ))}
+      </ul>
+    )}
+  </section>
+)}
