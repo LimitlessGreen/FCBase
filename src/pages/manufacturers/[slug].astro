@@ -7,10 +7,8 @@ import { Badge } from '@/components/ui/Badge';
 import { ExternalLink } from 'lucide-react';
 import { GITHUB_REPO_URL } from '@/lib/constants';
 import { getBasePath, getSiteUrl } from '@/lib/paths';
-import {
-  getComponentCardBuilders,
-  getComponentImageResolver,
-} from '@/lib/component-registry';
+import { getComponentImageResolver } from '@/lib/component-registry';
+import { getComponentCardBuilders } from '@/lib/component-card-builders.server';
 
 export async function getStaticPaths() {
   const manufacturers = await getCollection('manufacturers');
@@ -37,7 +35,7 @@ const manufacturerTransmitters = allTransmitters
 // Sort by title
 manufacturerControllers.sort((a, b) => a.data.title.localeCompare(b.data.title));
 
-const controllerCardBuilders = getComponentCardBuilders('controller');
+const controllerCardBuilders = await getComponentCardBuilders('controller');
 const controllerCards = controllerCardBuilders?.createModels
   ? await controllerCardBuilders.createModels(manufacturerControllers)
   : [];

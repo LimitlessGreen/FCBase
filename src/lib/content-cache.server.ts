@@ -1,4 +1,18 @@
-import { getCollection, type CollectionEntry, type ContentEntryMap } from 'astro:content';
+import type { CollectionEntry, ContentEntryMap } from 'astro:content';
+
+let contentModulePromise: Promise<typeof import('astro:content')> | null = null;
+
+async function loadContentModule() {
+  if (!contentModulePromise) {
+    if (!import.meta.env.SSR) {
+      throw new Error('astro:content is only available on the server.');
+    }
+
+    contentModulePromise = import('astro:content');
+  }
+
+  return contentModulePromise;
+}
 
 let manufacturersPromise: Promise<Map<string, CollectionEntry<'manufacturers'>>> | null = null;
 let sensorsPromise: Promise<Map<string, CollectionEntry<'sensors'>>> | null = null;
@@ -8,6 +22,7 @@ let sourcesPromise: Promise<Map<string, CollectionEntry<'sources'>>> | null = nu
 async function loadCollectionMap<T extends keyof ContentEntryMap>(
   collection: T
 ): Promise<Map<string, CollectionEntry<T>>> {
+  const { getCollection } = await loadContentModule();
   const entries = await getCollection(collection);
   return new Map(entries.map((entry) => [entry.id, entry]));
 }

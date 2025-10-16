@@ -8,9 +8,9 @@ import TableRow from '@/components/table/TableRow.astro';
 import ControllerCard from '@/components/cards/ControllerCard.astro';
 import { Badge } from '@/components/ui/Badge';
 import { AlertTriangle, ExternalLink } from 'lucide-react';
-import { getManufacturersMap, getSourcesMap } from '@/lib/content-cache';
+import { getManufacturersMap, getSourcesMap } from '@/lib/content-cache.server';
 import { getBasePath, getSiteUrl } from '@/lib/paths';
-import { getComponentCardBuilders } from '@/lib/component-registry';
+import { getComponentCardBuilders } from '@/lib/component-card-builders.server';
 
 export async function getStaticPaths() {
   const sensors = await getCollection('sensors');
@@ -58,7 +58,7 @@ const controllersGroupedByBrand = await Promise.all(
       a.data.title.localeCompare(b.data.title)
     );
 
-    const controllerCardBuilders = getComponentCardBuilders('controller');
+    const controllerCardBuilders = await getComponentCardBuilders('controller');
     const createControllerCardModel = controllerCardBuilders?.createModel;
     const controllerCards = createControllerCardModel
       ? await Promise.all(

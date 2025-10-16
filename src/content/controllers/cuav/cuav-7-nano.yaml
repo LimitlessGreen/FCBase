@@ -92,7 +92,7 @@ io:
     connector: USB Type-C
     notes: Primary configuration and firmware interface.
   - name: Buzzer and safety switch
-    type: buzzer
+    type: other
     interfaces:
     - buzzer
     - safety

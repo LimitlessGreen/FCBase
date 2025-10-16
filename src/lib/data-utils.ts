@@ -9,7 +9,7 @@
  */
 
 import type { CollectionEntry } from 'astro:content';
-import { getSensorsMap } from '@/lib/content-cache';
+import { getSensorsMap } from '@/lib/content-cache.server';
 
 /**
  * Sensor with enriched name data

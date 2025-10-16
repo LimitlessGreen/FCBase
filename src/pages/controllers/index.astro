@@ -5,14 +5,14 @@ import MainLayout from '@/layouts/MainLayout.astro';
 import { getBasePath } from '@/lib/paths';
 import { LayoutGrid, Rows3 } from 'lucide-react';
 import ControllerSection from './_sections.astro';
-import { getComponentCardBuilders } from '@/lib/component-registry';
+import { getComponentCardBuilders } from '@/lib/component-card-builders.server';
 
 const controllers = await getCollection('controllers');
 const manufacturers = await getCollection('manufacturers');
 
 const manufacturerMap = new Map(manufacturers.map((entry) => [entry.id, entry]));
 
-const controllerCardBuilders = getComponentCardBuilders('controller');
+const controllerCardBuilders = await getComponentCardBuilders('controller');
 const createControllerCardModel = controllerCardBuilders?.createModel;
 
 const controllerGroups = (

@@ -112,7 +112,7 @@ io:
       connector: JST-GH 6-pin
       notes: Auxiliary SPI port for payload sensors or data loggers.
     - name: Buzzer and safety switch
-      type: buzzer
+      type: other
       interfaces:
         - buzzer
         - safety

@@ -2,7 +2,7 @@ import type { CollectionEntry } from "astro:content";
 import type { ImageMetadata } from "astro";
 
 import { resolveControllerPreviewImage } from "@/lib/controller-images";
-import { getManufacturersMap } from "@/lib/content-cache";
+import { getManufacturersMap } from "@/lib/content-cache.server";
 
 type ManufacturerEntry = CollectionEntry<"manufacturers">;
 

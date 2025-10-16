@@ -16,16 +16,11 @@ export type CompareComponentHomepageMetadata = {
   ctaCopy: string;
 };
 
-import { createControllerCardModel, createControllerCardModels } from "@/lib/controller-card-model";
 import { resolveControllerPreviewImage } from "@/lib/controller-images";
 import { resolveTransmitterPreviewImage } from "@/lib/transmitter-images";
 
 const componentIntegrations = {
   controller: {
-    cardBuilders: {
-      createModel: createControllerCardModel,
-      createModels: createControllerCardModels,
-    },
     imageResolver: resolveControllerPreviewImage,
   },
   transmitter: {
@@ -124,17 +119,6 @@ export function getCompareComponentDefinition(
   return compareComponentRegistry[id];
 }
 
-export function getComponentCardBuilders(
-  id: 'controller',
-): ComponentIntegrationEntry<'controller'>['cardBuilders'];
-export function getComponentCardBuilders(
-  id: 'transmitter',
-): ComponentIntegrationEntry<'transmitter'>['cardBuilders'];
-export function getComponentCardBuilders(
-  id: CompareComponentId,
-) {
-  return componentIntegrations[id].cardBuilders;
-}
 
 export function getComponentImageResolver(
   id: 'controller',
