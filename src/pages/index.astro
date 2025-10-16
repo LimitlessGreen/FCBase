@@ -15,11 +15,15 @@ const description = "Browse and compare ArduPilot, PX4, and iNAV flight controll
 
 // Load actual controllers from content collection
 const allControllers = await getCollection('controllers');
+const featuredControllerEntries = allControllers.filter(
+  (controller) => controller.data.featured === true
+);
+const hasFeaturedControllers = featuredControllerEntries.length > 0;
 
-// First 6 controllers for grid preview
+// Featured controllers for homepage grid
 const manufacturers = await getManufacturersMap();
 const controllers = await createControllerCardModels(
-  allControllers.slice(0, 6),
+  hasFeaturedControllers ? featuredControllerEntries : [],
   { manufacturersMap: manufacturers }
 );
 
@@ -166,31 +170,51 @@ const basePath = getBasePath();
     </div>
   </section>
 
-  <!-- Controllers Grid -->
+  <!-- Featured Controllers -->
   <section class="w-full py-12 md:py-16 lg:py-24">
-    <div class="container">
-      <div class="grid gap-6 md:gap-8 sm:grid-cols-2 lg:grid-cols-3">
-        {controllers.map((controller) => (
-          <ControllerCard
-            key={controller.id}
-            id={controller.id}
-            title={controller.title}
-            manufacturer={controller.manufacturer}
-            mcu={controller.mcu}
-            mounting={controller.mounting}
-            uarts={controller.uarts}
-            can={controller.can}
-            pwm={controller.pwm}
-            sdCard={controller.sdCard}
-            barometer={controller.barometer}
-            ethernet={controller.ethernet}
-            firmwares={controller.firmwares}
-            image={controller.image}
-            basePath={basePath}
-            variant={controller.variant}
-          />
-        ))}
+    <div class="container space-y-8">
+      <div class="flex flex-col gap-2 md:gap-3 text-center max-w-3xl mx-auto">
+        <h2 class="text-2xl md:text-3xl font-bold tracking-tight lg:text-4xl">
+          Featured flight controllers
+        </h2>
+        <p class="text-base md:text-lg text-muted-foreground">
+          Browse curated hardware picks highlighted across the FCBase database.
+        </p>
       </div>
+
+      {hasFeaturedControllers ? (
+        <div class="grid gap-6 md:gap-8 sm:grid-cols-2 lg:grid-cols-3">
+          {controllers.map((controller) => (
+            <ControllerCard
+              key={controller.id}
+              id={controller.id}
+              title={controller.title}
+              manufacturer={controller.manufacturer}
+              mcu={controller.mcu}
+              mounting={controller.mounting}
+              uarts={controller.uarts}
+              can={controller.can}
+              pwm={controller.pwm}
+              sdCard={controller.sdCard}
+              barometer={controller.barometer}
+              ethernet={controller.ethernet}
+              firmwares={controller.firmwares}
+              image={controller.image}
+              basePath={basePath}
+              variant={controller.variant}
+            />
+          ))}
+        </div>
+      ) : (
+        <Card class="max-w-xl mx-auto">
+          <CardHeader class="space-y-3">
+            <CardTitle class="text-xl">No featured controllers yet</CardTitle>
+            <CardDescription>
+              Check back soon—the FCBase team is still curating standout flight controllers for this spotlight.
+            </CardDescription>
+          </CardHeader>
+        </Card>
+      )}
     </div>
   </section>
 
