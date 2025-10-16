@@ -1,6 +1,12 @@
 id: jumper-tpro-v2
 title: Jumper T-Pro V2
 brand: jumper-rc
+images:
+  - src: "https://www.flyingtech.co.uk/wp-content/uploads/2023/11/Jumper-T-Pro-V2.jpg"
+    alt: "Front view of the Jumper T-Pro V2 radio transmitter highlighting its controls and display."
+    credit: "JumperRC"
+    source_url: "https://www.flyingtech.co.uk/product/jumper-t-pro-v2-transmitter-4in1-multi-protocol-elrs/"
+
 support:
   level: official
   since_version: v2.10
@@ -26,4 +32,4 @@ keywords:
 - transmitter
 verification:
   level: community
-  last_updated: "2025-10-14"
+  last_updated: "2025-10-16"

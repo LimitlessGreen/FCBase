@@ -1,6 +1,12 @@
 id: jumper-t16
 title: Jumper T16 Series
 brand: jumper-rc
+images:
+  - src: "https://oscarliang.com/wp-content/uploads/2019/03/Jumper-T16-Multi-protocol-Radio-Transmitter-TX-jr-module-bay.jpg"
+    alt: "Front view of the Jumper T16 Series radio transmitter highlighting its controls and display."
+    credit: "JumperRC"
+    source_url: "https://oscarliang.com/jumper-t16-radio/"
+
 support:
   level: official
   since_version: v2.4
@@ -44,4 +50,4 @@ keywords:
 - transmitter
 verification:
   level: community
-  last_updated: "2025-10-14"
+  last_updated: "2025-10-16"

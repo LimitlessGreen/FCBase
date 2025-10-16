@@ -1,6 +1,12 @@
 id: flysky-pa01
 title: Flysky PA01
 brand: flysky
+images:
+  - src: "https://m.media-amazon.com/images/I/61C8mFoaN2L._AC_SL1138_.jpg"
+    alt: "Front view of the Flysky PA01 radio transmitter highlighting its controls and display."
+    credit: "Flysky"
+    source_url: "https://www.amazon.com/-/es/Flysky-FS-i6X-transmisor-predeterminado-receptor/dp/B0744DPPL8"
+
 support:
   level: official
   since_version: v2.11.3
@@ -26,4 +32,4 @@ keywords:
 - transmitter
 verification:
   level: community
-  last_updated: "2025-10-14"
+  last_updated: "2025-10-16"

@@ -1,6 +1,12 @@
 id: radiomaster-gx12
 title: RadioMaster GX12
 brand: radiomaster
+images:
+  - src: "https://www.fpvfaster.com.au/cdn/shop/files/3_9695332a-a793-4e1d-b4dc-f31ff61d4de3_1024x1024.webp?v=1734751978"
+    alt: "Front view of the RadioMaster GX12 radio transmitter highlighting its controls and display."
+    credit: "RadioMaster"
+    source_url: "https://www.fpvfaster.com.au/products/radiomaster-gx12-dual-band-gemini-x-radio-controller-transmitter-mode-2"
+
 support:
   level: official
   since_version: v2.11
@@ -26,4 +32,4 @@ keywords:
 - transmitter
 verification:
   level: community
-  last_updated: "2025-10-14"
+  last_updated: "2025-10-16"

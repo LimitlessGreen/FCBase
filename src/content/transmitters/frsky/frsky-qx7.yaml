@@ -1,6 +1,12 @@
 id: frsky-qx7
 title: FrSky QX7 Series
 brand: frsky
+images:
+  - src: "https://www.electricwingman.com/img/product/large/FrSkyTaranisQX7Transmitter423.jpg"
+    alt: "Front view of the FrSky QX7 Series radio transmitter highlighting its controls and display."
+    credit: "FrSky"
+    source_url: "https://www.electricwingman.com/frsky-taranis-qx7-transmitter"
+
 support:
   level: community
   since_version: v2.4
@@ -37,5 +43,5 @@ keywords:
 - transmitter
 verification:
   level: community
-  last_updated: "2025-10-14"
+  last_updated: "2025-10-16"
 notes: EdgeTX documentation calls out v2.11 as the final firmware for these ACCESS predecessors.

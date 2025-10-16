@@ -1,6 +1,12 @@
 id: flysky-st16
 title: Flysky ST16
 brand: flysky
+images:
+  - src: "https://soarskyrc.com/cdn/shop/files/160A1660_1_b9ea26e5-a1cf-4653-bfa1-c992137fa428_3200x.jpg?v=1744026279"
+    alt: "Front view of the Flysky ST16 radio transmitter highlighting its controls and display."
+    credit: "Flysky"
+    source_url: "https://soarskyrc.com/products/flysky-fs-st16-16-channel-transmitter-ant-protocol-for-airplanes-cars-or-boats"
+
 support:
   level: official
   since_version: v2.11
@@ -27,5 +33,5 @@ keywords:
 - transmitter
 verification:
   level: community
-  last_updated: "2025-10-14"
+  last_updated: "2025-10-16"
 notes: Internal RF and magnetometer limitations highlighted by the EdgeTX support matrix.

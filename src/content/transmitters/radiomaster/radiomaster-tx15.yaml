@@ -1,6 +1,12 @@
 id: radiomaster-tx15
 title: RadioMaster TX15
 brand: radiomaster
+images:
+  - src: "https://www.hobbyrc.co.uk/images/thumbs/0020695_radiomaster-tx15-max-transmitter-elrs.jpeg"
+    alt: "Front view of the RadioMaster TX15 radio transmitter highlighting its controls and display."
+    credit: "RadioMaster"
+    source_url: "https://www.hobbyrc.co.uk/radiomaster-tx15-max-transmitter-elrs-3-versions"
+
 support:
   level: official
   since_version: v3.0
@@ -27,5 +33,5 @@ keywords:
 - transmitter
 verification:
   level: community
-  last_updated: "2025-10-14"
+  last_updated: "2025-10-16"
 notes: EdgeTX recommends using factory firmware until v3.0 is released for this radio.

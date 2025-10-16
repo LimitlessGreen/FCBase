@@ -1,6 +1,12 @@
 id: flysky-el18
 title: Flysky EL18
 brand: flysky
+images:
+  - src: "https://ueeshop.ly200-cdn.com/u_file/UPAU/UPAU175/2302/23/products/EL18-01-34bd.jpg"
+    alt: "Front view of the Flysky EL18 radio transmitter highlighting its controls and display."
+    credit: "Flysky"
+    source_url: "https://www.arrishobby.com/products/flysky-elysium-el18-24ghz-afhds-3-open-source-edgetx-transmitter-with-tmr-micro-receiver"
+
 support:
   level: official
   since_version: v2.8
@@ -26,4 +32,4 @@ keywords:
 - transmitter
 verification:
   level: community
-  last_updated: "2025-10-14"
+  last_updated: "2025-10-16"

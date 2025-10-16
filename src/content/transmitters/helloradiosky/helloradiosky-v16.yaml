@@ -1,6 +1,12 @@
 id: helloradiosky-v16
 title: HelloRadioSky V16
 brand: helloradiosky
+images:
+  - src: "https://imgaz.staticbg.com/thumb/large/oaupload/banggood/images/4E/58/353b7a7f-e4c3-475e-88f3-d03454fbe8a4.jpg.webp"
+    alt: "Front view of the HelloRadioSky V16 radio transmitter highlighting its controls and display."
+    credit: "HelloRadioSky"
+    source_url: "https://uk.banggood.com/HelloRadioSky-V16-Pro-ELRS-or-4in1-Multi-protocol-EdgeTX-and-OpenTX-Radio-Transmitter-with-4_3-inch-Touch-Screen-for-FPV-Drone-Helicopter-RC-Airplane-p-2020885.html"
+
 support:
   level: manufacturer
   since_version: v2.11
@@ -26,4 +32,4 @@ keywords:
 - transmitter
 verification:
   level: community
-  last_updated: "2025-10-14"
+  last_updated: "2025-10-16"

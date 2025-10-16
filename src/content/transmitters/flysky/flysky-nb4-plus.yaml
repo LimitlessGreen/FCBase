@@ -1,6 +1,12 @@
 id: flysky-nb4-plus
 title: Flysky NB4+
 brand: flysky
+images:
+  - src: "https://m.media-amazon.com/images/I/61Xuw+UA5NL._AC_SL1200_.jpg"
+    alt: "Front view of the Flysky NB4+ radio transmitter highlighting its controls and display."
+    credit: "Flysky"
+    source_url: "https://www.amazon.co.uk/Flysky-FS-NB4-Transmitter-Receiver-Screen-NB4/dp/B07JLX7LQP"
+
 support:
   level: official
   since_version: v2.11
@@ -27,5 +33,5 @@ keywords:
 - transmitter
 verification:
   level: community
-  last_updated: "2025-10-14"
+  last_updated: "2025-10-16"
 notes: Limited support details and hardware caveats documented by the EdgeTX supported radios list.

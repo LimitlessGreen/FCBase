@@ -1,6 +1,12 @@
 id: helloradiosky-v14
 title: HelloRadioSky V14
 brand: helloradiosky
+images:
+  - src: "https://oscarliang.com/wp-content/uploads/2025/05/HelloRadio-V14-MAX-edgetx-elrs-transmitter-controller-front-controls-1024x682.jpg"
+    alt: "Front view of the HelloRadioSky V14 radio transmitter highlighting its controls and display."
+    credit: "HelloRadioSky"
+    source_url: "https://oscarliang.com/helloradio-v14-max/"
+
 support:
   level: manufacturer
   since_version: v2.11
@@ -26,4 +32,4 @@ keywords:
 - transmitter
 verification:
   level: community
-  last_updated: "2025-10-14"
+  last_updated: "2025-10-16"
