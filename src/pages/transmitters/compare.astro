@@ -4,6 +4,7 @@ import TransmitterCompareTable from '@/components/compare/TransmitterCompareTabl
 import MainLayout from '@/layouts/MainLayout.astro';
 import { getManufacturersMap } from '@/lib/content-cache';
 import { getBasePath } from '@/lib/paths';
+import { resolveTransmitterPreviewImage } from '@/lib/transmitter-images';
 
 const transmitters = await getCollection('transmitters');
 const manufacturers = await getManufacturersMap();
@@ -42,11 +43,12 @@ const compareItems = transmitters
     }));
 
     const support = transmitter.data.support;
-    const rawImage = transmitter.data.image ?? null;
-    const imageUrl =
-      rawImage?.src && typeof rawImage.src !== 'string'
-        ? rawImage.src.src
-        : rawImage?.src ?? null;
+    const preview = resolveTransmitterPreviewImage(transmitter);
+    const imageUrl = preview
+      ? typeof preview.src === 'string'
+        ? preview.src
+        : preview.src.src
+      : null;
 
     return {
       id: transmitter.id,
@@ -63,9 +65,15 @@ const compareItems = transmitters
       image: imageUrl
         ? {
             url: imageUrl,
-            alt: rawImage?.alt ?? transmitter.data.title,
-            width: rawImage?.width,
-            height: rawImage?.height,
+            alt: preview?.alt ?? transmitter.data.title,
+            width:
+              typeof preview?.src === 'string'
+                ? preview?.width
+                : preview?.src.width,
+            height:
+              typeof preview?.src === 'string'
+                ? preview?.height
+                : preview?.src.height,
           }
         : null,
     };

@@ -716,6 +716,7 @@ const transmitterSchema = z.object({
   id: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
   title: z.string(),
   brand: z.string(),
+  images: z.array(controllerImageSchema).optional(),
   support: z.object({
     level: transmitterSupportLevelEnum,
     since_version: z.string(),
