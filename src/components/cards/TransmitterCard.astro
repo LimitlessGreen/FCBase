@@ -46,6 +46,7 @@ interface Props {
   basePath?: string;
   showImage?: boolean;
   variant: 'grid' | 'compact';
+  remoteUrl?: string;
   class?: string;
 }
 
@@ -61,6 +62,7 @@ const {
   basePath = '',
   variant: variantProp = 'grid',
   showImage: showImageProp = true,
+  remoteUrl,
   class: className,
 } = Astro.props;
 
@@ -250,6 +252,16 @@ const showBadgeFooter = !isCompact && !showImage && shouldShowSupportBadges;
               </div>
             </div>
           )}
+          {remoteUrl && (
+            <a
+              href={remoteUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center gap-1 text-[9px] font-semibold text-primary transition-colors hover:text-primary/80"
+            >
+              View YAML ↗
+            </a>
+          )}
         </div>
       </div>
     ) : (
@@ -328,6 +340,17 @@ const showBadgeFooter = !isCompact && !showImage && shouldShowSupportBadges;
               </div>
             )}
           </div>
+        )}
+
+        {remoteUrl && (
+          <a
+            href={remoteUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center gap-1 text-[10px] font-semibold text-primary transition-colors hover:text-primary/80"
+          >
+            View YAML ↗
+          </a>
         )}
       </div>
     )}

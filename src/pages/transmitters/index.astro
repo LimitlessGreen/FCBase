@@ -4,6 +4,7 @@ import MainLayout from '@/layouts/MainLayout.astro';
 import TransmitterCard from '@/components/cards/TransmitterCard.astro';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/Tabs';
 import { getManufacturersMap } from '@/lib/content-cache';
+import { GITHUB_REPO_URL } from '@/lib/constants';
 import { getBasePath } from '@/lib/paths';
 
 const allTransmitters = await getCollection('transmitters');
@@ -96,6 +97,8 @@ const basePath = getBasePath();
                       const revisions = item.data.hardware?.revisions ?? [];
                       const compliance = item.data.compliance ?? [];
                       const slug = item.slug ?? item.id;
+                      const remotePath = `src/content/transmitters/${slug}.yaml`;
+                      const remoteUrl = `${GITHUB_REPO_URL}/blob/main/${remotePath}`;
 
                       return (
                         <TransmitterCard
@@ -113,6 +116,7 @@ const basePath = getBasePath();
                           }}
                           hardwareRevisions={revisions}
                           compliance={compliance}
+                          remoteUrl={remoteUrl}
                           basePath={basePath}
                           variant="grid"
                         />
@@ -147,6 +151,8 @@ const basePath = getBasePath();
                       const revisions = item.data.hardware?.revisions ?? [];
                       const compliance = item.data.compliance ?? [];
                       const slug = item.slug ?? item.id;
+                      const remotePath = `src/content/transmitters/${slug}.yaml`;
+                      const remoteUrl = `${GITHUB_REPO_URL}/blob/main/${remotePath}`;
 
                       return (
                         <div key={item.id} role="listitem">
@@ -164,6 +170,7 @@ const basePath = getBasePath();
                             }}
                             hardwareRevisions={revisions}
                             compliance={compliance}
+                            remoteUrl={remoteUrl}
                             basePath={basePath}
                             variant="compact"
                           />
