@@ -6,6 +6,7 @@ import TransmitterCard from '@/components/cards/TransmitterCard.astro';
 import { Badge } from '@/components/ui/Badge';
 import { ExternalLink } from 'lucide-react';
 import { createControllerCardModels } from '@/lib/controller-card-model';
+import { GITHUB_REPO_URL } from '@/lib/constants';
 import { getBasePath, getSiteUrl } from '@/lib/paths';
 
 export async function getStaticPaths() {
@@ -55,9 +56,13 @@ const transmitterCards = manufacturerTransmitters.map((transmitter) => {
       }
     : undefined;
 
+  const slug = (transmitter as { slug?: string }).slug ?? transmitter.id;
+  const remotePath = `src/content/transmitters/${slug}.yaml`;
+  const remoteUrl = `${GITHUB_REPO_URL}/blob/main/${remotePath}`;
+
   return {
     id: transmitter.id,
-    slug: (transmitter as { slug?: string }).slug ?? transmitter.id,
+    slug,
     title: transmitter.data.title,
     manufacturer: data.name || transmitter.data.brand,
     support: {
@@ -70,6 +75,7 @@ const transmitterCards = manufacturerTransmitters.map((transmitter) => {
     hardwareRevisions: transmitter.data.hardware?.revisions ?? [],
     compliance: transmitter.data.compliance ?? [],
     image: cardImage,
+    remoteUrl,
     variant: 'grid' as const,
   };
 });
@@ -216,6 +222,7 @@ const pageDescription = `${manufacturerName} hardware catalog. ${manufacturerSum
                 hardwareRevisions={transmitter.hardwareRevisions}
                 compliance={transmitter.compliance}
                 image={transmitter.image}
+                remoteUrl={transmitter.remoteUrl}
                 basePath={basePath}
                 variant={transmitter.variant}
               />

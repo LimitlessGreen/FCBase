@@ -8,6 +8,7 @@ import StatusBadge from '@/components/ui/StatusBadge.astro';
 import ProfessionalTable from '@/components/table/ProfessionalTable.astro';
 import TableRow from '@/components/table/TableRow.astro';
 import { getManufacturersMap, getSourcesMap } from '@/lib/content-cache';
+import { GITHUB_REPO_URL } from '@/lib/constants';
 import { getBasePath } from '@/lib/paths';
 
 interface SourceMeta {
@@ -75,6 +76,8 @@ const topLevelSources = data.sources
 const basePath = getBasePath();
 const transmitterSlug = (transmitter as { slug?: string }).slug ?? transmitter.id;
 const editPath = `src/content/transmitters/${transmitterSlug}.yaml`;
+const normalizedEditPath = editPath.replace(/^\/+/, '');
+const remoteUrl = `${GITHUB_REPO_URL}/blob/main/${normalizedEditPath}`;
 
 const supportLevelLabel = supportLevelLabels[data.support.level];
 const supportStatusLabel = supportStatusLabels[data.support.status];
@@ -273,9 +276,22 @@ const pageDescription = `${data.title} by ${manufacturerName} - ${supportLevelLa
           <TableRow label="Manufacturer" value={manufacturerName} />
           <TableRow label="Support since" value={data.support.since_version} />
           <TableRow label="Verification updated" value={data.verification.last_updated} />
+          {remoteUrl && (
+            <TableRow label="Data file">
+              <a
+                href={remoteUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center gap-1 text-primary transition-colors hover:text-primary/80"
+              >
+                View YAML on GitHub
+                <span aria-hidden="true">↗</span>
+              </a>
+            </TableRow>
+          )}
           {hardware?.form_factor && (
-            <TableRow 
-              label="Form factor" 
+            <TableRow
+              label="Form factor"
               value={hardware.form_factor.charAt(0).toUpperCase() + hardware.form_factor.slice(1)} 
             />
           )}
