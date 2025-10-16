@@ -134,6 +134,35 @@ const trimmedCompliance = compliance.slice(0, 4);
 const remainingCompliance = Math.max(0, complianceCount - trimmedCompliance.length);
 
 const initCompareToggleSource = initCompareToggle.toString();
+const defaultCompareTypeLiteral = JSON.stringify(defaultCompareType);
+const compareEventNameLiteral = JSON.stringify(COMPARE_EVENT_NAME);
+const compareToggleScript = String.raw`(() => {
+  const scriptEl = document.currentScript;
+  if (!(scriptEl instanceof HTMLScriptElement)) {
+    return;
+  }
+
+  const compareId = scriptEl.dataset.compareId;
+  const compareType = scriptEl.dataset.compareType || ${defaultCompareTypeLiteral};
+  const eventName = scriptEl.dataset.compareEventName || ${compareEventNameLiteral};
+  const storageKey = scriptEl.dataset.compareStorageKey || undefined;
+  const legacyStorageKey = scriptEl.dataset.compareLegacyKey;
+  const container = scriptEl.parentElement;
+
+  if (!compareId || !(container instanceof HTMLElement)) {
+    return;
+  }
+
+  const initCompareToggle = ${initCompareToggleSource};
+  initCompareToggle({
+    compareId,
+    compareType,
+    root: container,
+    eventName,
+    storageKey,
+    legacyStorageKey: legacyStorageKey || undefined,
+  });
+})();`;
 const supportTimeline: TimelineEntry[] = [
   { id: 'since', label: 'Since', value: support.sinceVersion },
 ];
@@ -439,33 +468,7 @@ const hasRemoteLink = Boolean(remoteUrl);
       data-compare-id={compareId}
       data-compare-type={compareType}
       data-compare-event-name={COMPARE_EVENT_NAME}
-    >
-      (() => {
-        const scriptEl = document.currentScript;
-        if (!(scriptEl instanceof HTMLScriptElement)) {
-          return;
-        }
-
-        const compareId = scriptEl.dataset.compareId;
-        const compareType = scriptEl.dataset.compareType || '${defaultCompareType}';
-        const eventName = scriptEl.dataset.compareEventName || '${COMPARE_EVENT_NAME}';
-        const storageKey = scriptEl.dataset.compareStorageKey || undefined;
-        const legacyStorageKey = scriptEl.dataset.compareLegacyKey;
-        const container = scriptEl.parentElement;
-        if (!compareId || !(container instanceof HTMLElement)) {
-          return;
-        }
-
-        const initCompareToggle = ${initCompareToggleSource};
-        initCompareToggle({
-          compareId,
-          compareType,
-          root: container,
-          eventName,
-          storageKey,
-          legacyStorageKey: legacyStorageKey || undefined,
-        });
-      })();
-    </script>
+      set:html={compareToggleScript}
+    />
   )}
 </div>
