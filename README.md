@@ -39,6 +39,9 @@ can evaluate boards with consistent, transparent data.
   pnpm run build
   ```
 
+## Deployment notes
+- The GitHub Pages workflow caches optimized Astro assets in `node_modules/.astro`; ensure this directory (or a custom `cacheDir` path) is persisted between runs to reuse generated images.
+
 ## Contributing
 - Keep all user-facing content in English and follow the directory structure outlined in `AGENTS.md`.
 - Add or update YAML content files with complete metadata, sources, and `verification` blocks.
