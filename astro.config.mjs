@@ -40,8 +40,28 @@ function deriveGithubRepoUrl(remoteUrl) {
   return "";
 }
 
+function deriveGithubProfileUrl(email) {
+  if (!email) {
+    return "";
+  }
+
+  const noreplyMatch = email.match(/^(?:\d+\+)?([a-z0-9-]+)@users\.noreply\.github\.com$/i);
+
+  if (noreplyMatch) {
+    return `https://github.com/${noreplyMatch[1]}`;
+  }
+
+  const githubMatch = email.match(/^([a-z0-9-]+)@github\.com$/i);
+
+  if (githubMatch) {
+    return `https://github.com/${githubMatch[1]}`;
+  }
+
+  return "";
+}
+
 const gitLogOutput = getGitValue(
-  "git log -1 --pretty=format:%h%x1f%H%x1f%an%x1f%cI"
+  "git log -1 --pretty=format:%h%x1f%H%x1f%an%x1f%ae%x1f%cI"
 );
 const gitLogFields = gitLogOutput
   ? gitLogOutput.split("\x1f").map((value) => value.trim())
@@ -50,8 +70,10 @@ const [
   commitHashShort = "",
   commitHashFull = "",
   commitAuthor = "",
+  commitAuthorEmail = "",
   commitDateIso = "",
 ] = gitLogFields;
+const commitAuthorUrl = deriveGithubProfileUrl(commitAuthorEmail);
 const remoteOriginUrl = getGitValue("git config --get remote.origin.url");
 const currentBranch = getGitValue("git rev-parse --abbrev-ref HEAD") || "main";
 const githubRepoUrl =
@@ -69,6 +91,7 @@ export default defineConfig({
       "import.meta.env.PUBLIC_GIT_COMMIT_HASH": JSON.stringify(commitHashShort),
       "import.meta.env.PUBLIC_GIT_COMMIT_HASH_FULL": JSON.stringify(commitHashFull),
       "import.meta.env.PUBLIC_GIT_COMMIT_AUTHOR": JSON.stringify(commitAuthor),
+      "import.meta.env.PUBLIC_GIT_COMMIT_AUTHOR_URL": JSON.stringify(commitAuthorUrl),
       "import.meta.env.PUBLIC_GIT_COMMIT_DATE": JSON.stringify(commitDateIso),
       "import.meta.env.PUBLIC_GITHUB_REPO_URL": JSON.stringify(githubRepoUrl),
       "import.meta.env.PUBLIC_GITHUB_EDIT_BASE_URL": JSON.stringify(githubEditBaseUrl),
