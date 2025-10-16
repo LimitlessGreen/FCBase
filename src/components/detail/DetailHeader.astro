@@ -104,7 +104,7 @@ const storageKey = `fcbase:compare:${compareType}`;
             return [];
           }
           return parsed.filter((value) => typeof value === 'string');
-        } catch {
+        } catch (_error) {
           return [];
         }
       };

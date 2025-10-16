@@ -23,7 +23,7 @@ const parseList = (raw: NullableString): string[] => {
     }
 
     return parsed.filter((value): value is string => typeof value === 'string');
-  } catch {
+  } catch (_error) {
     return [];
   }
 };

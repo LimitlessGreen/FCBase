@@ -62,7 +62,7 @@ const isAbsoluteUrl = (value: string): boolean => {
   try {
     const url = new URL(value);
     return Boolean(url.protocol && url.host);
-  } catch {
+  } catch (_error) {
     return false;
   }
 };
