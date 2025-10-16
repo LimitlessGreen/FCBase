@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/Button";
 import { GITHUB_REPO_URL } from "@/lib/constants";
 import { compareComponentDefinitions } from "@/lib/component-registry";
-import { getComponentCardBuilders } from "@/lib/component-card-builders.server";
+import { getComponentRegistration } from "@/content/components";
 import ControllerCard from "@/components/cards/ControllerCard.astro";
 import { getManufacturersMap } from "@/lib/content-cache.server";
 import { getBasePath } from "@/lib/paths";
@@ -15,7 +15,8 @@ const title = "FCBase – Open Flight Controller Database";
 const description = "Browse and compare ArduPilot, PX4, and iNAV flight controllers plus EdgeTX transmitters – open, community-driven.";
 
 // Load actual controllers from content collection
-const allControllers = await getCollection('controllers');
+const controllerRegistration = getComponentRegistration('controller');
+const allControllers = await getCollection(controllerRegistration.collectionKey);
 const featuredControllerEntries = allControllers.filter(
   (controller) => controller.data.featured === true
 );
@@ -23,7 +24,13 @@ const hasFeaturedControllers = featuredControllerEntries.length > 0;
 
 // Featured controllers for homepage grid
 const manufacturers = await getManufacturersMap();
-const controllerCardBuilders = await getComponentCardBuilders('controller');
+const controllerDefinition = compareComponentDefinitions.find(
+  (definition) => definition.id === 'controller'
+);
+const controllerCardBuilders = controllerDefinition?.integration.cardBuilders;
+const featuredControllersHeading = controllerDefinition
+  ? `Featured ${controllerDefinition.label.toLowerCase()}`
+  : 'Featured flight controllers';
 const controllers = controllerCardBuilders
   ? await controllerCardBuilders.createModels(
       hasFeaturedControllers ? featuredControllerEntries : [],
@@ -179,7 +186,7 @@ const homepageNavigationEntries = compareComponentDefinitions.map((definition, i
     <div class="container space-y-8">
       <div class="flex flex-col gap-2 md:gap-3 text-center max-w-3xl mx-auto">
         <h2 class="text-2xl md:text-3xl font-bold tracking-tight lg:text-4xl">
-          Featured flight controllers
+          {featuredControllersHeading}
         </h2>
         <p class="text-base md:text-lg text-muted-foreground">
           Browse curated hardware picks highlighted across the FCBase database.

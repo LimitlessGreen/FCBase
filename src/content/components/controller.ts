@@ -1,5 +1,10 @@
 import { defineCollection, z } from 'astro:content';
 
+import type { ComponentDefinition } from '@/lib/components/registry';
+import { createControllerCardModel, createControllerCardModels } from '@/lib/controller-card-model';
+import { resolveControllerPreviewImage } from '@/lib/controller-images';
+import { componentMetadataRegistry } from '@/lib/components/metadata';
+
 import { componentImageSchema, knownIssueSchema } from './common';
 
 const sensorSchema = z.object({
@@ -482,6 +487,8 @@ export const buildRevisionVariants = (
   return [baseVariant, ...revisionVariants];
 };
 
+const metadata = componentMetadataRegistry.controller;
+
 export const controllerComponent = {
   id: 'controller',
   collectionKey: 'controllers',
@@ -491,4 +498,14 @@ export const controllerComponent = {
     buildRevisionVariants,
     mergeControllerRevision,
   },
-} as const;
+  cards: {
+    createModel: createControllerCardModel,
+    createModels: createControllerCardModels,
+  },
+  images: {
+    resolvePreviewImage: resolveControllerPreviewImage,
+  },
+  compare: metadata.compare,
+  navigation: metadata.navigation,
+  homepage: metadata.homepage,
+} as const satisfies ComponentDefinition<'controller', 'controllers'>;
