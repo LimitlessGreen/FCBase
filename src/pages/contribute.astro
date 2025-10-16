@@ -1,0 +1,161 @@
+---
+import MainLayout from "@/layouts/MainLayout.astro";
+import { Button } from "@/components/ui/Button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/Card";
+import { getBasePath } from "@/lib/paths";
+import { GITHUB_REPO_URL } from "@/lib/constants";
+import { ClipboardList, FileText, GitPullRequest, ShieldCheck, Sparkles, Upload, UsersRound } from "lucide-react";
+
+const basePath = getBasePath();
+
+const waysToHelp = [
+  {
+    title: "Add new hardware",
+    description:
+      "Submit flight controllers, transmitters, or component data backed by manufacturer documentation and reliable sources.",
+    icon: Upload,
+  },
+  {
+    title: "Improve metadata",
+    description:
+      "Fix specs, add missing firmware support details, and expand sensor information to keep the database accurate.",
+    icon: ClipboardList,
+  },
+  {
+    title: "Verify entries",
+    description:
+      "Confirm data from hands-on experience, share validation photos, or flag inconsistencies that require review.",
+    icon: ShieldCheck,
+  },
+];
+
+const contributionSteps = [
+  {
+    title: "Check existing data",
+    description:
+      "Search the database first to avoid duplicates and note any fields that need clarification before you start editing.",
+    icon: FileText,
+  },
+  {
+    title: "Update the repository",
+    description:
+      "Fork FCBase on GitHub, run pnpm install, and use pnpm run validate to ensure schema compliance before committing.",
+    icon: GitPullRequest,
+  },
+  {
+    title: "Open a pull request",
+    description:
+      "Describe your changes, include supporting sources, and tag the PR using the feat(controller) or fix(data) prefix.",
+    icon: UsersRound,
+  },
+];
+---
+
+<MainLayout
+  title="Contribute to FCBase"
+  description="Learn how to add new hardware data, improve accuracy, and collaborate on the open flight controller database."
+  editPath="src/pages/contribute.astro"
+>
+  <div class="container py-12 md:py-16 lg:py-20 space-y-16">
+    <nav class="flex items-center gap-2 text-sm text-muted-foreground">
+      <a href={`${basePath}/`} class="transition-colors hover:text-foreground">Home</a>
+      <span>/</span>
+      <span class="text-foreground">Contribute</span>
+    </nav>
+
+    <section class="grid gap-8 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:items-start">
+      <div class="space-y-6">
+        <h1 class="text-4xl font-bold tracking-tight sm:text-5xl">Build the open hardware index together</h1>
+        <p class="text-lg text-muted-foreground">
+          FCBase thrives on community contributions. Whether you maintain a manufacturer catalog, fly these boards every day, or just spotted outdated specs, your updates keep the database trustworthy for pilots, developers, and reviewers.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-3">
+          <Button size="lg" asChild>
+            <a href={`${GITHUB_REPO_URL}`} target="_blank" rel="noreferrer">View the project on GitHub</a>
+          </Button>
+          <Button variant="outline" size="lg" asChild>
+            <a href={`${GITHUB_REPO_URL}/issues`} target="_blank" rel="noreferrer">Report an issue</a>
+          </Button>
+        </div>
+      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>Before you submit</CardTitle>
+          <CardDescription>
+            Follow these quick checks to help maintain data quality and speed up reviews.
+          </CardDescription>
+        </CardHeader>
+        <CardContent class="space-y-4 text-sm text-muted-foreground">
+          <p class="flex gap-2"><Sparkles class="h-4 w-4 text-primary" aria-hidden="true" />Review the schemas inside <code class="rounded bg-muted px-1.5 py-0.5 text-xs text-foreground">/meta/schema/</code>.</p>
+          <p class="flex gap-2"><ShieldCheck class="h-4 w-4 text-primary" aria-hidden="true" />Always include reliable sources and update the verification block.</p>
+          <p class="flex gap-2"><ClipboardList class="h-4 w-4 text-primary" aria-hidden="true" />Run <code class="rounded bg-muted px-1.5 py-0.5 text-xs text-foreground">pnpm run validate</code> before opening a pull request.</p>
+        </CardContent>
+      </Card>
+    </section>
+
+    <section class="space-y-6">
+      <h2 class="text-3xl font-semibold tracking-tight">Ways to help</h2>
+      <p class="text-muted-foreground max-w-3xl">
+        Contributions can cover any hardware covered by FCBase. Pick the area that matches your expertise and follow the structured schema fields outlined in the repository documentation.
+      </p>
+      <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        {waysToHelp.map((item) => {
+          const Icon = item.icon;
+          return (
+            <Card key={item.title} class="h-full">
+              <CardHeader class="space-y-4">
+                <span class="inline-flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
+                  <Icon class="h-6 w-6" aria-hidden="true" />
+                </span>
+                <div class="space-y-2">
+                  <CardTitle>{item.title}</CardTitle>
+                  <CardDescription>{item.description}</CardDescription>
+                </div>
+              </CardHeader>
+            </Card>
+          );
+        })}
+      </div>
+    </section>
+
+    <section class="space-y-6">
+      <h2 class="text-3xl font-semibold tracking-tight">Contribution workflow</h2>
+      <p class="text-muted-foreground max-w-3xl">
+        Use this checklist each time you contribute data. It keeps your updates consistent with the FCBase standards and helps reviewers merge changes faster.
+      </p>
+      <div class="grid gap-4 md:grid-cols-3">
+        {contributionSteps.map((step) => {
+          const Icon = step.icon;
+          return (
+            <Card key={step.title} class="h-full">
+              <CardHeader class="space-y-3">
+                <span class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
+                  <Icon class="h-5 w-5" aria-hidden="true" />
+                </span>
+                <div class="space-y-2">
+                  <CardTitle class="text-lg">{step.title}</CardTitle>
+                  <CardDescription>{step.description}</CardDescription>
+                </div>
+              </CardHeader>
+            </Card>
+          );
+        })}
+      </div>
+    </section>
+
+    <section class="space-y-4 rounded-xl border bg-muted/40 p-6">
+      <h2 class="text-2xl font-semibold tracking-tight">Need help?</h2>
+      <p class="text-muted-foreground">
+        Open a discussion on GitHub or tag maintainers in your pull request if you have questions about schema fields, vocabulary, or verification requirements. Clear commit messages and detailed PR descriptions speed up reviews for everyone.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-3">
+        <Button variant="outline" asChild>
+          <a href={`${GITHUB_REPO_URL}/discussions`} target="_blank" rel="noreferrer">Start a discussion</a>
+        </Button>
+        <Button variant="ghost" asChild>
+          <a href="mailto:hello@fcbase.org">Contact the maintainers</a>
+        </Button>
+      </div>
+    </section>
+  </div>
+</MainLayout>
