@@ -60,7 +60,6 @@ const mountingDisplay = mounting
   : undefined;
 
 const firmwareBadges = firmwares.map((firmware) => firmware.toUpperCase());
-const [primaryFirmwareBadge, ...secondaryFirmwareBadges] = firmwareBadges;
 const href = `${basePath}/controllers/${id}`;
 const ioMetrics = [
   { label: 'UART', value: uarts },
@@ -81,111 +80,89 @@ const featureFlags = [sdCard ? 'SD' : null, barometer ? 'Baro' : null].filter(Bo
 >
   {showImage && (
     <Fragment slot="imageOverlay">
-      <div class="pointer-events-none relative flex h-full w-full flex-col">
-        <div class="absolute inset-0 bg-gradient-to-b from-black/70 via-black/30 to-black/60" aria-hidden="true" />
-        <div class="relative z-10 flex h-full flex-col justify-between p-3 sm:p-4">
-          <div class="flex items-start justify-between gap-3">
-            <div class="space-y-1.5 text-left">
-              {manufacturer && (
-                <span class="inline-flex items-center rounded-full border border-white/30 bg-white/10 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-white shadow-sm">
-                  {manufacturer}
-                </span>
-              )}
-              <h3 class="text-base font-semibold leading-tight text-white drop-shadow sm:text-lg">
-                {title}
-              </h3>
-            </div>
-            {primaryFirmwareBadge && (
-              <span class="inline-flex items-center rounded-full border border-white/30 bg-white/15 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white shadow-sm">
-                {primaryFirmwareBadge}
-              </span>
-            )}
-          </div>
-          {secondaryFirmwareBadges.length > 0 && (
-            <div class="flex flex-wrap items-center justify-end gap-1.5">
-              {secondaryFirmwareBadges.map((label, index) => (
-                <span
-                  key={`${label}-${index}`}
-                  class="inline-flex items-center rounded-full border border-white/25 bg-white/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white/90 shadow-sm"
-                >
-                  {label}
-                </span>
-              ))}
-            </div>
+      <div class="pointer-events-none relative h-full w-full">
+        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent" aria-hidden="true" />
+        <div class="absolute top-2 left-2 max-w-[70%] space-y-1">
+          <h3 class="rounded-sm border bg-background/95 px-1.5 py-0.5 text-xs font-semibold leading-snug text-foreground shadow-sm transition-colors group-hover:text-primary">
+            {title}
+          </h3>
+          {manufacturer && (
+            <p class="inline-flex rounded-sm border bg-background/95 px-1.5 py-0.5 text-[11px] font-medium text-muted-foreground shadow-sm">
+              {manufacturer}
+            </p>
           )}
         </div>
+        {firmwareBadges.length > 0 && (
+          <div class="absolute top-2 right-2 flex flex-wrap justify-end gap-1.5">
+            {firmwareBadges.map((label) => (
+              <span class="inline-flex items-center rounded-sm border bg-background/95 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide shadow-sm">
+                {label}
+              </span>
+            ))}
+          </div>
+        )}
       </div>
     </Fragment>
   )}
 
   <Fragment slot="specs">
     {isCompact ? (
-      <div class="space-y-2.5 text-[10px] leading-snug">
+      <div class="space-y-2 text-[10px] leading-snug">
         <div class="flex flex-wrap items-center justify-between gap-2">
           <div class="flex flex-wrap items-center gap-1.5">
-            <span class="inline-flex items-center rounded-full border px-2 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wide text-foreground">
+            <span class="inline-flex items-center rounded-sm border px-1.5 py-0.5 font-mono text-[9px] font-semibold uppercase tracking-wide">
               {mcuDisplay}
             </span>
             {mountingDisplay && (
-              <span class="inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide">
+              <span class="inline-flex items-center rounded-sm border px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide">
                 {mountingDisplay}
               </span>
             )}
           </div>
           {featureFlags.length > 0 && (
-            <div class="flex flex-wrap items-center gap-1 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
-              {featureFlags.map((flag, index) => (
-                <span key={`${flag}-${index}`} class="inline-flex items-center gap-1">
-                  {index > 0 && <span aria-hidden="true" class="opacity-60">/</span>}
-                  <span class="text-foreground">{flag}</span>
+            <div class="flex flex-wrap items-center gap-1.5 text-[9px] uppercase tracking-wide text-muted-foreground">
+              {featureFlags.map((flag) => (
+                <span key={flag} class="inline-flex items-center gap-1 rounded-sm border px-1 py-0.5 font-semibold">
+                  <span aria-hidden="true">•</span>
+                  {flag}
                 </span>
               ))}
             </div>
           )}
         </div>
         {ioMetrics.length > 0 && (
-          <dl class="grid grid-cols-[repeat(auto-fit,minmax(72px,1fr))] gap-2">
+          <dl class="flex flex-wrap gap-3">
             {ioMetrics.map((metric) => (
-              <div
-                key={metric.label}
-                class="rounded-lg border bg-muted/30 px-2.5 py-2 text-center shadow-xs"
-              >
-                <dd class="text-lg font-semibold leading-tight text-foreground">{metric.value}</dd>
-                <dt class="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">{metric.label}</dt>
+              <div key={metric.label} class="flex items-baseline gap-1">
+                <dt class="text-[9px] uppercase tracking-wide text-muted-foreground">{metric.label}</dt>
+                <dd class="text-sm font-semibold leading-none text-foreground">{metric.value}</dd>
               </div>
             ))}
           </dl>
         )}
       </div>
     ) : (
-      <div class="space-y-3">
-        <div class="flex flex-wrap items-center justify-between gap-2 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
-          <div class="flex flex-wrap items-center gap-1.5">
-            <span class="inline-flex items-center rounded-full border px-2 py-0.5 font-mono text-[11px] text-foreground">
-              {mcuDisplay}
+      <div class="space-y-2.5">
+        <div class="flex flex-wrap items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+          <span class="inline-flex items-center rounded-sm border px-1.5 py-0.5 font-mono text-[10px]">
+            {mcuDisplay}
+          </span>
+          {mountingDisplay && (
+            <span class="inline-flex items-center rounded-sm border px-1.5 py-0.5 text-[10px]">
+              {mountingDisplay}
             </span>
-            {mountingDisplay && (
-              <span class="inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] text-foreground">
-                {mountingDisplay}
-              </span>
-            )}
-          </div>
-          {featureFlags.length > 0 && (
-            <div class="flex flex-wrap items-center gap-1 text-[10px]">
-              {featureFlags.map((flag, index) => (
-                <span key={`${flag}-${index}`} class="inline-flex items-center gap-1">
-                  {index > 0 && <span aria-hidden="true" class="opacity-60">/</span>}
-                  <span class="text-foreground">{flag}</span>
-                </span>
-              ))}
-            </div>
           )}
+          {featureFlags.map((flag) => (
+            <span key={flag} class="inline-flex items-center rounded-sm border px-1.5 py-0.5 text-[10px]">
+              {flag}
+            </span>
+          ))}
         </div>
         {ioMetrics.length > 0 && (
-          <dl class="grid grid-cols-[repeat(auto-fit,minmax(90px,1fr))] gap-2 text-center text-[11px] uppercase tracking-wide text-muted-foreground">
+          <dl class="grid grid-cols-[repeat(auto-fit,minmax(72px,1fr))] gap-2 text-center text-[10px] uppercase tracking-wide text-muted-foreground">
             {ioMetrics.map((metric) => (
-              <div key={metric.label} class="rounded-lg border bg-muted/20 px-3 py-2 shadow-xs">
-                <dd class="text-xl font-semibold leading-tight text-foreground">{metric.value}</dd>
+              <div key={metric.label} class="rounded-sm border px-2 py-1">
+                <dd class="text-base font-semibold leading-tight text-foreground">{metric.value}</dd>
                 <dt>{metric.label}</dt>
               </div>
             ))}
