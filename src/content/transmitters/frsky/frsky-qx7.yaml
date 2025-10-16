@@ -2,7 +2,7 @@ id: frsky-qx7
 title: FrSky QX7 Series
 brand: frsky
 images:
-  - src: "https://www.electricwingman.com/img/product/large/FrSkyTaranisQX7Transmitter423.jpg"
+  - src: frsky-qx7.jpg
     alt: "Front view of the FrSky QX7 Series radio transmitter highlighting its controls and display."
     credit: "FrSky"
     source_url: "https://www.electricwingman.com/frsky-taranis-qx7-transmitter"

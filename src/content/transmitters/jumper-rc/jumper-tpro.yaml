@@ -2,7 +2,7 @@ id: jumper-tpro
 title: Jumper T-Pro
 brand: jumper-rc
 images:
-  - src: "https://www.robotonbd.com/wp-content/uploads/2022/06/tpro-fix-3_1800x1800.jpeg"
+  - src: jumper-tpro.jpeg
     alt: "Front view of the Jumper T-Pro radio transmitter highlighting its controls and display."
     credit: "JumperRC"
     source_url: "https://www.robotonbd.com/jumper-t-pro/"

@@ -2,7 +2,7 @@ id: jumper-t20-v2
 title: Jumper T20 V2
 brand: jumper-rc
 images:
-  - src: "https://ae01.alicdn.com/kf/Sb4a2ecb6029a4e1cb029eacd4c363902X/Jumper-T20-T20S-V2-RC-HALL-RDC90-ELRS-915Mhz-2-4GHz-Remote-Control-Transmitter-Oled-Screen.jpg"
+  - src: jumper-t20-v2.jpg
     alt: "Front view of the Jumper T20 V2 radio transmitter highlighting its controls and display."
     credit: "JumperRC"
     source_url: "https://www.aliexpress.com/item/1005006755338901.html"

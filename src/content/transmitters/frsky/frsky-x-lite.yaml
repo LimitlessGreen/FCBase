@@ -2,7 +2,7 @@ id: frsky-x-lite
 title: FrSky X-Lite Series
 brand: frsky
 images:
-  - src: "https://oscarliang.com/wp-content/uploads/2018/01/frsky-x-lite-tx-radio-transmitter-red-case-1024x768.jpg"
+  - src: frsky-x-lite.jpg
     alt: "Front view of the FrSky X-Lite Series radio transmitter highlighting its controls and display."
     credit: "FrSky"
     source_url: "https://oscarliang.com/frsky-x-lite-tx/"

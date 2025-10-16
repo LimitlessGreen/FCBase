@@ -2,7 +2,7 @@ id: jumper-t12
 title: Jumper T12 Series
 brand: jumper-rc
 images:
-  - src: "https://www.racer.lt/uploads/modules/catalog/img/16000/1537914083_16641_jumper-t12-plus-multi.png"
+  - src: jumper-t12.png
     alt: "Front view of the Jumper T12 Series radio transmitter highlighting its controls and display."
     credit: "JumperRC"
     source_url: "https://www.racer.lt/item/jumper-t12-plus-multi-protocol-radio-transmitter-w-jp4-in-1-rf-module-hall-sensor-gimbal-black-16641.html"

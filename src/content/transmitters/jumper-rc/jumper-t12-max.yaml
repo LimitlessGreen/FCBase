@@ -2,7 +2,7 @@ id: jumper-t12-max
 title: Jumper T12 Max
 brand: jumper-rc
 images:
-  - src: "https://www.jumper-rc.com/wp-content/uploads/2024/11/2-1024x962.png"
+  - src: jumper-t12-max.png
     alt: "Front view of the Jumper T12 Max radio transmitter highlighting its controls and display."
     credit: "JumperRC"
     source_url: "https://www.jumper-rc.com/transmitters/t12-max/"
