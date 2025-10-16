@@ -1,5 +1,4 @@
-import { compareModuleRegistry } from '@/components/compare/registry';
-import type { CompareModuleRegistry } from '@/components/compare/registry';
+import type { CompareModuleRegistry } from '@/components/compare/registry.server';
 import type { ComponentRegistry } from '@/lib/components/registry';
 import {
   componentMetadata,
@@ -11,22 +10,27 @@ import {
 type RegisteredMetadata = (typeof componentMetadata)[number];
 
 let serverComponentRegistry: ComponentRegistry | undefined;
+let serverCompareModuleRegistry: CompareModuleRegistry | undefined;
 
 if (import.meta.env.SSR) {
-  const module = await import('@/lib/components/registry');
-  serverComponentRegistry = module.componentRegistry;
+  const [componentsModule, compareModule] = await Promise.all([
+    import('@/lib/components/registry'),
+    import('@/components/compare/registry.server'),
+  ]);
+  serverComponentRegistry = componentsModule.componentRegistry;
+  serverCompareModuleRegistry = compareModule.compareModuleRegistry;
 }
 
 export const compareComponentDefinitions = componentMetadata.map((metadata) => {
   const serverDefinition = serverComponentRegistry?.[metadata.id as keyof ComponentRegistry];
-  const module = compareModuleRegistry[
+  const module = serverCompareModuleRegistry?.[
     metadata.id as keyof CompareModuleRegistry
   ];
 
-  if (!module) {
+  if (!module && import.meta.env.SSR) {
     throw new Error(
       `No compare module registered for component "${metadata.id}". ` +
-        'Update src/components/compare/registry.ts to include the component.',
+        'Update src/components/compare/registry.server.ts to include the component.',
     );
   }
 
@@ -43,7 +47,7 @@ export const compareComponentDefinitions = componentMetadata.map((metadata) => {
       imageResolver: serverDefinition?.images?.resolvePreviewImage,
       cardBuilders: serverDefinition?.cards,
     },
-    module,
+    module: module ?? undefined,
   };
 }) as const satisfies ReadonlyArray<{
   id: RegisteredMetadata['id'];
@@ -62,7 +66,7 @@ export const compareComponentDefinitions = componentMetadata.map((metadata) => {
       : unknown;
     cardBuilders?: ComponentRegistry[keyof ComponentRegistry]['cards'];
   };
-  module: CompareModuleRegistry[RegisteredMetadata['id']];
+  module?: CompareModuleRegistry[RegisteredMetadata['id']];
 }>;
 
 export type CompareComponentDefinition =

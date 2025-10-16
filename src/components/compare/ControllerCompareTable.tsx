@@ -11,15 +11,6 @@ import {
   readCompareList,
   writeCompareList,
 } from "@/lib/compare";
-import { getComponentImageResolver } from "@/lib/component-registry";
-import {
-  getFirmwareMap,
-  getManufacturersMap,
-  getSensorsMap,
-} from "@/lib/content-cache.server";
-
-import type { CompareModule } from "./registry";
-
 interface ControllerCompareImage {
   url: string;
   alt?: string | null;
@@ -142,27 +133,29 @@ interface ControllerCompareItem {
   notes?: string | null;
 }
 
-type ControllerCompareContext = {
-  manufacturers: Awaited<ReturnType<typeof getManufacturersMap>>;
-  sensors: Awaited<ReturnType<typeof getSensorsMap>>;
-  firmwareMap: Awaited<ReturnType<typeof getFirmwareMap>>;
-  resolveImage?: ReturnType<typeof getComponentImageResolver>;
-};
+interface ControllerImagePreview {
+  src:
+    | string
+    | {
+        src: string;
+        width: number;
+        height: number;
+      };
+  alt?: string | null;
+  width?: number | null;
+  height?: number | null;
+}
 
-const loadControllerContext = async (): Promise<ControllerCompareContext> => {
-  const [manufacturers, sensors, firmwareMap] = await Promise.all([
-    getManufacturersMap(),
-    getSensorsMap(),
-    getFirmwareMap(),
-  ]);
+type ControllerImageResolver = (
+  entry: CollectionEntry<"controllers">,
+) => ControllerImagePreview | null | undefined;
 
-  return {
-    manufacturers,
-    sensors,
-    firmwareMap,
-    resolveImage: getComponentImageResolver("controller"),
-  };
-};
+export interface ControllerCompareContext {
+  manufacturers: Map<string, CollectionEntry<"manufacturers">>;
+  sensors: Map<string, CollectionEntry<"sensors">>;
+  firmwareMap: Map<string, CollectionEntry<"firmware">>;
+  resolveImage?: ControllerImageResolver;
+}
 
 const formatSensorEntries = (
   entries: unknown,
@@ -247,7 +240,7 @@ const formatFirmwareEntries = (
     .filter((value): value is FirmwareSupportEntry => Boolean(value));
 };
 
-const transformControllerEntry = (
+export const transformControllerEntry = (
   controller: CollectionEntry<"controllers">,
   context: ControllerCompareContext,
 ): ControllerCompareItem => {
@@ -475,7 +468,7 @@ const transformControllerEntry = (
   };
 };
 
-const sortControllerItems = (
+export const sortControllerItems = (
   items: ControllerCompareItem[],
 ): ControllerCompareItem[] =>
   [...items].sort((a, b) => a.title.localeCompare(b.title));
@@ -1330,23 +1323,3 @@ export default function ControllerCompareTable({
 }
 
 export type { ControllerCompareItem };
-
-export const controllerCompareModule: CompareModule<
-  typeof compareComponentId,
-  "controllers",
-  ControllerCompareItem,
-  ControllerCompareContext
-> = {
-  id: compareComponentId,
-  collectionKey: "controllers",
-  Table: ControllerCompareTable,
-  page: {
-    title: "Compare Flight Controllers - FCBase",
-    description:
-      "Select multiple flight controllers to review MCU, I/O, and firmware capabilities side by side.",
-    breadcrumbLabel: "Controllers",
-  },
-  loadContext: loadControllerContext,
-  transformEntry: (entry, context) => transformControllerEntry(entry, context),
-  sortItems: sortControllerItems,
-};

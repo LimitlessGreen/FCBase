@@ -6,7 +6,7 @@ vi.mock('@/lib/component-registry', () => ({
 
 import { componentMetadataIds } from '@/lib/components/metadata';
 
-import { compareModuleRegistry } from './registry';
+import { compareModuleRegistry } from './registry.server';
 
 describe('compareModuleRegistry', () => {
   it('includes a compare module for every registered component', () => {
