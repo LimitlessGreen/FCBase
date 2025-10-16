@@ -28,6 +28,7 @@ export interface ControllerCardModel {
   pwm?: number;
   sdCard: boolean;
   barometer: boolean;
+  ethernet: boolean;
   firmwares: string[];
   image?: ControllerCardImage;
   variant: 'grid' | 'compact';
@@ -99,6 +100,7 @@ export async function createControllerCardModel(
     pwm: controller.data.io?.pwm,
     sdCard: Boolean(controller.data.io?.sd_card),
     barometer: hasBarometer(controller),
+    ethernet: Boolean(controller.data.io?.ethernet),
     firmwares: resolveFirmwareIds(controller),
     image: normalizeImage(controller),
     variant: 'grid',
