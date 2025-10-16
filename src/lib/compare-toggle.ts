@@ -1,4 +1,11 @@
-export type CompareToggleType = 'controller' | 'transmitter';
+import {
+  COMPARE_EVENT_NAME,
+  getCompareLegacyStorageKeys,
+  getCompareStorageKey,
+  type CompareType,
+} from './compare';
+
+export type CompareToggleType = CompareType;
 
 export interface CompareToggleOptions {
   /** Unique identifier for the card being toggled. */
@@ -28,7 +35,7 @@ export function initCompareToggle(options: CompareToggleOptions): void {
     compareId,
     compareType,
     root,
-    eventName = 'fcbase:compare-change',
+    eventName = COMPARE_EVENT_NAME,
     storageKey: storageKeyOverride,
     legacyStorageKey: legacyStorageKeyOverride,
   } = options;
@@ -60,21 +67,37 @@ export function initCompareToggle(options: CompareToggleOptions): void {
     }
   };
 
-  const storageKey = storageKeyOverride ?? `fcbase:compare:${compareType}`;
-  const legacyStorageKey = legacyStorageKeyOverride ?? (compareType === 'controller' ? 'fcbase:compare' : null);
+  const storageKey = storageKeyOverride ?? getCompareStorageKey(compareType);
+  const legacyKeys = (() => {
+    if (legacyStorageKeyOverride === undefined) {
+      return getCompareLegacyStorageKeys(compareType);
+    }
 
-  let legacyMigrated = compareType !== 'controller';
+    if (legacyStorageKeyOverride === null) {
+      return [] as string[];
+    }
+
+    return [legacyStorageKeyOverride];
+  })();
+
+  let legacyMigrated = legacyKeys.length === 0;
 
   const readList = (): string[] => {
-    if (!legacyMigrated && legacyStorageKey) {
+    if (!legacyMigrated) {
       legacyMigrated = true;
-      const legacyRaw = window.localStorage.getItem(legacyStorageKey);
-      const legacyList = parseList(legacyRaw);
-      if (legacyList.length > 0) {
+      const legacyValues = legacyKeys.reduce<string[]>((accumulator, key) => {
+        const values = parseList(window.localStorage.getItem(key));
+        if (values.length > 0) {
+          accumulator.push(...values);
+          window.localStorage.removeItem(key);
+        }
+        return accumulator;
+      }, []);
+
+      if (legacyValues.length > 0) {
         const existing = parseList(window.localStorage.getItem(storageKey));
-        const merged = Array.from(new Set([...existing, ...legacyList]));
+        const merged = Array.from(new Set([...existing, ...legacyValues]));
         window.localStorage.setItem(storageKey, JSON.stringify(merged));
-        window.localStorage.removeItem(legacyStorageKey);
       }
     }
 
@@ -87,7 +110,7 @@ export function initCompareToggle(options: CompareToggleOptions): void {
     window.dispatchEvent(
       new CustomEvent(eventName, {
         detail: { type: compareType, ids: unique },
-      })
+      }),
     );
   };
 
@@ -119,7 +142,7 @@ export function initCompareToggle(options: CompareToggleOptions): void {
 
   window.addEventListener('storage', (event) => {
     if (!event.key) return;
-    if (event.key === storageKey || (legacyStorageKey && event.key === legacyStorageKey)) {
+    if (event.key === storageKey || legacyKeys.includes(event.key)) {
       syncFromStorage();
     }
   });

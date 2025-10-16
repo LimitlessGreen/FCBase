@@ -1,14 +1,13 @@
-export type CompareType = 'controller' | 'transmitter';
+import {
+  getCompareComponentDefinition,
+  type CompareComponentId,
+} from './component-registry';
+
+export type CompareType = CompareComponentId;
 
 export const COMPARE_EVENT_NAME = 'fcbase:compare-change';
 
-const STORAGE_KEYS: Record<CompareType, string> = {
-  controller: 'fcbase:compare:controller',
-  transmitter: 'fcbase:compare:transmitter',
-};
-
-const LEGACY_STORAGE_KEY = 'fcbase:compare';
-let legacyMigrated = false;
+const legacyMigrationState = new Set<CompareType>();
 
 type NullableString = string | null | undefined;
 
@@ -37,24 +36,45 @@ const getStorageItem = (key: string): string[] => {
   return parseList(window.localStorage.getItem(key));
 };
 
-const maybeMigrateLegacy = () => {
-  if (legacyMigrated || typeof window === 'undefined') {
+const maybeMigrateLegacy = (type: CompareType) => {
+  if (legacyMigrationState.has(type) || typeof window === 'undefined') {
     return;
   }
 
-  legacyMigrated = true;
-  const legacyList = parseList(window.localStorage.getItem(LEGACY_STORAGE_KEY));
-  if (legacyList.length === 0) {
+  legacyMigrationState.add(type);
+
+  const definition = getCompareComponentDefinition(type);
+  const legacyKeys = definition.legacyStorageKeys;
+
+  if (!legacyKeys || legacyKeys.length === 0) {
     return;
   }
 
-  const existing = getStorageItem(STORAGE_KEYS.controller);
-  const merged = Array.from(new Set([...existing, ...legacyList]));
-  window.localStorage.setItem(STORAGE_KEYS.controller, JSON.stringify(merged));
-  window.localStorage.removeItem(LEGACY_STORAGE_KEY);
+  const legacyValues = legacyKeys.reduce<string[]>((accumulator, key) => {
+    const values = parseList(window.localStorage.getItem(key));
+    if (values.length > 0) {
+      accumulator.push(...values);
+      window.localStorage.removeItem(key);
+    }
+    return accumulator;
+  }, []);
+
+  if (legacyValues.length === 0) {
+    return;
+  }
+
+  const existing = getStorageItem(definition.storageKey);
+  const merged = Array.from(new Set([...existing, ...legacyValues]));
+  window.localStorage.setItem(definition.storageKey, JSON.stringify(merged));
 };
 
-export const getCompareStorageKey = (type: CompareType): string => STORAGE_KEYS[type];
+export const getCompareStorageKey = (type: CompareType): string =>
+  getCompareComponentDefinition(type).storageKey;
+
+export const getCompareLegacyStorageKeys = (type: CompareType): string[] => {
+  const definition = getCompareComponentDefinition(type);
+  return definition.legacyStorageKeys ? [...definition.legacyStorageKeys] : [];
+};
 
 export interface CompareEventDetail {
   type: CompareType;
@@ -66,11 +86,10 @@ export const readCompareList = (type: CompareType): string[] => {
     return [];
   }
 
-  if (type === 'controller') {
-    maybeMigrateLegacy();
-  }
+  maybeMigrateLegacy(type);
 
-  return getStorageItem(STORAGE_KEYS[type]);
+  const storageKey = getCompareStorageKey(type);
+  return getStorageItem(storageKey);
 };
 
 export const writeCompareList = (type: CompareType, ids: string[]) => {
@@ -79,7 +98,8 @@ export const writeCompareList = (type: CompareType, ids: string[]) => {
   }
 
   const unique = Array.from(new Set(ids));
-  window.localStorage.setItem(STORAGE_KEYS[type], JSON.stringify(unique));
+  const storageKey = getCompareStorageKey(type);
+  window.localStorage.setItem(storageKey, JSON.stringify(unique));
   dispatchCompareEvent(type, unique);
 };
 
@@ -97,6 +117,7 @@ export const clearCompareList = (type: CompareType) => {
     return;
   }
 
-  window.localStorage.removeItem(STORAGE_KEYS[type]);
+  const storageKey = getCompareStorageKey(type);
+  window.localStorage.removeItem(storageKey);
   dispatchCompareEvent(type, []);
 };

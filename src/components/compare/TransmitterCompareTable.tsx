@@ -9,6 +9,7 @@ import {
   readCompareList,
   writeCompareList,
 } from "@/lib/compare";
+import { getCompareComponentDefinition } from "@/lib/component-registry";
 
 interface ComplianceEntry {
   id: string;
@@ -41,7 +42,9 @@ interface TransmitterCompareTableProps {
   basePath: string;
 }
 
-const type = "transmitter" as const;
+const transmitterComponent = getCompareComponentDefinition("transmitter");
+export const compareComponentId = transmitterComponent.id;
+const type = compareComponentId;
 
 export default function TransmitterCompareTable({
   items,
