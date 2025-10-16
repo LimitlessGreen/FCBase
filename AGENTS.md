@@ -70,12 +70,13 @@ Agents must validate each file against `/meta/schema/controller.schema.json` bef
 
 ---
 
-## 📸 Images
+## 📸 Images & UI Changes
 - Place images in `/assets/images/controllers/`
 - Filename: `<controller-id>-<view>.jpg`
 - Metadata in controller YAML:
   - `alt`, `credit`, `source_url` required
 - Agents may **not** auto-download or hotlink external images.
+- Whenever a change impacts the UI, agents **must** capture and attach a screenshot demonstrating the updated interface.
 
 ---
 
