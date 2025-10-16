@@ -1,5 +1,6 @@
 ---
 import type { ImageMetadata } from 'astro';
+import { initCompareToggle } from '@/lib/compare-toggle';
 import BaseCard from './BaseCard.astro';
 
 type SupportLevel = 'official' | 'manufacturer' | 'community';
@@ -118,6 +119,8 @@ const remainingRevisions = Math.max(0, revisionCount - trimmedRevisions.length);
 
 const trimmedCompliance = compliance.slice(0, 4);
 const remainingCompliance = Math.max(0, complianceCount - trimmedCompliance.length);
+
+const initCompareToggleSource = initCompareToggle.toString();
 const supportTimeline: TimelineEntry[] = [
   { id: 'since', label: 'Since', value: support.sinceVersion },
 ];
@@ -420,102 +423,23 @@ const showBadgeFooter = !isCompact && !showImage && shouldShowSupportBadges;
 
         const compareId = scriptEl.dataset.compareId;
         const compareType = scriptEl.dataset.compareType || 'transmitter';
-        const eventName = scriptEl.dataset.compareEventName || 'fcbase:compare-change';
-        const storageKey = `fcbase:compare:${compareType}`;
-        const legacyStorageKey = compareType === 'controller' ? 'fcbase:compare' : null;
+        const eventName = scriptEl.dataset.compareEventName || undefined;
+        const storageKey = scriptEl.dataset.compareStorageKey || undefined;
+        const legacyStorageKey = scriptEl.dataset.compareLegacyKey;
         const container = scriptEl.parentElement;
-        if (!compareId || !container) {
+        if (!compareId || !(container instanceof HTMLElement)) {
           return;
         }
 
-        const toggle = container.querySelector('input[data-compare-toggle]');
-        const card = container.querySelector('.compare-card');
-        const toggleWrapper = container.querySelector('[data-compare-toggle-wrapper]');
-        if (!(toggle instanceof HTMLInputElement) || !(card instanceof HTMLElement)) {
-          return;
-        }
-
-        let legacyMigrated = compareType !== 'controller';
-
-        const parseList = (raw) => {
-          if (!raw) return [];
-          try {
-            const parsed = JSON.parse(raw);
-            if (!Array.isArray(parsed)) return [];
-            return parsed.filter((value) => typeof value === 'string');
-          } catch {
-            return [];
-          }
-        };
-
-        const readList = () => {
-          if (!legacyMigrated && legacyStorageKey) {
-            legacyMigrated = true;
-            const legacyRaw = window.localStorage.getItem(legacyStorageKey);
-            const legacyList = parseList(legacyRaw);
-            if (legacyList.length > 0) {
-              const existing = parseList(window.localStorage.getItem(storageKey));
-              const merged = Array.from(new Set([...existing, ...legacyList]));
-              window.localStorage.setItem(storageKey, JSON.stringify(merged));
-              window.localStorage.removeItem(legacyStorageKey);
-            }
-          }
-
-          return parseList(window.localStorage.getItem(storageKey));
-        };
-
-        const writeList = (list) => {
-          const unique = Array.from(new Set(list));
-          window.localStorage.setItem(storageKey, JSON.stringify(unique));
-          window.dispatchEvent(
-            new CustomEvent(eventName, {
-              detail: { type: compareType, ids: unique },
-            })
-          );
-        };
-
-        const applyMarkedState = (marked) => {
-          card.dataset.marked = marked ? 'true' : 'false';
-          if (toggleWrapper instanceof HTMLElement) {
-            toggleWrapper.dataset.marked = marked ? 'true' : 'false';
-          }
-        };
-
-        const syncFromStorage = () => {
-          const list = readList();
-          const isMarked = list.includes(compareId);
-          toggle.checked = isMarked;
-          applyMarkedState(isMarked);
-        };
-
-        toggle.addEventListener('change', () => {
-          const list = readList();
-          const index = list.indexOf(compareId);
-          if (toggle.checked && index === -1) {
-            list.push(compareId);
-          } else if (!toggle.checked && index !== -1) {
-            list.splice(index, 1);
-          }
-          writeList(list);
-          applyMarkedState(toggle.checked);
+        const initCompareToggle = ${initCompareToggleSource};
+        initCompareToggle({
+          compareId,
+          compareType,
+          root: container,
+          eventName,
+          storageKey,
+          legacyStorageKey: legacyStorageKey || undefined,
         });
-
-        window.addEventListener('storage', (event) => {
-          if (!event.key) return;
-          if (event.key === storageKey || (legacyStorageKey && event.key === legacyStorageKey)) {
-            syncFromStorage();
-          }
-        });
-
-        window.addEventListener(eventName, (event) => {
-          if (!event || typeof event !== 'object') return;
-          const detail = 'detail' in event ? event.detail : undefined;
-          if (!detail || typeof detail !== 'object') return;
-          if (detail.type && detail.type !== compareType) return;
-          syncFromStorage();
-        });
-
-        syncFromStorage();
       })();
     </script>
   )}
