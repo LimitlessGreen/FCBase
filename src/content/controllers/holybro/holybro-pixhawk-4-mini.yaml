@@ -103,7 +103,7 @@ io:
     connector: JST-GH 4-pin
     notes: External I2C ports for compasses and digital sensors.
   - name: Buzzer and safety switch
-    type: buzzer
+    type: other
     interfaces:
     - buzzer
     - safety

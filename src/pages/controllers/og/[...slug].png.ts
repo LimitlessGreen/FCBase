@@ -4,7 +4,7 @@ import type { APIContext } from 'astro';
 import { getCollection, getEntry } from 'astro:content';
 import { jsx, jsxs } from 'react/jsx-runtime';
 import { formatMounting, getManufacturerName } from '@/lib/data-utils';
-import { getManufacturersMap } from '@/lib/content-cache';
+import { getManufacturersMap } from '@/lib/content-cache.server';
 import { resolveControllerSummary } from '@/lib/controller-seo';
 
 export const prerender = true;

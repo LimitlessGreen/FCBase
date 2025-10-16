@@ -2,7 +2,7 @@
 import { getCollection } from 'astro:content';
 import ControllerCompareTable from '@/components/compare/ControllerCompareTable';
 import MainLayout from '@/layouts/MainLayout.astro';
-import { getFirmwareMap, getManufacturersMap, getSensorsMap } from '@/lib/content-cache';
+import { getFirmwareMap, getManufacturersMap, getSensorsMap } from '@/lib/content-cache.server';
 import { getComponentImageResolver } from '@/lib/component-registry';
 import { getBasePath } from '@/lib/paths';
 

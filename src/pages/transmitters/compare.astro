@@ -2,7 +2,7 @@
 import { getCollection } from 'astro:content';
 import TransmitterCompareTable from '@/components/compare/TransmitterCompareTable';
 import MainLayout from '@/layouts/MainLayout.astro';
-import { getManufacturersMap } from '@/lib/content-cache';
+import { getManufacturersMap } from '@/lib/content-cache.server';
 import { getBasePath } from '@/lib/paths';
 import { getComponentImageResolver } from '@/lib/component-registry';
 

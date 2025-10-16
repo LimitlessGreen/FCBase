@@ -120,7 +120,7 @@ io:
     connector: JST-GH 6-pin
     notes: External debug and console header for development.
   - name: Buzzer and safety switch
-    type: buzzer
+    type: other
     interfaces:
     - buzzer
     - safety

@@ -88,7 +88,7 @@ io:
     connector: 6-pin power monitor inputs
     notes: Dual current and voltage monitor connectors support redundant power bricks.
   - name: Buzzer driver
-    type: buzzer
+    type: other
     interfaces:
     - buzzer
     connector: 2-pin JST

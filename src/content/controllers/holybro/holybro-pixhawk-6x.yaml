@@ -115,7 +115,7 @@ io:
     connector: JST-GH 4-pin
     notes: External I2C ports on the carrier for sensors and expansion nodes.
   - name: Buzzer and safety switch
-    type: buzzer
+    type: other
     interfaces:
     - buzzer
     - safety

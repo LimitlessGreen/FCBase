@@ -118,7 +118,7 @@ io:
     connector: JST BM06B-GHS-TBT
     notes: DSU7 debug header exposes FTDI console alongside SWDIO/SWCLK for development.
   - name: Buzzer and safety switch
-    type: buzzer
+    type: other
     interfaces:
     - safety
     - buzzer

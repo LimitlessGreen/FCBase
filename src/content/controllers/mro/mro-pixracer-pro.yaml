@@ -107,7 +107,7 @@ io:
     connector: USB Type-C
     notes: Console, firmware flashing, and composite USB interface with secondary SLCAN channel.
   - name: Buzzer
-    type: buzzer
+    type: other
     interfaces:
     - buzzer
     connector: Onboard driver

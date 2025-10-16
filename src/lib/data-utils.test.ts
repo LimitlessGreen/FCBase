@@ -5,7 +5,7 @@ vi.mock('astro:content', () => ({
   getCollection: vi.fn(async () => []),
 }));
 
-vi.mock('@/lib/content-cache', () => ({
+vi.mock('@/lib/content-cache.server', () => ({
   getSensorsMap: vi.fn(async () => new Map()),
 }));
 

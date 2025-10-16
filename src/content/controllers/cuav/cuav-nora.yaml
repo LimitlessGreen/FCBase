@@ -114,7 +114,7 @@ io:
     connector: JST-GH 4-pin
     notes: External I2C buses on the GPS and expansion headers for compasses or airspeed sensors.
   - name: Buzzer and safety switch
-    type: buzzer
+    type: other
     interfaces:
     - buzzer
     - safety
