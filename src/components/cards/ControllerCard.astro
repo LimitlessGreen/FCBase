@@ -1,6 +1,7 @@
 ---
 import type { ImageMetadata } from 'astro';
 import BaseCard from './BaseCard.astro';
+import { Check } from 'lucide-react';
 
 interface Props {
   id: string;
@@ -50,7 +51,7 @@ const {
 const variant = variantProp;
 const isCompact = variant === 'compact';
 const showImage = isCompact ? false : showImageProp;
-const cardClass = isCompact ? 'p-3.5 sm:p-4' : 'pb-4';
+const cardClass = isCompact ? 'p-3 sm:p-3.5' : 'pb-3.5';
 
 const mcuDisplay = mcu ? mcu.toUpperCase().replace(/^(STMICRO-|ATMEGA-)/, '') : 'UNKNOWN';
 const mountingDisplay = mounting
@@ -107,67 +108,82 @@ const featureFlags = [sdCard ? 'SD' : null, barometer ? 'Baro' : null].filter(Bo
 
   <Fragment slot="specs">
     {isCompact ? (
-      <div class="space-y-2 text-[10px] leading-snug">
-        <div class="flex flex-wrap items-center justify-between gap-2">
-          <div class="flex flex-wrap items-center gap-1.5">
-            <span class="inline-flex items-center rounded-sm border px-1.5 py-0.5 font-mono text-[9px] font-semibold uppercase tracking-wide">
-              {mcuDisplay}
+      <div class="space-y-1.5 text-[9px] leading-snug">
+        <div class="flex flex-wrap items-center gap-1 text-[8px] font-semibold uppercase tracking-wide text-muted-foreground">
+          <span class="inline-flex items-center rounded-sm border px-1 py-0.5 font-mono">
+            {mcuDisplay}
+          </span>
+          {mountingDisplay && (
+            <span class="inline-flex items-center rounded-sm border px-1 py-0.5">
+              {mountingDisplay}
             </span>
-            {mountingDisplay && (
-              <span class="inline-flex items-center rounded-sm border px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide">
-                {mountingDisplay}
-              </span>
-            )}
-          </div>
+          )}
+        </div>
+
+        <div class="h-px w-full bg-border/70" />
+
+        <div class="flex flex-wrap items-start justify-between gap-2">
+          {ioMetrics.length > 0 && (
+            <dl class="flex flex-wrap gap-2">
+              {ioMetrics.map((metric) => (
+                <div key={metric.label} class="min-w-[40px] text-center">
+                  <dd class="text-[11px] font-semibold leading-tight text-foreground">{metric.value}</dd>
+                  <dt class="text-[8px] uppercase tracking-wide text-muted-foreground">{metric.label}</dt>
+                </div>
+              ))}
+            </dl>
+          )}
+
           {featureFlags.length > 0 && (
-            <div class="flex flex-wrap items-center gap-1.5 text-[9px] uppercase tracking-wide text-muted-foreground">
+            <div class="flex flex-wrap justify-end gap-1">
               {featureFlags.map((flag) => (
-                <span key={flag} class="inline-flex items-center gap-1 rounded-sm border px-1 py-0.5 font-semibold">
-                  <span aria-hidden="true">•</span>
+                <span key={flag} class="inline-flex items-center gap-1 text-[8px] font-semibold uppercase tracking-wide">
+                  <Check class="h-3 w-3 text-primary" aria-hidden="true" />
                   {flag}
                 </span>
               ))}
             </div>
           )}
         </div>
-        {ioMetrics.length > 0 && (
-          <dl class="flex flex-wrap gap-3">
-            {ioMetrics.map((metric) => (
-              <div key={metric.label} class="flex items-baseline gap-1">
-                <dt class="text-[9px] uppercase tracking-wide text-muted-foreground">{metric.label}</dt>
-                <dd class="text-sm font-semibold leading-none text-foreground">{metric.value}</dd>
-              </div>
-            ))}
-          </dl>
-        )}
       </div>
     ) : (
-      <div class="space-y-2.5">
-        <div class="flex flex-wrap items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
-          <span class="inline-flex items-center rounded-sm border px-1.5 py-0.5 font-mono text-[10px]">
+      <div class="space-y-2.5 text-[10px] leading-snug">
+        <div class="flex flex-wrap items-center gap-1 text-[9px] font-semibold uppercase tracking-wide text-muted-foreground">
+          <span class="inline-flex items-center rounded-sm border px-1 py-0.5 font-mono">
             {mcuDisplay}
           </span>
           {mountingDisplay && (
-            <span class="inline-flex items-center rounded-sm border px-1.5 py-0.5 text-[10px]">
+            <span class="inline-flex items-center rounded-sm border px-1 py-0.5">
               {mountingDisplay}
             </span>
           )}
-          {featureFlags.map((flag) => (
-            <span key={flag} class="inline-flex items-center rounded-sm border px-1.5 py-0.5 text-[10px]">
-              {flag}
-            </span>
-          ))}
         </div>
-        {ioMetrics.length > 0 && (
-          <dl class="grid grid-cols-[repeat(auto-fit,minmax(72px,1fr))] gap-2 text-center text-[10px] uppercase tracking-wide text-muted-foreground">
-            {ioMetrics.map((metric) => (
-              <div key={metric.label} class="rounded-sm border px-2 py-1">
-                <dd class="text-base font-semibold leading-tight text-foreground">{metric.value}</dd>
-                <dt>{metric.label}</dt>
-              </div>
-            ))}
-          </dl>
-        )}
+
+        <div class="h-px w-full bg-border/70" />
+
+        <div class="flex flex-wrap items-start justify-between gap-3">
+          {ioMetrics.length > 0 && (
+            <dl class="flex flex-wrap gap-3">
+              {ioMetrics.map((metric) => (
+                <div key={metric.label} class="min-w-[56px] text-center">
+                  <dd class="text-base font-semibold leading-tight text-foreground">{metric.value}</dd>
+                  <dt class="text-[9px] uppercase tracking-wide text-muted-foreground">{metric.label}</dt>
+                </div>
+              ))}
+            </dl>
+          )}
+
+          {featureFlags.length > 0 && (
+            <div class="flex flex-wrap justify-end gap-1.5">
+              {featureFlags.map((flag) => (
+                <span key={flag} class="inline-flex items-center gap-1 text-[9px] font-semibold uppercase tracking-wide">
+                  <Check class="h-3 w-3 text-primary" aria-hidden="true" />
+                  {flag}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     )}
   </Fragment>
