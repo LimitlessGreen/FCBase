@@ -2,10 +2,12 @@
 import { getCollection } from 'astro:content';
 import MainLayout from '@/layouts/MainLayout.astro';
 import ControllerCard from '@/components/cards/ControllerCard.astro';
+import TransmitterCard from '@/components/cards/TransmitterCard.astro';
 import { createControllerCardModels } from '@/lib/controller-card-model';
 import { Badge } from '@/components/ui/Badge';
 import { ExternalLink } from 'lucide-react';
 import { getBasePath } from '@/lib/paths';
+import { GITHUB_REPO_URL } from '@/lib/constants';
 
 export async function getStaticPaths() {
   const firmware = await getCollection('firmware');
@@ -26,8 +28,35 @@ const compatibleControllers = allControllers.filter((controller) =>
   controller.data.firmware_support.some((fw) => fw.id === firmware.id)
 );
 
+// Load all transmitters matching this firmware
+const allTransmitters = await getCollection('transmitters');
+
+const normalize = (value: string | undefined) =>
+  value
+    ?.toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .trim();
+
+const firmwareTokens = [firmware.id, data.title, data.name]
+  .map((token) => normalize(token))
+  .filter((token): token is string => Boolean(token));
+
+const compatibleTransmitters = allTransmitters.filter((transmitter) => {
+  const keywords = (transmitter.data.keywords ?? [])
+    .map((keyword) => normalize(keyword))
+    .filter((keyword): keyword is string => Boolean(keyword));
+
+  if (keywords.length === 0) {
+    return false;
+  }
+
+  return firmwareTokens.some((token) => keywords.includes(token));
+});
+
 // Sort by title
 compatibleControllers.sort((a, b) => a.data.title.localeCompare(b.data.title));
+compatibleTransmitters.sort((a, b) => a.data.title.localeCompare(b.data.title));
 
 const manufacturerMap = new Map(manufacturers.map((entry) => [entry.id, entry]));
 
@@ -58,11 +87,70 @@ const getStatusTone = (status: string | undefined) => {
 
 const basePath = getBasePath();
 const editPath = `src/content/firmware/${firmware.id}.yaml`;
+
+const transmitterCards = compatibleTransmitters.map((transmitter) => {
+  const support = transmitter.data.support;
+  const manufacturerEntry = transmitter.data.brand
+    ? manufacturerMap.get(transmitter.data.brand)
+    : undefined;
+  const manufacturerName = manufacturerEntry?.data.name ?? transmitter.data.brand;
+  const slug = (transmitter as { slug?: string }).slug ?? transmitter.id;
+  const remotePath = `src/content/transmitters/${slug}.yaml`;
+  const remoteUrl = `${GITHUB_REPO_URL}/blob/main/${remotePath}`;
+
+  return {
+    id: transmitter.id,
+    slug,
+    title: transmitter.data.title,
+    manufacturer: manufacturerName,
+    support: {
+      level: support.level,
+      status: support.status,
+      sinceVersion: support.since_version,
+      lastVersion: support.last_version,
+      notes: support.notes,
+    },
+    hardwareRevisions: transmitter.data.hardware?.revisions ?? [],
+    compliance: transmitter.data.compliance ?? [],
+    remoteUrl,
+  };
+});
+
+const compatibilitySummaryParts: string[] = [];
+
+if (compatibleControllers.length > 0) {
+  compatibilitySummaryParts.push(
+    `${compatibleControllers.length} compatible controller${
+      compatibleControllers.length === 1 ? '' : 's'
+    }`
+  );
+}
+
+if (compatibleTransmitters.length > 0) {
+  compatibilitySummaryParts.push(
+    `${compatibleTransmitters.length} compatible transmitter${
+      compatibleTransmitters.length === 1 ? '' : 's'
+    }`
+  );
+}
+
+const compatibilitySummary = compatibilitySummaryParts.join(' and ');
+const compatibilityDescription =
+  compatibilitySummary.length > 0
+    ? `Browse ${compatibilitySummary}.`
+    : 'Compatible hardware list coming soon.';
+
+const pageDescription = `${data.title} firmware platform.${
+  data.maintainer ? ` Maintained by ${data.maintainer}.` : ''
+} ${compatibilityDescription}`.trim();
+
+const hasCompatibility =
+  compatibleControllers.length > 0 || compatibleTransmitters.length > 0;
 ---
 
 <MainLayout
   title={`${data.title} - Firmware - FCBase`}
-  description={`${data.title} firmware platform. ${data.maintainer ? `Maintained by ${data.maintainer}.` : ''} Browse ${compatibleControllers.length} compatible controllers.`}
+  description={pageDescription}
   editPath={editPath}
   showEditBar
 >
@@ -126,48 +214,86 @@ const editPath = `src/content/firmware/${firmware.id}.yaml`;
           </div>
         )}
 
-        <div class="flex items-center gap-4 text-sm mt-4">
-          <Badge variant="secondary" className="text-sm">
-            {compatibleControllers.length} Compatible {compatibleControllers.length === 1 ? 'Controller' : 'Controllers'}
-          </Badge>
-        </div>
+        {hasCompatibility && (
+          <div class="flex flex-wrap items-center gap-2 text-sm mt-4">
+            {compatibleControllers.length > 0 && (
+              <Badge variant="secondary" className="text-sm">
+                {compatibleControllers.length} Compatible{' '}
+                {compatibleControllers.length === 1 ? 'Controller' : 'Controllers'}
+              </Badge>
+            )}
+            {compatibleTransmitters.length > 0 && (
+              <Badge variant="outline" className="text-sm">
+                {compatibleTransmitters.length} Compatible{' '}
+                {compatibleTransmitters.length === 1 ? 'Transmitter' : 'Transmitters'}
+              </Badge>
+            )}
+          </div>
+        )}
       </div>
 
-      <!-- Compatible Controllers -->
-      {compatibleControllers.length > 0 ? (
-        <>
-          <h2 class="text-2xl font-bold tracking-tight mb-6">Compatible Controllers</h2>
-          <ul class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {controllerCards.map((controller) => {
-              const status = firmwareStatusByController.get(controller.id);
-              const showStatus = status && status !== 'stable';
-              const tone = getStatusTone(status);
-              return (
-                <li key={controller.id} class="relative">
-                  <ControllerCard
-                    {...controller}
+      <div class="space-y-12">
+        {compatibleControllers.length > 0 && (
+          <section class="space-y-6">
+            <h2 class="text-2xl font-bold tracking-tight">Compatible Controllers</h2>
+            <ul class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {controllerCards.map((controller) => {
+                const status = firmwareStatusByController.get(controller.id);
+                const showStatus = status && status !== 'stable';
+                const tone = getStatusTone(status);
+                return (
+                  <li key={controller.id} class="relative">
+                    <ControllerCard
+                      {...controller}
+                      basePath={basePath}
+                      firmwares={[firmware.id]}
+                    />
+                    {showStatus && (
+                      <div class="pointer-events-none absolute top-3 right-3 z-20">
+                        <Badge
+                          variant="outline"
+                          className={`text-[10px] font-semibold uppercase tracking-wide shadow ${tone}`}
+                        >
+                          {status}
+                        </Badge>
+                      </div>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
+        )}
+
+        {compatibleTransmitters.length > 0 && (
+          <section class="space-y-6">
+            <h2 class="text-2xl font-bold tracking-tight">Compatible Transmitters</h2>
+            <ul class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {transmitterCards.map((transmitter) => (
+                <li key={transmitter.id} class="relative">
+                  <TransmitterCard
+                    id={transmitter.id}
+                    slug={transmitter.slug}
+                    title={transmitter.title}
+                    manufacturer={transmitter.manufacturer}
+                    support={transmitter.support}
+                    hardwareRevisions={transmitter.hardwareRevisions}
+                    compliance={transmitter.compliance}
+                    remoteUrl={transmitter.remoteUrl}
                     basePath={basePath}
-                    firmwares={[firmware.id]}
+                    variant="grid"
                   />
-                  {showStatus && (
-                    <div class="pointer-events-none absolute top-3 right-3 z-20">
-                      <Badge
-                        variant="outline"
-                        className={`text-[10px] font-semibold uppercase tracking-wide shadow ${tone}`}
-                      >
-                        {status}
-                      </Badge>
-                    </div>
-                  )}
                 </li>
-              );
-            })}
-          </ul>
-        </>
-      ) : (
-        <div class="text-center py-12 bg-muted/20 rounded-lg">
-          <p class="text-muted-foreground">No compatible controllers found yet.</p>
-        </div>
-      )}
+              ))}
+            </ul>
+          </section>
+        )}
+
+        {!hasCompatibility && (
+          <div class="text-center py-12 bg-muted/20 rounded-lg">
+            <p class="text-muted-foreground">No compatible hardware found yet.</p>
+          </div>
+        )}
+      </div>
     </div>
 </MainLayout>

@@ -11,16 +11,43 @@ const allFirmware = await getCollection('firmware');
 // Load all controllers to count per firmware
 const allControllers = await getCollection('controllers');
 
+// Load all transmitters to count per firmware
+const allTransmitters = await getCollection('transmitters');
+
 // Count controllers per firmware
+const normalize = (value: string | undefined) =>
+  value
+    ?.toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .trim();
+
 const firmwareWithCounts = allFirmware
   .map((firmware) => {
     const controllerCount = allControllers.filter((controller) =>
       controller.data.firmware_support.some((fw) => fw.id === firmware.id)
     ).length;
 
+    const firmwareTokens = [firmware.id, firmware.data.title, firmware.data.name]
+      .map((token) => normalize(token))
+      .filter((token): token is string => Boolean(token));
+
+    const transmitterCount = allTransmitters.filter((transmitter) => {
+      const transmitterKeywords = (transmitter.data.keywords ?? [])
+        .map((keyword) => normalize(keyword))
+        .filter((keyword): keyword is string => Boolean(keyword));
+
+      if (transmitterKeywords.length === 0) {
+        return false;
+      }
+
+      return firmwareTokens.some((token) => transmitterKeywords.includes(token));
+    }).length;
+
     return {
       ...firmware,
       controllerCount,
+      transmitterCount,
     };
   })
   .sort((a, b) => a.data.title.localeCompare(b.data.title));
@@ -81,7 +108,7 @@ const basePath = getBasePath();
 
 <MainLayout
   title="Firmware - FCBase"
-  description="Browse flight controller firmware platforms. Compare ArduPilot, PX4, iNAV and find compatible controllers."
+  description="Browse firmware platforms for flight controllers and transmitters. Compare ArduPilot, PX4, EdgeTX, and more to find compatible hardware."
   editPath="src/pages/firmware/index.astro"
 >
     <div class="container py-8">
@@ -128,11 +155,20 @@ const basePath = getBasePath();
                             {firmware.data.title.charAt(0)}
                           </span>
                         </div>
-                        {firmware.controllerCount > 0 && (
-                          <Badge variant="secondary" className="text-xs">
-                            {firmware.controllerCount} {firmware.controllerCount === 1 ? 'controller' : 'controllers'}
-                          </Badge>
-                        )}
+                        <div class="flex flex-wrap gap-2 justify-end">
+                          {firmware.controllerCount > 0 && (
+                            <Badge variant="secondary" className="text-xs">
+                              {firmware.controllerCount}{' '}
+                              {firmware.controllerCount === 1 ? 'controller' : 'controllers'}
+                            </Badge>
+                          )}
+                          {firmware.transmitterCount > 0 && (
+                            <Badge variant="outline" className="text-xs">
+                              {firmware.transmitterCount}{' '}
+                              {firmware.transmitterCount === 1 ? 'transmitter' : 'transmitters'}
+                            </Badge>
+                          )}
+                        </div>
                       </div>
                       <CardTitle className="group-hover:text-primary transition-colors">
                         {firmware.data.title}
@@ -148,6 +184,11 @@ const basePath = getBasePath();
                             <Badge variant="outline" className="text-xs">
                               {firmware.data.license}
                             </Badge>
+                          )}
+                          {firmware.controllerCount === 0 && firmware.transmitterCount === 0 && (
+                            <p class="text-xs text-muted-foreground">
+                              Compatible hardware coming soon.
+                            </p>
                           )}
                         </div>
                       </CardDescription>
