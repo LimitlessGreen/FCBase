@@ -62,7 +62,7 @@ export function initCompareToggle(options: CompareToggleOptions): void {
       const parsed = JSON.parse(raw);
       if (!Array.isArray(parsed)) return [];
       return parsed.filter((value) => typeof value === 'string');
-    } catch {
+    } catch (_error) {
       return [];
     }
   };
