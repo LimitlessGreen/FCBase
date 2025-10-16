@@ -1,0 +1,59 @@
+---
+import { getCollection } from 'astro:content';
+import ControllerCompareTable from '@/components/compare/ControllerCompareTable';
+import MainLayout from '@/layouts/MainLayout.astro';
+import { getManufacturersMap } from '@/lib/content-cache';
+import { getBasePath } from '@/lib/paths';
+
+const controllers = await getCollection('controllers');
+const manufacturers = await getManufacturersMap();
+
+const compareItems = controllers
+  .map((controller) => {
+    const manufacturerId = controller.data.brand;
+    const manufacturerEntry = manufacturerId ? manufacturers.get(manufacturerId) ?? null : null;
+    const manufacturerName =
+      manufacturerEntry?.data.name ??
+      (manufacturerEntry?.data as { title?: string } | undefined)?.title ??
+      manufacturerId ??
+      'Unknown manufacturer';
+
+    const slug = (controller as { slug?: string }).slug ?? controller.id;
+    const firmwareIds = (controller.data.firmware_support ?? []).map((firmware) => firmware.id);
+
+    return {
+      id: controller.id,
+      slug,
+      title: controller.data.title,
+      manufacturer: manufacturerName,
+      mounting: controller.data.mounting ?? null,
+      mcu: controller.data.mcu ?? null,
+      uarts: controller.data.io?.uarts ?? null,
+      can: controller.data.io?.can ?? null,
+      pwm: controller.data.io?.pwm ?? null,
+      ethernet: controller.data.io?.ethernet ?? null,
+      sdCard: controller.data.io?.sd_card ?? null,
+      firmwares: firmwareIds,
+    };
+  })
+  .sort((a, b) => a.title.localeCompare(b.title));
+
+const basePath = getBasePath();
+---
+
+<MainLayout
+  title="Compare Flight Controllers - FCBase"
+  description="Select multiple flight controllers to review MCU, I/O, and firmware capabilities side by side."
+  editPath="src/pages/controllers/compare.astro"
+>
+  <div class="container py-8">
+    <nav class="mb-4 flex items-center gap-2 text-sm text-muted-foreground">
+      <a href={`${basePath}/`} class="transition-colors hover:text-foreground">Home</a>
+      <span>/</span>
+      <a href={`${basePath}/controllers`} class="transition-colors hover:text-foreground">Controllers</a>
+      <span>/</span>
+      <span class="text-foreground">Compare</span>
+    </nav>
+    <ControllerCompareTable client:load items={compareItems} basePath={basePath} />
+  </div>
+</MainLayout>

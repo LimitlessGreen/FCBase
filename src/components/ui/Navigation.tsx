@@ -3,6 +3,7 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { Compass, Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "./Button";
+import { CompareMenu } from "./CompareMenu";
 import { ThemeToggle } from "./ThemeToggle";
 import {
   NavigationMenu,
@@ -149,6 +150,7 @@ export function Navigation({ className, basePath = "" }: NavigationProps) {
               </NavigationMenu>
             </div>
             <div className="hidden items-center gap-2 md:flex">
+              <CompareMenu basePath={basePath} />
               <Button asChild size="sm" variant="secondary" className="rounded-full px-4">
                 <a href={contributeHref}>Contribute</a>
               </Button>
@@ -188,6 +190,11 @@ export function Navigation({ className, basePath = "" }: NavigationProps) {
                       </Button>
                     </Dialog.Close>
                     <div className="flex flex-1 flex-col gap-4 overflow-y-auto">
+                      <CompareMenu
+                        basePath={basePath}
+                        layout="stacked"
+                        onNavigate={closeMobileMenu}
+                      />
                       {navLinks.map((link) => {
                         const isActive = getLinkIsActive(link.href);
                         const href = createHref(link.href);
