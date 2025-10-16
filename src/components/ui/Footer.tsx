@@ -64,6 +64,7 @@ export function Footer({ className, basePath = "" }: FooterProps) {
   const commitHash = import.meta.env.PUBLIC_GIT_COMMIT_HASH;
   const commitHashFull = import.meta.env.PUBLIC_GIT_COMMIT_HASH_FULL;
   const commitAuthor = import.meta.env.PUBLIC_GIT_COMMIT_AUTHOR;
+  const commitAuthorUrl = import.meta.env.PUBLIC_GIT_COMMIT_AUTHOR_URL;
   const commitDate = import.meta.env.PUBLIC_GIT_COMMIT_DATE;
 
   const formattedDateRaw = React.useMemo(() => getFormattedCommitDate(commitDate), [commitDate]);
@@ -189,7 +190,18 @@ export function Footer({ className, basePath = "" }: FooterProps) {
                 ) : (
                   <span className="font-medium text-foreground">{commitHash}</span>
                 )}{" "}
-                by <span className="font-medium text-foreground">{commitAuthor}</span>{" "}
+                by {commitAuthorUrl ? (
+                  <a
+                    href={commitAuthorUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-medium text-foreground underline-offset-4 hover:underline"
+                  >
+                    {commitAuthor}
+                  </a>
+                ) : (
+                  <span className="font-medium text-foreground">{commitAuthor}</span>
+                )}{" "}
                 on <span suppressHydrationWarning>{formattedDate}</span>
                 {relativeTime ? <span suppressHydrationWarning> ({relativeTime})</span> : ""}.
               </p>
