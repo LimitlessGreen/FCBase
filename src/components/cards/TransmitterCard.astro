@@ -67,7 +67,7 @@ const {
 const variant = variantProp;
 const isCompact = variant === 'compact';
 const showImage = isCompact ? false : showImageProp;
-const cardClass = isCompact ? 'p-3.5 sm:p-4' : 'pb-4';
+const cardClass = isCompact ? 'p-3 sm:p-3.5' : 'pb-3.5';
 
 const targetSlug = slug || id;
 
@@ -182,51 +182,50 @@ const showBadgeFooter = !isCompact && !showImage && shouldShowSupportBadges;
 
   <Fragment slot="specs">
     {isCompact ? (
-      <div class="space-y-2 text-[10px] leading-snug">
-        <div class="flex flex-wrap items-start justify-between gap-2">
-          {supportBadges.length > 0 && (
-            <div class="flex flex-wrap gap-1.5">
-              {supportBadges.map((badge) => (
-                <span
-                  key={badge.id}
-                  class="inline-flex items-center rounded-sm border px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide"
-                >
-                  {badge.label}
-                </span>
-              ))}
-            </div>
-          )}
-          {supportTimeline.length > 0 && (
-            <dl class="flex flex-wrap justify-end gap-2 text-right text-[9px] uppercase tracking-wide text-muted-foreground">
-              {supportTimeline.map((entry) => (
-                <div key={entry.id} class="flex items-baseline gap-1">
-                  <dt>{entry.label}</dt>
-                  <dd class="text-sm font-semibold leading-none text-foreground">{entry.value}</dd>
-                </div>
-              ))}
-            </dl>
-          )}
-        </div>
+      <div class="space-y-1.5 text-[9px] leading-snug">
+        {supportBadges.length > 0 && (
+          <div class="flex flex-wrap gap-1 text-[8px] font-semibold uppercase tracking-wide text-muted-foreground">
+            {supportBadges.map((badge) => (
+              <span key={badge.id} class="inline-flex items-center rounded-sm border px-1 py-0.5">
+                {badge.label}
+              </span>
+            ))}
+          </div>
+        )}
 
-        {support.notes && (
-          <p class="text-[10px] leading-snug text-muted-foreground">{support.notes}</p>
+        <div class="h-px w-full bg-border/70" />
+
+        {(supportTimeline.length > 0 || support.notes) && (
+          <div class="flex flex-wrap items-start justify-between gap-2">
+            {supportTimeline.length > 0 && (
+              <dl class="flex flex-wrap gap-2">
+                {supportTimeline.map((entry) => (
+                  <div key={entry.id} class="min-w-[40px] text-center">
+                    <dd class="text-[11px] font-semibold leading-tight text-foreground">{entry.value}</dd>
+                    <dt class="text-[8px] uppercase tracking-wide text-muted-foreground">{entry.label}</dt>
+                  </div>
+                ))}
+              </dl>
+            )}
+
+            {support.notes && (
+              <p class="max-w-[70%] text-[9px] leading-snug text-muted-foreground">{support.notes}</p>
+            )}
+          </div>
         )}
 
         <div class="flex flex-col gap-2">
           {revisionCount > 0 && (
             <div class="space-y-1">
-              <span class="text-[9px] font-semibold uppercase tracking-wide text-muted-foreground">Hardware variants</span>
-              <div class="flex flex-wrap gap-1.5">
+              <span class="text-[8px] font-semibold uppercase tracking-wide text-muted-foreground">Hardware variants</span>
+              <div class="flex flex-wrap gap-1">
                 {trimmedRevisions.map((revision) => (
-                  <span
-                    key={revision.id}
-                    class="inline-flex items-center rounded-sm border px-1.5 py-0.5 text-[9px] font-medium"
-                  >
+                  <span key={revision.id} class="inline-flex items-center rounded-sm border px-1 py-0.5 text-[8px] font-medium">
                     {revision.name}
                   </span>
                 ))}
                 {remainingRevisions > 0 && (
-                  <span class="inline-flex items-center rounded-sm border bg-muted/40 px-1.5 py-0.5 text-[9px] font-semibold">
+                  <span class="inline-flex items-center rounded-sm border bg-muted/40 px-1 py-0.5 text-[8px] font-semibold">
                     +{remainingRevisions} more
                   </span>
                 )}
@@ -236,18 +235,15 @@ const showBadgeFooter = !isCompact && !showImage && shouldShowSupportBadges;
 
           {complianceCount > 0 && (
             <div class="space-y-1">
-              <span class="text-[9px] font-semibold uppercase tracking-wide text-muted-foreground">Compliance IDs</span>
-              <div class="flex flex-wrap gap-1.5">
+              <span class="text-[8px] font-semibold uppercase tracking-wide text-muted-foreground">Compliance IDs</span>
+              <div class="flex flex-wrap gap-1">
                 {trimmedCompliance.map((entry) => (
-                  <span
-                    key={entry.id}
-                    class="inline-flex items-center rounded-sm border px-1.5 py-0.5 text-[9px] font-semibold text-primary"
-                  >
+                  <span key={entry.id} class="inline-flex items-center rounded-sm border px-1 py-0.5 text-[8px] font-semibold text-primary">
                     {entry.id}
                   </span>
                 ))}
                 {remainingCompliance > 0 && (
-                  <span class="inline-flex items-center rounded-sm border bg-muted/40 px-1.5 py-0.5 text-[9px] font-semibold">
+                  <span class="inline-flex items-center rounded-sm border bg-muted/40 px-1 py-0.5 text-[8px] font-semibold">
                     +{remainingCompliance} more
                   </span>
                 )}
@@ -258,54 +254,53 @@ const showBadgeFooter = !isCompact && !showImage && shouldShowSupportBadges;
       </div>
     ) : (
       <div class="space-y-2.5 text-[10px] leading-snug">
-        <div class="flex flex-wrap items-center justify-between gap-2">
-          {supportBadges.length > 0 && (
-            <div class="flex flex-wrap gap-1.5 text-[10px] uppercase tracking-wide text-muted-foreground">
-              {supportBadges.map((badge) => (
-                <span
-                  key={badge.id}
-                  class="inline-flex items-center rounded-sm border px-1.5 py-0.5 font-semibold"
-                >
-                  {badge.label}
-                </span>
-              ))}
-            </div>
-          )}
-          {supportTimeline.length > 0 && (
-            <dl class="flex flex-wrap justify-end gap-3 text-right text-[9px] uppercase tracking-wide text-muted-foreground">
-              {supportTimeline.map((entry) => (
-                <div key={entry.id} class="flex items-baseline gap-1">
-                  <dt>{entry.label}</dt>
-                  <dd class="text-base font-semibold leading-tight text-foreground">{entry.value}</dd>
-                </div>
-              ))}
-            </dl>
-          )}
-        </div>
+        {supportBadges.length > 0 && (
+          <div class="flex flex-wrap gap-1 text-[9px] font-semibold uppercase tracking-wide text-muted-foreground">
+            {supportBadges.map((badge) => (
+              <span key={badge.id} class="inline-flex items-center rounded-sm border px-1 py-0.5">
+                {badge.label}
+              </span>
+            ))}
+          </div>
+        )}
 
-        {support.notes && (
-          <p class="text-sm leading-snug text-muted-foreground">{support.notes}</p>
+        <div class="h-px w-full bg-border/70" />
+
+        {(supportTimeline.length > 0 || support.notes) && (
+          <div class="flex flex-wrap items-start justify-between gap-3">
+            {supportTimeline.length > 0 && (
+              <dl class="flex flex-wrap gap-3">
+                {supportTimeline.map((entry) => (
+                  <div key={entry.id} class="min-w-[54px] text-center">
+                    <dd class="text-sm font-semibold leading-tight text-foreground">{entry.value}</dd>
+                    <dt class="text-[9px] uppercase tracking-wide text-muted-foreground">{entry.label}</dt>
+                  </div>
+                ))}
+              </dl>
+            )}
+
+            {support.notes && (
+              <p class="max-w-[60%] text-sm leading-snug text-muted-foreground">{support.notes}</p>
+            )}
+          </div>
         )}
 
         {(revisionCount > 0 || complianceCount > 0) && (
           <div class="grid gap-2 sm:grid-cols-2">
             {revisionCount > 0 && (
-              <div class="space-y-1.5 rounded-sm border px-2.5 py-2">
-                <div class="flex items-center justify-between text-[9px] uppercase tracking-wide text-muted-foreground">
+              <div class="space-y-1.5 rounded-sm border px-2 py-1.5">
+                <div class="flex items-center justify-between text-[8px] uppercase tracking-wide text-muted-foreground">
                   <span>Hardware variants</span>
                   <span class="font-semibold text-muted-foreground/80">{revisionCount}</span>
                 </div>
-                <div class="flex flex-wrap gap-1.5">
+                <div class="flex flex-wrap gap-1">
                   {trimmedRevisions.map((revision) => (
-                    <span
-                      key={revision.id}
-                      class="inline-flex items-center rounded-sm border px-1.5 py-0.5 text-[10px] font-medium"
-                    >
+                    <span key={revision.id} class="inline-flex items-center rounded-sm border px-1 py-0.5 text-[9px] font-medium">
                       {revision.name}
                     </span>
                   ))}
                   {remainingRevisions > 0 && (
-                    <span class="inline-flex items-center rounded-sm border bg-muted/40 px-1.5 py-0.5 text-[10px] font-semibold">
+                    <span class="inline-flex items-center rounded-sm border bg-muted/40 px-1 py-0.5 text-[9px] font-semibold">
                       +{remainingRevisions} more
                     </span>
                   )}
@@ -313,22 +308,19 @@ const showBadgeFooter = !isCompact && !showImage && shouldShowSupportBadges;
               </div>
             )}
             {complianceCount > 0 && (
-              <div class="space-y-1.5 rounded-sm border px-2.5 py-2">
-                <div class="flex items-center justify-between text-[9px] uppercase tracking-wide text-muted-foreground">
+              <div class="space-y-1.5 rounded-sm border px-2 py-1.5">
+                <div class="flex items-center justify-between text-[8px] uppercase tracking-wide text-muted-foreground">
                   <span>Compliance IDs</span>
                   <span class="font-semibold text-muted-foreground/80">{complianceCount}</span>
                 </div>
-                <div class="flex flex-wrap gap-1.5">
+                <div class="flex flex-wrap gap-1">
                   {trimmedCompliance.map((entry) => (
-                    <span
-                      key={entry.id}
-                      class="inline-flex items-center rounded-sm border px-1.5 py-0.5 text-[10px] font-semibold text-primary"
-                    >
+                    <span key={entry.id} class="inline-flex items-center rounded-sm border px-1 py-0.5 text-[9px] font-semibold text-primary">
                       {entry.id}
                     </span>
                   ))}
                   {remainingCompliance > 0 && (
-                    <span class="inline-flex items-center rounded-sm border bg-muted/40 px-1.5 py-0.5 text-[10px] font-semibold">
+                    <span class="inline-flex items-center rounded-sm border bg-muted/40 px-1 py-0.5 text-[9px] font-semibold">
                       +{remainingCompliance} more
                     </span>
                   )}
