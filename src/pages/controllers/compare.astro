@@ -3,7 +3,7 @@ import { getCollection } from 'astro:content';
 import ControllerCompareTable from '@/components/compare/ControllerCompareTable';
 import MainLayout from '@/layouts/MainLayout.astro';
 import { getFirmwareMap, getManufacturersMap, getSensorsMap } from '@/lib/content-cache';
-import { resolveControllerPreviewImage } from '@/lib/controller-images';
+import { getComponentImageResolver } from '@/lib/component-registry';
 import { getBasePath } from '@/lib/paths';
 
 const controllers = await getCollection('controllers');
@@ -111,6 +111,8 @@ const formatFirmwareEntries = (
     );
 };
 
+const resolveControllerImage = getComponentImageResolver('controller');
+
 const compareItems = controllers
   .map((controller) => {
     const manufacturerId = controller.data.brand;
@@ -123,7 +125,7 @@ const compareItems = controllers
 
     const slug = (controller as { slug?: string }).slug ?? controller.id;
 
-    const preview = resolveControllerPreviewImage(controller) ?? null;
+    const preview = resolveControllerImage?.(controller) ?? null;
     const imageUrl =
       preview?.src && typeof preview.src !== 'string'
         ? preview.src.src

@@ -16,8 +16,30 @@ export type CompareComponentHomepageMetadata = {
   ctaCopy: string;
 };
 
-export type CompareComponentDefinition = {
-  id: string;
+import { createControllerCardModel, createControllerCardModels } from "@/lib/controller-card-model";
+import { resolveControllerPreviewImage } from "@/lib/controller-images";
+import { resolveTransmitterPreviewImage } from "@/lib/transmitter-images";
+
+const componentIntegrations = {
+  controller: {
+    cardBuilders: {
+      createModel: createControllerCardModel,
+      createModels: createControllerCardModels,
+    },
+    imageResolver: resolveControllerPreviewImage,
+  },
+  transmitter: {
+    imageResolver: resolveTransmitterPreviewImage,
+  },
+} as const;
+
+export type ComponentIntegrations = typeof componentIntegrations;
+
+export type ComponentIntegrationEntry<Id extends keyof ComponentIntegrations> =
+  ComponentIntegrations[Id];
+
+export type CompareComponentDefinition<Id extends keyof ComponentIntegrations = keyof ComponentIntegrations> = {
+  id: Id;
   label: string;
   /** Label used when rendering navigation or action buttons. */
   menuLabel: string;
@@ -31,6 +53,8 @@ export type CompareComponentDefinition = {
   navigation: CompareComponentNavigationMetadata;
   /** Homepage presentation metadata for the category grid. */
   homepage: CompareComponentHomepageMetadata;
+  /** Integration hooks for card builders, image resolvers, and more. */
+  integration: ComponentIntegrationEntry<Id>;
 };
 
 export const compareComponentDefinitions = [
@@ -52,6 +76,7 @@ export const compareComponentDefinitions = [
         'Browse verified boards, compare MCUs, and filter by firmware support.',
       ctaCopy: 'Browse flight controllers',
     },
+    integration: componentIntegrations.controller,
   },
   {
     id: 'transmitter',
@@ -70,6 +95,7 @@ export const compareComponentDefinitions = [
         'Explore EdgeTX radios, track support versions, and jump to FCC compliance records.',
       ctaCopy: 'Browse transmitters',
     },
+    integration: componentIntegrations.transmitter,
   },
 ] as const satisfies ReadonlyArray<CompareComponentDefinition>;
 
@@ -96,4 +122,26 @@ export function getCompareComponentDefinition(
   id: CompareComponentId,
 ): CompareComponentRegistry[CompareComponentId] {
   return compareComponentRegistry[id];
+}
+
+export function getComponentCardBuilders(
+  id: 'controller',
+): ComponentIntegrationEntry<'controller'>['cardBuilders'];
+export function getComponentCardBuilders(
+  id: 'transmitter',
+): ComponentIntegrationEntry<'transmitter'>['cardBuilders'];
+export function getComponentCardBuilders(
+  id: CompareComponentId,
+) {
+  return componentIntegrations[id].cardBuilders;
+}
+
+export function getComponentImageResolver(
+  id: 'controller',
+): ComponentIntegrationEntry<'controller'>['imageResolver'];
+export function getComponentImageResolver(
+  id: 'transmitter',
+): ComponentIntegrationEntry<'transmitter'>['imageResolver'];
+export function getComponentImageResolver(id: CompareComponentId) {
+  return componentIntegrations[id].imageResolver;
 }

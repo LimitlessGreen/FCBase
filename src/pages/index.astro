@@ -4,10 +4,9 @@ import MainLayout from "@/layouts/MainLayout.astro";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { GITHUB_REPO_URL } from "@/lib/constants";
-import { compareComponentDefinitions } from "@/lib/component-registry";
+import { compareComponentDefinitions, getComponentCardBuilders } from "@/lib/component-registry";
 import ControllerCard from "@/components/cards/ControllerCard.astro";
 import { getManufacturersMap } from "@/lib/content-cache";
-import { createControllerCardModels } from "@/lib/controller-card-model";
 import { getBasePath } from "@/lib/paths";
 import { Database, Github, Layers } from "lucide-react";
 
@@ -23,10 +22,13 @@ const hasFeaturedControllers = featuredControllerEntries.length > 0;
 
 // Featured controllers for homepage grid
 const manufacturers = await getManufacturersMap();
-const controllers = await createControllerCardModels(
-  hasFeaturedControllers ? featuredControllerEntries : [],
-  { manufacturersMap: manufacturers }
-);
+const controllerCardBuilders = getComponentCardBuilders('controller');
+const controllers = controllerCardBuilders?.createModels
+  ? await controllerCardBuilders.createModels(
+      hasFeaturedControllers ? featuredControllerEntries : [],
+      { manufacturersMap: manufacturers }
+    )
+  : [];
 
 const featureIcons = {
   database: Database,

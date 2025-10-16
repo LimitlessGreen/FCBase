@@ -1,7 +1,7 @@
 ---
 import TransmitterCard from '@/components/cards/TransmitterCard.astro';
 import { GITHUB_REPO_URL } from '@/lib/constants';
-import { resolveTransmitterPreviewImage } from '@/lib/transmitter-images';
+import { getComponentImageResolver } from '@/lib/component-registry';
 import type { CollectionEntry } from 'astro:content';
 
 type SupportLevel = 'official' | 'manufacturer' | 'community';
@@ -22,6 +22,8 @@ interface Props {
 
 const { level, label, description, items, variant, basePath } = Astro.props as Props;
 
+const resolveTransmitterImage = getComponentImageResolver('transmitter');
+
 const preparedItems = items.map((item) => {
   const support = item.data.support;
   const revisions = item.data.hardware?.revisions ?? [];
@@ -30,7 +32,7 @@ const preparedItems = items.map((item) => {
   const remotePath = `src/content/transmitters/${slug}.yaml`;
   const remoteUrl = `${GITHUB_REPO_URL}/blob/main/${remotePath}`;
 
-  const preview = resolveTransmitterPreviewImage(item);
+  const preview = resolveTransmitterImage?.(item);
   const cardImage = preview
     ? {
         src: preview.src,

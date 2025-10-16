@@ -3,12 +3,14 @@ import { getCollection } from 'astro:content';
 import MainLayout from '@/layouts/MainLayout.astro';
 import ControllerCard from '@/components/cards/ControllerCard.astro';
 import TransmitterCard from '@/components/cards/TransmitterCard.astro';
-import { createControllerCardModels } from '@/lib/controller-card-model';
 import { Badge } from '@/components/ui/Badge';
 import { ExternalLink } from 'lucide-react';
 import { getBasePath } from '@/lib/paths';
 import { GITHUB_REPO_URL } from '@/lib/constants';
-import { resolveTransmitterPreviewImage } from '@/lib/transmitter-images';
+import {
+  getComponentCardBuilders,
+  getComponentImageResolver,
+} from '@/lib/component-registry';
 
 export async function getStaticPaths() {
   const firmware = await getCollection('firmware');
@@ -61,9 +63,12 @@ compatibleTransmitters.sort((a, b) => a.data.title.localeCompare(b.data.title));
 
 const manufacturerMap = new Map(manufacturers.map((entry) => [entry.id, entry]));
 
-const controllerCards = await createControllerCardModels(compatibleControllers, {
-  manufacturersMap: manufacturerMap,
-});
+const controllerCardBuilders = getComponentCardBuilders('controller');
+const controllerCards = controllerCardBuilders?.createModels
+  ? await controllerCardBuilders.createModels(compatibleControllers, {
+      manufacturersMap: manufacturerMap,
+    })
+  : [];
 
 const firmwareStatusByController = new Map(
   compatibleControllers.map((controller) => {
@@ -89,6 +94,8 @@ const getStatusTone = (status: string | undefined) => {
 const basePath = getBasePath();
 const editPath = `src/content/firmware/${firmware.id}.yaml`;
 
+const resolveTransmitterImage = getComponentImageResolver('transmitter');
+
 const transmitterCards = compatibleTransmitters.map((transmitter) => {
   const support = transmitter.data.support;
   const manufacturerEntry = transmitter.data.brand
@@ -98,7 +105,7 @@ const transmitterCards = compatibleTransmitters.map((transmitter) => {
   const slug = (transmitter as { slug?: string }).slug ?? transmitter.id;
   const remotePath = `src/content/transmitters/${slug}.yaml`;
   const remoteUrl = `${GITHUB_REPO_URL}/blob/main/${remotePath}`;
-  const preview = resolveTransmitterPreviewImage(transmitter);
+  const preview = resolveTransmitterImage?.(transmitter);
   const cardImage = preview
     ? {
         src: preview.src,
