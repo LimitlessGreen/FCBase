@@ -4,11 +4,19 @@ interface Props {
   subtitle?: string;
   description?: string;
   compareId?: string;
+  compareType?: 'controller' | 'transmitter';
 }
 
-const { title, subtitle, description, compareId }: Props = Astro.props;
+const { title, subtitle, description, compareId, compareType = 'controller' }: Props = Astro.props;
 const hasBadges = Astro.slots.has('badges');
 const hasDescription = Boolean(description) || Astro.slots.has('description');
+const compareAriaLabel =
+  compareType === 'transmitter'
+    ? 'Add transmitter to comparison'
+    : 'Add controller to comparison';
+const compareEventName = 'fcbase:compare-change';
+const legacyStorageKey = 'fcbase:compare';
+const storageKey = `fcbase:compare:${compareType}`;
 ---
 
 <div class="mb-6">
@@ -25,7 +33,8 @@ const hasDescription = Boolean(description) || Astro.slots.has('description');
             type="checkbox"
             class="h-4 w-4 rounded-sm border border-border/60 text-primary focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40"
             data-compare-toggle={compareId}
-            aria-label="Add controller to comparison"
+            data-compare-type={compareType}
+            aria-label={compareAriaLabel}
           />
           <label
             for={`compare-toggle-${compareId}`}
@@ -51,7 +60,14 @@ const hasDescription = Boolean(description) || Astro.slots.has('description');
 </div>
 
 {compareId && (
-  <script is:inline data-compare-id={compareId}>
+  <script
+    is:inline
+    data-compare-id={compareId}
+    data-compare-type={compareType}
+    data-compare-storage-key={storageKey}
+    data-compare-event-name={compareEventName}
+    data-compare-legacy-key={legacyStorageKey}
+  >
     {`(() => {
       const STORAGE_KEY = 'fcbase:compare';
       const scriptEl = document.currentScript;
@@ -60,6 +76,11 @@ const hasDescription = Boolean(description) || Astro.slots.has('description');
       }
 
       const compareId = scriptEl.dataset.compareId;
+      const compareType = scriptEl.dataset.compareType || 'controller';
+      const storageKey = scriptEl.dataset.compareStorageKey || 'fcbase:compare:controller';
+      const legacyStorageKey = scriptEl.dataset.compareLegacyKey || STORAGE_KEY;
+      const eventName = scriptEl.dataset.compareEventName || 'fcbase:compare-change';
+
       if (!compareId || typeof window === 'undefined') {
         return;
       }
@@ -70,18 +91,48 @@ const hasDescription = Boolean(description) || Astro.slots.has('description');
         return;
       }
 
-      const readList = () => {
+      let legacyMigrated = false;
+
+      const parseList = (raw) => {
+        if (!raw) {
+          return [];
+        }
+
         try {
-          const raw = window.localStorage.getItem(STORAGE_KEY);
-          const parsed = raw ? JSON.parse(raw) : [];
-          return Array.isArray(parsed) ? parsed : [];
+          const parsed = JSON.parse(raw);
+          if (!Array.isArray(parsed)) {
+            return [];
+          }
+          return parsed.filter((value) => typeof value === 'string');
         } catch {
           return [];
         }
       };
 
+      const readList = () => {
+        if (!legacyMigrated && compareType === 'controller') {
+          legacyMigrated = true;
+          const legacyRaw = window.localStorage.getItem(legacyStorageKey);
+          const legacyList = parseList(legacyRaw);
+          if (legacyList.length > 0) {
+            const existing = parseList(window.localStorage.getItem(storageKey));
+            const merged = Array.from(new Set([...existing, ...legacyList]));
+            window.localStorage.setItem(storageKey, JSON.stringify(merged));
+            window.localStorage.removeItem(legacyStorageKey);
+          }
+        }
+
+        return parseList(window.localStorage.getItem(storageKey));
+      };
+
       const writeList = (list) => {
-        window.localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+        const unique = Array.from(new Set(list));
+        window.localStorage.setItem(storageKey, JSON.stringify(unique));
+        window.dispatchEvent(
+          new CustomEvent(eventName, {
+            detail: { type: compareType, ids: unique },
+          })
+        );
       };
 
       const syncFromStorage = () => {
@@ -101,7 +152,7 @@ const hasDescription = Boolean(description) || Astro.slots.has('description');
       });
 
       window.addEventListener('storage', (event) => {
-        if (event.key === STORAGE_KEY) {
+        if (event.key === storageKey || event.key === legacyStorageKey) {
           syncFromStorage();
         }
       });
