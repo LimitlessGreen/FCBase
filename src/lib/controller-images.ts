@@ -16,7 +16,7 @@ const controllerImageMap = new Map<string, ImageMetadata>(
       throw new Error(`Unable to derive image id from path: ${path}`);
     }
 
-    return [id, module.default];
+    return [id.toLowerCase(), module.default];
   })
 );
 
@@ -34,7 +34,9 @@ const toKeyVariants = (value: string): string[] => {
   const retinaVariant = withoutExtension.replace(/@\d+x$/i, '');
   variants.add(retinaVariant);
 
-  return Array.from(variants).filter((entry) => entry.length > 0);
+  return Array.from(variants)
+    .map((entry) => entry.toLowerCase())
+    .filter((entry) => entry.length > 0);
 };
 
 const findLocalImage = (candidates: Iterable<string | undefined>) => {
@@ -42,7 +44,7 @@ const findLocalImage = (candidates: Iterable<string | undefined>) => {
     if (!candidate) continue;
 
     for (const variant of toKeyVariants(candidate)) {
-      const match = controllerImageMap.get(variant);
+      const match = controllerImageMap.get(variant.toLowerCase());
       if (match) {
         return match;
       }
