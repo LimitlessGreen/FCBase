@@ -1,5 +1,6 @@
 id: px4
 title: PX4 Autopilot
+category: controller
 maintainer: Dronecode Foundation
 license: BSD-3-Clause
 website: https://px4.io/

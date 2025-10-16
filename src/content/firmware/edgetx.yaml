@@ -1,0 +1,10 @@
+id: edgetx
+title: EdgeTX
+category: transmitter
+maintainer: EdgeTX Project
+license: GPLv2
+website: https://www.edgetx.org/
+description: Open-source radio transmitter firmware derived from OpenTX and optimized for modern RC radios.
+sources:
+- edgetx-home
+- edgetx-supportedradios
