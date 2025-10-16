@@ -27,6 +27,7 @@ import {
   getPowerTypeLabel,
   formatPeripheralType,
   normalizePeripheralInterfaces,
+  formatBoolean,
 } from '@/lib/data-utils';
 import { cn } from '@/lib/utils';
 import { resolveControllerPreviewImage } from '@/lib/controller-images';
@@ -1346,7 +1347,7 @@ const hasLinkItems = linkItems.length > 0;
                               label1="Input Voltage"
                               value1={power?.voltage_in ?? '—'}
                               label2="Redundancy"
-                              value2={power?.redundant ? '✓ Yes' : '—'}
+                              value2={formatBoolean(power?.redundant)}
                               mono1
                             />
                           </tbody>
@@ -1392,16 +1393,22 @@ const hasLinkItems = linkItems.length > 0;
                               label1="UARTs"
                               value1={io?.uarts ?? '—'}
                               label2="CAN Bus"
-                              value2={io?.can ?? '—'}
+                              value2={
+                                typeof io?.can === 'number'
+                                  ? io.can
+                                  : formatBoolean(
+                                      typeof io?.can === 'boolean' ? io.can : null
+                                    )
+                              }
                             />
                             <TableRow2Col
                               label1="PWM Outputs"
                               value1={io?.pwm ?? '—'}
                               label2="SD Card"
-                              value2={io?.sd_card === undefined ? '—' : io.sd_card ? '✓ Yes' : '✗ No'}
+                              value2={formatBoolean(io?.sd_card)}
                             />
                             {io?.ethernet !== undefined && (
-                              <TableRow label="Ethernet" value={io.ethernet ? '✓ Yes' : '✗ No'} />
+                              <TableRow label="Ethernet" value={formatBoolean(io?.ethernet)} />
                             )}
                           </tbody>
                         </ProfessionalTable>

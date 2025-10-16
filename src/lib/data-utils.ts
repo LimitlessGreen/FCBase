@@ -363,3 +363,27 @@ export function formatWeight(weight_g?: number): string | null {
   if (typeof weight_g !== 'number') return null;
   return `${weight_g}g`;
 }
+
+/**
+ * Format boolean values for UI display with checkmark/cross prefixes
+ */
+export function formatBoolean(
+  value: boolean | null | undefined,
+  options: { yesLabel?: string; noLabel?: string; includeSymbols?: boolean } = {}
+): string {
+  const {
+    yesLabel = 'Yes',
+    noLabel = 'No',
+    includeSymbols = true,
+  } = options;
+
+  if (value === true) {
+    return includeSymbols ? `✓ ${yesLabel}` : yesLabel;
+  }
+
+  if (value === false) {
+    return includeSymbols ? `✗ ${noLabel}` : noLabel;
+  }
+
+  return '—';
+}
