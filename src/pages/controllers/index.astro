@@ -1,11 +1,11 @@
 ---
 import { getCollection } from 'astro:content';
-import ControllerCard from '@/components/cards/ControllerCard.astro';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/Tabs';
 import { createControllerCardModel } from '@/lib/controller-card-model';
 import MainLayout from '@/layouts/MainLayout.astro';
 import { getBasePath } from '@/lib/paths';
 import { LayoutGrid, Rows3 } from 'lucide-react';
+import ControllerSection from './_sections.astro';
 
 const controllers = await getCollection('controllers');
 const manufacturers = await getCollection('manufacturers');
@@ -103,68 +103,23 @@ const basePath = getBasePath();
         <TabsContent value="grid" className="mt-0">
           <div class="space-y-12">
             {controllerGroups.map((group) => (
-              <section
-                id={`manufacturer-${group.manufacturer.id}`}
-                class="space-y-4"
-                aria-labelledby={`manufacturer-${group.manufacturer.id}-heading`}
-              >
-                <div class="flex flex-wrap items-baseline justify-between gap-2">
-                  <h2
-                    id={`manufacturer-${group.manufacturer.id}-heading`}
-                    class="text-2xl font-semibold tracking-tight"
-                  >
-                    {group.manufacturer.data.name}
-                  </h2>
-                  <span class="text-sm text-muted-foreground">
-                    {group.controllers.length}{' '}
-                    {group.controllers.length === 1 ? 'controller' : 'controllers'}
-                  </span>
-                </div>
-                {group.manufacturer.data.description && (
-                  <p class="text-sm text-muted-foreground max-w-3xl">
-                    {group.manufacturer.data.description}
-                  </p>
-                )}
-                <ul class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                  {group.controllers.map((controller) => (
-                    <li key={controller.id}>
-                      <ControllerCard
-                        {...controller}
-                        basePath={basePath}
-                        enableCompareToggle
-                      />
-                    </li>
-                  ))}
-                </ul>
-              </section>
+              <ControllerSection
+                group={{
+                  type: 'manufacturer',
+                  manufacturer: group.manufacturer,
+                  controllers: group.controllers,
+                }}
+                basePath={basePath}
+                variant="grid"
+              />
             ))}
 
             {unassignedControllers.length > 0 && (
-              <section class="space-y-4" aria-labelledby="unassigned-heading">
-                <div class="flex flex-wrap items-baseline justify-between gap-2">
-                  <h2 id="unassigned-heading" class="text-2xl font-semibold tracking-tight">
-                    Other controllers
-                  </h2>
-                  <span class="text-sm text-muted-foreground">
-                    {unassignedControllers.length}{' '}
-                    {unassignedControllers.length === 1 ? 'controller' : 'controllers'}
-                  </span>
-                </div>
-                <p class="text-sm text-muted-foreground max-w-3xl">
-                  These controllers are not currently linked to a registered manufacturer.
-                </p>
-                <ul class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                  {unassignedControllers.map((controller) => (
-                    <li key={controller.id}>
-                      <ControllerCard
-                        {...controller}
-                        basePath={basePath}
-                        enableCompareToggle
-                      />
-                    </li>
-                  ))}
-                </ul>
-              </section>
+              <ControllerSection
+                group={{ type: 'unassigned', controllers: unassignedControllers }}
+                basePath={basePath}
+                variant="grid"
+              />
             )}
           </div>
         </TabsContent>
@@ -172,76 +127,23 @@ const basePath = getBasePath();
         <TabsContent value="compact" className="mt-0">
           <div class="space-y-12">
             {controllerGroups.map((group) => (
-              <section
-                id={`manufacturer-${group.manufacturer.id}-compact`}
-                class="space-y-4"
-                aria-labelledby={`manufacturer-${group.manufacturer.id}-compact-heading`}
-              >
-                <div class="flex flex-wrap items-baseline justify-between gap-2">
-                  <h2
-                    id={`manufacturer-${group.manufacturer.id}-compact-heading`}
-                    class="text-2xl font-semibold tracking-tight"
-                  >
-                    {group.manufacturer.data.name}
-                  </h2>
-                  <span class="text-sm text-muted-foreground">
-                    {group.controllers.length}{' '}
-                    {group.controllers.length === 1 ? 'controller' : 'controllers'}
-                  </span>
-                </div>
-                {group.manufacturer.data.description && (
-                  <p class="text-sm text-muted-foreground max-w-3xl">
-                    {group.manufacturer.data.description}
-                  </p>
-                )}
-                <div
-                  role="list"
-                  class="divide-y divide-[hsl(var(--border))] overflow-hidden rounded-lg border"
-                >
-                  {group.controllers.map((controller) => (
-                    <div key={controller.id} role="listitem" class="p-4 sm:p-5">
-                      <ControllerCard
-                        {...controller}
-                        basePath={basePath}
-                        variant="compact"
-                        enableCompareToggle
-                      />
-                    </div>
-                  ))}
-                </div>
-              </section>
+              <ControllerSection
+                group={{
+                  type: 'manufacturer',
+                  manufacturer: group.manufacturer,
+                  controllers: group.controllers,
+                }}
+                basePath={basePath}
+                variant="compact"
+              />
             ))}
 
             {unassignedControllers.length > 0 && (
-              <section class="space-y-4" aria-labelledby="unassigned-heading-compact">
-                <div class="flex flex-wrap items-baseline justify-between gap-2">
-                  <h2 id="unassigned-heading-compact" class="text-2xl font-semibold tracking-tight">
-                    Other controllers
-                  </h2>
-                  <span class="text-sm text-muted-foreground">
-                    {unassignedControllers.length}{' '}
-                    {unassignedControllers.length === 1 ? 'controller' : 'controllers'}
-                  </span>
-                </div>
-                <p class="text-sm text-muted-foreground max-w-3xl">
-                  These controllers are not currently linked to a registered manufacturer.
-                </p>
-                <div
-                  role="list"
-                  class="divide-y divide-[hsl(var(--border))] overflow-hidden rounded-lg border"
-                >
-                  {unassignedControllers.map((controller) => (
-                    <div key={controller.id} role="listitem" class="p-4 sm:p-5">
-                      <ControllerCard
-                        {...controller}
-                        basePath={basePath}
-                        variant="compact"
-                        enableCompareToggle
-                      />
-                    </div>
-                  ))}
-                </div>
-              </section>
+              <ControllerSection
+                group={{ type: 'unassigned', controllers: unassignedControllers }}
+                basePath={basePath}
+                variant="compact"
+              />
             )}
           </div>
         </TabsContent>
