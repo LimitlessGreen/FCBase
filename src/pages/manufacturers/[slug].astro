@@ -5,10 +5,12 @@ import ControllerCard from '@/components/cards/ControllerCard.astro';
 import TransmitterCard from '@/components/cards/TransmitterCard.astro';
 import { Badge } from '@/components/ui/Badge';
 import { ExternalLink } from 'lucide-react';
-import { createControllerCardModels } from '@/lib/controller-card-model';
 import { GITHUB_REPO_URL } from '@/lib/constants';
-import { resolveTransmitterPreviewImage } from '@/lib/transmitter-images';
 import { getBasePath, getSiteUrl } from '@/lib/paths';
+import {
+  getComponentCardBuilders,
+  getComponentImageResolver,
+} from '@/lib/component-registry';
 
 export async function getStaticPaths() {
   const manufacturers = await getCollection('manufacturers');
@@ -35,7 +37,12 @@ const manufacturerTransmitters = allTransmitters
 // Sort by title
 manufacturerControllers.sort((a, b) => a.data.title.localeCompare(b.data.title));
 
-const controllerCards = await createControllerCardModels(manufacturerControllers);
+const controllerCardBuilders = getComponentCardBuilders('controller');
+const controllerCards = controllerCardBuilders?.createModels
+  ? await controllerCardBuilders.createModels(manufacturerControllers)
+  : [];
+
+const resolveTransmitterImage = getComponentImageResolver('transmitter');
 
 const transmitterCards = manufacturerTransmitters.map((transmitter) => {
   const support = transmitter.data.support ?? {
@@ -44,7 +51,7 @@ const transmitterCards = manufacturerTransmitters.map((transmitter) => {
     since_version: 'Unknown',
   };
 
-  const preview = resolveTransmitterPreviewImage(transmitter);
+  const preview = resolveTransmitterImage?.(transmitter);
   const cardImage = preview
     ? {
         src: preview.src,

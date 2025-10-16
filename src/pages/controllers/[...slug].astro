@@ -30,7 +30,7 @@ import {
   formatBoolean,
 } from '@/lib/data-utils';
 import { cn } from '@/lib/utils';
-import { resolveControllerPreviewImage } from '@/lib/controller-images';
+import { getComponentImageResolver } from '@/lib/component-registry';
 import {
   getFirmwareMap,
   getManufacturersMap,
@@ -74,7 +74,8 @@ export async function getStaticPaths() {
 const { controller } = Astro.props;
 const { data } = controller;
 
-const previewImage = resolveControllerPreviewImage(controller) ?? null;
+const resolveControllerImage = getComponentImageResolver('controller');
+const previewImage = resolveControllerImage?.(controller) ?? null;
 const heroAlt = previewImage?.alt ?? data.title;
 
 const heroSizes = '(max-width: 1024px) 100vw, 600px';

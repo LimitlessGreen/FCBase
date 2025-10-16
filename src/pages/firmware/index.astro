@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import MainLayout from '@/layouts/MainLayout.astro';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
+import { componentIds } from '@/content/config';
 import { getBasePath } from '@/lib/paths';
 
 // Load all firmware
@@ -53,7 +54,7 @@ const firmwareWithCounts = allFirmware
   .sort((a, b) => a.data.title.localeCompare(b.data.title));
 
 type FirmwareWithCount = (typeof firmwareWithCounts)[number];
-type FirmwareCategory = 'controller' | 'transmitter';
+type FirmwareCategory = (typeof componentIds)[number];
 
 const groupedByCategory = new Map<string, FirmwareWithCount[]>();
 
@@ -68,9 +69,15 @@ for (const firmware of firmwareWithCounts) {
   }
 }
 
-const categoryOrder: FirmwareCategory[] = ['controller', 'transmitter'];
+const preferredCategoryOrder = ['controller', 'transmitter'] as const;
 
-const categoryMetadata: Record<FirmwareCategory, { label: string; description: string }> = {
+const categoryOrder: FirmwareCategory[] = preferredCategoryOrder.filter(
+  (category): category is FirmwareCategory => componentIds.includes(category as FirmwareCategory)
+);
+
+const categoryMetadata: Partial<
+  Record<FirmwareCategory, { label: string; description: string }>
+> = {
   controller: {
     label: 'Flight Controller Firmware',
     description: 'Autopilot platforms designed for multirotor, fixed-wing, and ground vehicles.',
@@ -81,12 +88,18 @@ const categoryMetadata: Record<FirmwareCategory, { label: string; description: s
   },
 };
 
+const formatCategoryLabel = (category: string) =>
+  category
+    .split(/[-_]/)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ');
+
 const firmwareSections = [
   ...categoryOrder
     .map((category) => ({
       id: category,
-      label: categoryMetadata[category].label,
-      description: categoryMetadata[category].description,
+      label: categoryMetadata[category]?.label ?? formatCategoryLabel(category),
+      description: categoryMetadata[category]?.description,
       items: groupedByCategory.get(category) ?? [],
     }))
     .filter((section) => section.items.length > 0),
@@ -94,10 +107,7 @@ const firmwareSections = [
     .filter(([category]) => !categoryOrder.includes(category as FirmwareCategory))
     .map(([category, items]) => ({
       id: category,
-      label: category
-        .split(/[-_]/)
-        .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-        .join(' '),
+      label: formatCategoryLabel(category),
       description: undefined,
       items,
     })),

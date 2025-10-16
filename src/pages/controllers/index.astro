@@ -1,16 +1,19 @@
 ---
 import { getCollection } from 'astro:content';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/Tabs';
-import { createControllerCardModel } from '@/lib/controller-card-model';
 import MainLayout from '@/layouts/MainLayout.astro';
 import { getBasePath } from '@/lib/paths';
 import { LayoutGrid, Rows3 } from 'lucide-react';
 import ControllerSection from './_sections.astro';
+import { getComponentCardBuilders } from '@/lib/component-registry';
 
 const controllers = await getCollection('controllers');
 const manufacturers = await getCollection('manufacturers');
 
 const manufacturerMap = new Map(manufacturers.map((entry) => [entry.id, entry]));
+
+const controllerCardBuilders = getComponentCardBuilders('controller');
+const createControllerCardModel = controllerCardBuilders?.createModel;
 
 const controllerGroups = (
   await Promise.all(
@@ -19,11 +22,13 @@ const controllerGroups = (
         .filter((controller) => controller.data.brand === manufacturer.id)
         .sort((a, b) => a.data.title.localeCompare(b.data.title));
 
-      const controllerModels = await Promise.all(
-        manufacturerControllers.map((controller) =>
-          createControllerCardModel(controller, { manufacturersMap: manufacturerMap })
-        )
-      );
+      const controllerModels = createControllerCardModel
+        ? await Promise.all(
+            manufacturerControllers.map((controller) =>
+              createControllerCardModel(controller, { manufacturersMap: manufacturerMap })
+            )
+          )
+        : [];
 
       return {
         manufacturer,
@@ -35,14 +40,16 @@ const controllerGroups = (
   .filter((group) => group.controllers.length > 0)
   .sort((a, b) => a.manufacturer.data.name.localeCompare(b.manufacturer.data.name));
 
-const unassignedControllers = await Promise.all(
-  controllers
-    .filter((controller) => !manufacturerMap.has(controller.data.brand))
-    .sort((a, b) => a.data.title.localeCompare(b.data.title))
-    .map((controller) =>
-      createControllerCardModel(controller, { manufacturersMap: manufacturerMap })
+const unassignedControllers = createControllerCardModel
+  ? await Promise.all(
+      controllers
+        .filter((controller) => !manufacturerMap.has(controller.data.brand))
+        .sort((a, b) => a.data.title.localeCompare(b.data.title))
+        .map((controller) =>
+          createControllerCardModel(controller, { manufacturersMap: manufacturerMap })
+        )
     )
-);
+  : [];
 
 const totalControllers = controllers.length;
 const basePath = getBasePath();

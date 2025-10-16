@@ -8,9 +8,9 @@ import TableRow from '@/components/table/TableRow.astro';
 import ControllerCard from '@/components/cards/ControllerCard.astro';
 import { Badge } from '@/components/ui/Badge';
 import { AlertTriangle, ExternalLink } from 'lucide-react';
-import { createControllerCardModel } from '@/lib/controller-card-model';
 import { getManufacturersMap, getSourcesMap } from '@/lib/content-cache';
 import { getBasePath, getSiteUrl } from '@/lib/paths';
+import { getComponentCardBuilders } from '@/lib/component-registry';
 
 export async function getStaticPaths() {
   const sensors = await getCollection('sensors');
@@ -58,11 +58,15 @@ const controllersGroupedByBrand = await Promise.all(
       a.data.title.localeCompare(b.data.title)
     );
 
-    const controllerCards = await Promise.all(
-      sortedControllers.map((controller) =>
-        createControllerCardModel(controller, { manufacturersMap })
-      )
-    );
+    const controllerCardBuilders = getComponentCardBuilders('controller');
+    const createControllerCardModel = controllerCardBuilders?.createModel;
+    const controllerCards = createControllerCardModel
+      ? await Promise.all(
+          sortedControllers.map((controller) =>
+            createControllerCardModel(controller, { manufacturersMap })
+          )
+        )
+      : [];
 
     return { brandName, controllers: controllerCards };
   })
