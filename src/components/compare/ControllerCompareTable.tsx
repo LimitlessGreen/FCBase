@@ -1,4 +1,6 @@
 import * as React from "react";
+import type { CollectionEntry } from "astro:content";
+
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import {
@@ -9,7 +11,14 @@ import {
   readCompareList,
   writeCompareList,
 } from "@/lib/compare";
-import { getCompareComponentDefinition } from "@/lib/component-registry";
+import { getComponentImageResolver } from "@/lib/component-registry";
+import {
+  getFirmwareMap,
+  getManufacturersMap,
+  getSensorsMap,
+} from "@/lib/content-cache.server";
+
+import type { CompareModule } from "./registry";
 
 interface ControllerCompareImage {
   url: string;
@@ -133,13 +142,350 @@ interface ControllerCompareItem {
   notes?: string | null;
 }
 
+type ControllerCompareContext = {
+  manufacturers: Awaited<ReturnType<typeof getManufacturersMap>>;
+  sensors: Awaited<ReturnType<typeof getSensorsMap>>;
+  firmwareMap: Awaited<ReturnType<typeof getFirmwareMap>>;
+  resolveImage?: ReturnType<typeof getComponentImageResolver>;
+};
+
+const loadControllerContext = async (): Promise<ControllerCompareContext> => {
+  const [manufacturers, sensors, firmwareMap] = await Promise.all([
+    getManufacturersMap(),
+    getSensorsMap(),
+    getFirmwareMap(),
+  ]);
+
+  return {
+    manufacturers,
+    sensors,
+    firmwareMap,
+    resolveImage: getComponentImageResolver("controller"),
+  };
+};
+
+const formatSensorEntries = (
+  entries: unknown,
+  sensors: ControllerCompareContext["sensors"],
+): SensorItem[] => {
+  if (!Array.isArray(entries)) {
+    return [];
+  }
+
+  return entries
+    .map((raw) => {
+      if (!raw || typeof raw !== "object") {
+        return null;
+      }
+
+      const candidate = raw as { id?: string; count?: number | null };
+      if (!candidate.id) {
+        return null;
+      }
+
+      const entry = sensors.get(candidate.id);
+      const name =
+        entry?.data.title ??
+        (entry?.data as { name?: string } | undefined)?.name ??
+        candidate.id;
+
+      return {
+        id: candidate.id,
+        name,
+        count:
+          typeof candidate.count === "number"
+            ? candidate.count
+            : candidate.count === null
+              ? null
+              : undefined,
+      };
+    })
+    .filter((value): value is SensorItem => Boolean(value));
+};
+
+const formatFirmwareEntries = (
+  entries: unknown,
+  firmwareMap: ControllerCompareContext["firmwareMap"],
+): FirmwareSupportEntry[] => {
+  if (!Array.isArray(entries)) {
+    return [];
+  }
+
+  return entries
+    .map((raw) => {
+      if (!raw || typeof raw !== "object") {
+        return null;
+      }
+
+      const candidate = raw as {
+        id?: string;
+        status?: string | null;
+        since_version?: string | null;
+        last_version?: string | null;
+        notes?: string | null;
+      };
+
+      if (!candidate.id) {
+        return null;
+      }
+
+      const entry = firmwareMap.get(candidate.id);
+      const name =
+        entry?.data.title ??
+        (entry?.data as { name?: string } | undefined)?.name ??
+        candidate.id;
+
+      return {
+        id: candidate.id,
+        name,
+        status: candidate.status ?? null,
+        since: candidate.since_version ?? null,
+        last: candidate.last_version ?? null,
+        notes: candidate.notes ?? null,
+      };
+    })
+    .filter((value): value is FirmwareSupportEntry => Boolean(value));
+};
+
+const transformControllerEntry = (
+  controller: CollectionEntry<"controllers">,
+  context: ControllerCompareContext,
+): ControllerCompareItem => {
+  const manufacturerId = controller.data.brand;
+  const manufacturerEntry = manufacturerId
+    ? context.manufacturers.get(manufacturerId) ?? null
+    : null;
+  const manufacturerName =
+    manufacturerEntry?.data.name ??
+    (manufacturerEntry?.data as { title?: string } | undefined)?.title ??
+    manufacturerId ??
+    "Unknown manufacturer";
+
+  const slug = (controller as { slug?: string }).slug ?? controller.id;
+  const preview = context.resolveImage?.(controller) ?? null;
+  const imageUrl =
+    preview?.src && typeof preview.src !== "string"
+      ? preview.src.src
+      : preview?.src ?? null;
+
+  const dimensions = controller.data.dimensions ?? {};
+  const power = controller.data.power ?? {};
+  const io = controller.data.io ?? {};
+  const sensorsData = controller.data.sensors ?? {};
+  const peripheralPorts = Array.isArray(controller.data.peripheral_ports)
+    ? controller.data.peripheral_ports
+    : [];
+  const features = Array.isArray(controller.data.features)
+    ? controller.data.features.filter(
+        (value): value is string => typeof value === "string",
+      )
+    : [];
+
+  return {
+    id: controller.id,
+    slug,
+    title: controller.data.title,
+    manufacturer: manufacturerName,
+    mounting: controller.data.mounting ?? null,
+    mcu: controller.data.mcu ?? null,
+    firmwares: formatFirmwareEntries(
+      controller.data.firmware_support,
+      context.firmwareMap,
+    ),
+    dimensions: {
+      length:
+        typeof dimensions.length_mm === "number" ? dimensions.length_mm : null,
+      width: typeof dimensions.width_mm === "number" ? dimensions.width_mm : null,
+      height:
+        typeof dimensions.height_mm === "number" ? dimensions.height_mm : null,
+      weight:
+        typeof dimensions.weight_g === "number" ? dimensions.weight_g : null,
+    },
+    power: {
+      voltageIn:
+        typeof power.voltage_in === "string" ? power.voltage_in : null,
+      redundant:
+        typeof power.redundant === "boolean"
+          ? power.redundant
+          : power.redundant === null
+            ? null
+            : undefined,
+      notes: typeof power.notes === "string" ? power.notes : null,
+      inputs: Array.isArray(power.inputs)
+        ? power.inputs
+            .map((input) => {
+              if (!input || typeof input !== "object") {
+                return null;
+              }
+
+              const candidate = input as {
+                name?: string;
+                type?: string | null;
+                connector?: string | null;
+                voltage?: {
+                  min?: number | null;
+                  max?: number | null;
+                  nominal?: number | null;
+                  unit?: string | null;
+                  notes?: string | null;
+                  cells?: { min?: number | null; max?: number | null } | null;
+                } | null;
+                current?: {
+                  continuous?: number | null;
+                  max?: number | null;
+                  peak?: number | null;
+                  unit?: string | null;
+                  notes?: string | null;
+                } | null;
+                notes?: string | null;
+              };
+
+              if (!candidate.name) {
+                return null;
+              }
+
+              return {
+                name: candidate.name,
+                type: candidate.type ?? null,
+                connector: candidate.connector ?? null,
+                voltage: candidate.voltage ?? null,
+                current: candidate.current ?? null,
+                notes: candidate.notes ?? null,
+              };
+            })
+            .filter((value): value is PowerInputInfo => Boolean(value))
+        : [],
+    },
+    io: {
+      uarts: typeof io.uarts === "number" ? io.uarts : null,
+      can: typeof io.can === "number" ? io.can : null,
+      pwm: typeof io.pwm === "number" ? io.pwm : null,
+      ethernet:
+        typeof io.ethernet === "boolean"
+          ? io.ethernet
+          : io.ethernet === null
+            ? null
+            : undefined,
+      sdCard:
+        typeof io.sd_card === "boolean"
+          ? io.sd_card
+          : io.sd_card === null
+            ? null
+            : undefined,
+      peripherals: Array.isArray(io.peripherals)
+        ? io.peripherals
+            .map((peripheral) => {
+              if (!peripheral || typeof peripheral !== "object") {
+                return null;
+              }
+
+              const candidate = peripheral as {
+                name?: string;
+                type?: string | null;
+                count?: number | null;
+                interfaces?: string[] | null;
+                connector?: string | null;
+                voltage?: string | null;
+                notes?: string | null;
+              };
+
+              if (!candidate.name) {
+                return null;
+              }
+
+              return {
+                name: candidate.name,
+                type: candidate.type ?? null,
+                count:
+                  typeof candidate.count === "number"
+                    ? candidate.count
+                    : null,
+                interfaces: Array.isArray(candidate.interfaces)
+                  ? candidate.interfaces.filter(
+                      (value): value is string => typeof value === "string",
+                    )
+                  : [],
+                connector: candidate.connector ?? null,
+                voltage: candidate.voltage ?? null,
+                notes: candidate.notes ?? null,
+              };
+            })
+            .filter((value): value is PeripheralInfo => Boolean(value))
+        : [],
+    },
+    sensors: {
+      imu: formatSensorEntries(
+        (sensorsData as Record<string, unknown>).imu,
+        context.sensors,
+      ),
+      barometer: formatSensorEntries(
+        (sensorsData as Record<string, unknown>).barometer,
+        context.sensors,
+      ),
+      magnetometer: formatSensorEntries(
+        (sensorsData as Record<string, unknown>).magnetometer,
+        context.sensors,
+      ),
+    },
+    features,
+    peripheralPorts: peripheralPorts
+      .map((port) => {
+        if (!port || typeof port !== "object") {
+          return null;
+        }
+
+        const candidate = port as {
+          port?: string;
+          type?: string | null;
+          default_use?: string | null;
+          voltage?: string | null;
+          connector?: string | null;
+          notes?: string | null;
+        };
+
+        if (!candidate.port) {
+          return null;
+        }
+
+        return {
+          port: candidate.port,
+          type: candidate.type ?? null,
+          defaultUse: candidate.default_use ?? null,
+          voltage: candidate.voltage ?? null,
+          connector: candidate.connector ?? null,
+          notes: candidate.notes ?? null,
+        };
+      })
+      .filter((value): value is PeripheralPortInfo => Boolean(value)),
+    hardware: {
+      openness:
+        typeof controller.data.hardware?.openness === "string"
+          ? controller.data.hardware?.openness
+          : null,
+    },
+    notes: typeof controller.data.notes === "string" ? controller.data.notes : null,
+    image: imageUrl
+      ? {
+          url: imageUrl,
+          alt: preview?.alt ?? controller.data.title,
+          width: preview?.width,
+          height: preview?.height,
+        }
+      : null,
+  };
+};
+
+const sortControllerItems = (
+  items: ControllerCompareItem[],
+): ControllerCompareItem[] =>
+  [...items].sort((a, b) => a.title.localeCompare(b.title));
+
 interface ControllerCompareTableProps {
   items: ControllerCompareItem[];
   basePath: string;
 }
 
-const controllerComponent = getCompareComponentDefinition("controller");
-export const compareComponentId = controllerComponent.id;
+export const compareComponentId = "controller" as const;
 const type = compareComponentId;
 
 interface SpecRow {
@@ -982,3 +1328,25 @@ export default function ControllerCompareTable({
     </div>
   );
 }
+
+export type { ControllerCompareItem };
+
+export const controllerCompareModule: CompareModule<
+  typeof compareComponentId,
+  "controllers",
+  ControllerCompareItem,
+  ControllerCompareContext
+> = {
+  id: compareComponentId,
+  collectionKey: "controllers",
+  Table: ControllerCompareTable,
+  page: {
+    title: "Compare Flight Controllers - FCBase",
+    description:
+      "Select multiple flight controllers to review MCU, I/O, and firmware capabilities side by side.",
+    breadcrumbLabel: "Controllers",
+  },
+  loadContext: loadControllerContext,
+  transformEntry: (entry, context) => transformControllerEntry(entry, context),
+  sortItems: sortControllerItems,
+};

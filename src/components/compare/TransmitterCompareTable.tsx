@@ -1,4 +1,6 @@
 import * as React from "react";
+import type { CollectionEntry } from "astro:content";
+
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import {
@@ -9,7 +11,10 @@ import {
   readCompareList,
   writeCompareList,
 } from "@/lib/compare";
-import { getCompareComponentDefinition } from "@/lib/component-registry";
+import { getComponentImageResolver } from "@/lib/component-registry";
+import { getManufacturersMap } from "@/lib/content-cache.server";
+
+import type { CompareModule } from "./registry";
 
 interface ComplianceEntry {
   id: string;
@@ -37,13 +42,107 @@ interface TransmitterCompareItem {
   compliance: ComplianceEntry[];
 }
 
+const supportLevelLabels: Record<
+  "official" | "manufacturer" | "community",
+  string
+> = {
+  official: "Official EdgeTX Support",
+  manufacturer: "Manufacturer Maintained",
+  community: "Community Maintained",
+};
+
+const supportStatusLabels: Record<
+  "supported" | "limited" | "sunset" | "planned",
+  string
+> = {
+  supported: "Active support",
+  limited: "Limited support",
+  sunset: "Support ending",
+  planned: "Planned support",
+};
+
+type TransmitterCompareContext = {
+  manufacturers: Awaited<ReturnType<typeof getManufacturersMap>>;
+  resolveImage?: ReturnType<typeof getComponentImageResolver>;
+};
+
+const loadTransmitterContext = async (): Promise<TransmitterCompareContext> => ({
+  manufacturers: await getManufacturersMap(),
+  resolveImage: getComponentImageResolver("transmitter"),
+});
+
+const transformTransmitterEntry = (
+  transmitter: CollectionEntry<"transmitters">,
+  context: TransmitterCompareContext,
+): TransmitterCompareItem => {
+  const manufacturerId = transmitter.data.brand;
+  const manufacturerEntry = manufacturerId
+    ? context.manufacturers.get(manufacturerId) ?? null
+    : null;
+  const manufacturerName =
+    manufacturerEntry?.data.name ??
+    (manufacturerEntry?.data as { title?: string } | undefined)?.title ??
+    manufacturerId ??
+    "Unknown manufacturer";
+
+  const slug = (transmitter as { slug?: string }).slug ?? transmitter.id;
+  const hardwareVariants = (transmitter.data.hardware?.revisions ?? [])
+    .map((revision) => revision.name ?? revision.id)
+    .filter((name): name is string => Boolean(name));
+  const complianceEntries = (transmitter.data.compliance ?? []).map((entry) => ({
+    id: entry.id,
+    type: entry.type,
+    url: entry.url ?? null,
+  }));
+
+  const support = transmitter.data.support;
+  const preview = context.resolveImage?.(transmitter);
+  const imageUrl = preview
+    ? typeof preview.src === "string"
+      ? preview.src
+      : preview.src.src
+    : null;
+
+  return {
+    id: transmitter.id,
+    slug,
+    title: transmitter.data.title,
+    manufacturer: manufacturerName,
+    supportLevelLabel: supportLevelLabels[support.level],
+    supportStatusLabel: supportStatusLabels[support.status],
+    sinceVersion: support.since_version,
+    lastVersion: support.last_version ?? null,
+    notes: support.notes ?? null,
+    hardwareVariants,
+    compliance: complianceEntries,
+    image: imageUrl
+      ? {
+          url: imageUrl,
+          alt: preview?.alt ?? transmitter.data.title,
+          width:
+            typeof preview?.src === "string"
+              ? preview?.width
+              : preview?.src.width,
+          height:
+            typeof preview?.src === "string"
+              ? preview?.height
+              : preview?.src.height,
+        }
+      : null,
+  };
+};
+
+const sortTransmitterItems = (
+  items: TransmitterCompareItem[],
+): TransmitterCompareItem[] =>
+  [...items].sort((a, b) => a.title.localeCompare(b.title));
+
 interface TransmitterCompareTableProps {
   items: TransmitterCompareItem[];
   basePath: string;
 }
 
-const transmitterComponent = getCompareComponentDefinition("transmitter");
-export const compareComponentId = transmitterComponent.id;
+export const compareComponentId = "transmitter" as const;
 const type = compareComponentId;
 
 export default function TransmitterCompareTable({
@@ -326,3 +425,25 @@ export default function TransmitterCompareTable({
     </div>
   );
 }
+
+export type { TransmitterCompareItem };
+
+export const transmitterCompareModule: CompareModule<
+  typeof compareComponentId,
+  "transmitters",
+  TransmitterCompareItem,
+  TransmitterCompareContext
+> = {
+  id: compareComponentId,
+  collectionKey: "transmitters",
+  Table: TransmitterCompareTable,
+  page: {
+    title: "Compare Transmitters - FCBase",
+    description:
+      "Review EdgeTX transmitter support levels, hardware variants, and compliance records side by side.",
+    breadcrumbLabel: "Transmitters",
+  },
+  loadContext: loadTransmitterContext,
+  transformEntry: (entry, context) => transformTransmitterEntry(entry, context),
+  sortItems: sortTransmitterItems,
+};
