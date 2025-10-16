@@ -1,7 +1,9 @@
 # FCBase
 
 ## Overview
-FCBase is an open, community-maintained database of multirotor and fixed-wing flight controllers for ArduPilot, PX4, and iNAV. The project centralizes hardware specifications, firmware compatibility, and provenance so pilots, manufacturers, and reviewers can evaluate boards with consistent, transparent data.
+FCBase is an open, community-maintained database of multirotor and fixed-wing flight controllers for ArduPilot, PX4, and iNAV.
+The project centralizes hardware specifications, firmware compatibility, and provenance so pilots, manufacturers, and reviewers
+can evaluate boards with consistent, transparent data.
 
 ## Features
 - **Searchable catalog** of flight controllers with standardized metadata for quick comparison.

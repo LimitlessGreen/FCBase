@@ -17,6 +17,7 @@ const mcuDir = path.join(repoRoot, 'src', 'content', 'mcu');
 const sensorsDir = path.join(repoRoot, 'src', 'content', 'sensors');
 const firmwareDir = path.join(repoRoot, 'src', 'content', 'firmware');
 const sourcesDir = path.join(repoRoot, 'src', 'content', 'sources');
+const controllerImagesDir = path.join(repoRoot, 'src', 'assets', 'images', 'controllers');
 
 type ReferenceSets = {
   manufacturers: Set<string>;
@@ -24,6 +25,7 @@ type ReferenceSets = {
   sensors: Set<string>;
   firmware: Set<string>;
   sources: Set<string>;
+  images: Set<string>;
 };
 
 type IssuesMap = Map<string, string[]>;
@@ -52,6 +54,18 @@ const gatherIds = async (pattern: string): Promise<Set<string>> => {
   }
 
   return ids;
+};
+
+const gatherImageNames = async (dir: string): Promise<Set<string>> => {
+  const files = await glob(`${dir}/**/*`, { absolute: true, nodir: true });
+  const names = new Set<string>();
+
+  for (const file of files) {
+    const relative = path.relative(dir, file).replace(/\\/g, '/');
+    names.add(relative);
+  }
+
+  return names;
 };
 
 const formatInstancePath = (instancePath: string): string => {
@@ -93,7 +107,16 @@ const validateReferences = (
   file: string,
   refs: ReferenceSets
 ) => {
-  const { brand, mcu, firmware_support: firmwareSupport, sensors, sources, hardware, known_issues } =
+  const {
+    brand,
+    mcu,
+    firmware_support: firmwareSupport,
+    sensors,
+    sources,
+    hardware,
+    known_issues,
+    images,
+  } =
     controller ?? {};
 
   if (typeof brand === 'string' && !refs.manufacturers.has(brand)) {
@@ -140,6 +163,25 @@ const validateReferences = (
     }
   }
 
+  if (Array.isArray(images)) {
+    for (let index = 0; index < images.length; index++) {
+      const entry = images[index];
+      const src = entry?.src;
+      if (typeof src !== 'string' || src.trim().length === 0) {
+        continue;
+      }
+
+      const normalized = src.trim().replace(/\\/g, '/');
+      if (!refs.images.has(normalized)) {
+        addIssue(
+          issues,
+          file,
+          `images[${index}] references missing controller image '${normalized}'`
+        );
+      }
+    }
+  }
+
   if (Array.isArray(known_issues)) {
     for (const issue of known_issues) {
       const sourceId = issue?.source;
@@ -181,12 +223,13 @@ const main = async () => {
 
   const validate = ajv.compile(schema);
 
-  const [manufacturerIds, mcuIds, sensorIds, firmwareIds, sourceIds] = await Promise.all([
+  const [manufacturerIds, mcuIds, sensorIds, firmwareIds, sourceIds, imageNames] = await Promise.all([
     gatherIds(path.join(manufacturersDir, '*.yaml')),
     gatherIds(path.join(mcuDir, '*.yaml')),
     gatherIds(path.join(sensorsDir, '*.yaml')),
     gatherIds(path.join(firmwareDir, '*.yaml')),
     gatherIds(path.join(sourcesDir, '*.yaml')),
+    gatherImageNames(controllerImagesDir),
   ]);
 
   const refs: ReferenceSets = {
@@ -195,6 +238,7 @@ const main = async () => {
     sensors: sensorIds,
     firmware: firmwareIds,
     sources: sourceIds,
+    images: imageNames,
   };
 
   const controllerFiles = await glob(`${controllersDir}/**/*.yaml`, { absolute: true });
