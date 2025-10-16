@@ -1,8 +1,13 @@
 ---
 import type { ImageMetadata } from 'astro';
 import { getCompareComponentDefinition } from '@/lib/component-registry';
-import { COMPARE_EVENT_NAME, type CompareType } from '@/lib/compare';
-import { initCompareToggle } from '@/lib/compare-toggle';
+import {
+  COMPARE_EVENT_NAME,
+  type CompareType,
+  getCompareLegacyStorageKeys,
+  getCompareStorageKey,
+} from '@/lib/compare';
+import { compareToggleInlineScript } from './compare-toggle-inline-script';
 import BaseCard from './BaseCard.astro';
 
 interface Props {
@@ -92,36 +97,9 @@ const featureFlags = [
   ethernet ? 'Ethernet' : null,
 ].filter(Boolean);
 
-const initCompareToggleSource = initCompareToggle.toString();
-const defaultCompareTypeLiteral = JSON.stringify(defaultCompareType);
-const compareEventNameLiteral = JSON.stringify(COMPARE_EVENT_NAME);
-const compareToggleScript = String.raw`(() => {
-  const scriptEl = document.currentScript;
-  if (!(scriptEl instanceof HTMLScriptElement)) {
-    return;
-  }
-
-  const compareId = scriptEl.dataset.compareId;
-  const compareType = scriptEl.dataset.compareType || ${defaultCompareTypeLiteral};
-  const eventName = scriptEl.dataset.compareEventName || ${compareEventNameLiteral};
-  const storageKey = scriptEl.dataset.compareStorageKey || undefined;
-  const legacyStorageKey = scriptEl.dataset.compareLegacyKey;
-  const container = scriptEl.parentElement;
-
-  if (!compareId || !(container instanceof HTMLElement)) {
-    return;
-  }
-
-  const initCompareToggle = ${initCompareToggleSource};
-  initCompareToggle({
-    compareId,
-    compareType,
-    root: container,
-    eventName,
-    storageKey,
-    legacyStorageKey: legacyStorageKey || undefined,
-  });
-})();`;
+const compareStorageKey = getCompareStorageKey(compareType);
+const compareLegacyKeysLiteral = JSON.stringify(getCompareLegacyStorageKeys(compareType));
+const compareToggleScript = compareToggleInlineScript;
 ---
 <div class="relative" data-compare-container={shouldRenderCompare ? compareId : undefined}>
   <BaseCard
@@ -292,7 +270,9 @@ const compareToggleScript = String.raw`(() => {
       is:inline
       data-compare-id={compareId}
       data-compare-type={compareType}
+      data-compare-storage-key={compareStorageKey}
       data-compare-event-name={COMPARE_EVENT_NAME}
+      data-compare-legacy-keys={compareLegacyKeysLiteral}
       set:html={compareToggleScript}
     />
   )}
