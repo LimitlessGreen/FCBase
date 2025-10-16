@@ -21,6 +21,12 @@ interface TransmitterCompareItem {
   slug: string;
   title: string;
   manufacturer: string;
+  image?: {
+    url: string;
+    alt?: string | null;
+    width?: number | null;
+    height?: number | null;
+  } | null;
   supportLevelLabel: string;
   supportStatusLabel: string;
   sinceVersion: string;
@@ -261,16 +267,33 @@ export default function TransmitterCompareTable({
                   </th>
                   {selectedItems.map((item) => (
                     <th key={item.id} className="px-4 py-3 text-left align-bottom">
-                      <div className="flex flex-col gap-1">
-                        <a
-                          href={`${basePath}/transmitters/${item.slug}`}
-                          className="text-sm font-semibold text-primary transition-colors hover:text-primary/80"
-                        >
-                          {item.title}
-                        </a>
-                        <span className="text-xs uppercase tracking-wide text-muted-foreground">
-                          {item.manufacturer}
-                        </span>
+                      <div className="flex flex-col items-start gap-2">
+                        <div className="flex h-24 w-full max-w-[140px] items-center justify-center overflow-hidden rounded-lg border border-border/60 bg-muted/30 p-2">
+                          {item.image?.url ? (
+                            <img
+                              src={item.image.url}
+                              alt={item.image.alt ?? item.title}
+                              loading="lazy"
+                              decoding="async"
+                              width={item.image.width ?? undefined}
+                              height={item.image.height ?? undefined}
+                              className="h-full w-full object-contain"
+                            />
+                          ) : (
+                            <span className="text-xs font-medium text-muted-foreground/70">No image</span>
+                          )}
+                        </div>
+                        <div className="flex flex-col gap-1">
+                          <a
+                            href={`${basePath}/transmitters/${item.slug}`}
+                            className="text-sm font-semibold text-primary transition-colors hover:text-primary/80"
+                          >
+                            {item.title}
+                          </a>
+                          <span className="text-xs uppercase tracking-wide text-muted-foreground">
+                            {item.manufacturer}
+                          </span>
+                        </div>
                       </div>
                     </th>
                   ))}

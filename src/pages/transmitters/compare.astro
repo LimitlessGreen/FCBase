@@ -42,6 +42,11 @@ const compareItems = transmitters
     }));
 
     const support = transmitter.data.support;
+    const rawImage = transmitter.data.image ?? null;
+    const imageUrl =
+      rawImage?.src && typeof rawImage.src !== 'string'
+        ? rawImage.src.src
+        : rawImage?.src ?? null;
 
     return {
       id: transmitter.id,
@@ -55,6 +60,14 @@ const compareItems = transmitters
       notes: support.notes ?? null,
       hardwareVariants,
       compliance: complianceEntries,
+      image: imageUrl
+        ? {
+            url: imageUrl,
+            alt: rawImage?.alt ?? transmitter.data.title,
+            width: rawImage?.width,
+            height: rawImage?.height,
+          }
+        : null,
     };
   })
   .sort((a, b) => a.title.localeCompare(b.title));
