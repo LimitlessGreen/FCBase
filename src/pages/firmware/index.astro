@@ -12,16 +12,69 @@ const allFirmware = await getCollection('firmware');
 const allControllers = await getCollection('controllers');
 
 // Count controllers per firmware
-const firmwareWithCounts = allFirmware.map((firmware) => {
-  const controllerCount = allControllers.filter((controller) =>
-    controller.data.firmware_support.some((fw) => fw.id === firmware.id)
-  ).length;
-  
-  return {
-    ...firmware,
-    controllerCount,
-  };
-}).sort((a, b) => a.data.title.localeCompare(b.data.title));
+const firmwareWithCounts = allFirmware
+  .map((firmware) => {
+    const controllerCount = allControllers.filter((controller) =>
+      controller.data.firmware_support.some((fw) => fw.id === firmware.id)
+    ).length;
+
+    return {
+      ...firmware,
+      controllerCount,
+    };
+  })
+  .sort((a, b) => a.data.title.localeCompare(b.data.title));
+
+type FirmwareWithCount = (typeof firmwareWithCounts)[number];
+type FirmwareCategory = 'controller' | 'transmitter';
+
+const groupedByCategory = new Map<string, FirmwareWithCount[]>();
+
+for (const firmware of firmwareWithCounts) {
+  const category = firmware.data.category ?? 'controller';
+  const existing = groupedByCategory.get(category);
+
+  if (existing) {
+    existing.push(firmware);
+  } else {
+    groupedByCategory.set(category, [firmware]);
+  }
+}
+
+const categoryOrder: FirmwareCategory[] = ['controller', 'transmitter'];
+
+const categoryMetadata: Record<FirmwareCategory, { label: string; description: string }> = {
+  controller: {
+    label: 'Flight Controller Firmware',
+    description: 'Autopilot platforms designed for multirotor, fixed-wing, and ground vehicles.',
+  },
+  transmitter: {
+    label: 'Transmitter Firmware',
+    description: 'Operating systems for RC transmitters, radio gear, and ground control radios.',
+  },
+};
+
+const firmwareSections = [
+  ...categoryOrder
+    .map((category) => ({
+      id: category,
+      label: categoryMetadata[category].label,
+      description: categoryMetadata[category].description,
+      items: groupedByCategory.get(category) ?? [],
+    }))
+    .filter((section) => section.items.length > 0),
+  ...Array.from(groupedByCategory.entries())
+    .filter(([category]) => !categoryOrder.includes(category as FirmwareCategory))
+    .map(([category, items]) => ({
+      id: category,
+      label: category
+        .split(/[-_]/)
+        .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+        .join(' '),
+      description: undefined,
+      items,
+    })),
+];
 
 const basePath = getBasePath();
 ---
@@ -42,65 +95,82 @@ const basePath = getBasePath();
         
         <h1 class="text-4xl font-bold tracking-tight mb-3">Firmware Platforms</h1>
         <p class="text-lg text-muted-foreground">
-          Browse {firmwareWithCounts.length} flight controller firmware platforms
+          Browse {firmwareWithCounts.length} firmware platforms across controllers and transmitters
         </p>
       </div>
 
-      <!-- Firmware Grid -->
-      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {firmwareWithCounts.map((firmware) => (
-          <a
-            href={`${basePath}/firmware/${firmware.id}`}
-            class="group block"
-          >
-            <Card class="h-full transition-all hover:shadow-lg hover:-translate-y-1">
-              <CardHeader>
-                <div class="flex items-start justify-between mb-2">
-                  <div class="h-12 w-12 rounded-lg bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
-                    <span class="text-xl font-bold text-primary">
-                      {firmware.data.title.charAt(0)}
-                    </span>
-                  </div>
-                  {firmware.controllerCount > 0 && (
-                    <Badge variant="secondary" className="text-xs">
-                      {firmware.controllerCount} {firmware.controllerCount === 1 ? 'controller' : 'controllers'}
-                    </Badge>
-                  )}
-                </div>
-                <CardTitle className="group-hover:text-primary transition-colors">
-                  {firmware.data.title}
-                </CardTitle>
-                <CardDescription>
-                  <div class="space-y-2 mt-2">
-                    {firmware.data.maintainer && (
-                      <p class="text-xs">
-                        <span class="font-medium">Maintainer:</span> {firmware.data.maintainer}
-                      </p>
-                    )}
-                    {firmware.data.license && (
-                      <Badge variant="outline" className="text-xs">
-                        {firmware.data.license}
-                      </Badge>
-                    )}
-                  </div>
-                </CardDescription>
-              </CardHeader>
-              {firmware.data.supported_vehicle_types && firmware.data.supported_vehicle_types.length > 0 && (
-                <CardContent>
-                  <div class="space-y-2">
-                    <p class="text-xs font-medium text-muted-foreground">Supported vehicles:</p>
-                    <div class="flex flex-wrap gap-1.5">
-                      {firmware.data.supported_vehicle_types.map((type) => (
-                        <Badge key={type} variant="secondary" className="text-xs capitalize">
-                          {type}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                </CardContent>
+      <!-- Firmware Sections -->
+      <div class="space-y-12">
+        {firmwareSections.map((section) => (
+          <section key={section.id} class="space-y-6">
+            <header class="space-y-2">
+              <h2 class="text-2xl font-semibold tracking-tight">
+                {section.label}
+              </h2>
+              {section.description && (
+                <p class="text-sm text-muted-foreground max-w-3xl">
+                  {section.description}
+                </p>
               )}
-            </Card>
-          </a>
+            </header>
+
+            <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {section.items.map((firmware) => (
+                <a
+                  href={`${basePath}/firmware/${firmware.id}`}
+                  class="group block"
+                >
+                  <Card class="h-full transition-all hover:shadow-lg hover:-translate-y-1">
+                    <CardHeader>
+                      <div class="flex items-start justify-between mb-2">
+                        <div class="h-12 w-12 rounded-lg bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
+                          <span class="text-xl font-bold text-primary">
+                            {firmware.data.title.charAt(0)}
+                          </span>
+                        </div>
+                        {firmware.controllerCount > 0 && (
+                          <Badge variant="secondary" className="text-xs">
+                            {firmware.controllerCount} {firmware.controllerCount === 1 ? 'controller' : 'controllers'}
+                          </Badge>
+                        )}
+                      </div>
+                      <CardTitle className="group-hover:text-primary transition-colors">
+                        {firmware.data.title}
+                      </CardTitle>
+                      <CardDescription>
+                        <div class="space-y-2 mt-2">
+                          {firmware.data.maintainer && (
+                            <p class="text-xs">
+                              <span class="font-medium">Maintainer:</span> {firmware.data.maintainer}
+                            </p>
+                          )}
+                          {firmware.data.license && (
+                            <Badge variant="outline" className="text-xs">
+                              {firmware.data.license}
+                            </Badge>
+                          )}
+                        </div>
+                      </CardDescription>
+                    </CardHeader>
+                    {firmware.data.supported_vehicle_types && firmware.data.supported_vehicle_types.length > 0 && (
+                      <CardContent>
+                        <div class="space-y-2">
+                          <p class="text-xs font-medium text-muted-foreground">Supported vehicles:</p>
+                          <div class="flex flex-wrap gap-1.5">
+                            {firmware.data.supported_vehicle_types.map((type) => (
+                              <Badge key={type} variant="secondary" className="text-xs capitalize">
+                                {type}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                      </CardContent>
+                    )}
+                  </Card>
+                </a>
+              ))}
+            </div>
+          </section>
         ))}
       </div>
 

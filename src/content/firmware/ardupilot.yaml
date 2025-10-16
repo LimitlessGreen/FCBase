@@ -1,5 +1,6 @@
 id: ardupilot
 title: ArduPilot
+category: controller
 maintainer: ArduPilot community
 license: GPLv3
 website: https://ardupilot.org/

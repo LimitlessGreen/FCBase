@@ -681,6 +681,7 @@ const firmwareCollection = defineCollection({
   type: 'data',
   schema: z.object({
     id: z.string(),
+    category: z.enum(['controller', 'transmitter']),
     title: z.string().optional(),
     name: z.string().optional(),
     website: z.string().url().optional(),
