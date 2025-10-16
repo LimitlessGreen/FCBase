@@ -1,6 +1,12 @@
 id: helloradiosky-v12
 title: HelloRadioSky V12
 brand: helloradiosky
+images:
+  - src: "https://imgaz2.staticbg.com/thumb/large/oaupload/banggood/images/99/39/558078fb-a1ee-4119-87fb-26f03c8be62b.jpg.webp"
+    alt: "Front view of the HelloRadioSky V12 radio transmitter highlighting its controls and display."
+    credit: "HelloRadioSky"
+    source_url: "https://uk.banggood.com/HelloRadioSky-V16-MAX-ELRS-4in1-Multi-protocol-VG01-Hall-Gimbals-EdgeTX-and-OpenTX-Radio-Transmitter-with-Touch-Screen-AI-Voice-Control-for-FPV-Drone-Helicopter-RC-Airplane-p-2020892.html"
+
 support:
   level: manufacturer
   since_version: v2.11
@@ -27,5 +33,5 @@ keywords:
 - transmitter
 verification:
   level: community
-  last_updated: "2025-10-14"
+  last_updated: "2025-10-16"
 notes: Support status depends on the radio’s retail availability per the EdgeTX listing.

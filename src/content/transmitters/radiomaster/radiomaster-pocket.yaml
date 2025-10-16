@@ -1,6 +1,12 @@
 id: radiomaster-pocket
 title: RadioMaster Pocket
 brand: radiomaster
+images:
+  - src: "https://cdn11.bigcommerce.com/s-kgkeg34ccb/images/stencil/1280x1280/products/5950/23370/89asdf9as8df__76165.1691230245.png?c=2"
+    alt: "Front view of the RadioMaster Pocket radio transmitter highlighting its controls and display."
+    credit: "RadioMaster"
+    source_url: "https://rotorvillage.ca/radiomaster-pocket-transmitter-elrs-charcoal-edition/"
+
 support:
   level: official
   since_version: v2.10
@@ -26,4 +32,4 @@ keywords:
 - transmitter
 verification:
   level: community
-  last_updated: "2025-10-14"
+  last_updated: "2025-10-16"

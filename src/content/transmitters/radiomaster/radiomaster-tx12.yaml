@@ -1,6 +1,12 @@
 id: radiomaster-tx12
 title: RadioMaster TX12
 brand: radiomaster
+images:
+  - src: "https://robu.in/wp-content/uploads/2022/09/Radiomaster-TX12-MKII-ExpressLRS-EdgeTX-with-RP1-ExpressLRS-2.4ghz-Nano-Receiver_Drone-Remote-Control_52413_1.jpeg"
+    alt: "Front view of the RadioMaster TX12 radio transmitter highlighting its controls and display."
+    credit: "RadioMaster"
+    source_url: "https://robu.in/product/radiomaster-tx12-mkii-expresslrs-edgetx-radio-controller/"
+
 support:
   level: official
   since_version: v2.4
@@ -28,5 +34,5 @@ keywords:
 - transmitter
 verification:
   level: community
-  last_updated: "2025-10-14"
+  last_updated: "2025-10-16"
 notes: EdgeTX support table documents the retirement at firmware v2.11.

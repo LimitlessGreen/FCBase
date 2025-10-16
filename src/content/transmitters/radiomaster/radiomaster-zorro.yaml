@@ -1,6 +1,12 @@
 id: radiomaster-zorro
 title: RadioMaster Zorro
 brand: radiomaster
+images:
+  - src: "https://m1hobbystore.com.au/wp-content/uploads/radiomaster-zorro-4-in-1-transmitter.jpg"
+    alt: "Front view of the RadioMaster Zorro radio transmitter highlighting its controls and display."
+    credit: "RadioMaster"
+    source_url: "https://m1hobbystore.com.au/radiomaster-zorro-rc-transmitter-4-in-1/"
+
 support:
   level: official
   since_version: v2.6
@@ -26,4 +32,4 @@ keywords:
 - transmitter
 verification:
   level: community
-  last_updated: "2025-10-14"
+  last_updated: "2025-10-16"

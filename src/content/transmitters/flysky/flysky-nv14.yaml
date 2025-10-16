@@ -1,6 +1,12 @@
 id: flysky-nv14
 title: Flysky NV14 Nirvana
 brand: flysky
+images:
+  - src: "https://m.media-amazon.com/images/I/61F2YUXHWpL._AC_SL1200_.jpg"
+    alt: "Front view of the Flysky NV14 Nirvana radio transmitter highlighting its controls and display."
+    credit: "Flysky"
+    source_url: "https://www.amazon.com/Flysky-Transmitter-Controller-Simulator-Quadcopter/dp/B07FDY29GL"
+
 support:
   level: official
   since_version: v2.5
@@ -27,4 +33,4 @@ keywords:
 - transmitter
 verification:
   level: community
-  last_updated: "2025-10-14"
+  last_updated: "2025-10-16"

@@ -1,6 +1,12 @@
 id: frsky-x9-lite
 title: FrSky X9 Lite Series
 brand: frsky
+images:
+  - src: "https://img.gkbcdn.com/s3/p/2019-05-09/frsky-taranis-x9-lite-radio-transmitter-black-1571992529521.jpg"
+    alt: "Front view of the FrSky X9 Lite Series radio transmitter highlighting its controls and display."
+    credit: "FrSky"
+    source_url: "https://www.geekbuying.com/item/Frsky-Taranis-X9-Lite-Radio-Transmitter-Black-416324.html"
+
 support:
   level: community
   since_version: v2.4
@@ -37,5 +43,5 @@ keywords:
 - transmitter
 verification:
   level: community
-  last_updated: "2025-10-14"
+  last_updated: "2025-10-16"
 notes: The EdgeTX support matrix identifies v2.11 as the retirement release for the X9 Lite family.

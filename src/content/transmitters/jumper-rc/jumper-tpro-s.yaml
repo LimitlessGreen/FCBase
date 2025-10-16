@@ -1,6 +1,12 @@
 id: jumper-tpro-s
 title: Jumper T-Pro S
 brand: jumper-rc
+images:
+  - src: "https://down-ph.img.susercontent.com/file/cn-11134207-7ras8-m1fd89zw8a0z97"
+    alt: "Front view of the Jumper T-Pro S radio transmitter highlighting its controls and display."
+    credit: "JumperRC"
+    source_url: "https://shopee.ph/JUMPER-T-PRO-S-Remote-Controller-ELRS-2.4GHz-Hall-Sensor-Gimbals-Built-in-1000mW-ELRS-Radio-Transmitter-For-RC-FPV-airplane-i.779642846.28964180791"
+
 support:
   level: official
   since_version: v2.10.3
@@ -26,4 +32,4 @@ keywords:
 - transmitter
 verification:
   level: community
-  last_updated: "2025-10-14"
+  last_updated: "2025-10-16"

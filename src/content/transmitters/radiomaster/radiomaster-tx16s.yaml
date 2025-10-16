@@ -1,6 +1,12 @@
 id: radiomaster-tx16s
 title: RadioMaster TX16S Series
 brand: radiomaster
+images:
+  - src: "https://cdn11.bigcommerce.com/s-l73l7lwqjy/images/stencil/1280x1280/products/1325/8323/51SUzUhw1iL._AC_SL1000___41064.1676311039.jpg?c=2&imbypass=on"
+    alt: "Front view of the RadioMaster TX16S Series radio transmitter highlighting its controls and display."
+    credit: "RadioMaster"
+    source_url: "https://twistedhobbys.com/radiomaster-tx16s-mark-ii-radio-transmitter-hall-gimbals-4in1-edgetx-opentx/"
+
 support:
   level: official
   since_version: v2.4
@@ -36,4 +42,4 @@ keywords:
 - transmitter
 verification:
   level: community
-  last_updated: "2025-10-14"
+  last_updated: "2025-10-16"

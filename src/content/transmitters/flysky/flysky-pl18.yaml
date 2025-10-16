@@ -1,6 +1,12 @@
 id: flysky-pl18
 title: Flysky PL18 Series
 brand: flysky
+images:
+  - src: "https://www.rc-king.co.za/1246-large_default/flysky-paladin-pl18.jpg"
+    alt: "Front view of the Flysky PL18 Series radio transmitter highlighting its controls and display."
+    credit: "Flysky"
+    source_url: "https://www.rc-king.co.za/transmitters-and-receivers/2526-flysky-paladin-pl18-2104263587860.html"
+
 support:
   level: official
   since_version: v2.10
@@ -36,5 +42,5 @@ keywords:
 - transmitter
 verification:
   level: community
-  last_updated: "2025-10-14"
+  last_updated: "2025-10-16"
 notes: Hardware modification guidance is referenced directly from the EdgeTX supported radios documentation.

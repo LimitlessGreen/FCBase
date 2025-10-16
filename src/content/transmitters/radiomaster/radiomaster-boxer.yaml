@@ -1,6 +1,12 @@
 id: radiomaster-boxer
 title: RadioMaster Boxer
 brand: radiomaster
+images:
+  - src: "https://www.hobbyrc.co.uk/images/thumbs/0014131_radiomaster-boxer-transmitter-cc2500.jpeg"
+    alt: "Front view of the RadioMaster Boxer radio transmitter highlighting its controls and display."
+    credit: "RadioMaster"
+    source_url: "https://www.hobbyrc.co.uk/radiomaster-boxer-transmitter-cc2500"
+
 support:
   level: official
   since_version: v2.8.1
@@ -26,4 +32,4 @@ keywords:
 - transmitter
 verification:
   level: community
-  last_updated: "2025-10-14"
+  last_updated: "2025-10-16"

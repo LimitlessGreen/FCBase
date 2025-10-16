@@ -1,6 +1,12 @@
 id: radiomaster-mt12
 title: RadioMaster MT12
 brand: radiomaster
+images:
+  - src: "https://www.hobbyrc.co.uk/images/thumbs/0017282_radiomaster-mt12-surface-radio-controller.jpeg"
+    alt: "Front view of the RadioMaster MT12 radio transmitter highlighting its controls and display."
+    credit: "RadioMaster"
+    source_url: "https://www.hobbyrc.co.uk/radiomaster-mt12-surface-radio-controller"
+
 support:
   level: official
   since_version: v2.10
@@ -27,5 +33,5 @@ keywords:
 - transmitter
 verification:
   level: community
-  last_updated: "2025-10-14"
+  last_updated: "2025-10-16"
 notes: Companion availability status sourced from the EdgeTX supported radios documentation.

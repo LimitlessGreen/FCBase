@@ -1,6 +1,12 @@
 id: jumper-tlite
 title: Jumper T-Lite Series
 brand: jumper-rc
+images:
+  - src: "https://rcdrone.top/cdn/shop/products/Sdcbd868af72842f5af05251435f79dddd.jpg?v=1684072516&width=1445"
+    alt: "Front view of the Jumper T-Lite Series radio transmitter highlighting its controls and display."
+    credit: "JumperRC"
+    source_url: "https://rcdrone.top/products/jumper-t-lite-v2-transmitter"
+
 support:
   level: official
   since_version: v2.4
@@ -37,5 +43,5 @@ keywords:
 - transmitter
 verification:
   level: community
-  last_updated: "2025-10-14"
+  last_updated: "2025-10-16"
 notes: EdgeTX release notes call out v2.11 as the final build for the Jumper T-Lite family.

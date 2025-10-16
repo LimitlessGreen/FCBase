@@ -1,6 +1,12 @@
 id: jumper-t14
 title: Jumper T14
 brand: jumper-rc
+images:
+  - src: "https://www.hobbyrc.co.uk/images/thumbs/0018695_jumper-t14-transmitter.jpeg"
+    alt: "Front view of the Jumper T14 radio transmitter highlighting its controls and display."
+    credit: "JumperRC"
+    source_url: "https://www.hobbyrc.co.uk/jumper-t14-transmitter-hall-gimbal"
+
 support:
   level: official
   since_version: v2.10
@@ -26,4 +32,4 @@ keywords:
 - transmitter
 verification:
   level: community
-  last_updated: "2025-10-14"
+  last_updated: "2025-10-16"

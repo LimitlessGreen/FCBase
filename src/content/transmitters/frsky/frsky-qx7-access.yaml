@@ -1,6 +1,12 @@
 id: frsky-qx7-access
 title: FrSky QX7 ACCESS Series
 brand: frsky
+images:
+  - src: "https://images.amainhobbies.com/images/large/frk/frk-03017043b.jpg"
+    alt: "Front view of the FrSky QX7 ACCESS Series radio transmitter highlighting its controls and display."
+    credit: "FrSky"
+    source_url: "https://www.amainhobbies.com/frsky-taranis-qx7-access-16channel-telemetry-transmitter-black-frk-03017043b/p1310052"
+
 support:
   level: community
   since_version: v2.4
@@ -36,4 +42,4 @@ keywords:
 - transmitter
 verification:
   level: community
-  last_updated: "2025-10-14"
+  last_updated: "2025-10-16"

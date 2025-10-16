@@ -1,6 +1,12 @@
 id: frsky-x12s
 title: FrSky X12S Series
 brand: frsky
+images:
+  - src: "https://media.horusrc.com/catalog/product/cache/22e388530867c99ff9223c5c84da916b/s/i/silver-1.jpg"
+    alt: "Front view of the FrSky X12S Series radio transmitter highlighting its controls and display."
+    credit: "FrSky"
+    source_url: "https://www.horusrc.com/en/frsky-horus-x12s-16-channels-transmitter-inbuilt-gps-module-silver-texture-space-grey-color.html"
+
 support:
   level: community
   since_version: v2.4
@@ -35,4 +41,4 @@ keywords:
 - transmitter
 verification:
   level: community
-  last_updated: "2025-10-14"
+  last_updated: "2025-10-16"

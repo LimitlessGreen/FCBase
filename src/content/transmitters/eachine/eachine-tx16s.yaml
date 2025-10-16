@@ -1,6 +1,12 @@
 id: eachine-tx16s
 title: Eachine TX16S
 brand: eachine
+images:
+  - src: "https://imgaz3.staticbg.com/thumb/large/oaupload/banggood/images/77/FD/743a8146-9a75-4548-80a5-64659ccb42f1.jpg"
+    alt: "Front view of the Eachine TX16S radio transmitter highlighting its controls and display."
+    credit: "Eachine"
+    source_url: "https://www.banggood.com/Eachine-TX16S-Hall-Sensor-Gimbals-2_4GHz-16CH-Internal-Multi-protocol-RF-System-OpenTX-Radio-Transmitter-for-RC-Drone-p-1837632.html"
+
 support:
   level: community
   since_version: v2.4
@@ -26,4 +32,4 @@ keywords:
 - transmitter
 verification:
   level: community
-  last_updated: "2025-10-14"
+  last_updated: "2025-10-16"

@@ -1,6 +1,12 @@
 id: fatfish-f16
 title: FatFish F16
 brand: fatfish
+images:
+  - src: "https://cdn.shopifycdn.net/s/files/1/0721/1450/3973/files/Fatfish_F16_ERLS_Radio_1.jpg?v=1717638093"
+    alt: "Front view of the FatFish F16 radio transmitter highlighting its controls and display."
+    credit: "FatFish FPV"
+    source_url: "https://bestbuyboxes.com/products/rc-transmitters-fatfish-f16-16ch-edgetx-elrs-bright-display"
+
 support:
   level: manufacturer
   since_version: v2.11
@@ -26,4 +32,4 @@ keywords:
 - transmitter
 verification:
   level: community
-  last_updated: "2025-10-14"
+  last_updated: "2025-10-16"
