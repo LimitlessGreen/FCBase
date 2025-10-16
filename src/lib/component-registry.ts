@@ -1,117 +1,75 @@
-export type CompareComponentNavigationMetadata = {
-  /** Short label used for the site navigation. */
-  label: string;
-  /** Primary route for browsing this component category. */
-  primaryRoute: string;
-  /** CTA copy used in hero and category buttons. */
-  ctaCopy: string;
-};
+import type { ComponentRegistry } from '@/lib/components/registry';
+import {
+  componentMetadata,
+  componentMetadataIds,
+  type ComponentHomepageMetadata,
+  type ComponentNavigationMetadata,
+} from '@/lib/components/metadata';
 
-export type CompareComponentHomepageMetadata = {
-  /** Marketing title used on the homepage category grid. */
-  title: string;
-  /** Supporting copy for the homepage category grid. */
-  description: string;
-  /** CTA copy for the homepage category card. */
-  ctaCopy: string;
-};
+type RegisteredMetadata = (typeof componentMetadata)[number];
 
-import { resolveControllerPreviewImage } from "@/lib/controller-images";
-import { resolveTransmitterPreviewImage } from "@/lib/transmitter-images";
+let serverComponentRegistry: ComponentRegistry | undefined;
 
-const componentIntegrations = {
-  controller: {
-    imageResolver: resolveControllerPreviewImage,
-  },
-  transmitter: {
-    imageResolver: resolveTransmitterPreviewImage,
-  },
-} as const;
+if (import.meta.env.SSR) {
+  const module = await import('@/lib/components/registry');
+  serverComponentRegistry = module.componentRegistry;
+}
 
-export type ComponentIntegrations = typeof componentIntegrations;
+export const compareComponentDefinitions = componentMetadata.map((metadata) => {
+  const serverDefinition = serverComponentRegistry?.[metadata.id as keyof ComponentRegistry];
 
-export type ComponentIntegrationEntry<Id extends keyof ComponentIntegrations> =
-  ComponentIntegrations[Id];
-
-export type CompareComponentDefinition<Id extends keyof ComponentIntegrations = keyof ComponentIntegrations> = {
-  id: Id;
-  label: string;
-  /** Label used when rendering navigation or action buttons. */
-  menuLabel: string;
-  /** Absolute route (from the site root) to the compare table page. */
-  compareRoute: string;
-  /** Local storage key that tracks selected IDs for this component type. */
-  storageKey: string;
-  /** Optional list of legacy storage keys that should be migrated. */
-  legacyStorageKeys?: readonly string[];
-  /** Metadata used to power global navigation and hero CTAs. */
-  navigation: CompareComponentNavigationMetadata;
-  /** Homepage presentation metadata for the category grid. */
-  homepage: CompareComponentHomepageMetadata;
-  /** Integration hooks for card builders, image resolvers, and more. */
-  integration: ComponentIntegrationEntry<Id>;
-};
-
-export const compareComponentDefinitions = [
-  {
-    id: 'controller',
-    label: 'Flight controllers',
-    menuLabel: 'Compare FCs',
-    compareRoute: '/controllers/compare',
-    storageKey: 'fcbase:compare:controller',
-    legacyStorageKeys: ['fcbase:compare'],
-    navigation: {
-      label: 'Controllers',
-      primaryRoute: '/controllers',
-      ctaCopy: 'Browse Controllers',
+  return {
+    id: metadata.id,
+    label: metadata.compare.label,
+    menuLabel: metadata.compare.menuLabel,
+    compareRoute: metadata.compare.compareRoute,
+    storageKey: metadata.compare.storageKey,
+    legacyStorageKeys: metadata.compare.legacyStorageKeys,
+    navigation: metadata.navigation,
+    homepage: metadata.homepage,
+    integration: {
+      imageResolver: serverDefinition?.images?.resolvePreviewImage,
+      cardBuilders: serverDefinition?.cards,
     },
-    homepage: {
-      title: 'Flight Controllers',
-      description:
-        'Browse verified boards, compare MCUs, and filter by firmware support.',
-      ctaCopy: 'Browse flight controllers',
-    },
-    integration: componentIntegrations.controller,
-  },
-  {
-    id: 'transmitter',
-    label: 'Transmitters',
-    menuLabel: 'Compare TXs',
-    compareRoute: '/transmitters/compare',
-    storageKey: 'fcbase:compare:transmitter',
-    navigation: {
-      label: 'Transmitters',
-      primaryRoute: '/transmitters',
-      ctaCopy: 'Browse Transmitters',
-    },
-    homepage: {
-      title: 'Transmitters',
-      description:
-        'Explore EdgeTX radios, track support versions, and jump to FCC compliance records.',
-      ctaCopy: 'Browse transmitters',
-    },
-    integration: componentIntegrations.transmitter,
-  },
-] as const satisfies ReadonlyArray<CompareComponentDefinition>;
+  };
+}) as const satisfies ReadonlyArray<{
+  id: RegisteredMetadata['id'];
+  label: RegisteredMetadata['compare']['label'];
+  menuLabel: RegisteredMetadata['compare']['menuLabel'];
+  compareRoute: RegisteredMetadata['compare']['compareRoute'];
+  storageKey: RegisteredMetadata['compare']['storageKey'];
+  legacyStorageKeys?: RegisteredMetadata['compare']['legacyStorageKeys'];
+  navigation: ComponentNavigationMetadata;
+  homepage: ComponentHomepageMetadata;
+  integration: {
+    imageResolver?: ComponentRegistry[keyof ComponentRegistry]['images'] extends {
+      resolvePreviewImage: infer Resolver;
+    }
+      ? Resolver
+      : unknown;
+    cardBuilders?: ComponentRegistry[keyof ComponentRegistry]['cards'];
+  };
+}>;
 
-export type CompareComponentId =
-  (typeof compareComponentDefinitions)[number]['id'];
+export type CompareComponentDefinition =
+  (typeof compareComponentDefinitions)[number];
 
-export type CompareComponentRegistry = {
-  readonly [Definition in (typeof compareComponentDefinitions)[number] as Definition['id']]: Definition;
-};
+export type CompareComponentId = (typeof componentMetadata)[number]['id'];
 
 const registry = compareComponentDefinitions.reduce<
-  Partial<Record<CompareComponentId, (typeof compareComponentDefinitions)[number]>>
+  Partial<Record<CompareComponentId, CompareComponentDefinition>>
 >((accumulator, definition) => {
   accumulator[definition.id] = definition;
   return accumulator;
 }, {});
 
-export const compareComponentRegistry = registry as CompareComponentRegistry;
+export const compareComponentRegistry =
+  registry as {
+    readonly [Definition in CompareComponentDefinition as Definition['id']]: Definition;
+  };
 
 export const compareComponentIds: readonly CompareComponentId[] =
-  compareComponentDefinitions.map((definition) => definition.id);
+  componentMetadataIds;
 
 export function getCompareComponentDefinition(
   id: CompareComponentId,
@@ -119,13 +77,10 @@ export function getCompareComponentDefinition(
   return compareComponentRegistry[id];
 }
 
-
-export function getComponentImageResolver(
-  id: 'controller',
-): ComponentIntegrationEntry<'controller'>['imageResolver'];
-export function getComponentImageResolver(
-  id: 'transmitter',
-): ComponentIntegrationEntry<'transmitter'>['imageResolver'];
 export function getComponentImageResolver(id: CompareComponentId) {
-  return componentIntegrations[id].imageResolver;
+  if (!serverComponentRegistry) {
+    throw new Error('getComponentImageResolver is only available on the server.');
+  }
+
+  return serverComponentRegistry[id]?.images?.resolvePreviewImage;
 }

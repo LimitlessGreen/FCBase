@@ -1,5 +1,9 @@
 import { defineCollection, z } from 'astro:content';
 
+import type { ComponentDefinition } from '@/lib/components/registry';
+import { componentMetadataRegistry } from '@/lib/components/metadata';
+import { resolveTransmitterPreviewImage } from '@/lib/transmitter-images';
+
 import { componentImageSchema } from './common';
 import { hardwareRevisionSchema } from './controller';
 
@@ -63,9 +67,17 @@ export const transmittersCollection = defineCollection({
 
 export type TransmitterData = z.infer<typeof transmitterSchema>;
 
+const metadata = componentMetadataRegistry.transmitter;
+
 export const transmitterComponent = {
   id: 'transmitter',
   collectionKey: 'transmitters',
   schema: transmitterSchema,
   collection: transmittersCollection,
-} as const;
+  images: {
+    resolvePreviewImage: resolveTransmitterPreviewImage,
+  },
+  compare: metadata.compare,
+  navigation: metadata.navigation,
+  homepage: metadata.homepage,
+} as const satisfies ComponentDefinition<'transmitter', 'transmitters'>;
