@@ -1,11 +1,10 @@
 ---
 import { getCollection } from 'astro:content';
 import MainLayout from '@/layouts/MainLayout.astro';
-import TransmitterCard from '@/components/cards/TransmitterCard.astro';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/Tabs';
 import { getManufacturersMap } from '@/lib/content-cache';
-import { GITHUB_REPO_URL } from '@/lib/constants';
 import { getBasePath } from '@/lib/paths';
+import SupportSection from '@/components/transmitters/SupportSection.astro';
 
 const allTransmitters = await getCollection('transmitters');
 
@@ -32,10 +31,19 @@ const groupedByLevel = {
   community: transmittersWithMeta.filter((item) => item.data.support.level === 'community'),
 };
 
-const supportLevelLabels: Record<'official' | 'manufacturer' | 'community', string> = {
+type SupportLevel = keyof typeof groupedByLevel;
+type TransmitterWithMeta = (typeof transmittersWithMeta)[number];
+
+const supportLevelLabels: Record<SupportLevel, string> = {
   official: 'Official EdgeTX Support',
   manufacturer: 'Manufacturer Maintained',
   community: 'Community Maintained',
+};
+
+const supportLevelDescriptions: Record<SupportLevel, string> = {
+  official: 'Maintained by the EdgeTX core team and available through EdgeTX Buddy/Companion.',
+  manufacturer: 'Firmware images maintained by hardware vendors in collaboration with the EdgeTX project.',
+  community: 'Community volunteers maintain builds for these radios. Check the support window before updating.',
 };
 
 const basePath = getBasePath();
@@ -75,114 +83,31 @@ const basePath = getBasePath();
         </div>
 
         <TabsContent value="grid" className="space-y-16">
-          {(Object.entries(groupedByLevel) as [keyof typeof groupedByLevel, typeof transmittersWithMeta][]).map(
-            ([level, items]) =>
-              items.length > 0 && (
-                <section key={level} class="space-y-6">
-                  <header class="flex flex-col gap-2">
-                    <h2 class="text-2xl font-semibold tracking-tight">{supportLevelLabels[level]}</h2>
-                    <p class="text-sm text-muted-foreground max-w-3xl">
-                      {level === 'official' &&
-                        'Maintained by the EdgeTX core team and available through EdgeTX Buddy/Companion.'}
-                      {level === 'manufacturer' &&
-                        'Firmware images maintained by hardware vendors in collaboration with the EdgeTX project.'}
-                      {level === 'community' &&
-                        'Community volunteers maintain builds for these radios. Check the support window before updating.'}
-                    </p>
-                  </header>
-
-                  <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-                    {items.map((item) => {
-                      const support = item.data.support;
-                      const revisions = item.data.hardware?.revisions ?? [];
-                      const compliance = item.data.compliance ?? [];
-                      const slug = item.slug ?? item.id;
-                      const remotePath = `src/content/transmitters/${slug}.yaml`;
-                      const remoteUrl = `${GITHUB_REPO_URL}/blob/main/${remotePath}`;
-
-                      return (
-                        <TransmitterCard
-                          key={item.id}
-                          id={item.id}
-                          slug={slug}
-                          title={item.data.title}
-                          manufacturer={item.manufacturerName}
-                          support={{
-                            level: support.level,
-                            status: support.status,
-                            sinceVersion: support.since_version,
-                            lastVersion: support.last_version,
-                            notes: support.notes,
-                          }}
-                          hardwareRevisions={revisions}
-                          compliance={compliance}
-                          remoteUrl={remoteUrl}
-                          basePath={basePath}
-                          variant="grid"
-                          enableCompareToggle
-                        />
-                      );
-                    })}
-                  </div>
-                </section>
-              )
-          )}
+          {(Object.entries(groupedByLevel) as [SupportLevel, TransmitterWithMeta[]][]).map(([level, items]) => (
+            <SupportSection
+              key={level}
+              level={level}
+              label={supportLevelLabels[level]}
+              description={supportLevelDescriptions[level]}
+              items={items}
+              variant="grid"
+              basePath={basePath}
+            />
+          ))}
         </TabsContent>
 
         <TabsContent value="compact" className="space-y-12">
-          {(Object.entries(groupedByLevel) as [keyof typeof groupedByLevel, typeof transmittersWithMeta][]).map(
-            ([level, items]) =>
-              items.length > 0 && (
-                <section key={level} class="space-y-6">
-                  <header class="flex flex-col gap-2">
-                    <h2 class="text-2xl font-semibold tracking-tight">{supportLevelLabels[level]}</h2>
-                    <p class="text-sm text-muted-foreground max-w-3xl">
-                      {level === 'official' &&
-                        'Maintained by the EdgeTX core team and available through EdgeTX Buddy/Companion.'}
-                      {level === 'manufacturer' &&
-                        'Firmware images maintained by hardware vendors in collaboration with the EdgeTX project.'}
-                      {level === 'community' &&
-                        'Community volunteers maintain builds for these radios. Check the support window before updating.'}
-                    </p>
-                  </header>
-
-                  <div role="list" class="flex flex-col gap-3">
-                    {items.map((item) => {
-                      const support = item.data.support;
-                      const revisions = item.data.hardware?.revisions ?? [];
-                      const compliance = item.data.compliance ?? [];
-                      const slug = item.slug ?? item.id;
-                      const remotePath = `src/content/transmitters/${slug}.yaml`;
-                      const remoteUrl = `${GITHUB_REPO_URL}/blob/main/${remotePath}`;
-
-                      return (
-                        <div key={item.id} role="listitem">
-                          <TransmitterCard
-                            id={item.id}
-                            slug={slug}
-                            title={item.data.title}
-                            manufacturer={item.manufacturerName}
-                            support={{
-                              level: support.level,
-                              status: support.status,
-                              sinceVersion: support.since_version,
-                              lastVersion: support.last_version,
-                              notes: support.notes,
-                            }}
-                            hardwareRevisions={revisions}
-                            compliance={compliance}
-                            remoteUrl={remoteUrl}
-                            basePath={basePath}
-                            variant="compact"
-                            enableCompareToggle
-                          />
-                        </div>
-                      );
-                    })}
-                  </div>
-                </section>
-              )
-          )}
+          {(Object.entries(groupedByLevel) as [SupportLevel, TransmitterWithMeta[]][]).map(([level, items]) => (
+            <SupportSection
+              key={level}
+              level={level}
+              label={supportLevelLabels[level]}
+              description={supportLevelDescriptions[level]}
+              items={items}
+              variant="compact"
+              basePath={basePath}
+            />
+          ))}
         </TabsContent>
       </Tabs>
     </div>

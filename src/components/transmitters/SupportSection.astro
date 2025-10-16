@@ -1,0 +1,98 @@
+---
+import TransmitterCard from '@/components/cards/TransmitterCard.astro';
+import { GITHUB_REPO_URL } from '@/lib/constants';
+import type { CollectionEntry } from 'astro:content';
+
+type SupportLevel = 'official' | 'manufacturer' | 'community';
+type SupportVariant = 'grid' | 'compact';
+
+type TransmitterWithMeta = CollectionEntry<'transmitters'> & {
+  manufacturerName: string | null | undefined;
+};
+
+interface Props {
+  level: SupportLevel;
+  label: string;
+  description: string;
+  items: TransmitterWithMeta[];
+  variant: SupportVariant;
+  basePath: string;
+}
+
+const { level, label, description, items, variant, basePath } = Astro.props as Props;
+
+const preparedItems = items.map((item) => {
+  const support = item.data.support;
+  const revisions = item.data.hardware?.revisions ?? [];
+  const compliance = item.data.compliance ?? [];
+  const slug = item.slug ?? item.id;
+  const remotePath = `src/content/transmitters/${slug}.yaml`;
+  const remoteUrl = `${GITHUB_REPO_URL}/blob/main/${remotePath}`;
+
+  return {
+    key: item.id,
+    slug,
+    title: item.data.title,
+    manufacturer: item.manufacturerName,
+    support: {
+      level: support.level,
+      status: support.status,
+      sinceVersion: support.since_version,
+      lastVersion: support.last_version,
+      notes: support.notes,
+    },
+    hardwareRevisions: revisions,
+    compliance,
+    remoteUrl,
+  };
+});
+---
+{preparedItems.length > 0 && (
+  <section class="space-y-6" data-support-level={level}>
+    <header class="flex flex-col gap-2">
+      <h2 class="text-2xl font-semibold tracking-tight">{label}</h2>
+      <p class="text-sm text-muted-foreground max-w-3xl">{description}</p>
+    </header>
+
+    {variant === 'grid' ? (
+      <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+        {preparedItems.map((item) => (
+          <TransmitterCard
+            key={item.key}
+            id={item.key}
+            slug={item.slug}
+            title={item.title}
+            manufacturer={item.manufacturer}
+            support={item.support}
+            hardwareRevisions={item.hardwareRevisions}
+            compliance={item.compliance}
+            remoteUrl={item.remoteUrl}
+            basePath={basePath}
+            variant={variant}
+            enableCompareToggle
+          />
+        ))}
+      </div>
+    ) : (
+      <div role="list" class="flex flex-col gap-3">
+        {preparedItems.map((item) => (
+          <div key={item.key} role="listitem">
+            <TransmitterCard
+              id={item.key}
+              slug={item.slug}
+              title={item.title}
+              manufacturer={item.manufacturer}
+              support={item.support}
+              hardwareRevisions={item.hardwareRevisions}
+              compliance={item.compliance}
+              remoteUrl={item.remoteUrl}
+              basePath={basePath}
+              variant={variant}
+              enableCompareToggle
+            />
+          </div>
+        ))}
+      </div>
+    )}
+  </section>
+)}
