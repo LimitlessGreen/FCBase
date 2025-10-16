@@ -68,7 +68,7 @@ const storageKey = `fcbase:compare:${compareType}`;
     data-compare-event-name={compareEventName}
     data-compare-legacy-key={legacyStorageKey}
   >
-    {`(() => {
+    (() => {
       const STORAGE_KEY = 'fcbase:compare';
       const scriptEl = document.currentScript;
       if (!(scriptEl instanceof HTMLScriptElement)) {
@@ -158,6 +158,6 @@ const storageKey = `fcbase:compare:${compareType}`;
       });
 
       syncFromStorage();
-    })();`}
+    })();
   </script>
 )}
