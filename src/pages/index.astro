@@ -77,6 +77,8 @@ const homepageNavigationEntries = compareComponentDefinitions.map((definition, i
   cardDescription: definition.homepage.description,
   cardCtaCopy: definition.homepage.ctaCopy,
 }));
+
+export const prerender = true;
 ---
 
 <MainLayout title={title} description={description} editPath="src/pages/index.astro">
