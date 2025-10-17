@@ -84,6 +84,9 @@ export default defineConfig({
   site: "https://limitlessgreen.github.io",
   base: "/FCBase",
   output: "static",
+  build: {
+    format: "file",
+  },
   integrations: [react()],
   vite: {
     plugins: [tailwindcss()],
