@@ -61,7 +61,7 @@ interface Props {
   };
   basePath?: string;
   showImage?: boolean;
-  variant: 'grid' | 'compact';
+  variant: 'grid' | 'list';
   remoteUrl?: string;
   class?: string;
   compareId?: string;
@@ -91,9 +91,9 @@ const {
 const componentDefinition = getCompareComponentDefinition('transmitter');
 const defaultCompareType = componentDefinition.id;
 const variant = variantProp;
-const isCompact = variant === 'compact';
-const showImage = isCompact ? false : showImageProp;
-const cardClass = isCompact ? 'p-3 sm:p-3.5' : 'pb-2';
+const isList = variant === 'list';
+const showImage = isList ? false : showImageProp;
+const cardClass = isList ? undefined : 'pb-2';
 const compareId = compareIdProp ?? id;
 const compareType = compareTypeProp ?? defaultCompareType;
 const shouldRenderCompare = enableCompareToggle && Boolean(compareId);
@@ -152,7 +152,7 @@ if (support.lastVersion) {
 const href = `${basePath}/transmitters/${targetSlug}`;
 const shouldShowSupportBadges = supportBadges.length > 0;
 const hasFallbackIcon = !image?.src;
-const showBadgeFooter = !isCompact && !showImage && shouldShowSupportBadges;
+const showBadgeFooter = !isList && !showImage && shouldShowSupportBadges;
 const supportMetrics = supportTimeline.map((entry) => ({
   ...entry,
   label: entry.label,
@@ -193,37 +193,34 @@ const hasMetaSections = metaSections.length > 0;
 const hasSupportSummary = supportMetrics.length > 0 || Boolean(supportNotes);
 const hasRemoteLink = Boolean(remoteUrl);
 ---
-<div class="relative" data-compare-container={shouldRenderCompare ? compareId : undefined}>
-  <BaseCard
-    href={href}
-    title={title}
-    subtitle={manufacturer}
-    image={image}
-    showImage={showImage}
-    showHeader={!showImage}
-    cardClass={cardClass}
-    class={`compare-card ${className ?? ''}`.trim()}
+{isList ? (
+  <article
+    class={`group relative overflow-hidden rounded-lg border bg-background/90 shadow-xs transition hover:border-primary/40 focus-within:border-primary/50 ${
+      className ?? ''
+    }`.trim()}
+    data-compare-container={shouldRenderCompare ? compareId : undefined}
+    role="listitem"
   >
-  {showImage && (
-    <Fragment slot="imageOverlay">
-      <div class="pointer-events-none relative h-full w-full">
-        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent" aria-hidden="true" />
-        <div class="absolute top-2 left-2 max-w-[70%] space-y-1">
-          <h3 class="rounded-sm border bg-background/95 px-1.5 py-0.5 text-xs font-semibold leading-snug text-foreground shadow-sm transition-colors group-hover:text-primary">
+    <div class="grid gap-4 px-4 py-4 sm:grid-cols-[minmax(0,2.1fr)_minmax(0,1.1fr)_minmax(0,1fr)_auto] sm:items-start sm:px-5">
+      <div class="flex flex-col gap-3">
+        <div class="space-y-1">
+          <a
+            href={href}
+            class="inline-flex text-base font-semibold leading-snug text-foreground transition-colors hover:text-primary focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40"
+          >
             {title}
-          </h3>
+          </a>
           {manufacturer && (
-            <p class="inline-flex rounded-sm border bg-background/95 px-1.5 py-0.5 text-[11px] font-medium text-muted-foreground shadow-sm">
-              {manufacturer}
-            </p>
+            <p class="text-sm text-muted-foreground">{manufacturer}</p>
           )}
         </div>
+
         {shouldShowSupportBadges && (
-          <div class="absolute bottom-2 left-2 flex flex-wrap gap-1.5">
+          <div class="flex flex-wrap gap-1.5">
             {supportBadges.map((badge) => (
               <span
                 key={badge.id}
-                class="inline-flex items-center rounded-sm border bg-background/95 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-foreground shadow-sm"
+                class="inline-flex items-center rounded-sm border px-1.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide"
               >
                 {badge.label}
               </span>
@@ -231,82 +228,48 @@ const hasRemoteLink = Boolean(remoteUrl);
           </div>
         )}
       </div>
-    </Fragment>
-  )}
 
-  {showImage && hasFallbackIcon && (
-    <Fragment slot="imageFallback">
-      <div class="flex h-full w-full items-center justify-center text-muted-foreground/50">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1.5"
-          class="h-12 w-12"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M4.5 8.25v7.5a2.25 2.25 0 0 0 2.25 2.25h10.5A2.25 2.25 0 0 0 19.5 15.75v-7.5A2.25 2.25 0 0 0 17.25 6H6.75A2.25 2.25 0 0 0 4.5 8.25Zm6.75 7.5a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm3 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM8.25 9.75h7.5m-3.75-3.75v-1.5"
-          />
-        </svg>
-      </div>
-    </Fragment>
-  )}
-
-  <Fragment slot="specs">
-    {isCompact ? (
-      <div class="space-y-0.5 text-[9px] leading-snug">
-        {shouldShowSupportBadges && (
-          <div class="flex flex-wrap gap-1 text-[8px] font-semibold uppercase tracking-wide text-muted-foreground">
-            {supportBadges.map((badge) => (
-              <span key={badge.id} class="inline-flex items-center rounded-sm border px-1 py-0.5">
-                {badge.label}
-              </span>
+      <div class="space-y-3">
+        {supportMetrics.length > 0 && (
+          <dl class="grid gap-2">
+            {supportMetrics.map((entry) => (
+              <div key={entry.id} class="rounded-md border px-3 py-2">
+                <dt class="text-[11px] uppercase tracking-wide text-muted-foreground/80">{entry.label}</dt>
+                <dd class="text-base font-semibold leading-tight text-foreground">{entry.value}</dd>
+              </div>
             ))}
-          </div>
+          </dl>
         )}
 
-        <div class="h-px w-full bg-border/70" />
-
-        {hasSupportSummary && (
-          <div class="flex flex-wrap items-start justify-between gap-0.5">
-            {supportMetrics.length > 0 && (
-              <dl class="flex flex-wrap gap-0.5">
-                {supportMetrics.map((entry) => (
-                  <div key={entry.id} class="min-w-[36px] text-left">
-                    <dd class="text-[10px] font-semibold leading-tight text-foreground text-center">{entry.value}</dd>
-                    <dt class="text-[8px] uppercase tracking-wide text-muted-foreground text-left">{entry.label}</dt>
-                  </div>
-                ))}
-              </dl>
-            )}
-
-            {supportNotes && (
-              <p class="max-w-[65%] text-[8px] leading-snug text-muted-foreground">{supportNotes}</p>
-            )}
-          </div>
+        {supportNotes && (
+          <p class="rounded-md border bg-muted/30 p-3 text-sm leading-snug text-muted-foreground">
+            {supportNotes}
+          </p>
         )}
+      </div>
 
-        {hasMetaSections && (
-          <div class="space-y-1">
+      <div class="space-y-3">
+        {hasMetaSections ? (
+          <div class="space-y-3">
             {metaSections.map((section) => (
-              <div key={section.id} class="space-y-0.5">
-                <span class="text-[8px] font-semibold uppercase tracking-wide text-muted-foreground">{section.title}</span>
-                <div class="flex flex-wrap gap-0.5">
+              <div key={section.id} class="rounded-md border p-3">
+                <div class="flex items-center justify-between text-[11px] uppercase tracking-wide text-muted-foreground/80">
+                  <span>{section.title}</span>
+                  <span class="font-semibold text-muted-foreground">{section.count}</span>
+                </div>
+                <div class="mt-2 flex flex-wrap gap-1.5">
                   {section.items.map((item) => (
                     <span
                       key={item.id}
-                      class={`inline-flex items-center rounded-sm border px-1 py-0.5 text-[8px] font-medium ${
-                        item.accent ? 'text-primary' : ''
+                      class={`inline-flex items-center rounded-sm border px-1.5 py-0.5 text-[11px] font-medium ${
+                        item.accent ? 'text-primary' : 'text-foreground'
                       }`.trim()}
                     >
                       {item.label}
                     </span>
                   ))}
                   {section.remaining > 0 && (
-                    <span class="inline-flex items-center rounded-sm border bg-muted/40 px-1 py-0.5 text-[8px] font-semibold">
+                    <span class="inline-flex items-center rounded-sm border bg-muted/40 px-1.5 py-0.5 text-[11px] font-semibold">
                       +{section.remaining} more
                     </span>
                   )}
@@ -314,20 +277,125 @@ const hasRemoteLink = Boolean(remoteUrl);
               </div>
             ))}
           </div>
+        ) : (
+          <p class="text-sm text-muted-foreground">No additional hardware or compliance notes.</p>
         )}
+      </div>
+
+      <div class="flex flex-col items-start gap-3 sm:items-end">
+        <a
+          href={href}
+          class="inline-flex items-center gap-2 text-sm font-semibold text-primary transition-colors hover:text-primary/80"
+        >
+          View profile
+          <span aria-hidden="true">→</span>
+        </a>
 
         {hasRemoteLink && (
           <a
             href={remoteUrl}
             target="_blank"
             rel="noopener noreferrer"
-            class="inline-flex items-center gap-1 text-[8px] font-semibold text-primary transition-colors hover:text-primary/80"
+            class="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground transition-colors hover:text-primary"
           >
             View YAML ↗
           </a>
         )}
+
+        {shouldRenderCompare && compareToggleId && (
+          <div class="compare-toggle flex items-center gap-1 rounded-full border px-2 py-1 text-xs text-muted-foreground" data-compare-toggle-wrapper>
+            <input
+              id={compareToggleId}
+              type="checkbox"
+              class="h-3.5 w-3.5 rounded-sm border text-primary focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40"
+              data-compare-toggle={compareId}
+              data-compare-type={compareType}
+              aria-label={compareAriaLabel}
+            />
+            <label for={compareToggleId} class="font-semibold uppercase tracking-wide">
+              Compare
+            </label>
+          </div>
+        )}
       </div>
-    ) : (
+    </div>
+
+    {shouldRenderCompare && (
+      <script
+        is:inline
+        data-compare-id={compareId}
+        data-compare-type={compareType}
+        data-compare-storage-key={compareStorageKey}
+        data-compare-event-name={COMPARE_EVENT_NAME}
+        data-compare-legacy-keys={compareLegacyKeysLiteral}
+        set:html={compareToggleScript}
+      />
+    )}
+  </article>
+) : (
+  <div class="relative" data-compare-container={shouldRenderCompare ? compareId : undefined}>
+    <BaseCard
+      href={href}
+      title={title}
+      subtitle={manufacturer}
+      image={image}
+      showImage={showImage}
+      showHeader={!showImage}
+      cardClass={cardClass}
+      class={`compare-card ${className ?? ''}`.trim()}
+    >
+    {showImage && (
+      <Fragment slot="imageOverlay">
+        <div class="pointer-events-none relative h-full w-full">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent" aria-hidden="true" />
+          <div class="absolute top-2 left-2 max-w-[70%] space-y-1">
+            <h3 class="rounded-sm border bg-background/95 px-1.5 py-0.5 text-xs font-semibold leading-snug text-foreground shadow-sm transition-colors group-hover:text-primary">
+              {title}
+            </h3>
+            {manufacturer && (
+              <p class="inline-flex rounded-sm border bg-background/95 px-1.5 py-0.5 text-[11px] font-medium text-muted-foreground shadow-sm">
+                {manufacturer}
+              </p>
+            )}
+          </div>
+          {shouldShowSupportBadges && (
+            <div class="absolute bottom-2 left-2 flex flex-wrap gap-1.5">
+              {supportBadges.map((badge) => (
+                <span
+                  key={badge.id}
+                  class="inline-flex items-center rounded-sm border bg-background/95 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-foreground shadow-sm"
+                >
+                  {badge.label}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+      </Fragment>
+    )}
+
+    {showImage && hasFallbackIcon && (
+      <Fragment slot="imageFallback">
+        <div class="flex h-full w-full items-center justify-center text-muted-foreground/50">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            class="h-12 w-12"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M4.5 8.25v7.5a2.25 2.25 0 0 0 2.25 2.25h10.5A2.25 2.25 0 0 0 19.5 15.75v-7.5A2.25 2.25 0 0 0 17.25 6H6.75A2.25 2.25 0 0 0 4.5 8.25Zm6.75 7.5a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm3 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM8.25 9.75h7.5m-3.75-3.75v-1.5"
+            />
+          </svg>
+        </div>
+      </Fragment>
+    )}
+
+    <Fragment slot="specs">
       <div class={`space-y-1 text-[10px] leading-snug ${showImage ? 'mt-2.5' : ''}`}>
         {shouldShowSupportBadges && (
           <div class="flex flex-wrap gap-1 text-[9px] font-semibold uppercase tracking-wide text-muted-foreground">
@@ -401,54 +469,49 @@ const hasRemoteLink = Boolean(remoteUrl);
           </a>
         )}
       </div>
-    )}
-  </Fragment>
-
-  {showBadgeFooter && (
-    <Fragment slot="badges">
-      {supportBadges.map((badge) => (
-        <span
-          key={badge.id}
-          class="inline-flex items-center rounded-sm border bg-muted/40 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide"
-        >
-          {badge.label}
-        </span>
-      ))}
     </Fragment>
-  )}
-  </BaseCard>
 
-  {shouldRenderCompare && compareToggleId && (
-    <div
-      class="compare-toggle absolute right-2 top-2 z-20 flex items-center gap-1 rounded-full border border-border/70 bg-background/90 px-2 py-1 shadow-xs backdrop-blur supports-[backdrop-filter]:backdrop-blur-sm"
-      data-compare-toggle-wrapper
-    >
-      <input
-        id={compareToggleId}
-        type="checkbox"
-        class="h-3.5 w-3.5 rounded-sm border border-border/70 text-primary focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40"
-        data-compare-toggle={compareId}
-        data-compare-type={compareType}
-        aria-label={compareAriaLabel}
-      />
-      <label
-        for={compareToggleId}
-        class="text-[9px] font-semibold uppercase tracking-wide text-muted-foreground"
+    {showBadgeFooter && (
+      <Fragment slot="badges">
+        {supportBadges.map((badge) => (
+          <span
+            key={badge.id}
+            class="inline-flex items-center rounded-sm border bg-muted/40 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide"
+          >
+            {badge.label}
+          </span>
+        ))}
+      </Fragment>
+    )}
+    </BaseCard>
+
+    {shouldRenderCompare && compareToggleId && (
+      <div
+        class="compare-toggle absolute right-2 top-2 z-20 flex items-center gap-1 rounded-full border bg-background/90 px-2 py-1 text-[9px] font-semibold uppercase tracking-wide text-muted-foreground shadow-xs backdrop-blur supports-[backdrop-filter]:backdrop-blur-sm"
+        data-compare-toggle-wrapper
       >
-        Compare
-      </label>
-    </div>
-  )}
+        <input
+          id={compareToggleId}
+          type="checkbox"
+          class="h-3.5 w-3.5 rounded-sm border text-primary focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40"
+          data-compare-toggle={compareId}
+          data-compare-type={compareType}
+          aria-label={compareAriaLabel}
+        />
+        <label for={compareToggleId}>Compare</label>
+      </div>
+    )}
 
-  {shouldRenderCompare && (
-    <script
-      is:inline
-      data-compare-id={compareId}
-      data-compare-type={compareType}
-      data-compare-storage-key={compareStorageKey}
-      data-compare-event-name={COMPARE_EVENT_NAME}
-      data-compare-legacy-keys={compareLegacyKeysLiteral}
-      set:html={compareToggleScript}
-    />
-  )}
-</div>
+    {shouldRenderCompare && (
+      <script
+        is:inline
+        data-compare-id={compareId}
+        data-compare-type={compareType}
+        data-compare-storage-key={compareStorageKey}
+        data-compare-event-name={COMPARE_EVENT_NAME}
+        data-compare-legacy-keys={compareLegacyKeysLiteral}
+        set:html={compareToggleScript}
+      />
+    )}
+  </div>
+)}

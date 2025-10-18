@@ -5,7 +5,7 @@ import { getComponentImageResolver } from '@/lib/component-registry';
 import type { CollectionEntry } from 'astro:content';
 
 type SupportLevel = 'official' | 'manufacturer' | 'community';
-type SupportVariant = 'grid' | 'compact';
+type SupportVariant = 'grid' | 'list';
 
 type TransmitterWithMeta = CollectionEntry<'transmitters'> & {
   manufacturerName: string | null | undefined;
@@ -91,25 +91,33 @@ const preparedItems = items.map((item) => {
         ))}
       </div>
     ) : (
-      <div role="list" class="flex flex-col gap-3">
-        {preparedItems.map((item) => (
-          <div key={item.key} role="listitem">
-            <TransmitterCard
-              id={item.key}
-              slug={item.slug}
-              title={item.title}
-              manufacturer={item.manufacturer}
-              support={item.support}
-              hardwareRevisions={item.hardwareRevisions}
-              compliance={item.compliance}
-              image={item.image}
-              remoteUrl={item.remoteUrl}
-              basePath={basePath}
-              variant={variant}
-              enableCompareToggle
-            />
-          </div>
-        ))}
+      <div class="overflow-hidden rounded-xl border">
+        <div class="hidden border-b bg-muted/40 px-4 py-3 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground sm:grid sm:grid-cols-[minmax(0,2.1fr)_minmax(0,1.1fr)_minmax(0,1fr)_auto] sm:gap-4 sm:px-5">
+          <span>Transmitter</span>
+          <span>Support window</span>
+          <span>Hardware & compliance</span>
+          <span class="text-right">Actions</span>
+        </div>
+        <div role="list" class="divide-y">
+          {preparedItems.map((item) => (
+            <div key={item.key} class="px-2 py-3 sm:px-0">
+              <TransmitterCard
+                id={item.key}
+                slug={item.slug}
+                title={item.title}
+                manufacturer={item.manufacturer}
+                support={item.support}
+                hardwareRevisions={item.hardwareRevisions}
+                compliance={item.compliance}
+                image={item.image}
+                remoteUrl={item.remoteUrl}
+                basePath={basePath}
+                variant={variant}
+                enableCompareToggle
+              />
+            </div>
+          ))}
+        </div>
       </div>
     )}
   </section>

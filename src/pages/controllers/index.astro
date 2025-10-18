@@ -3,7 +3,7 @@ import { getCollection } from 'astro:content';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/Tabs';
 import MainLayout from '@/layouts/MainLayout.astro';
 import { getBasePath } from '@/lib/paths';
-import { LayoutGrid, Rows3 } from 'lucide-react';
+import { LayoutGrid, List } from 'lucide-react';
 import ControllerSection from './_sections.astro';
 import { getComponentCardBuilders } from '@/lib/component-card-builders.server';
 
@@ -96,12 +96,12 @@ const basePath = getBasePath();
                 <span class="sm:hidden">Grid</span>
               </TabsTrigger>
               <TabsTrigger
-                value="compact"
+                value="list"
                 className="flex h-10 items-center justify-center gap-2 px-3 text-sm font-medium"
               >
-                <Rows3 className="h-4 w-4" aria-hidden="true" />
-                <span class="hidden sm:inline">Compact view</span>
-                <span class="sm:hidden">Compact</span>
+                <List className="h-4 w-4" aria-hidden="true" />
+                <span class="hidden sm:inline">List view</span>
+                <span class="sm:hidden">List</span>
               </TabsTrigger>
             </TabsList>
           </div>
@@ -131,7 +131,7 @@ const basePath = getBasePath();
           </div>
         </TabsContent>
 
-        <TabsContent value="compact" className="mt-0">
+        <TabsContent value="list" className="mt-0">
           <div class="space-y-12">
             {controllerGroups.map((group) => (
               <ControllerSection
@@ -141,7 +141,7 @@ const basePath = getBasePath();
                   controllers: group.controllers,
                 }}
                 basePath={basePath}
-                variant="compact"
+                variant="list"
               />
             ))}
 
@@ -149,7 +149,7 @@ const basePath = getBasePath();
               <ControllerSection
                 group={{ type: 'unassigned', controllers: unassignedControllers }}
                 basePath={basePath}
-                variant="compact"
+                variant="list"
               />
             )}
           </div>

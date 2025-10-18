@@ -78,7 +78,7 @@ const basePath = getBasePath();
           </span>
           <TabsList aria-labelledby="transmitter-layout-toggle" class="w-full max-w-sm sm:w-auto">
             <TabsTrigger value="grid">Detailed cards</TabsTrigger>
-            <TabsTrigger value="compact">Compact list</TabsTrigger>
+            <TabsTrigger value="list">List view</TabsTrigger>
           </TabsList>
         </div>
 
@@ -96,7 +96,7 @@ const basePath = getBasePath();
           ))}
         </TabsContent>
 
-        <TabsContent value="compact" className="space-y-12">
+        <TabsContent value="list" className="space-y-12">
           {(Object.entries(groupedByLevel) as [SupportLevel, TransmitterWithMeta[]][]).map(([level, items]) => (
             <SupportSection
               key={level}
@@ -104,7 +104,7 @@ const basePath = getBasePath();
               label={supportLevelLabels[level]}
               description={supportLevelDescriptions[level]}
               items={items}
-              variant="compact"
+              variant="list"
               basePath={basePath}
             />
           ))}

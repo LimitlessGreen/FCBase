@@ -31,7 +31,7 @@ export interface ControllerCardModel {
   ethernet: boolean;
   firmwares: string[];
   image?: ControllerCardImage;
-  variant: 'grid' | 'compact';
+  variant: 'grid' | 'list';
 }
 
 interface BuildOptions {
