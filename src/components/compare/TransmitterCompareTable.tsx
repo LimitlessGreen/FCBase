@@ -11,6 +11,10 @@ import {
   readCompareList,
   writeCompareList,
 } from "@/lib/compare";
+import { getComponentImageResolver } from "@/lib/component-registry";
+import { getManufacturersMap } from "@/lib/content-cache.server";
+
+import type { CompareModule } from "./registry";
 
 interface ComplianceEntry {
   id: string;
@@ -57,29 +61,17 @@ const supportStatusLabels: Record<
   planned: "Planned support",
 };
 
-interface TransmitterImagePreview {
-  src:
-    | string
-    | {
-        src: string;
-        width: number;
-        height: number;
-      };
-  alt?: string | null;
-  width?: number | null;
-  height?: number | null;
-}
+type TransmitterCompareContext = {
+  manufacturers: Awaited<ReturnType<typeof getManufacturersMap>>;
+  resolveImage?: ReturnType<typeof getComponentImageResolver>;
+};
 
-type TransmitterImageResolver = (
-  entry: CollectionEntry<"transmitters">,
-) => TransmitterImagePreview | null | undefined;
+const loadTransmitterContext = async (): Promise<TransmitterCompareContext> => ({
+  manufacturers: await getManufacturersMap(),
+  resolveImage: getComponentImageResolver("transmitter"),
+});
 
-export interface TransmitterCompareContext {
-  manufacturers: Map<string, CollectionEntry<"manufacturers">>;
-  resolveImage?: TransmitterImageResolver;
-}
-
-export const transformTransmitterEntry = (
+const transformTransmitterEntry = (
   transmitter: CollectionEntry<"transmitters">,
   context: TransmitterCompareContext,
 ): TransmitterCompareItem => {
@@ -140,7 +132,7 @@ export const transformTransmitterEntry = (
   };
 };
 
-export const sortTransmitterItems = (
+const sortTransmitterItems = (
   items: TransmitterCompareItem[],
 ): TransmitterCompareItem[] =>
   [...items].sort((a, b) => a.title.localeCompare(b.title));
@@ -435,3 +427,23 @@ export default function TransmitterCompareTable({
 }
 
 export type { TransmitterCompareItem };
+
+export const transmitterCompareModule: CompareModule<
+  typeof compareComponentId,
+  "transmitters",
+  TransmitterCompareItem,
+  TransmitterCompareContext
+> = {
+  id: compareComponentId,
+  collectionKey: "transmitters",
+  Table: TransmitterCompareTable,
+  page: {
+    title: "Compare Transmitters - FCBase",
+    description:
+      "Review EdgeTX transmitter support levels, hardware variants, and compliance records side by side.",
+    breadcrumbLabel: "Transmitters",
+  },
+  loadContext: loadTransmitterContext,
+  transformEntry: (entry, context) => transformTransmitterEntry(entry, context),
+  sortItems: sortTransmitterItems,
+};
