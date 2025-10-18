@@ -1,30 +1,103 @@
 ---
+import { getCollection } from 'astro:content';
+import TransmitterCompareTable from '@/components/compare/TransmitterCompareTable';
 import MainLayout from '@/layouts/MainLayout.astro';
-import { loadComparePage } from '@/lib/compare-page-loader.server';
+import { getManufacturersMap } from '@/lib/content-cache.server';
+import { getBasePath } from '@/lib/paths';
+import { getComponentImageResolver } from '@/lib/component-registry';
 
-const pageData = await loadComparePage('transmitter');
-const { module, items, basePath, breadcrumb, page } = pageData;
-const Table = module.Table;
+const transmitters = await getCollection('transmitters');
+const manufacturers = await getManufacturersMap();
+
+const supportLevelLabels: Record<'official' | 'manufacturer' | 'community', string> = {
+  official: 'Official EdgeTX Support',
+  manufacturer: 'Manufacturer Maintained',
+  community: 'Community Maintained',
+};
+
+const supportStatusLabels: Record<'supported' | 'limited' | 'sunset' | 'planned', string> = {
+  supported: 'Active support',
+  limited: 'Limited support',
+  sunset: 'Support ending',
+  planned: 'Planned support',
+};
+
+const resolveTransmitterImage = getComponentImageResolver('transmitter');
+
+const compareItems = transmitters
+  .map((transmitter) => {
+    const manufacturerId = transmitter.data.brand;
+    const manufacturerEntry = manufacturerId ? manufacturers.get(manufacturerId) ?? null : null;
+    const manufacturerName =
+      manufacturerEntry?.data.name ??
+      (manufacturerEntry?.data as { title?: string } | undefined)?.title ??
+      manufacturerId ??
+      'Unknown manufacturer';
+
+    const slug = (transmitter as { slug?: string }).slug ?? transmitter.id;
+    const hardwareVariants = (transmitter.data.hardware?.revisions ?? [])
+      .map((revision) => revision.name ?? revision.id)
+      .filter((name): name is string => Boolean(name));
+    const complianceEntries = (transmitter.data.compliance ?? []).map((entry) => ({
+      id: entry.id,
+      type: entry.type,
+      url: entry.url ?? null,
+    }));
+
+    const support = transmitter.data.support;
+    const preview = resolveTransmitterImage?.(transmitter);
+    const imageUrl = preview
+      ? typeof preview.src === 'string'
+        ? preview.src
+        : preview.src.src
+      : null;
+
+    return {
+      id: transmitter.id,
+      slug,
+      title: transmitter.data.title,
+      manufacturer: manufacturerName,
+      supportLevelLabel: supportLevelLabels[support.level],
+      supportStatusLabel: supportStatusLabels[support.status],
+      sinceVersion: support.since_version,
+      lastVersion: support.last_version ?? null,
+      notes: support.notes ?? null,
+      hardwareVariants,
+      compliance: complianceEntries,
+      image: imageUrl
+        ? {
+            url: imageUrl,
+            alt: preview?.alt ?? transmitter.data.title,
+            width:
+              typeof preview?.src === 'string'
+                ? preview?.width
+                : preview?.src.width,
+            height:
+              typeof preview?.src === 'string'
+                ? preview?.height
+                : preview?.src.height,
+          }
+        : null,
+    };
+  })
+  .sort((a, b) => a.title.localeCompare(b.title));
+
+const basePath = getBasePath();
 ---
 
 <MainLayout
-  title={page.title}
-  description={page.description}
+  title="Compare Transmitters - FCBase"
+  description="Review EdgeTX transmitter support levels, hardware variants, and compliance records side by side."
   editPath="src/pages/transmitters/compare.astro"
 >
   <div class="container py-8">
     <nav class="mb-4 flex items-center gap-2 text-sm text-muted-foreground">
       <a href={`${basePath}/`} class="transition-colors hover:text-foreground">Home</a>
       <span>/</span>
-      <a
-        href={`${basePath}${breadcrumb.href}`}
-        class="transition-colors hover:text-foreground"
-      >
-        {breadcrumb.label}
-      </a>
+      <a href={`${basePath}/transmitters`} class="transition-colors hover:text-foreground">Transmitters</a>
       <span>/</span>
       <span class="text-foreground">Compare</span>
     </nav>
-    <Table client:load items={items} basePath={basePath} />
+    <TransmitterCompareTable client:load items={compareItems} basePath={basePath} />
   </div>
 </MainLayout>

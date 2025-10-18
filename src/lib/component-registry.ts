@@ -1,5 +1,3 @@
-import { compareModuleRegistry } from '@/components/compare/registry';
-import type { CompareModuleRegistry } from '@/components/compare/registry';
 import type { ComponentRegistry } from '@/lib/components/registry';
 import {
   componentMetadata,
@@ -19,16 +17,6 @@ if (import.meta.env.SSR) {
 
 export const compareComponentDefinitions = componentMetadata.map((metadata) => {
   const serverDefinition = serverComponentRegistry?.[metadata.id as keyof ComponentRegistry];
-  const module = compareModuleRegistry[
-    metadata.id as keyof CompareModuleRegistry
-  ];
-
-  if (!module) {
-    throw new Error(
-      `No compare module registered for component "${metadata.id}". ` +
-        'Update src/components/compare/registry.ts to include the component.',
-    );
-  }
 
   return {
     id: metadata.id,
@@ -43,7 +31,6 @@ export const compareComponentDefinitions = componentMetadata.map((metadata) => {
       imageResolver: serverDefinition?.images?.resolvePreviewImage,
       cardBuilders: serverDefinition?.cards,
     },
-    module,
   };
 }) as const satisfies ReadonlyArray<{
   id: RegisteredMetadata['id'];
@@ -62,7 +49,6 @@ export const compareComponentDefinitions = componentMetadata.map((metadata) => {
       : unknown;
     cardBuilders?: ComponentRegistry[keyof ComponentRegistry]['cards'];
   };
-  module: CompareModuleRegistry[RegisteredMetadata['id']];
 }>;
 
 export type CompareComponentDefinition =
