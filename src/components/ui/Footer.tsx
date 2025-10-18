@@ -55,6 +55,20 @@ function getFormattedCommitDate(isoDate: string) {
   }).format(commitDate);
 }
 
+function getYearFromIso(isoDate: string) {
+  if (!isoDate) {
+    return null;
+  }
+
+  const commitDate = new Date(isoDate);
+
+  if (Number.isNaN(commitDate.getTime())) {
+    return null;
+  }
+
+  return commitDate.getUTCFullYear().toString();
+}
+
 interface FooterProps {
   className?: string;
   basePath?: string;
@@ -69,7 +83,7 @@ export function Footer({ className, basePath = "" }: FooterProps) {
 
   const formattedDateRaw = React.useMemo(() => getFormattedCommitDate(commitDate), [commitDate]);
   const formattedDate = formattedDateRaw || "Unknown date";
-  const relativeTime = React.useMemo(() => getRelativeTimeFromIso(commitDate), [commitDate]);
+  const [relativeTime, setRelativeTime] = React.useState("");
   const commitUrl = React.useMemo(() => {
     if (!commitHashFull) {
       return "";
@@ -77,8 +91,21 @@ export function Footer({ className, basePath = "" }: FooterProps) {
 
     return `${GITHUB_REPO_URL}/commit/${commitHashFull}`;
   }, [commitHashFull]);
+  const copyrightText = React.useMemo(() => {
+    const year = getYearFromIso(commitDate);
+
+    if (year) {
+      return `© ${year} FCBase. All rights reserved.`;
+    }
+
+    return "© FCBase. All rights reserved.";
+  }, [commitDate]);
 
   const hasCommitInfo = Boolean(commitHash && commitAuthor);
+
+  React.useEffect(() => {
+    setRelativeTime(getRelativeTimeFromIso(commitDate));
+  }, [commitDate]);
 
   return (
     <footer className={cn("border-t bg-background", className)}>
@@ -173,9 +200,7 @@ export function Footer({ className, basePath = "" }: FooterProps) {
 
         <div className="mt-12 border-t pt-8 flex flex-col sm:flex-row justify-between items-center gap-6 sm:gap-4">
           <div className="flex flex-col items-center sm:items-start gap-2 text-center sm:text-left">
-            <p className="text-sm text-muted-foreground">
-              © {new Date().getFullYear()} FCBase. All rights reserved.
-            </p>
+            <p className="text-sm text-muted-foreground">{copyrightText}</p>
             {hasCommitInfo ? (
               <p className="text-xs text-muted-foreground">
                 Latest commit {commitUrl ? (
