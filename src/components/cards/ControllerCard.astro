@@ -1,5 +1,6 @@
 ---
 import type { ImageMetadata } from 'astro';
+import { Picture } from 'astro:assets';
 import { getCompareComponentDefinition } from '@/lib/component-registry';
 import {
   COMPARE_EVENT_NAME,
@@ -67,7 +68,7 @@ const componentDefinition = getCompareComponentDefinition('controller');
 const defaultCompareType = componentDefinition.id;
 const variant = variantProp;
 const isList = variant === 'list';
-const showImage = isList ? false : showImageProp;
+const showImage = showImageProp;
 const cardClass = isList ? undefined : 'pb-2';
 const compareId = compareIdProp ?? id;
 const compareType = compareTypeProp ?? defaultCompareType;
@@ -76,6 +77,19 @@ const compareToggleId = shouldRenderCompare
   ? `compare-${compareType}-${compareId}`
   : undefined;
 const compareAriaLabel = `Add ${componentDefinition.label.toLowerCase()} to comparison`;
+
+const imageAlt = image?.alt || title;
+const localImage = image?.src && typeof image.src !== 'string' ? (image.src as ImageMetadata) : null;
+const remoteImage = image?.src && typeof image.src === 'string'
+  ? {
+      src: image.src,
+      width: image.width ?? 480,
+      height: image.height ?? 320,
+    }
+  : null;
+const showListImage = isList && showImage;
+const listImageSizes = '(max-width: 640px) 75vw, 160px';
+const listImageFallback = (title || '?').charAt(0).toUpperCase();
 
 const mcuDisplay = mcu ? mcu.toUpperCase().replace(/^(STMICRO-|ATMEGA-)/, '') : 'UNKNOWN';
 const mountingDisplay = mounting
@@ -109,42 +123,83 @@ const compareToggleScript = compareToggleInlineScript;
     data-compare-container={shouldRenderCompare ? compareId : undefined}
     role="listitem"
   >
-    <div class="grid gap-4 px-4 py-4 sm:grid-cols-[minmax(0,2fr)_minmax(0,1.15fr)_minmax(0,0.9fr)_auto] sm:items-center sm:px-5">
-      <div class="flex flex-col gap-3">
-        <div class="space-y-1">
+    <div class="flex flex-col gap-4 px-4 py-4 sm:grid sm:grid-cols-[minmax(0,2.05fr)_minmax(0,1.1fr)_minmax(0,0.9fr)_auto] sm:items-center sm:px-5">
+      <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-5">
+        {showListImage && (
           <a
             href={href}
-            class="inline-flex text-base font-semibold leading-snug text-foreground transition-colors hover:text-primary focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40"
+            class="group/thumbnail relative block w-full overflow-hidden rounded-lg border bg-muted/30 shadow-xs transition focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40 sm:w-32 md:w-36"
+            aria-label={`View ${title}`}
           >
-            {title}
+            <div class="aspect-[4/3]">
+              {localImage ? (
+                <Picture
+                  src={localImage}
+                  widths={[160, 240, 320]}
+                  formats={["avif", "webp"]}
+                  sizes={listImageSizes}
+                  alt={imageAlt}
+                  loading="lazy"
+                  decoding="async"
+                  pictureClass="block h-full w-full"
+                  imgClass="h-full w-full object-cover transition-transform duration-500 ease-out group-hover/thumbnail:scale-105"
+                />
+              ) : remoteImage ? (
+                <img
+                  src={remoteImage.src}
+                  alt={imageAlt}
+                  loading="lazy"
+                  decoding="async"
+                  width={remoteImage.width}
+                  height={remoteImage.height}
+                  sizes={listImageSizes}
+                  class="h-full w-full object-cover transition-transform duration-500 ease-out group-hover/thumbnail:scale-105"
+                />
+              ) : (
+                <div class="flex h-full w-full items-center justify-center bg-muted/40 text-lg font-semibold uppercase tracking-wide text-muted-foreground">
+                  {listImageFallback}
+                </div>
+              )}
+            </div>
           </a>
-          {manufacturer && (
-            <p class="text-sm text-muted-foreground">{manufacturer}</p>
-          )}
-        </div>
-
-        {firmwareBadges.length > 0 && (
-          <div class="flex flex-wrap gap-1.5">
-            {firmwareBadges.map((label) => (
-              <span
-                key={label}
-                class="inline-flex items-center rounded-sm border px-1.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide"
-              >
-                {label}
-              </span>
-            ))}
-          </div>
         )}
 
-        <div class="flex flex-wrap gap-3 text-xs font-medium uppercase tracking-wide text-muted-foreground/80">
-          <span class="inline-flex items-center gap-1 rounded-sm border px-1.5 py-0.5 font-mono text-[11px]">
-            {mcuDisplay}
-          </span>
-          {mountingDisplay && (
-            <span class="inline-flex items-center gap-1 rounded-sm border px-1.5 py-0.5 text-[11px]">
-              {mountingDisplay}
-            </span>
+        <div class="flex flex-1 flex-col gap-3">
+          <div class="space-y-1">
+            <a
+              href={href}
+              class="inline-flex text-base font-semibold leading-snug text-foreground transition-colors hover:text-primary focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40"
+            >
+              {title}
+            </a>
+            {manufacturer && (
+              <p class="text-sm text-muted-foreground">{manufacturer}</p>
+            )}
+          </div>
+
+          {firmwareBadges.length > 0 && (
+            <div class="flex flex-wrap gap-1.5">
+              {firmwareBadges.map((label) => (
+                <span
+                  key={label}
+                  class="inline-flex items-center rounded-sm border px-1.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide"
+                >
+                  {label}
+                </span>
+              ))}
+            </div>
           )}
+
+          <div class="flex flex-wrap gap-3 text-xs font-medium uppercase tracking-wide text-muted-foreground/80">
+            <span class="inline-flex items-center gap-1 rounded-sm border px-1.5 py-0.5 font-mono text-[11px]">
+              {mcuDisplay}
+            </span>
+            {mountingDisplay && (
+              <span class="inline-flex items-center gap-1 rounded-sm border px-1.5 py-0.5 text-[11px]">
+                {mountingDisplay}
+              </span>
+            )}
+          </div>
         </div>
       </div>
 
