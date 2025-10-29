@@ -1,11 +1,11 @@
 ---
 import { getCollection } from 'astro:content';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/Tabs';
 import MainLayout from '@/layouts/MainLayout.astro';
 import { getBasePath } from '@/lib/paths';
-import { LayoutGrid, List } from 'lucide-react';
 import ControllerSection from './_sections.astro';
 import { getComponentCardBuilders } from '@/lib/component-card-builders.server';
+import ViewModeSwitch from '@/components/ui/ViewModeSwitch';
+import { parseViewMode, type ViewMode } from '@/lib/viewMode';
 
 const controllers = await getCollection('controllers');
 const manufacturers = await getCollection('manufacturers');
@@ -53,6 +53,7 @@ const unassignedControllers = createControllerCardModel
 
 const totalControllers = controllers.length;
 const basePath = getBasePath();
+const initialView = parseViewMode(Astro.url.searchParams.get('view')) ?? ('grid' satisfies ViewMode);
 ---
 
 <MainLayout
@@ -68,7 +69,7 @@ const basePath = getBasePath();
         <span class="text-foreground">Controllers</span>
       </nav>
 
-      <Tabs client:load defaultValue="grid" className="space-y-10">
+      <section class="space-y-10" data-view={initialView}>
         <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div class="space-y-3">
             <h1 class="text-4xl font-bold tracking-tight">Flight Controllers</h1>
@@ -83,77 +84,97 @@ const basePath = getBasePath();
             >
               View mode
             </span>
-            <TabsList
+            <ViewModeSwitch
+              client:load
+              mode={initialView}
+              className="max-w-[320px] sm:w-auto"
               aria-labelledby="view-mode-label"
-              className="grid w-full max-w-[320px] grid-cols-2 gap-1 rounded-full bg-muted/70 p-1 sm:w-auto"
-            >
-              <TabsTrigger
-                value="grid"
-                className="flex h-10 items-center justify-center gap-2 px-3 text-sm font-medium"
-              >
-                <LayoutGrid className="h-4 w-4" aria-hidden="true" />
-                <span class="hidden sm:inline">Grid view</span>
-                <span class="sm:hidden">Grid</span>
-              </TabsTrigger>
-              <TabsTrigger
-                value="list"
-                className="flex h-10 items-center justify-center gap-2 px-3 text-sm font-medium"
-              >
-                <List className="h-4 w-4" aria-hidden="true" />
-                <span class="hidden sm:inline">List view</span>
-                <span class="sm:hidden">List</span>
-              </TabsTrigger>
-            </TabsList>
+            />
           </div>
         </div>
 
-        <TabsContent value="grid" className="mt-0">
-          <div class="space-y-12">
-            {controllerGroups.map((group) => (
-              <ControllerSection
-                group={{
-                  type: 'manufacturer',
-                  manufacturer: group.manufacturer,
-                  controllers: group.controllers,
-                }}
-                basePath={basePath}
-                variant="grid"
-              />
-            ))}
+        <div data-view-mode="grid" class="space-y-12">
+          {controllerGroups.map((group) => (
+            <ControllerSection
+              group={{
+                type: 'manufacturer',
+                manufacturer: group.manufacturer,
+                controllers: group.controllers,
+              }}
+              basePath={basePath}
+              variant="grid"
+            />
+          ))}
 
-            {unassignedControllers.length > 0 && (
-              <ControllerSection
-                group={{ type: 'unassigned', controllers: unassignedControllers }}
-                basePath={basePath}
-                variant="grid"
-              />
-            )}
-          </div>
-        </TabsContent>
+          {unassignedControllers.length > 0 && (
+            <ControllerSection
+              group={{ type: 'unassigned', controllers: unassignedControllers }}
+              basePath={basePath}
+              variant="grid"
+            />
+          )}
+        </div>
 
-        <TabsContent value="list" className="mt-0">
-          <div class="space-y-12">
-            {controllerGroups.map((group) => (
-              <ControllerSection
-                group={{
-                  type: 'manufacturer',
-                  manufacturer: group.manufacturer,
-                  controllers: group.controllers,
-                }}
-                basePath={basePath}
-                variant="list"
-              />
-            ))}
+        <div data-view-mode="list" class="space-y-12">
+          {controllerGroups.map((group) => (
+            <ControllerSection
+              group={{
+                type: 'manufacturer',
+                manufacturer: group.manufacturer,
+                controllers: group.controllers,
+              }}
+              basePath={basePath}
+              variant="list"
+            />
+          ))}
 
-            {unassignedControllers.length > 0 && (
-              <ControllerSection
-                group={{ type: 'unassigned', controllers: unassignedControllers }}
-                basePath={basePath}
-                variant="list"
-              />
-            )}
-          </div>
-        </TabsContent>
-      </Tabs>
+          {unassignedControllers.length > 0 && (
+            <ControllerSection
+              group={{ type: 'unassigned', controllers: unassignedControllers }}
+              basePath={basePath}
+              variant="list"
+            />
+          )}
+        </div>
+
+        <script>
+          {`
+            (() => {
+              const root = document.currentScript?.closest('section[data-view]');
+              if (!root) return;
+              const apply = (mode) => {
+                if (mode === 'grid' || mode === 'list') {
+                  root.setAttribute('data-view', mode);
+                }
+              };
+              const fromUrl = () => {
+                const url = new URL(window.location.href);
+                const view = url.searchParams.get('view');
+                return view === 'grid' || view === 'list' ? view : 'grid';
+              };
+              apply(root.getAttribute('data-view') ?? fromUrl());
+              window.addEventListener('fcbase:viewmode', (event) => {
+                if (event instanceof CustomEvent) {
+                  const detail = event.detail;
+                  if (detail === 'grid' || detail === 'list') {
+                    apply(detail);
+                  }
+                }
+              });
+              window.addEventListener('popstate', () => apply(fromUrl()));
+            })();
+          `}
+        </script>
+      </section>
     </div>
 </MainLayout>
+
+<style>
+  section[data-view="grid"] [data-view-mode="list"] {
+    display: none;
+  }
+
+  section[data-view="list"] [data-view-mode="grid"] {
+    display: none;
+  }
+</style>
