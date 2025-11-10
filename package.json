@@ -39,6 +39,6 @@
   },
   "dependencies": {
     "@vercel/og": "^0.8.5",
-    "sharp": "^0.34.4"
+    "sharp": "^0.34.5"
   }
 }
