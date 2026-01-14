@@ -3,8 +3,10 @@ import { LayoutGrid, List } from "lucide-react";
 
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import {
+  VIEW_MODE_STORAGE_KEY,
   broadcastViewMode,
   getInitialViewMode,
+  parseViewMode,
   persistViewMode,
   setUrlViewParam,
   type ViewMode,
@@ -56,36 +58,49 @@ export default function ViewModeSwitch({ mode, onChange, className, ...props }: 
   );
 
   React.useEffect(() => {
+    setValue(mode);
+  }, [mode]);
+
+  React.useEffect(() => {
     const initial = getInitialViewMode();
-    if (initial !== mode) {
-      commit(initial);
-    } else {
-      setValue(initial);
-    }
-  }, [commit, mode]);
+    commit(initial, { notify: false });
+  }, [commit]);
 
   React.useEffect(() => {
     const handleViewMode = (event: Event) => {
       const detail = (event as CustomEvent<ViewMode>).detail;
-      if (detail) {
-        commit(detail, { updateUrl: false, persist: false, broadcast: false });
+      const next = parseViewMode(detail);
+      if (next) {
+        commit(next, { updateUrl: false, persist: false, broadcast: false });
       }
     };
 
     const handlePopState = () => {
       const url = new URL(window.location.href);
-      const param = url.searchParams.get("view");
-      if (param === "grid" || param === "list") {
+      const param = parseViewMode(url.searchParams.get("view"));
+      if (param) {
         commit(param, { updateUrl: false, broadcast: true });
+      }
+    };
+
+    const handleStorage = (event: StorageEvent) => {
+      if (event.key !== VIEW_MODE_STORAGE_KEY) {
+        return;
+      }
+      const next = parseViewMode(event.newValue);
+      if (next) {
+        commit(next, { updateUrl: false, persist: false, broadcast: true });
       }
     };
 
     window.addEventListener("fcbase:viewmode", handleViewMode);
     window.addEventListener("popstate", handlePopState);
+    window.addEventListener("storage", handleStorage);
 
     return () => {
       window.removeEventListener("fcbase:viewmode", handleViewMode);
       window.removeEventListener("popstate", handlePopState);
+      window.removeEventListener("storage", handleStorage);
     };
   }, [commit]);
 
@@ -111,4 +126,3 @@ export default function ViewModeSwitch({ mode, onChange, className, ...props }: 
     </ToggleGroup>
   );
 }
-

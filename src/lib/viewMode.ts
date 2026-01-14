@@ -1,6 +1,6 @@
 export type ViewMode = "grid" | "list";
 
-const STORAGE_KEY = "fcbase:viewMode";
+export const VIEW_MODE_STORAGE_KEY = "fcbase:viewMode";
 
 const isValidViewMode = (value: string | null | undefined): value is ViewMode =>
   value === "grid" || value === "list";
@@ -17,7 +17,7 @@ export function getInitialViewMode(): ViewMode {
   }
 
   try {
-    const stored = window.localStorage.getItem(STORAGE_KEY);
+    const stored = window.localStorage.getItem(VIEW_MODE_STORAGE_KEY);
     if (isValidViewMode(stored)) {
       return stored;
     }
@@ -34,7 +34,7 @@ export function persistViewMode(mode: ViewMode) {
   }
 
   try {
-    window.localStorage.setItem(STORAGE_KEY, mode);
+    window.localStorage.setItem(VIEW_MODE_STORAGE_KEY, mode);
   } catch (error) {
     console.warn("Unable to persist view mode", error);
   }
@@ -61,4 +61,3 @@ export function broadcastViewMode(mode: ViewMode) {
 export function parseViewMode(value: string | null | undefined): ViewMode | undefined {
   return isValidViewMode(value) ? value : undefined;
 }
-
