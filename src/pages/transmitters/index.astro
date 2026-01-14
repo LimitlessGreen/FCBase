@@ -5,6 +5,7 @@ import { getManufacturersMap } from '@/lib/content-cache.server';
 import { getBasePath } from '@/lib/paths';
 import SupportSection from '@/components/transmitters/SupportSection.astro';
 import ViewModeSwitch from '@/components/ui/ViewModeSwitch';
+import ViewModeScope from '@/components/ui/ViewModeScope';
 import { parseViewMode, type ViewMode } from '@/lib/viewMode';
 
 const allTransmitters = await getCollection('transmitters');
@@ -74,6 +75,7 @@ const initialView = parseViewMode(Astro.url.searchParams.get('view')) ?? ('grid'
       </div>
 
       <section class="space-y-12" data-view={initialView} data-view-scope="transmitters">
+        <ViewModeScope client:load scope="transmitters" />
         <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <span
             id="transmitter-layout-toggle"
@@ -116,42 +118,6 @@ const initialView = parseViewMode(Astro.url.searchParams.get('view')) ?? ('grid'
             />
           ))}
         </div>
-
-        <script>
-          {`
-            (() => {
-              const init = () => {
-                const root = document.querySelector('section[data-view][data-view-scope="transmitters"]');
-                if (!root) return;
-                const apply = (mode) => {
-                  if (mode === 'grid' || mode === 'list') {
-                    root.setAttribute('data-view', mode);
-                  }
-                };
-                const fromUrl = () => {
-                  const url = new URL(window.location.href);
-                  const view = url.searchParams.get('view');
-                  return view === 'grid' || view === 'list' ? view : 'grid';
-                };
-                apply(root.getAttribute('data-view') ?? fromUrl());
-                window.addEventListener('fcbase:viewmode', (event) => {
-                  if (event instanceof CustomEvent) {
-                    const detail = event.detail;
-                    if (detail === 'grid' || detail === 'list') {
-                      apply(detail);
-                    }
-                  }
-                });
-                window.addEventListener('popstate', () => apply(fromUrl()));
-              };
-              if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', init, { once: true });
-              } else {
-                init();
-              }
-            })();
-          `}
-        </script>
       </section>
     </div>
 </MainLayout>
