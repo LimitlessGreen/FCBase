@@ -69,7 +69,7 @@ const initialView = parseViewMode(Astro.url.searchParams.get('view')) ?? ('grid'
         <span class="text-foreground">Controllers</span>
       </nav>
 
-      <section class="space-y-10" data-view={initialView}>
+      <section class="space-y-10" data-view={initialView} data-view-scope="controllers">
         <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div class="space-y-3">
             <h1 class="text-4xl font-bold tracking-tight">Flight Controllers</h1>
@@ -140,28 +140,35 @@ const initialView = parseViewMode(Astro.url.searchParams.get('view')) ?? ('grid'
         <script>
           {`
             (() => {
-              const root = document.currentScript?.closest('section[data-view]');
-              if (!root) return;
-              const apply = (mode) => {
-                if (mode === 'grid' || mode === 'list') {
-                  root.setAttribute('data-view', mode);
-                }
-              };
-              const fromUrl = () => {
-                const url = new URL(window.location.href);
-                const view = url.searchParams.get('view');
-                return view === 'grid' || view === 'list' ? view : 'grid';
-              };
-              apply(root.getAttribute('data-view') ?? fromUrl());
-              window.addEventListener('fcbase:viewmode', (event) => {
-                if (event instanceof CustomEvent) {
-                  const detail = event.detail;
-                  if (detail === 'grid' || detail === 'list') {
-                    apply(detail);
+              const init = () => {
+                const root = document.querySelector('section[data-view][data-view-scope="controllers"]');
+                if (!root) return;
+                const apply = (mode) => {
+                  if (mode === 'grid' || mode === 'list') {
+                    root.setAttribute('data-view', mode);
                   }
-                }
-              });
-              window.addEventListener('popstate', () => apply(fromUrl()));
+                };
+                const fromUrl = () => {
+                  const url = new URL(window.location.href);
+                  const view = url.searchParams.get('view');
+                  return view === 'grid' || view === 'list' ? view : 'grid';
+                };
+                apply(root.getAttribute('data-view') ?? fromUrl());
+                window.addEventListener('fcbase:viewmode', (event) => {
+                  if (event instanceof CustomEvent) {
+                    const detail = event.detail;
+                    if (detail === 'grid' || detail === 'list') {
+                      apply(detail);
+                    }
+                  }
+                });
+                window.addEventListener('popstate', () => apply(fromUrl()));
+              };
+              if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', init, { once: true });
+              } else {
+                init();
+              }
             })();
           `}
         </script>
