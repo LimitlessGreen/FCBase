@@ -32,7 +32,7 @@
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "tailwind-merge": "^3.3.1",
-    "tailwindcss": "^4.1.14",
+    "tailwindcss": "^4.1.17",
     "tsx": "^4.20.6",
     "vitest": "^3.2.4",
     "yaml": "^2.8.1"
