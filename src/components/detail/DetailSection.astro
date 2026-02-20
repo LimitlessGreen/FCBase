@@ -12,8 +12,8 @@ const { title, description, class: className }: Props = Astro.props;
 
 <Card class={className}>
   <CardHeader>
-    <CardTitle class="text-lg">{title}</CardTitle>
-    {description && <CardDescription>{description}</CardDescription>}
+    <CardTitle class="text-lg" title={description}>{title}</CardTitle>
+    {description && <span class="sr-only">{description}</span>}
   </CardHeader>
   <CardContent>
     <slot />

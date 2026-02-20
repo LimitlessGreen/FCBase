@@ -1009,12 +1009,10 @@ const hasLinkItems = linkItems.length > 0;
         <section id="features" aria-labelledby="features-heading">
           <Card className="border border-border/60 bg-background/80 shadow-xs">
             <CardHeader className="pb-4">
-              <h3 class="text-base font-semibold text-foreground" id="features-heading">
+              <h3 class="text-base font-semibold text-foreground" id="features-heading" title="Value-add capabilities bundled with the controller.">
                 Additional Features
               </h3>
-              <p class="text-sm text-muted-foreground">
-                Value-add capabilities bundled with the controller.
-              </p>
+              <span class="sr-only">Value-add capabilities bundled with the controller.</span>
             </CardHeader>
             <CardContent>
               <ul class="grid gap-2 sm:grid-cols-2">
@@ -1129,12 +1127,10 @@ const hasLinkItems = linkItems.length > 0;
             <section id="hardware-overview" aria-labelledby="hardware-overview-heading">
               <Card className="border border-border/60 bg-background/80 shadow-xs">
                 <CardHeader className="pb-4">
-                  <h3 class="text-base font-semibold text-foreground" id="hardware-overview-heading">
+                  <h3 class="text-base font-semibold text-foreground" id="hardware-overview-heading" title="Core MCU, mounting, and mechanical data.">
                     Hardware Overview
                   </h3>
-                  <p class="text-sm text-muted-foreground">
-                    Core MCU, mounting, and mechanical data.
-                  </p>
+                  <span class="sr-only">Core MCU, mounting, and mechanical data.</span>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   {revisionVariantsWithSensors.map((variant, idx) => {
@@ -1298,12 +1294,10 @@ const hasLinkItems = linkItems.length > 0;
             <section id="power-supply" aria-labelledby="power-supply-heading">
               <Card className="border border-border/60 bg-background/80 shadow-xs">
                 <CardHeader className="pb-4">
-                  <h3 class="text-base font-semibold text-foreground" id="power-supply-heading">
+                  <h3 class="text-base font-semibold text-foreground" id="power-supply-heading" title="Input rails, regulators, and redundancy.">
                     Power Supply
                   </h3>
-                  <p class="text-sm text-muted-foreground">
-                    Input rails, regulators, and redundancy.
-                  </p>
+                  <span class="sr-only">Input rails, regulators, and redundancy.</span>
                   <div class="mt-3 flex flex-wrap items-center gap-2">
                     <PowerSummaryBadge label="Voltage" value={powerVoltageIn} />
                     <PowerSummaryBadge label="Inputs" value={powerInputCount} />
@@ -1390,12 +1384,10 @@ const hasLinkItems = linkItems.length > 0;
             <section id="connectivity" aria-labelledby="connectivity-heading">
               <Card className="border border-border/60 bg-background/80 shadow-xs">
                 <CardHeader className="pb-4">
-                  <h3 class="text-base font-semibold text-foreground" id="connectivity-heading">
+                  <h3 class="text-base font-semibold text-foreground" id="connectivity-heading" title="Port availability, buses, and expansion options.">
                     Connectivity & I/O
                   </h3>
-                  <p class="text-sm text-muted-foreground">
-                    Port availability, buses, and expansion options.
-                  </p>
+                  <span class="sr-only">Port availability, buses, and expansion options.</span>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   {revisionVariantsWithSensors.map((variant, idx) => {
@@ -1481,9 +1473,6 @@ const hasLinkItems = linkItems.length > 0;
                                         <td class="px-3 py-2 font-semibold text-foreground">
                                           <span class="inline-flex items-center gap-2">
                                             {port.port}
-                                            {port.notes && (
-                                              <span class="text-muted-foreground" aria-hidden="true">ⓘ</span>
-                                            )}
                                           </span>
                                         </td>
                                         <td class="px-3 py-2">
@@ -1585,12 +1574,10 @@ const hasLinkItems = linkItems.length > 0;
             <section id="sensors" aria-labelledby="sensors-heading">
               <Card className="border border-border/60 bg-background/80 shadow-xs">
                 <CardHeader className="pb-4">
-                  <h3 class="text-base font-semibold text-foreground" id="sensors-heading">
+                  <h3 class="text-base font-semibold text-foreground" id="sensors-heading" title="IMU, barometer, and magnetometer load-outs per revision.">
                     Onboard Sensors
                   </h3>
-                  <p class="text-sm text-muted-foreground">
-                    IMU, barometer, and magnetometer load-outs per revision.
-                  </p>
+                  <span class="sr-only">IMU, barometer, and magnetometer load-outs per revision.</span>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   {revisionVariantsWithSensors.map((variant, idx) => {
