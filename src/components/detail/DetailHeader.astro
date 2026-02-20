@@ -1,4 +1,6 @@
 ---
+import { compareToggleInlineScript } from "@/components/cards/compare-toggle-inline-script";
+
 interface Props {
   title: string;
   subtitle?: string;
@@ -15,8 +17,8 @@ const compareAriaLabel =
     ? 'Add transmitter to comparison'
     : 'Add controller to comparison';
 const compareEventName = 'fcbase:compare-change';
-const legacyStorageKey = 'fcbase:compare';
 const storageKey = `fcbase:compare:${compareType}`;
+const legacyKeys = JSON.stringify(compareType === 'controller' ? ['fcbase:compare'] : []);
 ---
 
 <div class="mb-6">
@@ -27,11 +29,11 @@ const storageKey = `fcbase:compare:${compareType}`;
     </div>
     <div class="flex flex-col gap-2 sm:items-end">
       {compareId && (
-        <div class="sticky top-24 z-10 flex items-center gap-2 rounded-full border border-border/60 bg-background/90 px-3 py-1.5 shadow-xs backdrop-blur supports-[backdrop-filter]:backdrop-blur-sm">
+        <div class="sticky top-24 z-10 flex items-center gap-2 rounded-full border border-primary/15 bg-background/90 px-3 py-1.5 shadow-xs backdrop-blur supports-[backdrop-filter]:backdrop-blur-sm">
           <input
             id={`compare-toggle-${compareId}`}
             type="checkbox"
-            class="h-4 w-4 rounded-sm border border-border/60 text-primary focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40"
+            class="h-4 w-4 rounded-sm border border-primary/15 text-primary focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40"
             data-compare-toggle={compareId}
             data-compare-type={compareType}
             aria-label={compareAriaLabel}
@@ -62,102 +64,11 @@ const storageKey = `fcbase:compare:${compareType}`;
 {compareId && (
   <script
     is:inline
+    set:html={compareToggleInlineScript}
     data-compare-id={compareId}
     data-compare-type={compareType}
     data-compare-storage-key={storageKey}
     data-compare-event-name={compareEventName}
-    data-compare-legacy-key={legacyStorageKey}
-  >
-    (() => {
-      const STORAGE_KEY = 'fcbase:compare';
-      const scriptEl = document.currentScript;
-      if (!(scriptEl instanceof HTMLScriptElement)) {
-        return;
-      }
-
-      const compareId = scriptEl.dataset.compareId;
-      const compareType = scriptEl.dataset.compareType || 'controller';
-      const storageKey = scriptEl.dataset.compareStorageKey || 'fcbase:compare:controller';
-      const legacyStorageKey = scriptEl.dataset.compareLegacyKey || STORAGE_KEY;
-      const eventName = scriptEl.dataset.compareEventName || 'fcbase:compare-change';
-
-      if (!compareId || typeof window === 'undefined') {
-        return;
-      }
-
-      const selector = 'input[data-compare-toggle="' + compareId + '"]';
-      const toggle = document.querySelector(selector);
-      if (!(toggle instanceof HTMLInputElement)) {
-        return;
-      }
-
-      let legacyMigrated = false;
-
-      const parseList = (raw) => {
-        if (!raw) {
-          return [];
-        }
-
-        try {
-          const parsed = JSON.parse(raw);
-          if (!Array.isArray(parsed)) {
-            return [];
-          }
-          return parsed.filter((value) => typeof value === 'string');
-        } catch (_error) {
-          return [];
-        }
-      };
-
-      const readList = () => {
-        if (!legacyMigrated && compareType === 'controller') {
-          legacyMigrated = true;
-          const legacyRaw = window.localStorage.getItem(legacyStorageKey);
-          const legacyList = parseList(legacyRaw);
-          if (legacyList.length > 0) {
-            const existing = parseList(window.localStorage.getItem(storageKey));
-            const merged = Array.from(new Set([...existing, ...legacyList]));
-            window.localStorage.setItem(storageKey, JSON.stringify(merged));
-            window.localStorage.removeItem(legacyStorageKey);
-          }
-        }
-
-        return parseList(window.localStorage.getItem(storageKey));
-      };
-
-      const writeList = (list) => {
-        const unique = Array.from(new Set(list));
-        window.localStorage.setItem(storageKey, JSON.stringify(unique));
-        window.dispatchEvent(
-          new CustomEvent(eventName, {
-            detail: { type: compareType, ids: unique },
-          })
-        );
-      };
-
-      const syncFromStorage = () => {
-        const list = readList();
-        toggle.checked = list.includes(compareId);
-      };
-
-      toggle.addEventListener('change', () => {
-        const list = readList();
-        const index = list.indexOf(compareId);
-        if (toggle.checked && index === -1) {
-          list.push(compareId);
-        } else if (!toggle.checked && index !== -1) {
-          list.splice(index, 1);
-        }
-        writeList(list);
-      });
-
-      window.addEventListener('storage', (event) => {
-        if (event.key === storageKey || event.key === legacyStorageKey) {
-          syncFromStorage();
-        }
-      });
-
-      syncFromStorage();
-    })();
-  </script>
+    data-compare-legacy-keys={legacyKeys}
+  />
 )}

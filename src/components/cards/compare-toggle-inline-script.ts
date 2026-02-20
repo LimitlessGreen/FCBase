@@ -15,11 +15,12 @@ export const compareToggleInlineScript = String.raw`(() => {
     return;
   }
 
-  const toggle = container.querySelector('input[data-compare-toggle]');
+  const toggle = container.querySelector('input[data-compare-toggle]')
+    || document.querySelector('input[data-compare-toggle="' + compareId + '"]');
   const card = container.querySelector('.compare-card');
   const toggleWrapper = container.querySelector('[data-compare-toggle-wrapper]');
 
-  if (!(toggle instanceof HTMLInputElement) || !(card instanceof HTMLElement)) {
+  if (!(toggle instanceof HTMLInputElement)) {
     return;
   }
 
@@ -81,7 +82,9 @@ export const compareToggleInlineScript = String.raw`(() => {
   };
 
   const applyMarkedState = (marked) => {
-    card.dataset.marked = marked ? 'true' : 'false';
+    if (card instanceof HTMLElement) {
+      card.dataset.marked = marked ? 'true' : 'false';
+    }
     if (toggleWrapper instanceof HTMLElement) {
       toggleWrapper.dataset.marked = marked ? 'true' : 'false';
     }

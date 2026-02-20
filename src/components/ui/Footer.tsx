@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Github, Twitter, Mail } from "lucide-react";
+import { Github, Mail } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { GITHUB_REPO_URL } from "@/lib/constants";
 
@@ -128,10 +128,7 @@ export function Footer({ className, basePath = "" }: FooterProps) {
               >
                 <Github className="h-5 w-5" />
               </a>
-              <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
-                <Twitter className="h-5 w-5" />
-              </a>
-              <a href="mailto:contact@fcbase.com" className="text-muted-foreground hover:text-foreground transition-colors">
+              <a href={`${GITHUB_REPO_URL}/discussions`} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
                 <Mail className="h-5 w-5" />
               </a>
             </div>
@@ -163,36 +160,30 @@ export function Footer({ className, basePath = "" }: FooterProps) {
           <div className="flex flex-col gap-4">
             <h3 className="font-semibold">Resources</h3>
             <div className="flex flex-col gap-2 text-sm">
-              <a href={`${basePath}/docs`} className="text-muted-foreground hover:text-foreground transition-colors">
-                Documentation
+              <a href={`${basePath}/contribute`} className="text-muted-foreground hover:text-foreground transition-colors">
+                Contribute
               </a>
-              <a href={`${basePath}/api`} className="text-muted-foreground hover:text-foreground transition-colors">
-                API
+              <a href={`${GITHUB_REPO_URL}`} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
+                GitHub
               </a>
-              <a href={`${basePath}/guides`} className="text-muted-foreground hover:text-foreground transition-colors">
-                Guides
+              <a href={`${GITHUB_REPO_URL}/discussions`} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
+                Discussions
               </a>
-              <a href={`${basePath}/blog`} className="text-muted-foreground hover:text-foreground transition-colors">
-                Blog
+              <a href={`${GITHUB_REPO_URL}/issues`} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
+                Report Issue
               </a>
             </div>
           </div>
 
-          {/* Company */}
+          {/* Community */}
           <div className="flex flex-col gap-4">
-            <h3 className="font-semibold">Company</h3>
+            <h3 className="font-semibold">Community</h3>
             <div className="flex flex-col gap-2 text-sm">
-              <a href={`${basePath}/about`} className="text-muted-foreground hover:text-foreground transition-colors">
-                About
+              <a href={`${GITHUB_REPO_URL}/discussions`} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
+                Discussions
               </a>
-              <a href={`${basePath}/contact`} className="text-muted-foreground hover:text-foreground transition-colors">
-                Contact
-              </a>
-              <a href={`${basePath}/privacy`} className="text-muted-foreground hover:text-foreground transition-colors">
-                Privacy
-              </a>
-              <a href={`${basePath}/terms`} className="text-muted-foreground hover:text-foreground transition-colors">
-                Terms
+              <a href={`${GITHUB_REPO_URL}/blob/main/LICENSE`} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
+                License
               </a>
             </div>
           </div>
@@ -233,11 +224,8 @@ export function Footer({ className, basePath = "" }: FooterProps) {
             ) : null}
           </div>
           <div className="flex gap-4 text-sm text-muted-foreground">
-            <a href={`${basePath}/privacy`} className="hover:text-foreground transition-colors">
-              Privacy Policy
-            </a>
-            <a href={`${basePath}/terms`} className="hover:text-foreground transition-colors">
-              Terms of Service
+            <a href={`${GITHUB_REPO_URL}/blob/main/LICENSE`} target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">
+              License (MIT / CC-BY 4.0)
             </a>
           </div>
         </div>
