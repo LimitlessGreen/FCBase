@@ -1,0 +1,67 @@
+id: holybro-kakute-h7-mini
+title: Holybro Kakute H7 Mini
+brand: holybro
+mcu: stmicro-stm32h743
+mounting: 30.5x30.5
+power:
+  inputs:
+    - name: BAT
+      voltage:
+        min: 7
+        max: 26
+        unit: V
+      notes: Direct battery input
+io:
+  uarts: 6
+  can: 0
+  pwm: 9
+  ethernet: false
+  sd_card: false
+sensors:
+  imu:
+    - count: 1
+      id: invensense-icm42688p
+  barometer:
+    - count: 1
+      id: bosch-bmp280
+firmware_support:
+  - id: ardupilot
+    status: stable
+sources:
+  - ardupilot-holybro-kakuteh7mini
+verification:
+  level: community
+  last_updated: "2026-02-20"
+hardware:
+  openness: closed
+  revisions:
+    - id: mpu6000-v11
+      name: Hardware V1.1
+      notes: Early hardware variant with MPU6000 IMU.
+      changes:
+        - Uses MPU6000 IMU instead of newer BMI270/ICM42688P options.
+      sources:
+        - ardupilot-holybro-kakuteh7mini
+      overrides:
+        sensors:
+          imu:
+            - count: 1
+              id: invensense-mpu6000
+    - id: bmi270-v13
+      name: Hardware V1.3
+      notes: Mid revision listed by ArduPilot with BMI270 IMU.
+      changes:
+        - Replaces IMU with Bosch BMI270.
+      sources:
+        - ardupilot-holybro-kakuteh7mini
+      overrides:
+        sensors:
+          imu:
+            - count: 1
+              id: bosch-bmi270
+keywords:
+  - ardupilot
+  - holybro
+  - stm32h743
+  - whoop
+notes: ArduPilot documents multiple IMU hardware revisions; this entry tracks the latest ICM-42688-P variant as default.

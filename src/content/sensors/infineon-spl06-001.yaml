@@ -1,0 +1,33 @@
+id: infineon-spl06-001
+name: "Infineon SPL06-001"
+manufacturer: Infineon Technologies
+type: barometer
+interface:
+  - I2C
+  - SPI
+notes: "MEMS barometric pressure sensor used on iFlight Thunder H7 flight controllers."
+datasheet:
+  title: "Infineon SPL06-001 Digital Pressure Sensor Datasheet"
+  publisher: Infineon Technologies
+  year: 2023
+  url: https://www.infineon.com/dgdl/Infineon-SPL06-001-DS-v01_10-EN.pdf
+  retrieved: "2026-02-20"
+  language: en
+specs:
+  supply_voltage_v:
+    - 1.65
+    - 3.6
+  temperature_range_c:
+    - -40
+    - 85
+  barometer:
+    pressure_range_hpa:
+      - 300
+      - 1200
+    absolute_accuracy_pa: 100
+    relative_accuracy_pa: 6
+controllers:
+  - iflight-thunder-h7
+sources:
+  - ardupilot-iflight-thunder-h7
+  - infineon-spl06-001-datasheet

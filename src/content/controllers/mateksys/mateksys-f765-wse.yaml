@@ -1,0 +1,47 @@
+id: mateksys-f765-wse
+title: Mateksys F765-WSE
+brand: mateksys
+mcu: stmicro-stm32f765
+mounting: wing
+dimensions:
+  length_mm: 44
+  width_mm: 29
+  height_mm: 14.5
+  weight_g: 22
+power:
+  inputs:
+    - name: BAT
+      voltage:
+        min: 6.8
+        max: 30
+        unit: V
+      notes: Main DC input
+io:
+  uarts: 7
+  can: 1
+  pwm: 12
+  ethernet: false
+  sd_card: false
+sensors:
+  imu:
+    - count: 1
+      id: invensense-icm42688p
+  barometer:
+    - count: 1
+      id: infineon-dps310
+firmware_support:
+  - id: ardupilot
+    status: stable
+sources:
+  - ardupilot-matek-f765-wse
+verification:
+  level: community
+  last_updated: "2026-02-20"
+hardware:
+  openness: closed
+keywords:
+  - ardupilot
+  - mateksys
+  - stm32f765
+  - wing-controller
+notes: ArduPilot documents 6.5 UARTs (including an RX-only serial channel), 12 PWM outputs, and one CAN bus.

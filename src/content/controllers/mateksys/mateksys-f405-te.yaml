@@ -1,0 +1,39 @@
+id: mateksys-f405-te
+title: Mateksys F405-TE
+brand: mateksys
+mcu: stmicro-stm32f405
+mounting: wing
+power:
+  inputs:
+    - name: BAT
+      voltage:
+        min: 6
+        max: 30
+        unit: V
+      notes: Main DC input for F405-TE variant
+io:
+  uarts: 6
+  can: 1
+  pwm: 11
+  ethernet: false
+  sd_card: false
+sensors:
+  imu:
+    - count: 1
+      id: invensense-icm42688p
+firmware_support:
+  - id: ardupilot
+    status: stable
+sources:
+  - ardupilot-matek-f405-te
+verification:
+  level: community
+  last_updated: "2026-02-20"
+hardware:
+  openness: closed
+keywords:
+  - ardupilot
+  - mateksys
+  - stm32f405
+  - wing-controller
+notes: ArduPilot documents the F405-TE with CAN, multiple GPS-capable UARTs, and grouped DShot/PWM output behavior.
