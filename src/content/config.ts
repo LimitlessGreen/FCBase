@@ -5,29 +5,29 @@ import {
   componentIds,
   componentCollectionKeys,
   componentRegistry,
-} from './components';
-import type { ComponentId } from './components';
-import { knownIssueSchema } from './components/common';
+} from '@/lib/content-components';
+import type { ComponentId } from '@/lib/content-components';
+import { knownIssueSchema } from '@/lib/content-components/common';
 
-export { componentCollections, componentCollectionKeys, componentIds, componentRegistry } from './components';
+export { componentCollections, componentCollectionKeys, componentIds, componentRegistry } from '@/lib/content-components';
 export {
   controllerComponent,
   buildRevisionVariants,
   mergeControllerRevision,
-} from './components/controller';
+} from '@/lib/content-components/controller';
 export type {
   ControllerData,
   HardwareRevision,
   KnownIssue,
   RevisionVariant,
-} from './components/controller';
+} from '@/lib/content-components/controller';
 export {
   transmitterComponent,
   transmitterSupportLevelEnum,
   transmitterSupportStatusEnum,
-} from './components/transmitter';
-export type { TransmitterData } from './components/transmitter';
-export { knownIssueSchema } from './components/common';
+} from '@/lib/content-components/transmitter';
+export type { TransmitterData } from '@/lib/content-components/transmitter';
+export { knownIssueSchema } from '@/lib/content-components/common';
 
 // Manufacturers collection
 const manufacturersCollection = defineCollection({

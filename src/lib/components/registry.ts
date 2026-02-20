@@ -1,5 +1,5 @@
-import { controllerComponent } from '@/content/components/controller';
-import { transmitterComponent } from '@/content/components/transmitter';
+import { controllerComponent } from '@/lib/content-components/controller';
+import { transmitterComponent } from '@/lib/content-components/transmitter';
 
 export type CompareComponentNavigationMetadata = {
   /** Short label used for the site navigation. */
