@@ -69,6 +69,18 @@ const canonicalUrl = getSiteUrl(`mcu/${mcu.id}`, Astro.site);
 const mcuSummary = data.notes
   ? data.notes
   : `${mcuTitle} microcontroller from ${manufacturerName}${data.architecture ? ` using the ${data.architecture}` : ''}.`;
+const pageTitle = `${mcuTitle} - MCUs - FCBase`;
+const pageDescription = `${mcuTitle} microcontroller from ${manufacturerName}. ${data.architecture ? `Architecture: ${data.architecture}. ` : ''}${clockMhz ? `${clockMhz} MHz. ` : ''}${flashKb ? `${flashKb} KB Flash. ` : ''}${ramKb ? `${ramKb} KB RAM.` : ''}`;
+
+const mcuLdJson = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'TechArticle',
+  name: mcuTitle,
+  description: pageDescription,
+  url: canonicalUrl,
+  ...(manufacturerName !== 'Unknown manufacturer' ? { author: { '@type': 'Organization', name: manufacturerName } } : {}),
+  ...(data.datasheet?.url ? { mainEntityOfPage: data.datasheet.url } : {}),
+});
 ---
 
 <MainLayout
@@ -79,6 +91,15 @@ const mcuSummary = data.notes
 >
   <Fragment slot="head">
     <link rel="canonical" href={canonicalUrl} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={pageDescription} />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:site_name" content="FCBase" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={pageDescription} />
+    <script type="application/ld+json" is:inline>{mcuLdJson}</script>
   </Fragment>
     <div class="container py-8">
       <nav class="mb-6 flex items-center gap-2 text-sm text-muted-foreground">

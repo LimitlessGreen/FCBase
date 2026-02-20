@@ -1,0 +1,30 @@
+---
+import MainLayout from "@/layouts/MainLayout.astro";
+import { getBasePath } from "@/lib/paths";
+
+const basePath = getBasePath();
+---
+
+<MainLayout title="Page Not Found – FCBase">
+  <div class="mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-8 text-center">
+    <p class="text-6xl font-bold text-primary mb-4">404</p>
+    <h1 class="text-3xl font-bold tracking-tight mb-3">Page Not Found</h1>
+    <p class="text-muted-foreground mb-8 max-w-md mx-auto">
+      The page you're looking for doesn't exist or has been moved.
+    </p>
+    <div class="flex flex-wrap justify-center gap-3">
+      <a
+        href={`${basePath}/`}
+        class="inline-flex items-center justify-center rounded-sm bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-xs hover:bg-primary/90 transition-colors"
+      >
+        Back to Home
+      </a>
+      <a
+        href={`${basePath}/controllers`}
+        class="inline-flex items-center justify-center rounded-sm border bg-background px-4 py-2 text-sm font-medium shadow-xs hover:bg-accent hover:text-accent-foreground transition-colors"
+      >
+        Browse Controllers
+      </a>
+    </div>
+  </div>
+</MainLayout>

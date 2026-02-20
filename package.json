@@ -8,10 +8,13 @@
     "build": "astro build",
     "preview": "astro preview",
     "test": "vitest run",
-    "validate": "tsx scripts/validate-controllers.ts"
+    "validate": "tsx scripts/validate-controllers.ts",
+    "validate:transmitters": "tsx scripts/validate-transmitters.ts",
+    "validate:all": "tsx scripts/validate-controllers.ts && tsx scripts/validate-transmitters.ts"
   },
   "devDependencies": {
     "@astrojs/react": "^4.4.2",
+    "@astrojs/sitemap": "^3.7.0",
     "@radix-ui/react-dialog": "^1.1.15",
     "@radix-ui/react-dropdown-menu": "^2.1.16",
     "@radix-ui/react-navigation-menu": "^1.2.14",

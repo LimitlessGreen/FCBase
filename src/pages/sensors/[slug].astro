@@ -86,6 +86,18 @@ const editPath = `src/content/sensors/${sensor.id}.yaml`;
 const sensorTitle = data.name || data.title || sensor.id;
 const canonicalUrl = getSiteUrl(`sensors/${sensor.id}`, Astro.site);
 const sensorSummary = data.summary || data.notes || `Technical specification for the ${sensorTitle} sensor used in FCBase controllers.`;
+const pageTitle = `${sensorTitle} - Sensors - FCBase`;
+const pageDescription = `${sensorTitle} sensor${data.manufacturer ? ` by ${data.manufacturer}` : ''}${data.type ? ` (${typeDisplay[data.type] ?? data.type})` : ''}. ${sensorSummary}`;
+
+const sensorLdJson = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'TechArticle',
+  name: sensorTitle,
+  description: pageDescription,
+  url: canonicalUrl,
+  ...(data.manufacturer ? { author: { '@type': 'Organization', name: data.manufacturer } } : {}),
+  ...(data.datasheet?.url ? { mainEntityOfPage: data.datasheet.url } : {}),
+});
 
 const severityStyles = {
   info: { label: 'Info', className: 'bg-sky-500/10 text-sky-600 border-sky-500/20' },
@@ -136,6 +148,15 @@ const hasKnownIssues = knownIssues.length > 0;
 >
   <Fragment slot="head">
     <link rel="canonical" href={canonicalUrl} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={pageDescription} />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:site_name" content="FCBase" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={pageDescription} />
+    <script type="application/ld+json" is:inline>{sensorLdJson}</script>
   </Fragment>
     <div class="container py-8">
       <!-- Breadcrumb -->

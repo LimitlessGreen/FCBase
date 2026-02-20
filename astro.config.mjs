@@ -1,6 +1,7 @@
 import { defineConfig } from "astro/config";
 import { execSync } from "node:child_process";
 import react from "@astrojs/react";
+import sitemap from "@astrojs/sitemap";
 import tailwindcss from "@tailwindcss/vite";
 
 function getGitValue(command) {
@@ -84,7 +85,7 @@ export default defineConfig({
   site: "https://limitlessgreen.github.io",
   base: "/FCBase",
   output: "static",
-  integrations: [react()],
+  integrations: [react(), sitemap()],
   vite: {
     plugins: [tailwindcss()],
     define: {
