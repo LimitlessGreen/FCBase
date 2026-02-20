@@ -110,11 +110,11 @@ const hasRemoteLink = Boolean(remoteUrl);
 /* ── Compact labels for card context ── */
 const compactLevelLabels: Record<SupportLevel, string> = {
   official: 'Official',
-  manufacturer: 'OEM',
+  manufacturer: 'Manufacturer',
   community: 'Community',
 };
 const compactStatusLabels: Record<SupportStatus, string> = {
-  supported: 'Active',
+  supported: 'Supported',
   limited: 'Limited',
   sunset: 'Sunset',
   planned: 'Planned',
@@ -171,17 +171,17 @@ const compareToggleScript = compareToggleInlineScript;
       tabindex="0"
     />
 
-    <div class="grid grid-cols-1 gap-x-4 gap-y-2 px-4 py-3 sm:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,0.8fr)_minmax(0,0.8fr)_auto] sm:items-center">
+    <div class="grid grid-cols-1 gap-x-3 gap-y-1 px-3 py-1.5 sm:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,0.8fr)_minmax(0,0.8fr)_auto] sm:items-center">
       {/* ── Name + Brand ── */}
       <div class="flex items-center gap-3 min-w-0">
         {hasImage && (
-          <div class="hidden h-9 w-9 shrink-0 overflow-hidden rounded-md bg-muted/50 ring-1 ring-border sm:block">
+          <div class="hidden h-16 w-16 shrink-0 overflow-hidden rounded-md bg-muted/50 ring-1 ring-border sm:block">
             {localImage ? (
               <Picture
                 src={localImage}
-                widths={[36, 72]}
+                widths={[64, 128]}
                 formats={['avif', 'webp']}
-                sizes="36px"
+                sizes="64px"
                 alt={imageAlt}
                 loading="lazy"
                 decoding="async"
@@ -192,8 +192,8 @@ const compareToggleScript = compareToggleInlineScript;
               <img
                 src={remoteImage.src}
                 alt={imageAlt}
-                width={36}
-                height={36}
+                width={64}
+                height={64}
                 loading="lazy"
                 decoding="async"
                 class="h-full w-full object-cover"
@@ -243,7 +243,7 @@ const compareToggleScript = compareToggleInlineScript;
 
       {/* ── Details ── */}
       <div class="hidden sm:block text-xs text-muted-foreground">
-        {revisionCount > 0 && <div>{revisionCount} HW rev.</div>}
+        {revisionCount > 0 && <div>{revisionCount} Hardware revs</div>}
         {complianceCount > 0 && <div>{complianceCount} Compliance</div>}
       </div>
 
@@ -256,7 +256,7 @@ const compareToggleScript = compareToggleInlineScript;
             rel="noopener noreferrer"
             class="relative z-20 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground transition-colors hover:text-primary"
           >
-            YAML ↗
+            View YAML ↗
           </a>
         )}
         {shouldRenderCompare && compareToggleId && (
@@ -276,7 +276,7 @@ const compareToggleScript = compareToggleInlineScript;
               for={compareToggleId}
               class="font-semibold uppercase tracking-wide cursor-pointer"
             >
-              Cmp
+              Compare
             </label>
           </div>
         )}
@@ -343,13 +343,13 @@ const compareToggleScript = compareToggleInlineScript;
 
     {/* 1 ── Header: Thumbnail + Title ── */}
     <div class="flex items-start gap-3 p-3">
-      <div class="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-md bg-muted/50 ring-1 ring-border">
+      <div class="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-md bg-muted/50 ring-1 ring-border">
         {localImage ? (
           <Picture
             src={localImage}
-            widths={[48, 96]}
+            widths={[64, 128]}
             formats={['avif', 'webp']}
-            sizes="48px"
+            sizes="64px"
             alt={imageAlt}
             loading="lazy"
             decoding="async"
@@ -360,8 +360,8 @@ const compareToggleScript = compareToggleInlineScript;
           <img
             src={remoteImage.src}
             alt={imageAlt}
-            width={48}
-            height={48}
+            width={64}
+            height={64}
             loading="lazy"
             decoding="async"
             class="h-full w-full object-cover"
