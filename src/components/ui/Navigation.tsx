@@ -48,13 +48,7 @@ interface NavigationProps {
 
 export function Navigation({ className, basePath = "" }: NavigationProps) {
   const [isScrolled, setIsScrolled] = React.useState(false);
-  const [currentPath, setCurrentPath] = React.useState(() => {
-    if (typeof window !== "undefined") {
-      return normalizePath(window.location.pathname);
-    }
-
-    return "/";
-  });
+  const [currentPath, setCurrentPath] = React.useState("/");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
   const mobileMenuId = React.useId();
 

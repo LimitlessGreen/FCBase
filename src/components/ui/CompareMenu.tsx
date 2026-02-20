@@ -42,12 +42,15 @@ const storageKeyMap = new Map<string, CompareType>(
 );
 
 export function CompareMenu({ basePath, layout = "inline", onNavigate }: CompareMenuProps) {
-  const [counts, setCounts] = React.useState<CompareCounts>(() => createCounts());
+  const [counts, setCounts] = React.useState<CompareCounts>(defaultCounts);
 
   React.useEffect(() => {
     if (typeof window === "undefined") {
       return undefined;
     }
+
+    // Sync initial counts from localStorage after hydration
+    setCounts(createCounts());
 
     const handleStorage = (event: StorageEvent) => {
       if (!event.key) {
