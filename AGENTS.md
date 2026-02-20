@@ -1,8 +1,8 @@
 # 🤖 FCBase Agents Guide
 
 ## 🧭 Project Overview
-**FCBase** is an open, static database of flight controllers for ArduPilot, PX4, and iNAV.
-The project combines a structured YAML/JSON dataset, static Astro pages, and community-contributed metadata.
+**FCBase** is an open, static hardware database for ArduPilot, PX4, iNAV, and EdgeTX ecosystems.
+The project combines structured YAML content, JSON schemas, Astro pages, and community-sourced evidence.
 
 > 🔤 **Language Requirement**: All user-facing content must be written in English.
 
@@ -10,219 +10,144 @@ The project combines a structured YAML/JSON dataset, static Astro pages, and com
 
 ## 📁 Core Directories
 | Path | Description |
-|------|--------------|
-| `/content/controllers/` | One file per controller, e.g. `matek-h743-slim-v4.yaml` |
-| `/content/manufacturers/` | Manufacturer registry |
-| `/content/mcu/` | MCU types |
-| `/content/sensors/` | Sensor specs (IMU, Baro, Mag) |
-| `/content/firmware/` | Supported firmware metadata |
-| `/content/issues/` | Known hardware issues |
-| `/content/sources/` | Data sources & evidence |
-| `/meta/` | Schemas, vocabularies, changelogs |
+|------|-------------|
+| `/src/content/controllers/` | Flight controller entries (grouped by manufacturer folders) |
+| `/src/content/transmitters/` | Transmitter entries (grouped by manufacturer folders) |
+| `/src/content/manufacturers/` | Manufacturer registry |
+| `/src/content/mcu/` | MCU definitions |
+| `/src/content/sensors/` | Sensor definitions (IMU, barometer, magnetometer) |
+| `/src/content/firmware/` | Firmware metadata |
+| `/src/content/sources/` | Source/evidence records |
+| `/src/assets/images/controllers/` | Controller images |
+| `/src/assets/images/transmitters/` | Transmitter images |
+| `/meta/schema/` | JSON schemas |
+| `/meta/vocab/` | Shared vocabularies |
 
-Agents should not create new directories without explicit mention here.
+Agents should not create new top-level directories unless explicitly requested.
 
 ---
 
 ## 📄 File Standards
-- All content files are **YAML**, UTF-8, LF line endings.
-- IDs use `kebab-case`, e.g. `matek-h743-slim-v4`.
-- Strings use **double quotes** when containing special characters.
-- Reference fields (`mcu`, `brand`, `sensors`) must point to existing IDs.
-- Boolean fields (`sd_card`, `can`) must be `true`/`false`, not `"yes"`.
+- Content files are **YAML** with UTF-8 and LF line endings.
+- IDs use `kebab-case` and must stay stable once published.
+- Use double quotes when strings contain special characters.
+- Reference fields (`brand`, `mcu`, `sensors`, `sources`, `firmware_support.id`) must point to existing IDs.
+- Boolean fields must be real booleans (`true`/`false`), not string aliases.
+- Omit empty optional fields instead of storing `null`.
 
 ---
 
-## 🧠 Schema Summary
-Minimum required fields for `/content/controllers/*.yaml`:
+## 🧠 Data & Schema Rules
+### Controllers (`/src/content/controllers/**/*.yaml`)
+Minimum required fields include:
+- `id`, `title`, `brand`, `mcu`, `mounting`
+- `power` (must define `voltage_in` or `inputs`)
+- `io` (including `uarts`, `can`, `pwm`, `sd_card`)
+- `sensors`
+- `firmware_support` (non-empty)
+- `sources` (non-empty)
+- `verification.level`, `verification.last_updated`
 
-| Field | Type | Description |
-|--------|------|-------------|
-| `id` | string | unique identifier |
-| `title` | string | product name |
-| `brand` | string | manufacturer ID |
-| `mcu` | string | MCU reference |
-| `mounting` | enum | e.g. `20x20`, `30.5x30.5`, `cube`, `wing` |
-| `power.voltage_in` | string | supply range |
-| `io.uarts` | number | number of UARTs |
-| `firmware_support` | list | supported firmware objects |
-| `sources` | list | source IDs |
-| `verification.level` | enum | `unverified`, `community`, `reviewed` |
-| `verification.last_updated` | date | ISO format |
+Validation sources:
+- `/meta/schema/controller.schema.json`
+- `scripts/validate-controllers.ts` (schema + cross-reference checks)
 
-Agents must validate each file against `/meta/schema/controller.schema.json` before PR submission.
+### Transmitters (`/src/content/transmitters/**/*.yaml`)
+Required fields include:
+- `id`, `title`, `brand`
+- `support.level`, `support.since_version`, `support.status`
+- `sources` (non-empty)
+- `keywords` (non-empty)
+- `verification.level`, `verification.last_updated`
+
+Validation sources:
+- `/meta/schema/transmitter.schema.json`
+- `scripts/validate-transmitters.ts` (schema + enum/reference checks)
 
 ---
 
-## 🔍 Vocabulary Validation
-- Use enums from `/meta/vocab/*.yaml`
-- Disallowed values: any that do not match vocab
-- Normalize units (mm, V, g, MHz)
+## 🔍 Vocabulary & Consistency
+- Reuse existing values from `/meta/vocab/*.yaml` where applicable.
+- Keep units normalized (`mm`, `V`, `g`, `MHz`).
+- Use date format `YYYY-MM-DD`.
+- Prefer integer formatting without trailing `.0`.
+- Keep arrays sorted alphabetically when order is not semantically meaningful.
 
 ---
 
-## 🧩 Relations
-- Each controller must reference:
-  - one existing `manufacturer`
-  - one existing `mcu`
-  - zero or more `sensors`
-- Cross-links must not be broken.
+## 🧩 Relations & Integrity
+For every content entry:
+- `brand` must reference an existing manufacturer.
+- `sources` must reference existing source IDs.
+- Controllers must reference existing MCU/sensor/firmware IDs.
+- Image `src` values must match files under the corresponding local image directory.
+
+Do not break cross-links between collections.
 
 ---
 
 ## 📸 Images & UI Changes
-- Place images in `/assets/images/controllers/`
-- Filename: `<controller-id>-<view>.jpg`
-- Metadata in controller YAML:
-  - `alt`, `credit`, `source_url` required
-- Agents may **not** auto-download or hotlink external images.
-- Whenever a change impacts the UI, agents **must** capture and attach a screenshot demonstrating the updated interface.
+- Store images locally under `src/assets/images/...`.
+- Do not hotlink new external images.
+- Preserve metadata fields in YAML image objects (`alt`, `credit`, `source_url`).
+- If a change affects UI output, capture and attach an updated screenshot.
+
+---
+
+## 🎨 Frontend Stack
+FCBase currently uses:
+- Astro `5.16.9`
+- React `19.2.3`
+- Tailwind CSS `4.1.18` via `@tailwindcss/vite`
+- shadcn/ui patterns with Radix primitives
+
+Guidelines:
+- Use `@import "tailwindcss";` in global CSS (Tailwind v4 style).
+- Use `cn()` from `@/lib/utils` for class merging.
+- In Astro pages, mount interactive React components with `client:load`.
+- Path alias `@/*` maps to `./src/*`.
+
+---
+
+## 🧩 Contribution Workflow
+1. Add/update sources in `/src/content/sources/`.
+2. Add/update content entry in the relevant collection.
+3. Ensure `verification` is present and `last_updated` reflects the current change date.
+4. Run validation:
+   - `pnpm run validate` (controllers)
+   - `pnpm run validate:transmitters` (transmitters)
+   - or `pnpm run validate:all`
+5. Open PR with clear changelog and rationale.
+
+Recommended PR title tags:
+- `feat(controller): <id>`
+- `fix(data): <id>`
+- `feat(transmitter): <id>`
 
 ---
 
 ## 🔏 Licensing
-- Code: MIT License  
-- Data: CC-BY 4.0  
-- Images: © respective manufacturers (fair use only)  
+- Code: MIT
+- Data: CC-BY 4.0
+- Images: © respective manufacturers/owners (with attribution)
 
-Agents must preserve attribution fields and license headers.
-
----
-
-## 🧩 Contribution Flow
-1. Validate new data via schema.
-2. Add sources in `/content/sources/`.
-3. Add or update controller file.
-4. Run CI checks (`pnpm run validate`).
-5. Create Pull Request with clear changelog entry.
-
-Agents must:
-- Add `sources` and `verification` fields.
-- Include `last_updated` date automatically.
-- Tag PR title as `feat(controller): <id>` or `fix(data): <id>`.
+Do not remove attribution or license-relevant metadata.
 
 ---
 
-## 🧮 Data Quality Rules
-- Numerical values: no trailing `.0`
-- Arrays sorted alphabetically
-- Date format: `YYYY-MM-DD`
-- Empty optional fields omitted, not `null`
-
----
-
-## 🎨 Frontend & Styling
-**FCBase** uses **Astro 5.14.4** with **React 19.2.0** and **Tailwind CSS v4.1.14** for the UI.
-
-### Tech Stack
-- **Astro**: Static site generator with React integration
-- **Tailwind CSS v4**: Using `@tailwindcss/vite` plugin (NOT `@astrojs/tailwind`)
-- **shadcn/ui**: Component library with Radix UI primitives
-- **React**: For interactive components (client:load directive)
-
-### CSS & Theming
-The project follows **shadcn/ui theming standards**:
-
-#### CSS Import (Tailwind v4)
-```css
-/* ✅ Correct - in globals.css */
-@import "tailwindcss";
-
-/* ❌ Don't use v3 syntax */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-```
-
-#### Theme Colors
-Theme colors are registered using `@theme inline`:
-```css
-@theme inline {
-  --color-background: hsl(var(--background));
-  --color-foreground: hsl(var(--foreground));
-  --color-primary: hsl(var(--primary));
-  --color-muted: hsl(var(--muted));
-  /* ... etc */
-}
-```
-
-This automatically generates utilities like:
-- `bg-background`, `bg-primary`, `bg-muted`
-- `text-foreground`, `text-primary-foreground`, `text-muted-foreground`
-- `border-input`, `ring-ring`
-
-#### Utility Class Updates (v3 → v4)
-- `shadow-sm` → `shadow-xs`
-- `rounded-md` → `rounded-sm`
-- `outline-none` → `outline-hidden`
-
-#### Border Colors
-Border color is set globally via CSS variable:
-```css
-* {
-  border-color: hsl(var(--border));
-}
-```
-
-**Don't use** `border-border` (not a valid utility):
-```html
-<!-- ✅ Good -->
-<div class="border">...</div>
-
-<!-- ❌ Bad -->
-<div class="border border-border">...</div>
-```
-
-### Component Guidelines
-- Use `cn()` utility from `@/lib/utils` for class merging
-- React components must use `client:load` in Astro files
-- Follow shadcn/ui component patterns (CVA for variants)
-- Path aliases: `@/*` maps to `./src/*`
-
-### References
-- [shadcn/ui Theming](https://ui.shadcn.com/docs/theming)
-- [Tailwind CSS v4 Docs](https://tailwindcss.com/docs)
-
----
-
-## 🪪 Metadata for Agents
-```yaml
-agent:
-  name: FCBase Data Assistant
-  language: en
-  data_format: yaml
-  schema_path: /meta/schema/controller.schema.json
-  enforce_vocabulary: true
-  auto_add_last_updated: true
-  auto_format: true
-  review_required: true
-```
-
----
-
-## 🤝 Guidelines for PR Generation
-When generating a new controller entry, include:
-- A short `summary`
-- Minimum 1 source (manufacturer or datasheet)
-- Verification = `community`
-- Set `last_updated` = current date
-- Generate `keywords` from title, brand, MCU, and form factor
+## ✅ Agent Do / Don't
+Agents should:
+- add `sources` and `verification` for new data entries,
+- keep IDs and cross-references valid,
+- run relevant validation scripts before handing off,
+- keep user-facing copy in English.
 
 Agents should never:
-- invent specs without a source  
-- modify existing verified entries without explicit request  
-- auto-delete fields marked `verified: true`
+- invent hardware specs without a source,
+- silently change verified facts without evidence,
+- auto-delete fields marked or implied as verified provenance.
 
 ---
 
-### ✅ Example Command for Data Agent
-> "Create a new controller entry for *Holybro Kakute H743 Wing* using the FCBase schema.  
-> Use manufacturer docs as the primary source, include ports, firmware support, and add a verification level of `community`."
-
----
-
-# 💬 Notes
-This file is intended for:
-- GitHub Copilot / ChatGPT agents  
-- Local AI assistants (Cursor, Continue, OpenDevin)  
-- Human contributors who want to understand data standards
+## 💬 Notes
+This guide is for AI coding assistants and human contributors working inside the FCBase repository.
