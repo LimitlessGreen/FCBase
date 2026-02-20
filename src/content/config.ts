@@ -152,12 +152,16 @@ const sensorsCollection = defineCollection({
       accelerometer: z.object({
         range_g: numericRange.optional(),
         noise_mg_sqrtHz: z.number().optional(),
+        noise_mg_rtHz: z.number().optional(),
+        offset_mg: z.number().optional(),
         max_odr_hz: z.number().optional(),
         sensitivity_mg_lsb: z.number().optional(),
       }).optional(),
       gyroscope: z.object({
         range_dps: numericRange.optional(),
         noise_mdps_sqrtHz: z.number().optional(),
+        noise_dps_rtHz: z.number().optional(),
+        zero_rate_offset_dps: z.number().optional(),
         max_odr_hz: z.number().optional(),
         sensitivity_mdps_lsb: z.number().optional(),
       }).optional(),
@@ -177,6 +181,7 @@ const sensorsCollection = defineCollection({
     sources: z.array(z.string()).optional(),
     notes: z.string().optional(),
     known_issues: z.array(knownIssueSchema).optional(),
+    controllers: z.array(z.string()).optional(),
   }),
 });
 
@@ -186,6 +191,8 @@ const sourcesCollection = defineCollection({
   schema: z.object({
     id: z.string(),
     title: z.string(),
+    type: z.enum(['ardupilot-doc', 'px4-doc', 'manufacturer-doc', 'fcc', 'github-issue', 'community', 'other']).optional(),
+    reliability: z.enum(['A', 'B', 'C', 'D']).optional(),
     publisher: z.string().optional(),
     author: z.string().optional(),
     url: z.string().url(),
