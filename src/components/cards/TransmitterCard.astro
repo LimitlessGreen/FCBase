@@ -9,7 +9,6 @@ import {
   getCompareStorageKey,
 } from '@/lib/compare';
 import { compareToggleInlineScript } from './compare-toggle-inline-script';
-import BaseCard from './BaseCard.astro';
 
 type SupportLevel = 'official' | 'manufacturer' | 'community';
 type SupportStatus = 'supported' | 'limited' | 'sunset' | 'planned';
@@ -32,17 +31,6 @@ interface ComplianceEntry {
   type?: string;
   url?: string | null;
 }
-
-type SupportBadge = { id: string; label: string };
-type TimelineEntry = { id: string; label: string; value: string };
-type MetaChip = { id: string; label: string; accent?: boolean };
-type MetaSection = {
-  id: string;
-  title: string;
-  items: MetaChip[];
-  remaining: number;
-  count: number;
-};
 
 interface Props {
   id: string;
@@ -81,7 +69,6 @@ const {
   image,
   basePath = '',
   variant: variantProp = 'grid',
-  showImage: showImageProp = true,
   remoteUrl,
   class: className,
   compareId: compareIdProp,
@@ -91,10 +78,7 @@ const {
 
 const componentDefinition = getCompareComponentDefinition('transmitter');
 const defaultCompareType = componentDefinition.id;
-const variant = variantProp;
-const isList = variant === 'list';
-const showImage = showImageProp;
-const cardClass = isList ? undefined : 'pb-2';
+const isList = variantProp === 'list';
 const compareId = compareIdProp ?? id;
 const compareType = compareTypeProp ?? defaultCompareType;
 const shouldRenderCompare = enableCompareToggle && Boolean(compareId);
@@ -104,274 +88,227 @@ const compareToggleId = shouldRenderCompare
 const compareAriaLabel = `Add ${componentDefinition.label.toLowerCase()} to comparison`;
 
 const imageAlt = image?.alt || title;
-const localImage = image?.src && typeof image.src !== 'string' ? (image.src as ImageMetadata) : null;
-const remoteImage = image?.src && typeof image.src === 'string'
-  ? {
-      src: image.src,
-      width: image.width ?? 480,
-      height: image.height ?? 320,
-    }
-  : null;
-const showListImage = isList && showImage;
-const listImageSizes = '(max-width: 640px) 75vw, 160px';
-const listImageFallback = (title || '?').charAt(0).toUpperCase();
+const localImage =
+  image?.src && typeof image.src !== 'string'
+    ? (image.src as ImageMetadata)
+    : null;
+const remoteImage =
+  image?.src && typeof image.src === 'string'
+    ? { src: image.src, width: image.width ?? 480, height: image.height ?? 320 }
+    : null;
+const hasImage = Boolean(localImage || remoteImage);
+const thumbLetter = (title || '?').charAt(0).toUpperCase();
 
 const targetSlug = slug || id;
-
-const supportLevelLabels: Record<SupportLevel, string> = {
-  official: 'Official EdgeTX Support',
-  manufacturer: 'Manufacturer Maintained',
-  community: 'Community Maintained',
-};
-
-const supportStatusLabels: Record<SupportStatus, string> = {
-  supported: 'Active Support',
-  limited: 'Limited Support',
-  sunset: 'Support Ending',
-  planned: 'Planned Support',
-};
-
-const supportLevelLabel = supportLevelLabels[support.level];
-const supportStatusLabel = supportStatusLabels[support.status];
-const supportBadges: SupportBadge[] = [];
-
-if (supportLevelLabel) {
-  supportBadges.push({ id: 'level', label: supportLevelLabel });
-}
-
-if (supportStatusLabel) {
-  supportBadges.push({ id: 'status', label: supportStatusLabel });
-}
+const href = `${basePath}/transmitters/${targetSlug}`;
 
 const revisionCount = hardwareRevisions.length;
 const complianceCount = compliance.length;
+const supportNotes = support.notes?.trim();
+const hasRemoteLink = Boolean(remoteUrl);
 
-const trimmedRevisions = hardwareRevisions.slice(0, 4);
-const remainingRevisions = Math.max(0, revisionCount - trimmedRevisions.length);
+/* ── Compact labels for card context ── */
+const compactLevelLabels: Record<SupportLevel, string> = {
+  official: 'Official',
+  manufacturer: 'OEM',
+  community: 'Community',
+};
+const compactStatusLabels: Record<SupportStatus, string> = {
+  supported: 'Active',
+  limited: 'Limited',
+  sunset: 'Sunset',
+  planned: 'Planned',
+};
 
-const trimmedCompliance = compliance.slice(0, 4);
-const remainingCompliance = Math.max(0, complianceCount - trimmedCompliance.length);
+/* ── Color coding ── */
+const levelColorMap: Record<SupportLevel, string> = {
+  official:
+    'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20',
+  manufacturer:
+    'bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-500/20',
+  community:
+    'bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/20',
+};
+const statusColorMap: Record<SupportStatus, string> = {
+  supported:
+    'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20',
+  limited:
+    'bg-yellow-500/10 text-yellow-700 dark:text-yellow-400 border-yellow-500/20',
+  sunset:
+    'bg-red-500/10 text-red-700 dark:text-red-400 border-red-500/20',
+  planned:
+    'bg-sky-500/10 text-sky-700 dark:text-sky-400 border-sky-500/20',
+};
+
+const levelLabel = compactLevelLabels[support.level];
+const statusLabel = compactStatusLabels[support.status];
+const levelColor = levelColorMap[support.level] ?? '';
+const statusColor = statusColorMap[support.status] ?? '';
+
+const hasDetails = revisionCount > 0 || complianceCount > 0;
 
 const compareStorageKey = getCompareStorageKey(compareType);
-const compareLegacyKeysLiteral = JSON.stringify(getCompareLegacyStorageKeys(compareType));
+const compareLegacyKeysLiteral = JSON.stringify(
+  getCompareLegacyStorageKeys(compareType)
+);
 const compareToggleScript = compareToggleInlineScript;
-const supportTimeline: TimelineEntry[] = [
-  { id: 'since', label: 'Since', value: support.sinceVersion },
-];
-
-if (support.lastVersion) {
-  supportTimeline.push({ id: 'last', label: 'Last', value: support.lastVersion });
-}
-
-const href = `${basePath}/transmitters/${targetSlug}`;
-const shouldShowSupportBadges = supportBadges.length > 0;
-const hasFallbackIcon = !image?.src;
-const showBadgeFooter = !isList && !showImage && shouldShowSupportBadges;
-const supportMetrics = supportTimeline.map((entry) => ({
-  ...entry,
-  label: entry.label,
-  value: entry.value,
-}));
-const supportNotes = support.notes?.trim();
-
-const metaSections: MetaSection[] = [];
-
-if (revisionCount > 0) {
-  metaSections.push({
-    id: 'hardware',
-    title: 'Hardware variants',
-    count: revisionCount,
-    items: trimmedRevisions.map((revision) => ({
-      id: revision.id,
-      label: revision.name,
-    })),
-    remaining: remainingRevisions,
-  });
-}
-
-if (complianceCount > 0) {
-  metaSections.push({
-    id: 'compliance',
-    title: 'Compliance IDs',
-    count: complianceCount,
-    items: trimmedCompliance.map((entry) => ({
-      id: entry.id,
-      label: entry.id,
-      accent: true,
-    })),
-    remaining: remainingCompliance,
-  });
-}
-
-const hasMetaSections = metaSections.length > 0;
-const hasSupportSummary = supportMetrics.length > 0 || Boolean(supportNotes);
-const hasRemoteLink = Boolean(remoteUrl);
 ---
+
 {isList ? (
+  /* ───────────────────── LIST ROW ───────────────────── */
   <article
-    class={`group relative overflow-hidden rounded-lg border bg-background/90 shadow-xs transition hover:border-primary/40 focus-within:border-primary/50 ${
-      className ?? ''
-    }`.trim()}
+    class:list={[
+      'compare-card group relative transition-colors hover:bg-muted/30',
+      className,
+    ]}
     data-compare-container={shouldRenderCompare ? compareId : undefined}
     role="listitem"
   >
-    <div class="flex flex-col gap-4 px-4 py-4 sm:grid sm:grid-cols-[minmax(0,2.2fr)_minmax(0,1.1fr)_minmax(0,1fr)_auto] sm:items-start sm:px-5">
-      <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-5">
-        {showListImage && (
-          <a
-            href={href}
-            class="group/thumbnail relative block w-full overflow-hidden rounded-lg border bg-muted/30 shadow-xs transition focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40 sm:w-32 md:w-36"
-            aria-label={`View ${title}`}
-          >
-            <div class="aspect-[4/3]">
-              {localImage ? (
-                <Picture
-                  src={localImage}
-                  widths={[160, 240, 320]}
-                  formats={["avif", "webp"]}
-                  sizes={listImageSizes}
-                  alt={imageAlt}
-                  loading="lazy"
-                  decoding="async"
-                  pictureClass="block h-full w-full"
-                  imgClass="h-full w-full object-cover transition-transform duration-500 ease-out group-hover/thumbnail:scale-105"
-                />
-              ) : remoteImage ? (
-                <img
-                  src={remoteImage.src}
-                  alt={imageAlt}
-                  loading="lazy"
-                  decoding="async"
-                  width={remoteImage.width}
-                  height={remoteImage.height}
-                  sizes={listImageSizes}
-                  class="h-full w-full object-cover transition-transform duration-500 ease-out group-hover/thumbnail:scale-105"
-                />
-              ) : (
-                <div class="flex h-full w-full items-center justify-center bg-muted/40 text-lg font-semibold uppercase tracking-wide text-muted-foreground">
-                  {listImageFallback}
-                </div>
-              )}
-            </div>
-          </a>
-        )}
+    <a
+      href={href}
+      class="absolute inset-0 z-10 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-inset"
+      aria-label={`View ${title}`}
+      tabindex="0"
+    />
 
-        <div class="flex flex-1 flex-col gap-3">
-          <div class="space-y-1">
-            <a
-              href={href}
-              class="inline-flex text-base font-semibold leading-snug text-foreground transition-colors hover:text-primary focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40"
-            >
-              {title}
-            </a>
-            {manufacturer && (
-              <p class="text-sm text-muted-foreground">{manufacturer}</p>
-            )}
+    <div class="grid grid-cols-1 gap-x-4 gap-y-2 px-4 py-3 sm:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,0.8fr)_minmax(0,0.8fr)_auto] sm:items-center">
+      {/* ── Name + Brand ── */}
+      <div class="flex items-center gap-3 min-w-0">
+        {hasImage && (
+          <div class="hidden h-9 w-9 shrink-0 overflow-hidden rounded-md bg-muted/50 ring-1 ring-border sm:block">
+            {localImage ? (
+              <Picture
+                src={localImage}
+                widths={[36, 72]}
+                formats={['avif', 'webp']}
+                sizes="36px"
+                alt={imageAlt}
+                loading="lazy"
+                decoding="async"
+                pictureClass="block h-full w-full"
+                imgClass="h-full w-full object-cover"
+              />
+            ) : remoteImage ? (
+              <img
+                src={remoteImage.src}
+                alt={imageAlt}
+                width={36}
+                height={36}
+                loading="lazy"
+                decoding="async"
+                class="h-full w-full object-cover"
+              />
+            ) : null}
           </div>
-
-          {shouldShowSupportBadges && (
-            <div class="flex flex-wrap gap-1.5">
-              {supportBadges.map((badge) => (
-                <span
-                  key={badge.id}
-                  class="inline-flex items-center rounded-sm border px-1.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide"
-                >
-                  {badge.label}
-                </span>
-              ))}
-            </div>
+        )}
+        <div class="min-w-0 flex-1">
+          <div class="text-sm font-semibold text-foreground transition-colors group-hover:text-primary truncate">
+            {title}
+          </div>
+          {manufacturer && (
+            <div class="text-xs text-muted-foreground truncate">{manufacturer}</div>
           )}
         </div>
       </div>
 
-      <div class="space-y-3">
-        {supportMetrics.length > 0 && (
-          <dl class="grid gap-2">
-            {supportMetrics.map((entry) => (
-              <div key={entry.id} class="rounded-md border px-3 py-2">
-                <dt class="text-[11px] uppercase tracking-wide text-muted-foreground/80">{entry.label}</dt>
-                <dd class="text-base font-semibold leading-tight text-foreground">{entry.value}</dd>
-              </div>
-            ))}
-          </dl>
-        )}
-
-        {supportNotes && (
-          <p class="rounded-md border bg-muted/30 p-3 text-sm leading-snug text-muted-foreground">
-            {supportNotes}
-          </p>
-        )}
-      </div>
-
-      <div class="space-y-3">
-        {hasMetaSections ? (
-          <div class="space-y-3">
-            {metaSections.map((section) => (
-              <div key={section.id} class="rounded-md border p-3">
-                <div class="flex items-center justify-between text-[11px] uppercase tracking-wide text-muted-foreground/80">
-                  <span>{section.title}</span>
-                  <span class="font-semibold text-muted-foreground">{section.count}</span>
-                </div>
-                <div class="mt-2 flex flex-wrap gap-1.5">
-                  {section.items.map((item) => (
-                    <span
-                      key={item.id}
-                      class={`inline-flex items-center rounded-sm border px-1.5 py-0.5 text-[11px] font-medium ${
-                        item.accent ? 'text-primary' : 'text-foreground'
-                      }`.trim()}
-                    >
-                      {item.label}
-                    </span>
-                  ))}
-                  {section.remaining > 0 && (
-                    <span class="inline-flex items-center rounded-sm border bg-muted/40 px-1.5 py-0.5 text-[11px] font-semibold">
-                      +{section.remaining} more
-                    </span>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <p class="text-sm text-muted-foreground">No additional hardware or compliance notes.</p>
-        )}
-      </div>
-
-      <div class="flex flex-col items-start gap-3 sm:items-end">
-        <a
-          href={href}
-          class="inline-flex items-center gap-2 text-sm font-semibold text-primary transition-colors hover:text-primary/80"
+      {/* ── Support badges ── */}
+      <div class="hidden sm:flex flex-wrap gap-1">
+        <span
+          class:list={[
+            'inline-flex items-center rounded-sm border px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide',
+            levelColor,
+          ]}
         >
-          View profile
-          <span aria-hidden="true">→</span>
-        </a>
+          {levelLabel}
+        </span>
+        <span
+          class:list={[
+            'inline-flex items-center rounded-sm border px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide',
+            statusColor,
+          ]}
+        >
+          {statusLabel}
+        </span>
+      </div>
 
+      {/* ── Timeline ── */}
+      <div class="hidden sm:block text-xs">
+        <div>
+          Since <strong class="font-semibold">{support.sinceVersion}</strong>
+        </div>
+        {support.lastVersion && (
+          <div class="text-muted-foreground">Last {support.lastVersion}</div>
+        )}
+      </div>
+
+      {/* ── Details ── */}
+      <div class="hidden sm:block text-xs text-muted-foreground">
+        {revisionCount > 0 && <div>{revisionCount} HW rev.</div>}
+        {complianceCount > 0 && <div>{complianceCount} Compliance</div>}
+      </div>
+
+      {/* ── Actions ── */}
+      <div class="hidden sm:flex items-center gap-2 justify-end">
         {hasRemoteLink && (
           <a
             href={remoteUrl}
             target="_blank"
             rel="noopener noreferrer"
-            class="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground transition-colors hover:text-primary"
+            class="relative z-20 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground transition-colors hover:text-primary"
           >
-            View YAML ↗
+            YAML ↗
           </a>
         )}
-
         {shouldRenderCompare && compareToggleId && (
-          <div class="compare-toggle flex items-center gap-1 rounded-full border px-2 py-1 text-xs text-muted-foreground" data-compare-toggle-wrapper>
+          <div
+            class="compare-toggle relative z-20 flex items-center gap-1 text-[10px] text-muted-foreground"
+            data-compare-toggle-wrapper
+          >
             <input
               id={compareToggleId}
               type="checkbox"
-              class="h-3.5 w-3.5 rounded-sm border text-primary focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40"
+              class="h-3 w-3 rounded-sm border text-primary focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40"
               data-compare-toggle={compareId}
               data-compare-type={compareType}
               aria-label={compareAriaLabel}
             />
-            <label for={compareToggleId} class="font-semibold uppercase tracking-wide">
-              Compare
+            <label
+              for={compareToggleId}
+              class="font-semibold uppercase tracking-wide cursor-pointer"
+            >
+              Cmp
             </label>
           </div>
         )}
+        <span
+          class="text-sm text-muted-foreground/60 transition-colors group-hover:text-primary"
+          aria-hidden="true"
+        >
+          →
+        </span>
+      </div>
+
+      {/* ── Mobile condensed ── */}
+      <div class="flex flex-wrap items-center gap-2 text-xs sm:hidden">
+        <span
+          class:list={[
+            'inline-flex items-center rounded-sm border px-1 py-0.5 text-[10px] font-semibold uppercase',
+            levelColor,
+          ]}
+        >
+          {levelLabel}
+        </span>
+        <span
+          class:list={[
+            'inline-flex items-center rounded-sm border px-1 py-0.5 text-[10px] font-semibold uppercase',
+            statusColor,
+          ]}
+        >
+          {statusLabel}
+        </span>
+        <span class="text-muted-foreground">
+          · Since {support.sinceVersion}
+        </span>
       </div>
     </div>
 
@@ -388,172 +325,161 @@ const hasRemoteLink = Boolean(remoteUrl);
     )}
   </article>
 ) : (
-  <div class="relative" data-compare-container={shouldRenderCompare ? compareId : undefined}>
-    <BaseCard
+  /* ───────────────────── GRID CARD ───────────────────── */
+  <article
+    class:list={[
+      'compare-card group relative flex flex-col overflow-hidden rounded-lg border bg-card transition-all hover:border-primary/30 hover:shadow-sm',
+      className,
+    ]}
+    data-compare-container={shouldRenderCompare ? compareId : undefined}
+  >
+    {/* Full-card click target */}
+    <a
       href={href}
-      title={title}
-      subtitle={manufacturer}
-      image={image}
-      showImage={showImage}
-      showHeader={!showImage}
-      cardClass={cardClass}
-      class={`compare-card ${className ?? ''}`.trim()}
-    >
-    {showImage && (
-      <Fragment slot="imageOverlay">
-        <div class="pointer-events-none relative h-full w-full">
-          <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent" aria-hidden="true" />
-          <div class="absolute top-2 left-2 max-w-[70%] space-y-1">
-            <h3 class="rounded-sm border bg-background/95 px-1.5 py-0.5 text-xs font-semibold leading-snug text-foreground shadow-sm transition-colors group-hover:text-primary">
-              {title}
-            </h3>
-            {manufacturer && (
-              <p class="inline-flex rounded-sm border bg-background/95 px-1.5 py-0.5 text-[11px] font-medium text-muted-foreground shadow-sm">
-                {manufacturer}
-              </p>
-            )}
-          </div>
-          {shouldShowSupportBadges && (
-            <div class="absolute bottom-2 left-2 flex flex-wrap gap-1.5">
-              {supportBadges.map((badge) => (
-                <span
-                  key={badge.id}
-                  class="inline-flex items-center rounded-sm border bg-background/95 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-foreground shadow-sm"
-                >
-                  {badge.label}
-                </span>
-              ))}
-            </div>
-          )}
-        </div>
-      </Fragment>
-    )}
+      class="absolute inset-0 z-10 rounded-lg focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40"
+      aria-label={`View ${title}`}
+      tabindex="0"
+    />
 
-    {showImage && hasFallbackIcon && (
-      <Fragment slot="imageFallback">
-        <div class="flex h-full w-full items-center justify-center text-muted-foreground/50">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.5"
-            class="h-12 w-12"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M4.5 8.25v7.5a2.25 2.25 0 0 0 2.25 2.25h10.5A2.25 2.25 0 0 0 19.5 15.75v-7.5A2.25 2.25 0 0 0 17.25 6H6.75A2.25 2.25 0 0 0 4.5 8.25Zm6.75 7.5a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm3 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM8.25 9.75h7.5m-3.75-3.75v-1.5"
-            />
-          </svg>
-        </div>
-      </Fragment>
-    )}
-
-    <Fragment slot="specs">
-      <div class={`space-y-1 text-[10px] leading-snug ${showImage ? 'mt-2.5' : ''}`}>
-        {shouldShowSupportBadges && (
-          <div class="flex flex-wrap gap-1 text-[9px] font-semibold uppercase tracking-wide text-muted-foreground">
-            {supportBadges.map((badge) => (
-              <span key={badge.id} class="inline-flex items-center rounded-sm border px-1 py-0.5">
-                {badge.label}
-              </span>
-            ))}
-          </div>
-        )}
-
-        <div class="h-px w-full bg-border/70" />
-
-        {hasSupportSummary && (
-          <div class="flex flex-wrap items-start justify-between gap-1">
-            {supportMetrics.length > 0 && (
-              <dl class="flex flex-wrap gap-1">
-                {supportMetrics.map((entry) => (
-                  <div key={entry.id} class="min-w-[44px] text-left">
-                    <dd class="text-sm font-semibold leading-tight text-foreground text-center">{entry.value}</dd>
-                    <dt class="text-[9px] uppercase tracking-wide text-muted-foreground text-left">{entry.label}</dt>
-                  </div>
-                ))}
-              </dl>
-            )}
-
-            {supportNotes && (
-              <p class="max-w-[55%] text-sm leading-snug text-muted-foreground">{supportNotes}</p>
-            )}
-          </div>
-        )}
-
-        {hasMetaSections && (
-          <div class={`grid gap-1.5 ${metaSections.length > 1 ? 'sm:grid-cols-2' : ''}`}>
-            {metaSections.map((section) => (
-              <div key={section.id} class="space-y-1.5 rounded-sm border px-2 py-1.5">
-                <div class="flex items-center justify-between text-[8px] uppercase tracking-wide text-muted-foreground">
-                  <span>{section.title}</span>
-                  <span class="font-semibold text-muted-foreground/80">{section.count}</span>
-                </div>
-                <div class="flex flex-wrap gap-1">
-                  {section.items.map((item) => (
-                    <span
-                      key={item.id}
-                      class={`inline-flex items-center rounded-sm border px-1 py-0.5 text-[9px] font-medium ${
-                        item.accent ? 'text-primary' : ''
-                      }`.trim()}
-                    >
-                      {item.label}
-                    </span>
-                  ))}
-                  {section.remaining > 0 && (
-                    <span class="inline-flex items-center rounded-sm border bg-muted/40 px-1 py-0.5 text-[9px] font-semibold">
-                      +{section.remaining} more
-                    </span>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {hasRemoteLink && (
-          <a
-            href={remoteUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="inline-flex items-center gap-1 text-[10px] font-semibold text-primary transition-colors hover:text-primary/80"
-          >
-            View YAML ↗
-          </a>
+    {/* 1 ── Header: Thumbnail + Title ── */}
+    <div class="flex items-start gap-3 p-3">
+      <div class="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-md bg-muted/50 ring-1 ring-border">
+        {localImage ? (
+          <Picture
+            src={localImage}
+            widths={[48, 96]}
+            formats={['avif', 'webp']}
+            sizes="48px"
+            alt={imageAlt}
+            loading="lazy"
+            decoding="async"
+            pictureClass="block h-full w-full"
+            imgClass="h-full w-full object-cover"
+          />
+        ) : remoteImage ? (
+          <img
+            src={remoteImage.src}
+            alt={imageAlt}
+            width={48}
+            height={48}
+            loading="lazy"
+            decoding="async"
+            class="h-full w-full object-cover"
+          />
+        ) : (
+          <span class="text-sm font-bold text-muted-foreground">
+            {thumbLetter}
+          </span>
         )}
       </div>
-    </Fragment>
+      <div class="min-w-0 flex-1">
+        <h3 class="text-sm font-semibold leading-snug text-foreground transition-colors group-hover:text-primary truncate">
+          {title}
+        </h3>
+        {manufacturer && (
+          <p class="mt-0.5 text-xs text-muted-foreground truncate">
+            {manufacturer}
+          </p>
+        )}
+      </div>
+    </div>
 
-    {showBadgeFooter && (
-      <Fragment slot="badges">
-        {supportBadges.map((badge) => (
-          <span
-            key={badge.id}
-            class="inline-flex items-center rounded-sm border bg-muted/40 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide"
-          >
-            {badge.label}
-          </span>
-        ))}
-      </Fragment>
+    {/* 2 ── Support badges ── */}
+    <div class="flex items-center gap-1.5 border-t px-3 py-2">
+      <span
+        class:list={[
+          'inline-flex items-center rounded-sm border px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide',
+          levelColor,
+        ]}
+      >
+        {levelLabel}
+      </span>
+      <span
+        class:list={[
+          'inline-flex items-center rounded-sm border px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide',
+          statusColor,
+        ]}
+      >
+        {statusLabel}
+      </span>
+    </div>
+
+    {/* 3 ── Version timeline ── */}
+    <div class="flex items-end gap-4 border-t px-3 py-2">
+      <div class="leading-none">
+        <div class="text-base font-bold text-foreground">{support.sinceVersion}</div>
+        <div class="mt-0.5 text-[9px] font-semibold uppercase tracking-wider text-muted-foreground">
+          Since
+        </div>
+      </div>
+      {support.lastVersion && (
+        <div class="leading-none">
+          <div class="text-base font-bold text-foreground">
+            {support.lastVersion}
+          </div>
+          <div class="mt-0.5 text-[9px] font-semibold uppercase tracking-wider text-muted-foreground">
+            Latest
+          </div>
+        </div>
+      )}
+    </div>
+
+    {/* 4 ── Footer: details + notes ── */}
+    <div class="mt-auto border-t px-3 py-2 text-xs text-muted-foreground">
+      {hasDetails ? (
+        <div class="flex flex-wrap items-center gap-x-3 gap-y-0.5">
+          {revisionCount > 0 && (
+            <span>{revisionCount} hardware variant{revisionCount > 1 ? 's' : ''}</span>
+          )}
+          {complianceCount > 0 && (
+            <span>{complianceCount} compliance ID{complianceCount > 1 ? 's' : ''}</span>
+          )}
+        </div>
+      ) : supportNotes ? (
+        <p class="line-clamp-2 leading-snug">{supportNotes}</p>
+      ) : (
+        <span class="text-muted-foreground/60">View profile for details →</span>
+      )}
+    </div>
+
+    {/* Notes (shown separately if there are also details) */}
+    {hasDetails && supportNotes && (
+      <div class="border-t px-3 py-2">
+        <p class="text-xs text-muted-foreground line-clamp-2 leading-snug">
+          {supportNotes}
+        </p>
+      </div>
     )}
-    </BaseCard>
 
+    {/* YAML link */}
+    {hasRemoteLink && (
+      <div class="border-t px-3 py-1.5">
+        <a
+          href={remoteUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="relative z-20 inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground transition-colors hover:text-primary"
+        >
+          View YAML ↗
+        </a>
+      </div>
+    )}
+
+    {/* Compare toggle */}
     {shouldRenderCompare && compareToggleId && (
       <div
-        class="compare-toggle absolute right-2 top-2 z-20 flex items-center gap-1 rounded-full border bg-background/90 px-2 py-1 text-[9px] font-semibold uppercase tracking-wide text-muted-foreground shadow-xs backdrop-blur supports-[backdrop-filter]:backdrop-blur-sm"
+        class="compare-toggle absolute right-2 top-2 z-20 flex items-center gap-1 rounded-full border bg-background/90 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground shadow-xs backdrop-blur"
         data-compare-toggle-wrapper
       >
         <input
           id={compareToggleId}
           type="checkbox"
-          class="h-3.5 w-3.5 rounded-sm border text-primary focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40"
+          class="h-3 w-3 rounded-sm border text-primary focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40"
           data-compare-toggle={compareId}
           data-compare-type={compareType}
           aria-label={compareAriaLabel}
         />
-        <label for={compareToggleId}>Compare</label>
+        <label for={compareToggleId} class="cursor-pointer">Compare</label>
       </div>
     )}
 
@@ -568,5 +494,5 @@ const hasRemoteLink = Boolean(remoteUrl);
         set:html={compareToggleScript}
       />
     )}
-  </div>
+  </article>
 )}

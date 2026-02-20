@@ -9,7 +9,6 @@ import {
   getCompareStorageKey,
 } from '@/lib/compare';
 import { compareToggleInlineScript } from './compare-toggle-inline-script';
-import BaseCard from './BaseCard.astro';
 
 interface Props {
   id: string;
@@ -57,7 +56,6 @@ const {
   image,
   basePath = '',
   variant: variantProp = 'grid',
-  showImage: showImageProp = true,
   class: className,
   compareId: compareIdProp,
   compareType: compareTypeProp,
@@ -66,10 +64,7 @@ const {
 
 const componentDefinition = getCompareComponentDefinition('controller');
 const defaultCompareType = componentDefinition.id;
-const variant = variantProp;
-const isList = variant === 'list';
-const showImage = showImageProp;
-const cardClass = isList ? undefined : 'pb-2';
+const isList = variantProp === 'list';
 const compareId = compareIdProp ?? id;
 const compareType = compareTypeProp ?? defaultCompareType;
 const shouldRenderCompare = enableCompareToggle && Boolean(compareId);
@@ -79,197 +74,206 @@ const compareToggleId = shouldRenderCompare
 const compareAriaLabel = `Add ${componentDefinition.label.toLowerCase()} to comparison`;
 
 const imageAlt = image?.alt || title;
-const localImage = image?.src && typeof image.src !== 'string' ? (image.src as ImageMetadata) : null;
-const remoteImage = image?.src && typeof image.src === 'string'
-  ? {
-      src: image.src,
-      width: image.width ?? 480,
-      height: image.height ?? 320,
-    }
-  : null;
-const showListImage = isList && showImage;
-const listImageSizes = '(max-width: 640px) 75vw, 160px';
-const listImageFallback = (title || '?').charAt(0).toUpperCase();
+const localImage =
+  image?.src && typeof image.src !== 'string'
+    ? (image.src as ImageMetadata)
+    : null;
+const remoteImage =
+  image?.src && typeof image.src === 'string'
+    ? { src: image.src, width: image.width ?? 480, height: image.height ?? 320 }
+    : null;
+const hasImage = Boolean(localImage || remoteImage);
+const thumbLetter = (title || '?').charAt(0).toUpperCase();
 
-const mcuDisplay = mcu ? mcu.toUpperCase().replace(/^(STMICRO-|ATMEGA-)/, '') : 'UNKNOWN';
+const mcuDisplay = mcu
+  ? mcu.toUpperCase().replace(/^(STMICRO-|ATMEGA-)/, '')
+  : 'UNKNOWN';
 const mountingDisplay = mounting
   ? mounting === 'cube' || mounting === 'wing' || mounting === 'custom'
     ? mounting.charAt(0).toUpperCase() + mounting.slice(1)
     : mounting.replace('x', '×') + 'mm'
   : undefined;
 
-const firmwareBadges = firmwares.map((firmware) => firmware.toUpperCase());
+const firmwareBadges = firmwares.map((fw) => fw.toUpperCase());
 const href = `${basePath}/controllers/${id}`;
+
 const ioMetrics = [
   { label: 'UART', value: uarts },
   { label: 'CAN', value: can && can > 0 ? can : undefined },
   { label: 'PWM', value: pwm },
-].filter((metric) => metric.value !== undefined);
+].filter((m) => m.value !== undefined);
+
 const featureFlags = [
   sdCard ? 'SD' : null,
   barometer ? 'Baro' : null,
-  ethernet ? 'Ethernet' : null,
-].filter(Boolean);
+  ethernet ? 'Eth' : null,
+].filter(Boolean) as string[];
+
+const firmwareColorMap: Record<string, string> = {
+  ARDUPILOT: 'bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/20',
+  PX4: 'bg-sky-500/10 text-sky-700 dark:text-sky-400 border-sky-500/20',
+  INAV: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20',
+  BETAFLIGHT: 'bg-violet-500/10 text-violet-700 dark:text-violet-400 border-violet-500/20',
+};
+const getFirmwareColor = (fw: string) =>
+  firmwareColorMap[fw] ?? 'bg-muted/60 text-foreground';
 
 const compareStorageKey = getCompareStorageKey(compareType);
-const compareLegacyKeysLiteral = JSON.stringify(getCompareLegacyStorageKeys(compareType));
+const compareLegacyKeysLiteral = JSON.stringify(
+  getCompareLegacyStorageKeys(compareType)
+);
 const compareToggleScript = compareToggleInlineScript;
 ---
+
 {isList ? (
+  /* ───────────────────── LIST ROW ───────────────────── */
   <article
-    class={`group relative overflow-hidden rounded-lg border bg-background/90 shadow-xs transition hover:border-primary/40 focus-within:border-primary/50 ${
-      className ?? ''
-    }`.trim()}
+    class:list={[
+      'compare-card group relative transition-colors hover:bg-muted/30',
+      className,
+    ]}
     data-compare-container={shouldRenderCompare ? compareId : undefined}
     role="listitem"
   >
-    <div class="flex flex-col gap-4 px-4 py-4 sm:grid sm:grid-cols-[minmax(0,2.05fr)_minmax(0,1.1fr)_minmax(0,0.9fr)_auto] sm:items-center sm:px-5">
-      <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-5">
-        {showListImage && (
-          <a
-            href={href}
-            class="group/thumbnail relative block w-full overflow-hidden rounded-lg border bg-muted/30 shadow-xs transition focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40 sm:w-32 md:w-36"
-            aria-label={`View ${title}`}
-          >
-            <div class="aspect-[4/3]">
-              {localImage ? (
-                <Picture
-                  src={localImage}
-                  widths={[160, 240, 320]}
-                  formats={["avif", "webp"]}
-                  sizes={listImageSizes}
-                  alt={imageAlt}
-                  loading="lazy"
-                  decoding="async"
-                  pictureClass="block h-full w-full"
-                  imgClass="h-full w-full object-cover transition-transform duration-500 ease-out group-hover/thumbnail:scale-105"
-                />
-              ) : remoteImage ? (
-                <img
-                  src={remoteImage.src}
-                  alt={imageAlt}
-                  loading="lazy"
-                  decoding="async"
-                  width={remoteImage.width}
-                  height={remoteImage.height}
-                  sizes={listImageSizes}
-                  class="h-full w-full object-cover transition-transform duration-500 ease-out group-hover/thumbnail:scale-105"
-                />
-              ) : (
-                <div class="flex h-full w-full items-center justify-center bg-muted/40 text-lg font-semibold uppercase tracking-wide text-muted-foreground">
-                  {listImageFallback}
-                </div>
-              )}
-            </div>
-          </a>
-        )}
+    <a
+      href={href}
+      class="absolute inset-0 z-10 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-inset"
+      aria-label={`View ${title}`}
+      tabindex="0"
+    />
 
-        <div class="flex flex-1 flex-col gap-3">
-          <div class="space-y-1">
-            <a
-              href={href}
-              class="inline-flex text-base font-semibold leading-snug text-foreground transition-colors hover:text-primary focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40"
-            >
-              {title}
-            </a>
-            {manufacturer && (
-              <p class="text-sm text-muted-foreground">{manufacturer}</p>
-            )}
+    <div class="grid grid-cols-1 gap-x-4 gap-y-2 px-4 py-3 sm:grid-cols-[minmax(0,2fr)_minmax(0,0.8fr)_minmax(0,1fr)_minmax(0,1fr)_auto] sm:items-center">
+      {/* ── Name + Brand ── */}
+      <div class="flex items-center gap-3 min-w-0">
+        {hasImage && (
+          <div class="hidden h-9 w-9 shrink-0 overflow-hidden rounded-md bg-muted/50 ring-1 ring-border sm:block">
+            {localImage ? (
+              <Picture
+                src={localImage}
+                widths={[36, 72]}
+                formats={['avif', 'webp']}
+                sizes="36px"
+                alt={imageAlt}
+                loading="lazy"
+                decoding="async"
+                pictureClass="block h-full w-full"
+                imgClass="h-full w-full object-cover"
+              />
+            ) : remoteImage ? (
+              <img
+                src={remoteImage.src}
+                alt={imageAlt}
+                width={36}
+                height={36}
+                loading="lazy"
+                decoding="async"
+                class="h-full w-full object-cover"
+              />
+            ) : null}
           </div>
-
-          {firmwareBadges.length > 0 && (
-            <div class="flex flex-wrap gap-1.5">
-              {firmwareBadges.map((label) => (
-                <span
-                  key={label}
-                  class="inline-flex items-center rounded-sm border px-1.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide"
-                >
-                  {label}
-                </span>
-              ))}
-            </div>
+        )}
+        <div class="min-w-0 flex-1">
+          <div class="text-sm font-semibold text-foreground transition-colors group-hover:text-primary truncate">
+            {title}
+          </div>
+          {manufacturer && (
+            <div class="text-xs text-muted-foreground truncate">{manufacturer}</div>
           )}
+        </div>
+      </div>
 
-          <div class="flex flex-wrap gap-3 text-xs font-medium uppercase tracking-wide text-muted-foreground/80">
-            <span class="inline-flex items-center gap-1 rounded-sm border px-1.5 py-0.5 font-mono text-[11px]">
-              {mcuDisplay}
-            </span>
-            {mountingDisplay && (
-              <span class="inline-flex items-center gap-1 rounded-sm border px-1.5 py-0.5 text-[11px]">
-                {mountingDisplay}
+      {/* ── MCU + Mounting ── */}
+      <div class="hidden sm:flex flex-col gap-0.5">
+        <span class="font-mono text-xs font-medium">{mcuDisplay}</span>
+        {mountingDisplay && (
+          <span class="text-xs text-muted-foreground">{mountingDisplay}</span>
+        )}
+      </div>
+
+      {/* ── IO + Features ── */}
+      <div class="hidden sm:block">
+        {ioMetrics.length > 0 && (
+          <div class="flex items-center gap-2 text-xs">
+            {ioMetrics.map((m) => (
+              <span class="tabular-nums">
+                <strong class="font-semibold">{m.value}</strong>
+                <span class="ml-0.5 text-muted-foreground">{m.label.charAt(0)}</span>
               </span>
-            )}
-          </div>
-        </div>
-      </div>
-
-      <div class="space-y-2 text-sm">
-        <div class="rounded-md border bg-muted/30 p-3">
-          <div class="flex items-center justify-between text-xs uppercase tracking-wide text-muted-foreground/80">
-            <span>Processor</span>
-            <span class="font-semibold text-foreground">{mcuDisplay}</span>
-          </div>
-          {mountingDisplay && (
-            <div class="mt-2 flex items-center justify-between text-xs uppercase tracking-wide text-muted-foreground/80">
-              <span>Mounting</span>
-              <span class="font-semibold text-foreground">{mountingDisplay}</span>
-            </div>
-          )}
-        </div>
-      </div>
-
-      <div class="space-y-2">
-        {ioMetrics.length > 0 ? (
-          <dl class="grid gap-2 sm:grid-cols-3">
-            {ioMetrics.map((metric) => (
-              <div key={metric.label} class="rounded-md border px-2 py-1.5 text-center">
-                <dd class="text-base font-semibold leading-tight text-foreground">{metric.value}</dd>
-                <dt class="text-[11px] uppercase tracking-wide text-muted-foreground">{metric.label}</dt>
-              </div>
             ))}
-          </dl>
-        ) : (
-          <p class="text-sm text-muted-foreground">No IO metrics published.</p>
+          </div>
         )}
-      </div>
-
-      <div class="flex flex-col items-start gap-3 sm:items-end">
         {featureFlags.length > 0 && (
-          <ul class="flex flex-wrap gap-1.5 text-xs uppercase tracking-wide text-muted-foreground">
-            {featureFlags.map((flag) => (
-              <li
-                key={flag}
-                class="inline-flex items-center gap-1 rounded-full bg-muted/40 px-2 py-0.5 font-semibold text-muted-foreground"
-              >
-                <span aria-hidden="true" class="text-[10px] text-primary">●</span>
-                {flag}
-              </li>
+          <div class="mt-0.5 flex items-center gap-1.5 text-[11px] text-muted-foreground">
+            {featureFlags.map((f) => (
+              <span class="inline-flex items-center gap-0.5">
+                <span class="text-emerald-600 dark:text-emerald-400">✓</span>{f}
+              </span>
             ))}
-          </ul>
+          </div>
         )}
+      </div>
 
-        <a
-          href={href}
-          class="inline-flex items-center gap-2 text-sm font-semibold text-primary transition-colors hover:text-primary/80"
-        >
-          View details
-          <span aria-hidden="true">→</span>
-        </a>
+      {/* ── Firmware ── */}
+      <div class="hidden sm:flex flex-wrap gap-1">
+        {firmwareBadges.map((label) => (
+          <span
+            class:list={[
+              'inline-flex items-center rounded-sm border px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide',
+              getFirmwareColor(label),
+            ]}
+          >
+            {label}
+          </span>
+        ))}
+      </div>
 
+      {/* ── Actions ── */}
+      <div class="hidden sm:flex items-center gap-2 justify-end">
         {shouldRenderCompare && compareToggleId && (
-          <div class="compare-toggle flex items-center gap-1 rounded-full border px-2 py-1 text-xs text-muted-foreground" data-compare-toggle-wrapper>
+          <div
+            class="compare-toggle relative z-20 flex items-center gap-1 text-[10px] text-muted-foreground"
+            data-compare-toggle-wrapper
+          >
             <input
               id={compareToggleId}
               type="checkbox"
-              class="h-3.5 w-3.5 rounded-sm border text-primary focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40"
+              class="h-3 w-3 rounded-sm border text-primary focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40"
               data-compare-toggle={compareId}
               data-compare-type={compareType}
               aria-label={compareAriaLabel}
             />
-            <label for={compareToggleId} class="font-semibold uppercase tracking-wide">
-              Compare
+            <label
+              for={compareToggleId}
+              class="font-semibold uppercase tracking-wide cursor-pointer"
+            >
+              Cmp
             </label>
           </div>
+        )}
+        <span
+          class="text-sm text-muted-foreground/60 transition-colors group-hover:text-primary"
+          aria-hidden="true"
+        >
+          →
+        </span>
+      </div>
+
+      {/* ── Mobile condensed row ── */}
+      <div class="flex flex-wrap items-center gap-2 text-xs sm:hidden">
+        <span class="font-mono font-medium">{mcuDisplay}</span>
+        {mountingDisplay && (
+          <span class="text-muted-foreground">· {mountingDisplay}</span>
+        )}
+        {ioMetrics.length > 0 &&
+          ioMetrics.map((m) => (
+            <span class="tabular-nums text-muted-foreground">
+              {m.value}{m.label.charAt(0)}
+            </span>
+          ))}
+        {firmwareBadges.length > 0 && (
+          <span class="text-muted-foreground">
+            · {firmwareBadges.join(' · ')}
+          </span>
         )}
       </div>
     </div>
@@ -287,116 +291,144 @@ const compareToggleScript = compareToggleInlineScript;
     )}
   </article>
 ) : (
-  <div class="relative" data-compare-container={shouldRenderCompare ? compareId : undefined}>
-    <BaseCard
+  /* ───────────────────── GRID CARD ───────────────────── */
+  <article
+    class:list={[
+      'compare-card group relative flex flex-col overflow-hidden rounded-lg border bg-card transition-all hover:border-primary/30 hover:shadow-sm',
+      className,
+    ]}
+    data-compare-container={shouldRenderCompare ? compareId : undefined}
+  >
+    {/* Full-card click target */}
+    <a
       href={href}
-      title={title}
-      subtitle={manufacturer}
-      image={image}
-      showImage={showImage}
-      showHeader={!showImage}
-      cardClass={cardClass}
-      class={`compare-card ${className ?? ''}`.trim()}
-    >
-    {showImage && (
-      <Fragment slot="imageOverlay">
-        <div class="pointer-events-none relative h-full w-full">
-          <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent" aria-hidden="true" />
-          <div class="absolute top-2 left-2 max-w-[70%] space-y-1">
-            <h3 class="rounded-sm border bg-background/95 px-1.5 py-0.5 text-xs font-semibold leading-snug text-foreground shadow-sm transition-colors group-hover:text-primary">
-              {title}
-            </h3>
-            {manufacturer && (
-              <p class="inline-flex rounded-sm border bg-background/95 px-1.5 py-0.5 text-[11px] font-medium text-muted-foreground shadow-sm">
-                {manufacturer}
-              </p>
-            )}
-          </div>
-          {firmwareBadges.length > 0 && (
-            <div class="absolute bottom-2 left-2 flex flex-wrap gap-1.5">
-              {firmwareBadges.map((label) => (
-                <span class="inline-flex items-center rounded-sm border bg-background/95 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide shadow-sm">
-                  {label}
-                </span>
-              ))}
-            </div>
-          )}
-        </div>
-      </Fragment>
-    )}
+      class="absolute inset-0 z-10 rounded-lg focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40"
+      aria-label={`View ${title}`}
+      tabindex="0"
+    />
 
-    <Fragment slot="specs">
-      <div class={`space-y-1 text-[10px] leading-snug ${showImage ? 'mt-2.5' : ''}`}>
-        <div class="flex flex-wrap items-center gap-1 text-[9px] font-semibold uppercase tracking-wide text-muted-foreground">
-          <span class="inline-flex items-center rounded-sm border px-1 py-0.5 font-mono">
-            {mcuDisplay}
+    {/* 1 ── Header: Thumbnail + Title ── */}
+    <div class="flex items-start gap-3 p-3">
+      <div class="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-md bg-muted/50 ring-1 ring-border">
+        {localImage ? (
+          <Picture
+            src={localImage}
+            widths={[48, 96]}
+            formats={['avif', 'webp']}
+            sizes="48px"
+            alt={imageAlt}
+            loading="lazy"
+            decoding="async"
+            pictureClass="block h-full w-full"
+            imgClass="h-full w-full object-cover"
+          />
+        ) : remoteImage ? (
+          <img
+            src={remoteImage.src}
+            alt={imageAlt}
+            width={48}
+            height={48}
+            loading="lazy"
+            decoding="async"
+            class="h-full w-full object-cover"
+          />
+        ) : (
+          <span class="text-sm font-bold text-muted-foreground">
+            {thumbLetter}
           </span>
-          {mountingDisplay && (
-            <span class="inline-flex items-center rounded-sm border px-1 py-0.5">
-              {mountingDisplay}
-            </span>
-          )}
-        </div>
-
-        <div class="h-px w-full bg-border/70" />
-
-        <div class="flex flex-wrap items-start justify-between gap-1">
-          {ioMetrics.length > 0 && (
-            <dl class="flex flex-wrap gap-1">
-              {ioMetrics.map((metric) => (
-                <div key={metric.label} class="min-w-[40px] text-left">
-                  <dd class="text-sm font-semibold leading-tight text-foreground text-center">{metric.value}</dd>
-                  <dt class="text-[8px] uppercase tracking-wide text-muted-foreground text-left">{metric.label}</dt>
-                </div>
-              ))}
-            </dl>
-          )}
-
-          {featureFlags.length > 0 && (
-            <div class="flex flex-wrap justify-end gap-0.5">
-              {featureFlags.map((flag) => (
-                <span
-                  key={flag}
-                  class="inline-flex items-center gap-0.5 text-[8px] font-medium uppercase tracking-wide text-muted-foreground"
-                >
-                  <span aria-hidden="true" class="text-[10px] leading-none text-muted-foreground">🗸</span>
-                  {flag}
-                </span>
-              ))}
-            </div>
-          )}
-        </div>
+        )}
       </div>
-    </Fragment>
+      <div class="min-w-0 flex-1">
+        <h3 class="text-sm font-semibold leading-snug text-foreground transition-colors group-hover:text-primary truncate">
+          {title}
+        </h3>
+        {manufacturer && (
+          <p class="mt-0.5 text-xs text-muted-foreground truncate">
+            {manufacturer}
+          </p>
+        )}
+      </div>
+    </div>
 
-    {!showImage && firmwareBadges.length > 0 && (
-      <Fragment slot="badges">
+    {/* 2 ── Specs: MCU + Mounting ── */}
+    <div class="flex items-center gap-1.5 border-t px-3 py-2">
+      <span class="inline-flex items-center rounded bg-muted/60 px-1.5 py-0.5 font-mono text-[11px] font-medium">
+        {mcuDisplay}
+      </span>
+      {mountingDisplay && (
+        <span class="inline-flex items-center rounded bg-muted/60 px-1.5 py-0.5 text-[11px] font-medium">
+          {mountingDisplay}
+        </span>
+      )}
+    </div>
+
+    {/* 3 ── IO Metrics + Feature flags ── */}
+    <div class="flex items-end justify-between gap-2 border-t px-3 py-2">
+      {ioMetrics.length > 0 ? (
+        <div class="flex items-end gap-4">
+          {ioMetrics.map((metric) => (
+            <div class="leading-none">
+              <div class="text-lg font-bold tabular-nums text-foreground">
+                {metric.value}
+              </div>
+              <div class="mt-0.5 text-[9px] font-semibold uppercase tracking-wider text-muted-foreground">
+                {metric.label}
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <span class="text-xs text-muted-foreground">No IO data</span>
+      )}
+      {featureFlags.length > 0 && (
+        <div class="flex flex-col items-end gap-0.5">
+          {featureFlags.map((flag) => (
+            <span class="inline-flex items-center gap-1 text-[11px] text-muted-foreground">
+              <svg
+                class="h-3 w-3 text-emerald-600 dark:text-emerald-400"
+                viewBox="0 0 16 16"
+                fill="currentColor"
+              >
+                <path d="M12.416 3.376a.75.75 0 0 1 .208 1.04l-5 7.5a.75.75 0 0 1-1.154.114l-3-3a.75.75 0 0 1 1.06-1.06l2.353 2.353 4.493-6.74a.75.75 0 0 1 1.04-.207Z" />
+              </svg>
+              {flag}
+            </span>
+          ))}
+        </div>
+      )}
+    </div>
+
+    {/* 4 ── Firmware badges ── */}
+    {firmwareBadges.length > 0 && (
+      <div class="mt-auto flex flex-wrap gap-1 border-t px-3 py-2">
         {firmwareBadges.map((label) => (
           <span
-            key={label}
-            class="inline-flex items-center rounded-sm border px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide"
+            class:list={[
+              'inline-flex items-center rounded-sm border px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide',
+              getFirmwareColor(label),
+            ]}
           >
             {label}
           </span>
         ))}
-      </Fragment>
+      </div>
     )}
-    </BaseCard>
 
+    {/* Compare toggle */}
     {shouldRenderCompare && compareToggleId && (
       <div
-        class="compare-toggle absolute right-2 top-2 z-20 flex items-center gap-1 rounded-full border bg-background/90 px-2 py-1 text-[9px] font-semibold uppercase tracking-wide text-muted-foreground shadow-xs backdrop-blur supports-[backdrop-filter]:backdrop-blur-sm"
+        class="compare-toggle absolute right-2 top-2 z-20 flex items-center gap-1 rounded-full border bg-background/90 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground shadow-xs backdrop-blur"
         data-compare-toggle-wrapper
       >
         <input
           id={compareToggleId}
           type="checkbox"
-          class="h-3.5 w-3.5 rounded-sm border text-primary focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40"
+          class="h-3 w-3 rounded-sm border text-primary focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40"
           data-compare-toggle={compareId}
           data-compare-type={compareType}
           aria-label={compareAriaLabel}
         />
-        <label for={compareToggleId}>Compare</label>
+        <label for={compareToggleId} class="cursor-pointer">Compare</label>
       </div>
     )}
 
@@ -411,5 +443,5 @@ const compareToggleScript = compareToggleInlineScript;
         set:html={compareToggleScript}
       />
     )}
-  </div>
+  </article>
 )}
