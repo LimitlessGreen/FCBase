@@ -1,9 +1,9 @@
 id: cuav-x7-core-rc03
 type: manufacturer-doc
-title: "CUAV X7 Core RC03"
-url: https://doc.cuav.net/autopilot/x7/en/core-rc03.html
-date: "2025-10-15"
+title: "CUAV X7 Pro Documentation"
+url: https://doc.cuav.net/controller/x7/en/x7-pro.html
+date: "2026-02-20"
 reliability: A
 publisher: CUAV
 language: en
-notes: "Official CUAV reference for the X7 Core RC03 module covering specifications and connectors."
+notes: "Official CUAV X7 Pro documentation used as the current reference for the X7 core module specifications and interfaces."

@@ -1,9 +1,9 @@
 id: ardupilot-holybro-pixhawk4
 type: ardupilot-doc
-title: "Holybro Pixhawk 4 — ArduPilot Hardware Overview"
-url: https://ardupilot.org/copter/docs/common-holybro-pixhawk4.html
-date: "2025-10-15"
+title: "Pixhawk Family Overview — ArduPilot Hardware"
+url: https://ardupilot.org/copter/docs/common-pixhawk-overview.html
+date: "2026-02-20"
 reliability: A
 publisher: ArduPilot
 language: en
-notes: "Official ArduPilot hardware guide for the Holybro Pixhawk 4 with specifications, pinouts, and recommended peripherals."
+notes: "ArduPilot-maintained Pixhawk family overview used as the current upstream hardware reference after the older Pixhawk 4-specific page was removed."
