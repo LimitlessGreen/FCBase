@@ -1,0 +1,9 @@
+id: ardupilot-matek-f405-te
+type: ardupilot-doc
+title: "Matek F405-TE — ArduPilot Hardware Overview"
+url: https://ardupilot.org/plane/docs/common-matekf405-te.html
+date: "2026-02-20"
+reliability: A
+publisher: ArduPilot
+language: en
+notes: "Official ArduPilot hardware guide for the Matek F405-TE and F405-HDTE with wiring references and interface tables."

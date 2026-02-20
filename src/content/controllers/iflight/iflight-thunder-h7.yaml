@@ -1,0 +1,42 @@
+id: iflight-thunder-h7
+title: iFlight Thunder H7
+brand: iflight
+mcu: stmicro-stm32h743
+mounting: 30.5x30.5
+power:
+  inputs:
+    - name: BAT
+      voltage:
+        min: 6
+        max: 36
+        unit: V
+      notes: 2S-8S battery input
+io:
+  uarts: 6
+  can: 0
+  pwm: 9
+  ethernet: false
+  sd_card: false
+sensors:
+  imu:
+    - count: 1
+      id: invensense-icm42688p
+  barometer:
+    - count: 1
+      id: infineon-spl06-001
+firmware_support:
+  - id: ardupilot
+    status: stable
+sources:
+  - ardupilot-iflight-thunder-h7
+verification:
+  level: community
+  last_updated: "2026-02-20"
+hardware:
+  openness: closed
+keywords:
+  - ardupilot
+  - iflight
+  - racer
+  - stm32h743
+notes: ArduPilot lists six UARTs, nine PWM outputs, and hardware-inverted UART support across serial ports.

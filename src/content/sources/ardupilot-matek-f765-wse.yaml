@@ -1,0 +1,9 @@
+id: ardupilot-matek-f765-wse
+type: ardupilot-doc
+title: "Matek F765-WSE — ArduPilot Hardware Overview"
+url: https://ardupilot.org/plane/docs/common-matekf765-wse.html
+date: "2026-02-20"
+reliability: A
+publisher: ArduPilot
+language: en
+notes: "Official ArduPilot hardware guide for the Matek F765-WSE including processor, sensors, power range, and interface mapping."

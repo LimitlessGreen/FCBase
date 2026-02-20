@@ -1,0 +1,9 @@
+id: ardupilot-holybro-kakuteh7mini
+type: ardupilot-doc
+title: "Holybro Kakute H7 Mini — ArduPilot Hardware Overview"
+url: https://ardupilot.org/copter/docs/common-holybro-kakuteh7mini.html
+date: "2026-02-20"
+reliability: A
+publisher: ArduPilot
+language: en
+notes: "Official ArduPilot hardware guide for Holybro Kakute H7 Mini covering MCU, sensor revisions, UART mapping, and PWM outputs."
