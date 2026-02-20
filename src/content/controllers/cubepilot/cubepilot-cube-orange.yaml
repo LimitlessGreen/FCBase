@@ -1,0 +1,106 @@
+id: cubepilot-cube-orange
+title: CubePilot Cube Orange
+brand: cubepilot
+mcu: stmicro-stm32h753
+mounting: cube
+dimensions:
+  height_mm: 22.3
+  length_mm: 38.25
+  width_mm: 38.25
+power:
+  inputs:
+    - name: POWER1
+      type: power_module
+      connector: 6-pin power monitor
+      voltage:
+        min: 4.1
+        max: 5.7
+        unit: V
+    - name: POWER2
+      type: power_module
+      connector: 6-pin power monitor
+      voltage:
+        min: 4.1
+        max: 5.7
+        unit: V
+    - name: USB
+      type: usb
+      connector: Micro-USB
+      voltage:
+        min: 4.75
+        max: 5.25
+        unit: V
+  redundant: true
+  notes: Cube Orange supports redundant POWER1/POWER2 inputs and USB service power as documented by ArduPilot.
+io:
+  uarts: 5
+  can: 2
+  pwm: 14
+  ethernet: false
+  sd_card: true
+  peripherals:
+    - name: TELEM ports
+      type: uart
+      count: 2
+      interfaces:
+        - mavlink
+        - uart
+      connector: JST-GH 6-pin
+      notes: Dual telemetry ports with hardware flow control on compatible carrier boards.
+    - name: GPS ports
+      type: gps
+      count: 2
+      interfaces:
+        - i2c
+        - uart
+      connector: JST-GH 10-pin and JST-GH 6-pin
+      notes: Primary and secondary GNSS interfaces with support for safety, LED, and buzzer wiring on GPS1.
+    - name: CAN bus
+      type: can
+      count: 2
+      interfaces:
+        - can
+      connector: JST-GH 4-pin
+      notes: Two DroneCAN-capable interfaces exposed via carrier board.
+    - name: PWM outputs
+      type: pwm
+      count: 14
+      interfaces:
+        - pwm
+      connector: Carrier board servo rails
+      notes: Eight IOMCU outputs plus six FMU auxiliary outputs.
+sensors:
+  imu:
+    - count: 1
+      id: invensense-icm20649
+    - count: 1
+      id: invensense-icm20602
+    - count: 1
+      id: invensense-icm20948
+  barometer:
+    - count: 2
+      id: meas-ms5611
+  magnetometer:
+    - count: 1
+      id: akm-ak09916
+features:
+  - Integrated vibration isolation
+  - Triple-redundant IMU architecture
+  - Redundant power inputs
+firmware_support:
+  - id: ardupilot
+    status: stable
+sources:
+  - ardupilot-autopilots
+  - ardupilot-cube-orange-overview
+verification:
+  level: community
+  last_updated: "2026-02-20"
+hardware:
+  openness: open
+keywords:
+  - ardupilot
+  - cube
+  - cubepilot
+  - stm32h753
+notes: Cube Orange is a modular autopilot core that requires a compatible Cube carrier board for full I/O breakout.
