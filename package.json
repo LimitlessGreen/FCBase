@@ -25,7 +25,7 @@
     "@types/react-dom": "^19.2.3",
     "ajv": "^8.17.1",
     "ajv-formats": "^3.0.1",
-    "astro": "^5.16.9",
+    "astro": "^5.17.3",
     "autoprefixer": "^10.4.23",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
