@@ -23,7 +23,7 @@
     "@tailwindcss/vite": "^4.2.0",
     "@types/react": "^19.2.8",
     "@types/react-dom": "^19.2.3",
-    "ajv": "^8.17.1",
+    "ajv": "^8.18.0",
     "ajv-formats": "^3.0.1",
     "astro": "^5.17.3",
     "autoprefixer": "^10.4.23",
